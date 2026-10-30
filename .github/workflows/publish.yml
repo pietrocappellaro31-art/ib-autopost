@@ -2,9 +2,17 @@ name: Publish scheduled Instagram posts
 
 on:
   schedule:
-    # Every 15 minutes. GitHub cron is UTC and can run a few minutes late,
-    # so posts.json times are treated as "publish at or after".
-    - cron: "*/15 * * * *"
+    # GitHub does not guarantee cron timing, and it drops runs from
+    # high-frequency schedules on quiet repositories: a */15 schedule here
+    # fired once in seven hours. Runs are therefore concentrated into the
+    # windows that actually contain post times, which is a schedule GitHub
+    # is far more likely to honour, with an hourly sweep as a safety net.
+    #
+    # Times are UTC. 16:00-19:00 covers the 12:30 Eastern slot either side of
+    # the daylight saving change; 02:00-04:00 covers a 22:00 Eastern slot.
+    # posts.json times mean "publish at or after", so a late run still ships.
+    - cron: "*/10 2-3,16-18 * * *"
+    - cron: "7 * * * *"
   workflow_dispatch:
     inputs:
       mode:
