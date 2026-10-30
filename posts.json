@@ -23,6 +23,63 @@
       ]
     },
     {
+      "id": "w1-02-dcf",
+      "series": "Technical of the Day",
+      "scheduled_utc": "2026-10-31T16:30:00",
+      "caption": "Terminal value is 60 to 80% of your DCF. Most people spend 90% of their prep on the other 20%.\n\n6 steps, in order. Project unlevered free cash flow for 5 years. Pick a WACC. Discount. Build terminal value. Discount that too. Bridge to equity.\n\nStep 4 is where people fall apart.\n\nGordon growth takes your year 5 cash flow, grows it at g, and divides by WACC minus g. Keep g under long-run GDP growth, call it 2 to 3%. Quote 5% and you've just claimed the company eventually becomes the entire economy.\n\nTwo more things they're listening for.\n\nUnlevered cash flow pairs with WACC. It's before interest, so it belongs to lenders and shareholders together. Pair it with cost of equity instead and you've counted the capital structure twice.\n\nAnd a DCF gives you enterprise value, not a share price. Subtract net debt. Subtract preferred and minority interest. Divide by diluted shares. They asked for the share price.\n\nLast thing. Don't call it the most accurate method. It's the most assumption-heavy one, and saying so is what makes you sound like you've built one rather than read about one.\n\nSave this before your next technical.\n\n#investmentbanking #ibinterview #dcf #valuation",
+      "published_id": null,
+      "published_at_utc": null,
+      "images": [
+        "w1-02-dcf-01.jpg",
+        "w1-02-dcf-02.jpg",
+        "w1-02-dcf-03.jpg",
+        "w1-02-dcf-04.jpg",
+        "w1-02-dcf-05.jpg",
+        "w1-02-dcf-06.jpg",
+        "w1-02-dcf-07.jpg",
+        "w1-02-dcf-08.jpg",
+        "w1-02-dcf-09.jpg"
+      ]
+    },
+    {
+      "id": "w1-03-wacc",
+      "series": "Technical of the Day",
+      "scheduled_utc": "2026-11-01T17:30:00",
+      "caption": "Your whole DCF rests on 1 number, and most candidates can't defend it.\n\nWACC. Every term, and where each one comes from.\n\nThe weights are market value, not book. Equity weight uses market cap. Pulling book equity off the balance sheet is the single most common slip here.\n\nCost of debt is after tax. 100 of interest at a 25% rate costs the company 75, because the deduction is real. There's no equivalent on equity, since dividends aren't deductible. Haircut both and you've misunderstood why the haircut exists at all.\n\nCost of equity comes from CAPM. Risk-free rate, plus beta times the equity risk premium.\n\nBeta isn't 1 number off a screen. Take your comps' betas. Strip out each company's use. Average the business risk. Re-lever at the structure you're modelling. That's 4 steps, and interviewers ask for all of them.\n\nAnd use the current yield, not the coupon. A bond issued at 4% that now yields 6.5% costs you 6.5% to refinance. WACC looks forward.\n\nSave this one.\n\n#investmentbanking #ibinterview #wacc #valuation",
+      "published_id": null,
+      "published_at_utc": null,
+      "images": [
+        "w1-03-wacc-01.jpg",
+        "w1-03-wacc-02.jpg",
+        "w1-03-wacc-03.jpg",
+        "w1-03-wacc-04.jpg",
+        "w1-03-wacc-05.jpg",
+        "w1-03-wacc-06.jpg",
+        "w1-03-wacc-07.jpg",
+        "w1-03-wacc-08.jpg",
+        "w1-03-wacc-09.jpg"
+      ]
+    },
+    {
+      "id": "w1-04-cash",
+      "series": "Technical of the Day",
+      "scheduled_utc": "2026-11-02T17:30:00",
+      "caption": "A company can post record profit and miss payroll in the same quarter. Here's how.\n\nRevenue is booked when it's earned, not when it's collected. So a business growing 40% a year books profit on cash it hasn't seen yet.\n\nGrowth makes it worse, not better.\n\nYou buy inventory. You pay staff. You ship. You book the revenue. The customer pays you 60 days later, sometimes 90. Every extra unit of growth widens that gap, and you're the one funding it until it closes.\n\nThen there are 3 more that have nothing to do with working capital. Capex outrunning operating cash. Debt coming due. A one-off legal or restructuring payment that lands in 1 quarter.\n\nHere's the part almost everyone misses, and it's the part they're really asking about.\n\nWhere would you look?\n\nThe income statement is the last place this shows up. Operating cash flow falling while net income rises is the signal. Receivables up 50% on a 20% revenue increase is the cause.\n\nSo name the mechanism, name the line, name the statement. 3 sentences and you're done.\n\n\"Bad management\" names nothing, and they move on.\n\nSave this for the night before.\n\n#investmentbanking #ibinterview #accounting #financialmodeling",
+      "published_id": null,
+      "published_at_utc": null,
+      "images": [
+        "w1-04-cash-01.jpg",
+        "w1-04-cash-02.jpg",
+        "w1-04-cash-03.jpg",
+        "w1-04-cash-04.jpg",
+        "w1-04-cash-05.jpg",
+        "w1-04-cash-06.jpg",
+        "w1-04-cash-07.jpg",
+        "w1-04-cash-08.jpg",
+        "w1-04-cash-09.jpg"
+      ]
+    },
+    {
       "id": "2026-10-28-technicals-five-questions",
       "series": "Technical of the Day",
       "scheduled_utc": "2026-11-03T13:00:00",
@@ -41,6 +98,63 @@
       "published_id": "business-suite-2026-10-28",
       "published_at_utc": "2026-10-29T02:00:00+00:00",
       "note": "Published by hand through Meta Business Suite before this repo existed. Recorded here so the cron never republishes it."
+    },
+    {
+      "id": "w1-05-lbo",
+      "series": "Technical of the Day",
+      "scheduled_utc": "2026-11-03T17:30:00",
+      "caption": "Most people say an LBO is buying a company with debt, then stop talking. That's the setup, not the answer.\n\n5 steps. Sources and uses at entry. Project free cash flow. Sweep that cash against the debt. Exit on EBITDA times a multiple, usually after 5 years. Divide exit equity by entry equity.\n\nSo why use debt?\n\nTake a 1,000 purchase funded 60% debt and 40% equity. Your cheque is 400, not 1,000. The same gain in enterprise value now lands on a much thinner slice, so a deal that would have returned 2.0x returns closer to 3.0x. Interest is deductible. And a repayment schedule keeps management honest.\n\nSay the other half too. Use multiplies your losses on exactly the same maths, and if you don't volunteer that, they'll ask.\n\nReturns come from 3 places and they aren't equally reliable. Debt paydown and EBITDA growth are things a sponsor can influence. Multiple expansion is a market call. Build on the first 2 and assume you exit at the same 10x you paid.\n\nGood target? Steady cash flow, low existing debt, low capex. Not a software company growing 80% a year. It burns cash and it can't carry the debt.\n\nThen finish with the number. Exit enterprise value, minus net debt, over your 400.\n\nSave this one.\n\n#investmentbanking #ibinterview #privateequity #lbo",
+      "published_id": null,
+      "published_at_utc": null,
+      "images": [
+        "w1-05-lbo-01.jpg",
+        "w1-05-lbo-02.jpg",
+        "w1-05-lbo-03.jpg",
+        "w1-05-lbo-04.jpg",
+        "w1-05-lbo-05.jpg",
+        "w1-05-lbo-06.jpg",
+        "w1-05-lbo-07.jpg",
+        "w1-05-lbo-08.jpg",
+        "w1-05-lbo-09.jpg"
+      ]
+    },
+    {
+      "id": "w1-06-fcf",
+      "series": "Technical of the Day",
+      "scheduled_utc": "2026-11-04T17:30:00",
+      "caption": "\"Cash flow\" means 4 different things. Each takes its own discount rate. Mix 2 of them up and your valuation is wrong by a mile.\n\nUnlevered free cash flow. Start with EBIT of 200. Tax it at 25%, so 150. Add D&A of 40, subtract capex of 50, subtract a 10 build in working capital. That's 130, and it sits before interest, so it belongs to lenders and shareholders together. Discount at WACC. You get enterprise value.\n\nLevered free cash flow. Start at net income instead, so after the 30 of interest. Same adjustments, then subtract mandatory repayment. That's what's left for shareholders. Discount at cost of equity. You get equity value, and there's no bridge to build.\n\nOperating cash flow minus capex. The quick one, straight off the statement. It's levered, because operating cash flow already sits after interest paid. People feed this into a WACC-discounted DCF every single day and never notice.\n\nThen EBITDA, which isn't cash flow at all.\n\nIt ignores capex. It ignores working capital. It ignores cash taxes and interest. That's 4 omissions, and if you call it a cash proxy you'd better be able to name all 4.\n\n1 rule covers the whole thing. Match the claim to the rate.\n\nSave this before your next model test.\n\n#investmentbanking #ibinterview #financialmodeling #valuation",
+      "published_id": null,
+      "published_at_utc": null,
+      "images": [
+        "w1-06-fcf-01.jpg",
+        "w1-06-fcf-02.jpg",
+        "w1-06-fcf-03.jpg",
+        "w1-06-fcf-04.jpg",
+        "w1-06-fcf-05.jpg",
+        "w1-06-fcf-06.jpg",
+        "w1-06-fcf-07.jpg",
+        "w1-06-fcf-08.jpg",
+        "w1-06-fcf-09.jpg"
+      ]
+    },
+    {
+      "id": "w1-07-range",
+      "series": "Technical of the Day",
+      "scheduled_utc": "2026-11-05T17:30:00",
+      "caption": "\"Which method gives the highest valuation?\" There's a usual order, and the reason matters far more than the order does.\n\nPrecedents usually print highest. Comps sit below. The DCF ranges widest of the 4. An LBO sets the floor.\n\nWhy precedents beat comps.\n\nA comp is what 1 share trades at, a minority stake with no say in anything. A precedent is what somebody actually paid to own all 100% of it and run it. That price carries a control premium, often 20 to 30%, plus whatever synergies the buyer talked themselves into.\n\nWhy the DCF ranges widest. WACC, terminal growth and your year 5 margin are 3 numbers nobody can verify, and a 1% move in any of them swings the answer more than a revenue assumption you'd argue about for a week.\n\nWhy the LBO is the floor. A sponsor needs its target return, so there's a hard ceiling on what it can pay. A strategic buyer with synergies goes higher.\n\nThen say which one you'd lean on. Liquid comps, lean on comps. Live sale process, lean on precedents. Stable forecastable business, the DCF earns its place.\n\nSay typically. Then say why.\n\n#investmentbanking #ibinterview #valuation #mergersandacquisitions",
+      "published_id": null,
+      "published_at_utc": null,
+      "images": [
+        "w1-07-range-01.jpg",
+        "w1-07-range-02.jpg",
+        "w1-07-range-03.jpg",
+        "w1-07-range-04.jpg",
+        "w1-07-range-05.jpg",
+        "w1-07-range-06.jpg",
+        "w1-07-range-07.jpg",
+        "w1-07-range-08.jpg",
+        "w1-07-range-09.jpg"
+      ]
     }
   ]
 }
