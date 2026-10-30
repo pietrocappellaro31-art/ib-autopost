@@ -218,17 +218,18 @@ def main():
         print("image_base still contains the OWNER/REPO placeholder.", file=sys.stderr)
         return 1
 
-    ig_user_id = resolve_ig_user_id()
-
     if "--selftest" in sys.argv:
-        return selftest(ig_user_id, manifest)
+        return selftest(resolve_ig_user_id(), manifest)
 
     due = find_due_posts(manifest, now)
 
     if not due:
+        # The cron runs every 15 minutes, so most runs end here. Nothing has
+        # touched the network yet, which keeps the quiet runs genuinely free.
         print("Nothing due.")
         return 0
 
+    ig_user_id = resolve_ig_user_id()
     quota = remaining_quota(ig_user_id)
     print(f"{len(due)} post(s) due, {quota} remaining in the 24h window")
     if quota < len(due):
