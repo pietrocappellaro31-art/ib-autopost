@@ -31,6 +31,7 @@ MANIFEST = os.path.join(os.path.dirname(__file__), "posts.json")
 # A container that is still PROCESSING is polled this often, for this long.
 POLL_SECONDS = 10
 POLL_ATTEMPTS = 30
+REEL_POLL_ATTEMPTS = 60   # video transcoding is slow; 10 minutes at 10s
 
 
 def call_graph(path, params, method="GET"):
@@ -79,9 +80,9 @@ def create_carousel_container(ig_user_id, child_ids, caption):
     return result["id"]
 
 
-def wait_until_ready(container_id):
+def wait_until_ready(container_id, attempts=POLL_ATTEMPTS):
     """Block until a container reports FINISHED, or raise."""
-    for _ in range(POLL_ATTEMPTS):
+    for _ in range(attempts):
         status = call_graph(container_id, {"fields": "status_code,status"})
         code = status.get("status_code")
         if code == "FINISHED":
@@ -126,6 +127,47 @@ def publish_one_post(ig_user_id, post, image_base):
 
     wait_until_ready(carousel_id)
     media_id = publish_container(ig_user_id, carousel_id)
+    print(f"  published as {media_id}")
+    return media_id
+
+
+
+def create_reel_container(ig_user_id, video_url, caption, cover_url=None):
+    """Create a Reel container and return its id.
+
+    Instagram transcodes the video before the container is publishable, which
+    takes substantially longer than an image, so callers poll for longer.
+    Audio must already be inside the file: the API cannot attach a trending
+    track, and a silent reel is throttled, so every reel here ships with a
+    voiceover baked in.
+    """
+    params = {
+        "media_type": "REELS",
+        "video_url": video_url,
+        "caption": caption,
+        "share_to_feed": "true",
+    }
+    if cover_url:
+        params["cover_url"] = cover_url
+    return call_graph(f"{ig_user_id}/media", params, method="POST")["id"]
+
+
+def publish_one_reel(ig_user_id, post, image_base):
+    """Upload, transcode and publish a single Reel."""
+    video_url = post["video"]
+    if not video_url.startswith("http"):
+        video_url = image_base + video_url
+    cover = post.get("cover")
+    if cover and not cover.startswith("http"):
+        cover = image_base + cover
+
+    print(f"  reel {video_url.rsplit('/', 1)[-1]}")
+    container_id = create_reel_container(ig_user_id, video_url, post["caption"], cover)
+    print(f"  reel container: {container_id}")
+
+    # Transcoding a 60-second reel can take several minutes.
+    wait_until_ready(container_id, attempts=REEL_POLL_ATTEMPTS)
+    media_id = publish_container(ig_user_id, container_id)
     print(f"  published as {media_id}")
     return media_id
 
@@ -240,7 +282,8 @@ def main():
     for post in due:
         print(f"Publishing {post['id']} (scheduled {post['scheduled_utc']})")
         try:
-            post["published_id"] = publish_one_post(
+            publisher = publish_one_reel if post.get("video") else publish_one_post
+            post["published_id"] = publisher(
                 ig_user_id, post, manifest["image_base"]
             )
             post["published_at_utc"] = datetime.now(timezone.utc).isoformat()
