@@ -52,8 +52,9 @@ Append an entry to `posts["posts"]`:
 }
 ```
 
-Times are **UTC**. Eastern is UTC−4 until 2 November 2026 and UTC−5 after, so
-9:00 a.m. Eastern is `13:00` now and `14:00` from November.
+Times are **UTC**. US Eastern is UTC−4 through 31 October 2026 and UTC−5 from
+1 November, so 9:00 a.m. Eastern is `13:00` until the end of October and
+`14:00` from November onwards.
 
 Image filenames resolve against `image_base`; put the files in `images/`.
 
@@ -70,3 +71,9 @@ Image filenames resolve against `image_base`; put the files in `images/`.
   failure is visible in the Actions tab.
 - The token is stripped from any error body before it is printed, so it cannot
   leak into a public log.
+
+## Posts published before this repo existed
+
+Set `published_id` to any non-empty string and the cron will skip that entry
+for good. The first carousel carries `"business-suite-2026-10-28"` because it
+went out by hand through Meta Business Suite.

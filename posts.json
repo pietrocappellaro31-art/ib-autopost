@@ -1,10 +1,10 @@
 {
   "account": "investmentbankinginterviews",
   "image_base": "https://raw.githubusercontent.com/pietrocappellaro31-art/ib-autopost/main/images/",
-  "notes": "scheduled_utc is UTC. Eastern is UTC-4 until 2 Nov 2026, UTC-5 after. Image filenames resolve against image_base.",
+  "notes": "scheduled_utc is UTC. US Eastern is UTC-4 through 31 Oct 2026 and UTC-5 from 1 Nov 2026, so 09:00 Eastern is 13:00 UTC now and 14:00 UTC from November. Image filenames resolve against image_base.",
   "posts": [
     {
-      "id": "2026-11-03-technicals-five-questions",
+      "id": "2026-10-28-technicals-five-questions",
       "series": "Technical of the Day",
       "scheduled_utc": "2026-11-03T13:00:00",
       "images": [
@@ -19,8 +19,9 @@
         "IB-post1-09.jpg"
       ],
       "caption": "5 questions. Answer all five cold and you're ahead of most people in an investment banking first round.\n\nThe 3 statements. Enterprise value versus equity value. The DCF. Accretion and dilution. How a profitable company runs out of cash.\n\nEvery investment banking interview pulls from the same small set of technical questions. The names change, the order changes, the questions don't.\n\nEach one here comes with the answer, and with the mistake that costs people the offer.\n\nTwo new technical questions every day, starting now.\n\nSave this one for the night before.\n\n#investmentbanking #ibinterview #financecareers #valuation",
-      "published_id": null,
-      "published_at_utc": null
+      "published_id": "business-suite-2026-10-28",
+      "published_at_utc": "2026-10-29T02:00:00+00:00",
+      "note": "Published by hand through Meta Business Suite before this repo existed. Recorded here so the cron never republishes it."
     }
   ]
 }
