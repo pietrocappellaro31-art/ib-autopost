@@ -23,6 +23,25 @@
       ]
     },
     {
+      "id": "w1-08-about-you",
+      "series": "Technical of the Day",
+      "scheduled_utc": "2026-10-31T12:00:00",
+      "caption": "\"Tell me about yourself\" is the only question you know is coming. Most people still waste it.\n\n90 seconds. 3 beats. One thread running through all of them.\n\nBeat 1, where you started. 20 seconds, not 60. Where you're from, what you study, enough to place you. Then move.\n\nBeat 2 is the only part they'll remember. One decision and what you did about it. A deal you followed, a club you joined, a model you built at 2am because you wanted to know how it worked. This is where a person shows up instead of a candidate.\n\nBeat 3 points at the door. \"Which is why I want to be in this seat, at this bank.\" It hands them the follow-up question you actually want.\n\nThen cut it. A written answer of 220 words is about 90 seconds spoken. Most people deliver over 3 minutes and don't notice, because rehearsing in your head is always faster than saying it out loud.\n\nTime it with a stopwatch. Once.\n\nSave this.\n\n#investmentbanking #ibinterview #interviewprep #financecareers",
+      "published_id": null,
+      "published_at_utc": null,
+      "images": [
+        "w1-08-about-you-01.jpg",
+        "w1-08-about-you-02.jpg",
+        "w1-08-about-you-03.jpg",
+        "w1-08-about-you-04.jpg",
+        "w1-08-about-you-05.jpg",
+        "w1-08-about-you-06.jpg",
+        "w1-08-about-you-07.jpg",
+        "w1-08-about-you-08.jpg",
+        "w1-08-about-you-09.jpg"
+      ]
+    },
+    {
       "id": "w1-02-dcf",
       "series": "Technical of the Day",
       "scheduled_utc": "2026-10-31T16:30:00",
@@ -42,6 +61,25 @@
       ]
     },
     {
+      "id": "w1-09-comps",
+      "series": "Technical of the Day",
+      "scheduled_utc": "2026-11-01T13:00:00",
+      "caption": "A comp set isn't a list. It's an argument that the market should value your target exactly the way it values these 8 companies, so every name you include is a claim you have to be ready to defend out loud.\n\nScreen on the business, not the label. Same model, similar size and growth, same geography, same customer. 2 companies can share an industry code and have nothing in common economically.\n\nA sector screen isn't a comp set. It's 40 tickers.\n\nThen pick the multiple the capital structure allows. EV/EBITDA ignores use, so it compares companies financed completely differently. P/E sits after interest, so debt contaminates it, and you should use it only where use genuinely matches.\n\nCalendarise. A December filer and a June filer are 6 months apart.\n\nNobody mentions it until a VP does.\n\nUse the median, never the mean. 1 outlier drags an average in a set of 8, so show the quartile range too and let the reader see how tight it actually is.\n\nAnd explain your outliers rather than deleting them. The name trading at twice the median is the most interesting thing in the set.\n\nSave this one.\n\n#investmentbanking #ibinterview #valuation #comparablecompanies",
+      "published_id": null,
+      "published_at_utc": null,
+      "images": [
+        "w1-09-comps-01.jpg",
+        "w1-09-comps-02.jpg",
+        "w1-09-comps-03.jpg",
+        "w1-09-comps-04.jpg",
+        "w1-09-comps-05.jpg",
+        "w1-09-comps-06.jpg",
+        "w1-09-comps-07.jpg",
+        "w1-09-comps-08.jpg",
+        "w1-09-comps-09.jpg"
+      ]
+    },
+    {
       "id": "w1-03-wacc",
       "series": "Technical of the Day",
       "scheduled_utc": "2026-11-01T17:30:00",
@@ -58,6 +96,25 @@
         "w1-03-wacc-07.jpg",
         "w1-03-wacc-08.jpg",
         "w1-03-wacc-09.jpg"
+      ]
+    },
+    {
+      "id": "w1-10-premium",
+      "series": "Technical of the Day",
+      "scheduled_utc": "2026-11-02T13:00:00",
+      "caption": "The market already priced it. So why does an acquirer pay 30% above that?\n\n3 reasons, and only 1 of them is synergies.\n\nControl. Buy 2% of a company and you have no say in anything. Buy 51% and you set strategy, appoint the board and direct the cash. A traded share price is what a minority stake costs, and control isn't in it. This is the reason most candidates forget.\n\nSynergies, and say which kind. Cost synergies are overlapping functions and sites. You can count them and they usually land. Revenue synergies are cross-sell and new markets, they're forecast, and they frequently don't arrive. Buyers get discounted accordingly.\n\nScarcity. Sometimes there's no second asset like it, and that's worth paying for on its own.\n\nThen the question underneath all 3. Who captures the value? If the acquirer pays away 100% of the synergies, the deal is great for the seller and does nothing at all for the buyer.\n\nThat's why most large acquisitions disappoint. Closing isn't the test.\n\nSave this.\n\n#investmentbanking #ibinterview #mergersandacquisitions #valuation",
+      "published_id": null,
+      "published_at_utc": null,
+      "images": [
+        "w1-10-premium-01.jpg",
+        "w1-10-premium-02.jpg",
+        "w1-10-premium-03.jpg",
+        "w1-10-premium-04.jpg",
+        "w1-10-premium-05.jpg",
+        "w1-10-premium-06.jpg",
+        "w1-10-premium-07.jpg",
+        "w1-10-premium-08.jpg",
+        "w1-10-premium-09.jpg"
       ]
     },
     {
@@ -100,6 +157,25 @@
       "note": "Published by hand through Meta Business Suite before this repo existed. Recorded here so the cron never republishes it."
     },
     {
+      "id": "w1-11-goodwill",
+      "series": "Technical of the Day",
+      "scheduled_utc": "2026-11-03T13:00:00",
+      "caption": "\"Goodwill is the premium paid.\" That's the most commonly half-right answer in accounting, and half-right loses the question.\n\nIt's purchase price less the fair value of net identifiable assets acquired. Not book value. Fair value.\n\nHere's why that distinction matters. Book value of net assets is 600. On acquisition, property and brands get written up and customer relationships get recognised for the first time, taking you to 750. You paid 1,000. Goodwill is 250, not 400.\n\nThe step-up happens first. The residual is what's left.\n\nIt's tested, never amortised. Finite-life intangibles get amortised. Goodwill sits on the balance sheet indefinitely and gets tested for impairment at least once a year. Amortising it over 10 years was the old rule and it hasn't applied for 2 decades.\n\nAnd when it's written down, nothing leaves the building. The charge hits the income statement and equity. It's added straight back on the cash flow statement. Cash is untouched.\n\nWhat it really is: the buyer admitting in public that it overpaid.\n\nSave this one.\n\n#investmentbanking #ibinterview #accounting #mergersandacquisitions",
+      "published_id": null,
+      "published_at_utc": null,
+      "images": [
+        "w1-11-goodwill-01.jpg",
+        "w1-11-goodwill-02.jpg",
+        "w1-11-goodwill-03.jpg",
+        "w1-11-goodwill-04.jpg",
+        "w1-11-goodwill-05.jpg",
+        "w1-11-goodwill-06.jpg",
+        "w1-11-goodwill-07.jpg",
+        "w1-11-goodwill-08.jpg",
+        "w1-11-goodwill-09.jpg"
+      ]
+    },
+    {
       "id": "w1-05-lbo",
       "series": "Technical of the Day",
       "scheduled_utc": "2026-11-03T17:30:00",
@@ -116,6 +192,25 @@
         "w1-05-lbo-07.jpg",
         "w1-05-lbo-08.jpg",
         "w1-05-lbo-09.jpg"
+      ]
+    },
+    {
+      "id": "w1-12-nwc",
+      "series": "Technical of the Day",
+      "scheduled_utc": "2026-11-04T13:00:00",
+      "caption": "An increase in net working capital is a use of cash. Get that sign backwards and every forecast you build for the rest of your career is wrong in the same direction.\n\nIn: receivables, inventory, prepaid expenses, payables, accrued expenses.\n\nOut: cash and short-term debt. Those are financing.\n\nSo the textbook version, current assets minus current liabilities, is the wrong number, because it quietly includes both of the things you were supposed to strip out.\n\nHere's the mechanic. Receivables up 50, inventory up 30. That's 80 of cash sitting somewhere other than your bank account. Payables up 20 hands you 20 back, an interest-free loan from your suppliers. Net change: 60 used.\n\nThat's it. That's the whole thing.\n\nThe cycle in days is DSO plus DIO minus DPO. Days to collect, plus days of inventory, minus the days you take to pay, which is how long your cash is tied up before it comes home.\n\nSome businesses run it negative. A supermarket collects at the till and pays suppliers in 45 days, so growth throws off cash instead of eating it.\n\nDrop the term from your DCF because it looks small in year 1 and you've valued a company that never funds its own growth.\n\nSave this.\n\n#investmentbanking #ibinterview #financialmodeling #accounting",
+      "published_id": null,
+      "published_at_utc": null,
+      "images": [
+        "w1-12-nwc-01.jpg",
+        "w1-12-nwc-02.jpg",
+        "w1-12-nwc-03.jpg",
+        "w1-12-nwc-04.jpg",
+        "w1-12-nwc-05.jpg",
+        "w1-12-nwc-06.jpg",
+        "w1-12-nwc-07.jpg",
+        "w1-12-nwc-08.jpg",
+        "w1-12-nwc-09.jpg"
       ]
     },
     {
@@ -138,6 +233,25 @@
       ]
     },
     {
+      "id": "w1-13-multiples",
+      "series": "Technical of the Day",
+      "scheduled_utc": "2026-11-05T13:00:00",
+      "caption": "Why is there no P/EBITDA? 1 rule answers that, and every other multiple question you'll get.\n\nThe numerator and the denominator have to belong to the same people.\n\nEnterprise value is the whole business, so it pairs with anything measured before lenders are paid. That's 4 of them: EV/Revenue, EV/EBITDA, EV/EBIT, and EV over unlevered free cash flow.\n\nEquity value is the shareholders' slice, so it pairs with what's left after lenders. That's 3: P/E, price to book, and price over levered free cash flow.\n\nP/EBITDA mixes them. Price is after debt. EBITDA is before it. The ratio describes nobody.\n\nHere's why EV/EBITDA does the heavy lifting. Take 2 identical businesses. Company A has no debt and trades at a P/E of 20. Company B is heavily levered and trades at 12. Same operations, same 100 of EBITDA, and you'd conclude B is 40% cheaper. Their EV/EBITDA is identical, because enterprise value and EBITDA both sit above the capital structure.\n\nThen say what EBITDA hides. Capex, working capital and cash taxes, all 3 ignored. For a capital-intensive business, EV/EBIT is often fairer.\n\nSave this before your next technical.\n\n#investmentbanking #ibinterview #valuation #financialmodeling",
+      "published_id": null,
+      "published_at_utc": null,
+      "images": [
+        "w1-13-multiples-01.jpg",
+        "w1-13-multiples-02.jpg",
+        "w1-13-multiples-03.jpg",
+        "w1-13-multiples-04.jpg",
+        "w1-13-multiples-05.jpg",
+        "w1-13-multiples-06.jpg",
+        "w1-13-multiples-07.jpg",
+        "w1-13-multiples-08.jpg",
+        "w1-13-multiples-09.jpg"
+      ]
+    },
+    {
       "id": "w1-07-range",
       "series": "Technical of the Day",
       "scheduled_utc": "2026-11-05T17:30:00",
@@ -154,6 +268,25 @@
         "w1-07-range-07.jpg",
         "w1-07-range-08.jpg",
         "w1-07-range-09.jpg"
+      ]
+    },
+    {
+      "id": "w1-14-call",
+      "series": "Technical of the Day",
+      "scheduled_utc": "2026-11-06T13:00:00",
+      "caption": "Somebody gave you 15 minutes. Most people waste 11 of them talking about themselves.\n\nThe first 60 seconds: thank them, name whoever connected you, 2 lines on you, and 1 on why you asked for this call specifically. Then stop talking.\n\nAsk what only they can answer. \"What's banking like\" is a brochure question and you'll get a brochure answer. \"How did you end up in this group\" and \"what surprised you in year 1\" are questions nobody else can answer for them.\n\nShow the reading without performing it. 1 specific reference, not 3. \"I saw you worked on that deal, what was hard about it?\" One is interest. Three is research, and it reads differently.\n\nMinute 13 is the entire call. 2 questions: is there anyone else in the group worth speaking to, and is there anything I should be doing now. Both are easy to say yes to, and 1 of them hands you the next conversation.\n\nThen follow up inside 24 hours, referencing something specific they said so it's obviously not a template.\n\nSave this before your next one.\n\n#investmentbanking #ibrecruiting #networking #financecareers",
+      "published_id": null,
+      "published_at_utc": null,
+      "images": [
+        "w1-14-call-01.jpg",
+        "w1-14-call-02.jpg",
+        "w1-14-call-03.jpg",
+        "w1-14-call-04.jpg",
+        "w1-14-call-05.jpg",
+        "w1-14-call-06.jpg",
+        "w1-14-call-07.jpg",
+        "w1-14-call-08.jpg",
+        "w1-14-call-09.jpg"
       ]
     }
   ]

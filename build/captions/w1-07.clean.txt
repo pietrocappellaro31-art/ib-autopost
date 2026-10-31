@@ -1,0 +1,17 @@
+"Which method gives the highest valuation?" There's a usual order, and the reason matters far more than the order does.
+
+Precedents usually print highest. Comps sit below. The DCF ranges widest of the 4. An LBO sets the floor.
+
+Why precedents beat comps.
+
+A comp is what 1 share trades at, a minority stake with no say in anything. A precedent is what somebody actually paid to own all 100% of it and run it. That price carries a control premium, often 20 to 30%, plus whatever synergies the buyer talked themselves into.
+
+Why the DCF ranges widest. WACC, terminal growth and your year 5 margin are 3 numbers nobody can verify, and a 1% move in any of them swings the answer more than a revenue assumption you'd argue about for a week.
+
+Why the LBO is the floor. A sponsor needs its target return, so there's a hard ceiling on what it can pay. A strategic buyer with synergies goes higher.
+
+Then say which one you'd lean on. Liquid comps, lean on comps. Live sale process, lean on precedents. Stable forecastable business, the DCF earns its place.
+
+Say typically. Then say why.
+
+#investmentbanking #ibinterview #valuation #mergersandacquisitions

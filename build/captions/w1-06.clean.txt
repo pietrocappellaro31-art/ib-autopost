@@ -1,0 +1,17 @@
+"Cash flow" means 4 different things. Each takes its own discount rate. Mix 2 of them up and your valuation is wrong by a mile.
+
+Unlevered free cash flow. Start with EBIT of 200. Tax it at 25%, so 150. Add D&A of 40, subtract capex of 50, subtract a 10 build in working capital. That's 130, and it sits before interest, so it belongs to lenders and shareholders together. Discount at WACC. You get enterprise value.
+
+Levered free cash flow. Start at net income instead, so after the 30 of interest. Same adjustments, then subtract mandatory repayment. That's what's left for shareholders. Discount at cost of equity. You get equity value, and there's no bridge to build.
+
+Operating cash flow minus capex. The quick one, straight off the statement. It's levered, because operating cash flow already sits after interest paid. People feed this into a WACC-discounted DCF every single day and never notice.
+
+Then EBITDA, which isn't cash flow at all.
+
+It ignores capex. It ignores working capital. It ignores cash taxes and interest. That's 4 omissions, and if you call it a cash proxy you'd better be able to name all 4.
+
+1 rule covers the whole thing. Match the claim to the rate.
+
+Save this before your next model test.
+
+#investmentbanking #ibinterview #financialmodeling #valuation

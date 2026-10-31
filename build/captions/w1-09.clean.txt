@@ -1,0 +1,19 @@
+A comp set isn't a list. It's an argument that the market should value your target exactly the way it values these 8 companies, so every name you include is a claim you have to be ready to defend out loud.
+
+Screen on the business, not the label. Same model, similar size and growth, same geography, same customer. 2 companies can share an industry code and have nothing in common economically.
+
+A sector screen isn't a comp set. It's 40 tickers.
+
+Then pick the multiple the capital structure allows. EV/EBITDA ignores use, so it compares companies financed completely differently. P/E sits after interest, so debt contaminates it, and you should use it only where use genuinely matches.
+
+Calendarise. A December filer and a June filer are 6 months apart.
+
+Nobody mentions it until a VP does.
+
+Use the median, never the mean. 1 outlier drags an average in a set of 8, so show the quartile range too and let the reader see how tight it actually is.
+
+And explain your outliers rather than deleting them. The name trading at twice the median is the most interesting thing in the set.
+
+Save this one.
+
+#investmentbanking #ibinterview #valuation #comparablecompanies

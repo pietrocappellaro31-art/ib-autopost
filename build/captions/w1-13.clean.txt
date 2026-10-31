@@ -1,0 +1,17 @@
+Why is there no P/EBITDA? 1 rule answers that, and every other multiple question you'll get.
+
+The numerator and the denominator have to belong to the same people.
+
+Enterprise value is the whole business, so it pairs with anything measured before lenders are paid. That's 4 of them: EV/Revenue, EV/EBITDA, EV/EBIT, and EV over unlevered free cash flow.
+
+Equity value is the shareholders' slice, so it pairs with what's left after lenders. That's 3: P/E, price to book, and price over levered free cash flow.
+
+P/EBITDA mixes them. Price is after debt. EBITDA is before it. The ratio describes nobody.
+
+Here's why EV/EBITDA does the heavy lifting. Take 2 identical businesses. Company A has no debt and trades at a P/E of 20. Company B is heavily levered and trades at 12. Same operations, same 100 of EBITDA, and you'd conclude B is 40% cheaper. Their EV/EBITDA is identical, because enterprise value and EBITDA both sit above the capital structure.
+
+Then say what EBITDA hides. Capex, working capital and cash taxes, all 3 ignored. For a capital-intensive business, EV/EBIT is often fairer.
+
+Save this before your next technical.
+
+#investmentbanking #ibinterview #valuation #financialmodeling

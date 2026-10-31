@@ -1,0 +1,19 @@
+Terminal value is 60 to 80% of your DCF. Most people spend 90% of their prep on the other 20%.
+
+6 steps, in order. Project unlevered free cash flow for 5 years. Pick a WACC. Discount. Build terminal value. Discount that too. Bridge to equity.
+
+Step 4 is where people fall apart.
+
+Gordon growth takes your year 5 cash flow, grows it at g, and divides by WACC minus g. Keep g under long-run GDP growth, call it 2 to 3%. Quote 5% and you've just claimed the company eventually becomes the entire economy.
+
+Two more things they're listening for.
+
+Unlevered cash flow pairs with WACC. It's before interest, so it belongs to lenders and shareholders together. Pair it with cost of equity instead and you've counted the capital structure twice.
+
+And a DCF gives you enterprise value, not a share price. Subtract net debt. Subtract preferred and minority interest. Divide by diluted shares. They asked for the share price.
+
+Last thing. Don't call it the most accurate method. It's the most assumption-heavy one, and saying so is what makes you sound like you've built one rather than read about one.
+
+Save this before your next technical.
+
+#investmentbanking #ibinterview #dcf #valuation

@@ -1,0 +1,21 @@
+An increase in net working capital is a use of cash. Get that sign backwards and every forecast you build for the rest of your career is wrong in the same direction.
+
+In: receivables, inventory, prepaid expenses, payables, accrued expenses.
+
+Out: cash and short-term debt. Those are financing.
+
+So the textbook version, current assets minus current liabilities, is the wrong number, because it quietly includes both of the things you were supposed to strip out.
+
+Here's the mechanic. Receivables up 50, inventory up 30. That's 80 of cash sitting somewhere other than your bank account. Payables up 20 hands you 20 back, an interest-free loan from your suppliers. Net change: 60 used.
+
+That's it. That's the whole thing.
+
+The cycle in days is DSO plus DIO minus DPO. Days to collect, plus days of inventory, minus the days you take to pay, which is how long your cash is tied up before it comes home.
+
+Some businesses run it negative. A supermarket collects at the till and pays suppliers in 45 days, so growth throws off cash instead of eating it.
+
+Drop the term from your DCF because it looks small in year 1 and you've valued a company that never funds its own growth.
+
+Save this.
+
+#investmentbanking #ibinterview #financialmodeling #accounting

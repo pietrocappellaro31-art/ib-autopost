@@ -1,0 +1,17 @@
+Your whole DCF rests on 1 number, and most candidates can't defend it.
+
+WACC. Every term, and where each one comes from.
+
+The weights are market value, not book. Equity weight uses market cap. Pulling book equity off the balance sheet is the single most common slip here.
+
+Cost of debt is after tax. 100 of interest at a 25% rate costs the company 75, because the deduction is real. There's no equivalent on equity, since dividends aren't deductible. Haircut both and you've misunderstood why the haircut exists at all.
+
+Cost of equity comes from CAPM. Risk-free rate, plus beta times the equity risk premium.
+
+Beta isn't 1 number off a screen. Take your comps' betas. Strip out each company's use. Average the business risk. Re-lever at the structure you're modelling. That's 4 steps, and interviewers ask for all of them.
+
+And use the current yield, not the coupon. A bond issued at 4% that now yields 6.5% costs you 6.5% to refinance. WACC looks forward.
+
+Save this one.
+
+#investmentbanking #ibinterview #wacc #valuation

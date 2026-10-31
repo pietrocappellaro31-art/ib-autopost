@@ -1,0 +1,19 @@
+Most people say an LBO is buying a company with debt, then stop talking. That's the setup, not the answer.
+
+5 steps. Sources and uses at entry. Project free cash flow. Sweep that cash against the debt. Exit on EBITDA times a multiple, usually after 5 years. Divide exit equity by entry equity.
+
+So why use debt?
+
+Take a 1,000 purchase funded 60% debt and 40% equity. Your cheque is 400, not 1,000. The same gain in enterprise value now lands on a much thinner slice, so a deal that would have returned 2.0x returns closer to 3.0x. Interest is deductible. And a repayment schedule keeps management honest.
+
+Say the other half too. Use multiplies your losses on exactly the same maths, and if you don't volunteer that, they'll ask.
+
+Returns come from 3 places and they aren't equally reliable. Debt paydown and EBITDA growth are things a sponsor can influence. Multiple expansion is a market call. Build on the first 2 and assume you exit at the same 10x you paid.
+
+Good target? Steady cash flow, low existing debt, low capex. Not a software company growing 80% a year. It burns cash and it can't carry the debt.
+
+Then finish with the number. Exit enterprise value, minus net debt, over your 400.
+
+Save this one.
+
+#investmentbanking #ibinterview #privateequity #lbo

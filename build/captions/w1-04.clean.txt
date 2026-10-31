@@ -1,0 +1,23 @@
+A company can post record profit and miss payroll in the same quarter. Here's how.
+
+Revenue is booked when it's earned, not when it's collected. So a business growing 40% a year books profit on cash it hasn't seen yet.
+
+Growth makes it worse, not better.
+
+You buy inventory. You pay staff. You ship. You book the revenue. The customer pays you 60 days later, sometimes 90. Every extra unit of growth widens that gap, and you're the one funding it until it closes.
+
+Then there are 3 more that have nothing to do with working capital. Capex outrunning operating cash. Debt coming due. A one-off legal or restructuring payment that lands in 1 quarter.
+
+Here's the part almost everyone misses, and it's the part they're really asking about.
+
+Where would you look?
+
+The income statement is the last place this shows up. Operating cash flow falling while net income rises is the signal. Receivables up 50% on a 20% revenue increase is the cause.
+
+So name the mechanism, name the line, name the statement. 3 sentences and you're done.
+
+"Bad management" names nothing, and they move on.
+
+Save this for the night before.
+
+#investmentbanking #ibinterview #accounting #financialmodeling

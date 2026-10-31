@@ -1,0 +1,17 @@
+"Goodwill is the premium paid." That's the most commonly half-right answer in accounting, and half-right loses the question.
+
+It's purchase price less the fair value of net identifiable assets acquired. Not book value. Fair value.
+
+Here's why that distinction matters. Book value of net assets is 600. On acquisition, property and brands get written up and customer relationships get recognised for the first time, taking you to 750. You paid 1,000. Goodwill is 250, not 400.
+
+The step-up happens first. The residual is what's left.
+
+It's tested, never amortised. Finite-life intangibles get amortised. Goodwill sits on the balance sheet indefinitely and gets tested for impairment at least once a year. Amortising it over 10 years was the old rule and it hasn't applied for 2 decades.
+
+And when it's written down, nothing leaves the building. The charge hits the income statement and equity. It's added straight back on the cash flow statement. Cash is untouched.
+
+What it really is: the buyer admitting in public that it overpaid.
+
+Save this one.
+
+#investmentbanking #ibinterview #accounting #mergersandacquisitions

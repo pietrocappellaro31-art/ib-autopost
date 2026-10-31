@@ -1,0 +1,15 @@
+Depreciation goes up by 10. Walk me through the three statements.
+
+That's the real question. Anyone can name the three. What separates people is taking one line, changing it, and tracing it through all of them without stopping.
+
+Net income falls 7.5, not 10, because the tax saving is real cash you keep.
+Add the depreciation back and cash is up 2.5.
+Assets fall 7.5, equity falls 7.5, and it balances.
+
+Say "and it balances" out loud at the end. That's the sentence the interviewer is waiting for, and most people stop one line short of it.
+
+State your tax rate before you start. 25% is fine. Picking one and saying it is part of the answer.
+
+Save this for the night before.
+
+#investmentbanking #ibinterview #financialmodeling #accountinginterview
