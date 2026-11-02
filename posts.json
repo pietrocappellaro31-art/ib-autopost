@@ -23,120 +23,6 @@
       ]
     },
     {
-      "id": "w1-08-about-you",
-      "series": "Technical of the Day",
-      "scheduled_utc": "2026-10-31T12:00:00",
-      "caption": "\"Tell me about yourself\" is the only question you know is coming. Most people still waste it.\n\n90 seconds. 3 beats. One thread running through all of them.\n\nBeat 1, where you started. 20 seconds, not 60. Where you're from, what you study, enough to place you. Then move.\n\nBeat 2 is the only part they'll remember. One decision and what you did about it. A deal you followed, a club you joined, a model you built at 2am because you wanted to know how it worked. This is where a person shows up instead of a candidate.\n\nBeat 3 points at the door. \"Which is why I want to be in this seat, at this bank.\" It hands them the follow-up question you actually want.\n\nThen cut it. A written answer of 220 words is about 90 seconds spoken. Most people deliver over 3 minutes and don't notice, because rehearsing in your head is always faster than saying it out loud.\n\nTime it with a stopwatch. Once.\n\nSave this.\n\n#investmentbanking #ibinterview #interviewprep #financecareers",
-      "published_id": null,
-      "published_at_utc": null,
-      "images": [
-        "w1-08-about-you-01.jpg",
-        "w1-08-about-you-02.jpg",
-        "w1-08-about-you-03.jpg",
-        "w1-08-about-you-04.jpg",
-        "w1-08-about-you-05.jpg",
-        "w1-08-about-you-06.jpg",
-        "w1-08-about-you-07.jpg",
-        "w1-08-about-you-08.jpg",
-        "w1-08-about-you-09.jpg"
-      ]
-    },
-    {
-      "id": "w1-02-dcf",
-      "series": "Technical of the Day",
-      "scheduled_utc": "2026-10-31T16:30:00",
-      "caption": "Terminal value is 60 to 80% of your DCF. Most people spend 90% of their prep on the other 20%.\n\n6 steps, in order. Project unlevered free cash flow for 5 years. Pick a WACC. Discount. Build terminal value. Discount that too. Bridge to equity.\n\nStep 4 is where people fall apart.\n\nGordon growth takes your year 5 cash flow, grows it at g, and divides by WACC minus g. Keep g under long-run GDP growth, call it 2 to 3%. Quote 5% and you've just claimed the company eventually becomes the entire economy.\n\nTwo more things they're listening for.\n\nUnlevered cash flow pairs with WACC. It's before interest, so it belongs to lenders and shareholders together. Pair it with cost of equity instead and you've counted the capital structure twice.\n\nAnd a DCF gives you enterprise value, not a share price. Subtract net debt. Subtract preferred and minority interest. Divide by diluted shares. They asked for the share price.\n\nLast thing. Don't call it the most accurate method. It's the most assumption-heavy one, and saying so is what makes you sound like you've built one rather than read about one.\n\nSave this before your next technical.\n\n#investmentbanking #ibinterview #dcf #valuation",
-      "published_id": null,
-      "published_at_utc": null,
-      "images": [
-        "w1-02-dcf-01.jpg",
-        "w1-02-dcf-02.jpg",
-        "w1-02-dcf-03.jpg",
-        "w1-02-dcf-04.jpg",
-        "w1-02-dcf-05.jpg",
-        "w1-02-dcf-06.jpg",
-        "w1-02-dcf-07.jpg",
-        "w1-02-dcf-08.jpg",
-        "w1-02-dcf-09.jpg"
-      ]
-    },
-    {
-      "id": "w1-09-comps",
-      "series": "Technical of the Day",
-      "scheduled_utc": "2026-11-01T13:00:00",
-      "caption": "A comp set isn't a list. It's an argument that the market should value your target exactly the way it values these 8 companies, so every name you include is a claim you have to be ready to defend out loud.\n\nScreen on the business, not the label. Same model, similar size and growth, same geography, same customer. 2 companies can share an industry code and have nothing in common economically.\n\nA sector screen isn't a comp set. It's 40 tickers.\n\nThen pick the multiple the capital structure allows. EV/EBITDA ignores use, so it compares companies financed completely differently. P/E sits after interest, so debt contaminates it, and you should use it only where use genuinely matches.\n\nCalendarise. A December filer and a June filer are 6 months apart.\n\nNobody mentions it until a VP does.\n\nUse the median, never the mean. 1 outlier drags an average in a set of 8, so show the quartile range too and let the reader see how tight it actually is.\n\nAnd explain your outliers rather than deleting them. The name trading at twice the median is the most interesting thing in the set.\n\nSave this one.\n\n#investmentbanking #ibinterview #valuation #comparablecompanies",
-      "published_id": null,
-      "published_at_utc": null,
-      "images": [
-        "w1-09-comps-01.jpg",
-        "w1-09-comps-02.jpg",
-        "w1-09-comps-03.jpg",
-        "w1-09-comps-04.jpg",
-        "w1-09-comps-05.jpg",
-        "w1-09-comps-06.jpg",
-        "w1-09-comps-07.jpg",
-        "w1-09-comps-08.jpg",
-        "w1-09-comps-09.jpg"
-      ]
-    },
-    {
-      "id": "w1-03-wacc",
-      "series": "Technical of the Day",
-      "scheduled_utc": "2026-11-01T17:30:00",
-      "caption": "Your whole DCF rests on 1 number, and most candidates can't defend it.\n\nWACC. Every term, and where each one comes from.\n\nThe weights are market value, not book. Equity weight uses market cap. Pulling book equity off the balance sheet is the single most common slip here.\n\nCost of debt is after tax. 100 of interest at a 25% rate costs the company 75, because the deduction is real. There's no equivalent on equity, since dividends aren't deductible. Haircut both and you've misunderstood why the haircut exists at all.\n\nCost of equity comes from CAPM. Risk-free rate, plus beta times the equity risk premium.\n\nBeta isn't 1 number off a screen. Take your comps' betas. Strip out each company's use. Average the business risk. Re-lever at the structure you're modelling. That's 4 steps, and interviewers ask for all of them.\n\nAnd use the current yield, not the coupon. A bond issued at 4% that now yields 6.5% costs you 6.5% to refinance. WACC looks forward.\n\nSave this one.\n\n#investmentbanking #ibinterview #wacc #valuation",
-      "published_id": null,
-      "published_at_utc": null,
-      "images": [
-        "w1-03-wacc-01.jpg",
-        "w1-03-wacc-02.jpg",
-        "w1-03-wacc-03.jpg",
-        "w1-03-wacc-04.jpg",
-        "w1-03-wacc-05.jpg",
-        "w1-03-wacc-06.jpg",
-        "w1-03-wacc-07.jpg",
-        "w1-03-wacc-08.jpg",
-        "w1-03-wacc-09.jpg"
-      ]
-    },
-    {
-      "id": "w1-10-premium",
-      "series": "Technical of the Day",
-      "scheduled_utc": "2026-11-02T13:00:00",
-      "caption": "The market already priced it. So why does an acquirer pay 30% above that?\n\n3 reasons, and only 1 of them is synergies.\n\nControl. Buy 2% of a company and you have no say in anything. Buy 51% and you set strategy, appoint the board and direct the cash. A traded share price is what a minority stake costs, and control isn't in it. This is the reason most candidates forget.\n\nSynergies, and say which kind. Cost synergies are overlapping functions and sites. You can count them and they usually land. Revenue synergies are cross-sell and new markets, they're forecast, and they frequently don't arrive. Buyers get discounted accordingly.\n\nScarcity. Sometimes there's no second asset like it, and that's worth paying for on its own.\n\nThen the question underneath all 3. Who captures the value? If the acquirer pays away 100% of the synergies, the deal is great for the seller and does nothing at all for the buyer.\n\nThat's why most large acquisitions disappoint. Closing isn't the test.\n\nSave this.\n\n#investmentbanking #ibinterview #mergersandacquisitions #valuation",
-      "published_id": null,
-      "published_at_utc": null,
-      "images": [
-        "w1-10-premium-01.jpg",
-        "w1-10-premium-02.jpg",
-        "w1-10-premium-03.jpg",
-        "w1-10-premium-04.jpg",
-        "w1-10-premium-05.jpg",
-        "w1-10-premium-06.jpg",
-        "w1-10-premium-07.jpg",
-        "w1-10-premium-08.jpg",
-        "w1-10-premium-09.jpg"
-      ]
-    },
-    {
-      "id": "w1-04-cash",
-      "series": "Technical of the Day",
-      "scheduled_utc": "2026-11-02T17:30:00",
-      "caption": "A company can post record profit and miss payroll in the same quarter. Here's how.\n\nRevenue is booked when it's earned, not when it's collected. So a business growing 40% a year books profit on cash it hasn't seen yet.\n\nGrowth makes it worse, not better.\n\nYou buy inventory. You pay staff. You ship. You book the revenue. The customer pays you 60 days later, sometimes 90. Every extra unit of growth widens that gap, and you're the one funding it until it closes.\n\nThen there are 3 more that have nothing to do with working capital. Capex outrunning operating cash. Debt coming due. A one-off legal or restructuring payment that lands in 1 quarter.\n\nHere's the part almost everyone misses, and it's the part they're really asking about.\n\nWhere would you look?\n\nThe income statement is the last place this shows up. Operating cash flow falling while net income rises is the signal. Receivables up 50% on a 20% revenue increase is the cause.\n\nSo name the mechanism, name the line, name the statement. 3 sentences and you're done.\n\n\"Bad management\" names nothing, and they move on.\n\nSave this for the night before.\n\n#investmentbanking #ibinterview #accounting #financialmodeling",
-      "published_id": null,
-      "published_at_utc": null,
-      "images": [
-        "w1-04-cash-01.jpg",
-        "w1-04-cash-02.jpg",
-        "w1-04-cash-03.jpg",
-        "w1-04-cash-04.jpg",
-        "w1-04-cash-05.jpg",
-        "w1-04-cash-06.jpg",
-        "w1-04-cash-07.jpg",
-        "w1-04-cash-08.jpg",
-        "w1-04-cash-09.jpg"
-      ]
-    },
-    {
       "id": "2026-10-28-technicals-five-questions",
       "series": "Technical of the Day",
       "scheduled_utc": "2026-11-03T13:00:00",
@@ -157,9 +43,123 @@
       "note": "Published by hand through Meta Business Suite before this repo existed. Recorded here so the cron never republishes it."
     },
     {
-      "id": "w1-11-goodwill",
+      "id": "w1-08-about-you",
       "series": "Technical of the Day",
       "scheduled_utc": "2026-11-03T13:00:00",
+      "caption": "\"Tell me about yourself\" is the only question you know is coming. Most people still waste it.\n\n90 seconds. 3 beats. One thread running through all of them.\n\nBeat 1, where you started. 20 seconds, not 60. Where you're from, what you study, enough to place you. Then move.\n\nBeat 2 is the only part they'll remember. One decision and what you did about it. A deal you followed, a club you joined, a model you built at 2am because you wanted to know how it worked. This is where a person shows up instead of a candidate.\n\nBeat 3 points at the door. \"Which is why I want to be in this seat, at this bank.\" It hands them the follow-up question you actually want.\n\nThen cut it. A written answer of 220 words is about 90 seconds spoken. Most people deliver over 3 minutes and don't notice, because rehearsing in your head is always faster than saying it out loud.\n\nTime it with a stopwatch. Once.\n\nSave this.\n\n#investmentbanking #ibinterview #interviewprep #financecareers",
+      "published_id": null,
+      "published_at_utc": null,
+      "images": [
+        "w1-08-about-you-01.jpg",
+        "w1-08-about-you-02.jpg",
+        "w1-08-about-you-03.jpg",
+        "w1-08-about-you-04.jpg",
+        "w1-08-about-you-05.jpg",
+        "w1-08-about-you-06.jpg",
+        "w1-08-about-you-07.jpg",
+        "w1-08-about-you-08.jpg",
+        "w1-08-about-you-09.jpg"
+      ]
+    },
+    {
+      "id": "w1-02-dcf",
+      "series": "Technical of the Day",
+      "scheduled_utc": "2026-11-03T17:30:00",
+      "caption": "Terminal value is 60 to 80% of your DCF. Most people spend 90% of their prep on the other 20%.\n\n6 steps, in order. Project unlevered free cash flow for 5 years. Pick a WACC. Discount. Build terminal value. Discount that too. Bridge to equity.\n\nStep 4 is where people fall apart.\n\nGordon growth takes your year 5 cash flow, grows it at g, and divides by WACC minus g. Keep g under long-run GDP growth, call it 2 to 3%. Quote 5% and you've just claimed the company eventually becomes the entire economy.\n\nTwo more things they're listening for.\n\nUnlevered cash flow pairs with WACC. It's before interest, so it belongs to lenders and shareholders together. Pair it with cost of equity instead and you've counted the capital structure twice.\n\nAnd a DCF gives you enterprise value, not a share price. Subtract net debt. Subtract preferred and minority interest. Divide by diluted shares. They asked for the share price.\n\nLast thing. Don't call it the most accurate method. It's the most assumption-heavy one, and saying so is what makes you sound like you've built one rather than read about one.\n\nSave this before your next technical.\n\n#investmentbanking #ibinterview #dcf #valuation",
+      "published_id": null,
+      "published_at_utc": null,
+      "images": [
+        "w1-02-dcf-01.jpg",
+        "w1-02-dcf-02.jpg",
+        "w1-02-dcf-03.jpg",
+        "w1-02-dcf-04.jpg",
+        "w1-02-dcf-05.jpg",
+        "w1-02-dcf-06.jpg",
+        "w1-02-dcf-07.jpg",
+        "w1-02-dcf-08.jpg",
+        "w1-02-dcf-09.jpg"
+      ]
+    },
+    {
+      "id": "w1-09-comps",
+      "series": "Technical of the Day",
+      "scheduled_utc": "2026-11-04T13:00:00",
+      "caption": "A comp set isn't a list. It's an argument that the market should value your target exactly the way it values these 8 companies, so every name you include is a claim you have to be ready to defend out loud.\n\nScreen on the business, not the label. Same model, similar size and growth, same geography, same customer. 2 companies can share an industry code and have nothing in common economically.\n\nA sector screen isn't a comp set. It's 40 tickers.\n\nThen pick the multiple the capital structure allows. EV/EBITDA ignores use, so it compares companies financed completely differently. P/E sits after interest, so debt contaminates it, and you should use it only where use genuinely matches.\n\nCalendarise. A December filer and a June filer are 6 months apart.\n\nNobody mentions it until a VP does.\n\nUse the median, never the mean. 1 outlier drags an average in a set of 8, so show the quartile range too and let the reader see how tight it actually is.\n\nAnd explain your outliers rather than deleting them. The name trading at twice the median is the most interesting thing in the set.\n\nSave this one.\n\n#investmentbanking #ibinterview #valuation #comparablecompanies",
+      "published_id": null,
+      "published_at_utc": null,
+      "images": [
+        "w1-09-comps-01.jpg",
+        "w1-09-comps-02.jpg",
+        "w1-09-comps-03.jpg",
+        "w1-09-comps-04.jpg",
+        "w1-09-comps-05.jpg",
+        "w1-09-comps-06.jpg",
+        "w1-09-comps-07.jpg",
+        "w1-09-comps-08.jpg",
+        "w1-09-comps-09.jpg"
+      ]
+    },
+    {
+      "id": "w1-03-wacc",
+      "series": "Technical of the Day",
+      "scheduled_utc": "2026-11-04T17:30:00",
+      "caption": "Your whole DCF rests on 1 number, and most candidates can't defend it.\n\nWACC. Every term, and where each one comes from.\n\nThe weights are market value, not book. Equity weight uses market cap. Pulling book equity off the balance sheet is the single most common slip here.\n\nCost of debt is after tax. 100 of interest at a 25% rate costs the company 75, because the deduction is real. There's no equivalent on equity, since dividends aren't deductible. Haircut both and you've misunderstood why the haircut exists at all.\n\nCost of equity comes from CAPM. Risk-free rate, plus beta times the equity risk premium.\n\nBeta isn't 1 number off a screen. Take your comps' betas. Strip out each company's use. Average the business risk. Re-lever at the structure you're modelling. That's 4 steps, and interviewers ask for all of them.\n\nAnd use the current yield, not the coupon. A bond issued at 4% that now yields 6.5% costs you 6.5% to refinance. WACC looks forward.\n\nSave this one.\n\n#investmentbanking #ibinterview #wacc #valuation",
+      "published_id": null,
+      "published_at_utc": null,
+      "images": [
+        "w1-03-wacc-01.jpg",
+        "w1-03-wacc-02.jpg",
+        "w1-03-wacc-03.jpg",
+        "w1-03-wacc-04.jpg",
+        "w1-03-wacc-05.jpg",
+        "w1-03-wacc-06.jpg",
+        "w1-03-wacc-07.jpg",
+        "w1-03-wacc-08.jpg",
+        "w1-03-wacc-09.jpg"
+      ]
+    },
+    {
+      "id": "w1-10-premium",
+      "series": "Technical of the Day",
+      "scheduled_utc": "2026-11-05T13:00:00",
+      "caption": "The market already priced it. So why does an acquirer pay 30% above that?\n\n3 reasons, and only 1 of them is synergies.\n\nControl. Buy 2% of a company and you have no say in anything. Buy 51% and you set strategy, appoint the board and direct the cash. A traded share price is what a minority stake costs, and control isn't in it. This is the reason most candidates forget.\n\nSynergies, and say which kind. Cost synergies are overlapping functions and sites. You can count them and they usually land. Revenue synergies are cross-sell and new markets, they're forecast, and they frequently don't arrive. Buyers get discounted accordingly.\n\nScarcity. Sometimes there's no second asset like it, and that's worth paying for on its own.\n\nThen the question underneath all 3. Who captures the value? If the acquirer pays away 100% of the synergies, the deal is great for the seller and does nothing at all for the buyer.\n\nThat's why most large acquisitions disappoint. Closing isn't the test.\n\nSave this.\n\n#investmentbanking #ibinterview #mergersandacquisitions #valuation",
+      "published_id": null,
+      "published_at_utc": null,
+      "images": [
+        "w1-10-premium-01.jpg",
+        "w1-10-premium-02.jpg",
+        "w1-10-premium-03.jpg",
+        "w1-10-premium-04.jpg",
+        "w1-10-premium-05.jpg",
+        "w1-10-premium-06.jpg",
+        "w1-10-premium-07.jpg",
+        "w1-10-premium-08.jpg",
+        "w1-10-premium-09.jpg"
+      ]
+    },
+    {
+      "id": "w1-04-cash",
+      "series": "Technical of the Day",
+      "scheduled_utc": "2026-11-05T17:30:00",
+      "caption": "A company can post record profit and miss payroll in the same quarter. Here's how.\n\nRevenue is booked when it's earned, not when it's collected. So a business growing 40% a year books profit on cash it hasn't seen yet.\n\nGrowth makes it worse, not better.\n\nYou buy inventory. You pay staff. You ship. You book the revenue. The customer pays you 60 days later, sometimes 90. Every extra unit of growth widens that gap, and you're the one funding it until it closes.\n\nThen there are 3 more that have nothing to do with working capital. Capex outrunning operating cash. Debt coming due. A one-off legal or restructuring payment that lands in 1 quarter.\n\nHere's the part almost everyone misses, and it's the part they're really asking about.\n\nWhere would you look?\n\nThe income statement is the last place this shows up. Operating cash flow falling while net income rises is the signal. Receivables up 50% on a 20% revenue increase is the cause.\n\nSo name the mechanism, name the line, name the statement. 3 sentences and you're done.\n\n\"Bad management\" names nothing, and they move on.\n\nSave this for the night before.\n\n#investmentbanking #ibinterview #accounting #financialmodeling",
+      "published_id": null,
+      "published_at_utc": null,
+      "images": [
+        "w1-04-cash-01.jpg",
+        "w1-04-cash-02.jpg",
+        "w1-04-cash-03.jpg",
+        "w1-04-cash-04.jpg",
+        "w1-04-cash-05.jpg",
+        "w1-04-cash-06.jpg",
+        "w1-04-cash-07.jpg",
+        "w1-04-cash-08.jpg",
+        "w1-04-cash-09.jpg"
+      ]
+    },
+    {
+      "id": "w1-11-goodwill",
+      "series": "Technical of the Day",
+      "scheduled_utc": "2026-11-06T13:00:00",
       "caption": "\"Goodwill is the premium paid.\" That's the most commonly half-right answer in accounting, and half-right loses the question.\n\nIt's purchase price less the fair value of net identifiable assets acquired. Not book value. Fair value.\n\nHere's why that distinction matters. Book value of net assets is 600. On acquisition, property and brands get written up and customer relationships get recognised for the first time, taking you to 750. You paid 1,000. Goodwill is 250, not 400.\n\nThe step-up happens first. The residual is what's left.\n\nIt's tested, never amortised. Finite-life intangibles get amortised. Goodwill sits on the balance sheet indefinitely and gets tested for impairment at least once a year. Amortising it over 10 years was the old rule and it hasn't applied for 2 decades.\n\nAnd when it's written down, nothing leaves the building. The charge hits the income statement and equity. It's added straight back on the cash flow statement. Cash is untouched.\n\nWhat it really is: the buyer admitting in public that it overpaid.\n\nSave this one.\n\n#investmentbanking #ibinterview #accounting #mergersandacquisitions",
       "published_id": null,
       "published_at_utc": null,
@@ -178,7 +178,7 @@
     {
       "id": "w1-05-lbo",
       "series": "Technical of the Day",
-      "scheduled_utc": "2026-11-03T17:30:00",
+      "scheduled_utc": "2026-11-06T17:30:00",
       "caption": "Most people say an LBO is buying a company with debt, then stop talking. That's the setup, not the answer.\n\n5 steps. Sources and uses at entry. Project free cash flow. Sweep that cash against the debt. Exit on EBITDA times a multiple, usually after 5 years. Divide exit equity by entry equity.\n\nSo why use debt?\n\nTake a 1,000 purchase funded 60% debt and 40% equity. Your cheque is 400, not 1,000. The same gain in enterprise value now lands on a much thinner slice, so a deal that would have returned 2.0x returns closer to 3.0x. Interest is deductible. And a repayment schedule keeps management honest.\n\nSay the other half too. Use multiplies your losses on exactly the same maths, and if you don't volunteer that, they'll ask.\n\nReturns come from 3 places and they aren't equally reliable. Debt paydown and EBITDA growth are things a sponsor can influence. Multiple expansion is a market call. Build on the first 2 and assume you exit at the same 10x you paid.\n\nGood target? Steady cash flow, low existing debt, low capex. Not a software company growing 80% a year. It burns cash and it can't carry the debt.\n\nThen finish with the number. Exit enterprise value, minus net debt, over your 400.\n\nSave this one.\n\n#investmentbanking #ibinterview #privateequity #lbo",
       "published_id": null,
       "published_at_utc": null,
@@ -197,7 +197,7 @@
     {
       "id": "w1-12-nwc",
       "series": "Technical of the Day",
-      "scheduled_utc": "2026-11-04T13:00:00",
+      "scheduled_utc": "2026-11-07T13:00:00",
       "caption": "An increase in net working capital is a use of cash. Get that sign backwards and every forecast you build for the rest of your career is wrong in the same direction.\n\nIn: receivables, inventory, prepaid expenses, payables, accrued expenses.\n\nOut: cash and short-term debt. Those are financing.\n\nSo the textbook version, current assets minus current liabilities, is the wrong number, because it quietly includes both of the things you were supposed to strip out.\n\nHere's the mechanic. Receivables up 50, inventory up 30. That's 80 of cash sitting somewhere other than your bank account. Payables up 20 hands you 20 back, an interest-free loan from your suppliers. Net change: 60 used.\n\nThat's it. That's the whole thing.\n\nThe cycle in days is DSO plus DIO minus DPO. Days to collect, plus days of inventory, minus the days you take to pay, which is how long your cash is tied up before it comes home.\n\nSome businesses run it negative. A supermarket collects at the till and pays suppliers in 45 days, so growth throws off cash instead of eating it.\n\nDrop the term from your DCF because it looks small in year 1 and you've valued a company that never funds its own growth.\n\nSave this.\n\n#investmentbanking #ibinterview #financialmodeling #accounting",
       "published_id": null,
       "published_at_utc": null,
@@ -216,7 +216,7 @@
     {
       "id": "w1-06-fcf",
       "series": "Technical of the Day",
-      "scheduled_utc": "2026-11-04T17:30:00",
+      "scheduled_utc": "2026-11-07T17:30:00",
       "caption": "\"Cash flow\" means 4 different things. Each takes its own discount rate. Mix 2 of them up and your valuation is wrong by a mile.\n\nUnlevered free cash flow. Start with EBIT of 200. Tax it at 25%, so 150. Add D&A of 40, subtract capex of 50, subtract a 10 build in working capital. That's 130, and it sits before interest, so it belongs to lenders and shareholders together. Discount at WACC. You get enterprise value.\n\nLevered free cash flow. Start at net income instead, so after the 30 of interest. Same adjustments, then subtract mandatory repayment. That's what's left for shareholders. Discount at cost of equity. You get equity value, and there's no bridge to build.\n\nOperating cash flow minus capex. The quick one, straight off the statement. It's levered, because operating cash flow already sits after interest paid. People feed this into a WACC-discounted DCF every single day and never notice.\n\nThen EBITDA, which isn't cash flow at all.\n\nIt ignores capex. It ignores working capital. It ignores cash taxes and interest. That's 4 omissions, and if you call it a cash proxy you'd better be able to name all 4.\n\n1 rule covers the whole thing. Match the claim to the rate.\n\nSave this before your next model test.\n\n#investmentbanking #ibinterview #financialmodeling #valuation",
       "published_id": null,
       "published_at_utc": null,
@@ -235,7 +235,7 @@
     {
       "id": "w1-13-multiples",
       "series": "Technical of the Day",
-      "scheduled_utc": "2026-11-05T13:00:00",
+      "scheduled_utc": "2026-11-08T13:00:00",
       "caption": "Why is there no P/EBITDA? 1 rule answers that, and every other multiple question you'll get.\n\nThe numerator and the denominator have to belong to the same people.\n\nEnterprise value is the whole business, so it pairs with anything measured before lenders are paid. That's 4 of them: EV/Revenue, EV/EBITDA, EV/EBIT, and EV over unlevered free cash flow.\n\nEquity value is the shareholders' slice, so it pairs with what's left after lenders. That's 3: P/E, price to book, and price over levered free cash flow.\n\nP/EBITDA mixes them. Price is after debt. EBITDA is before it. The ratio describes nobody.\n\nHere's why EV/EBITDA does the heavy lifting. Take 2 identical businesses. Company A has no debt and trades at a P/E of 20. Company B is heavily levered and trades at 12. Same operations, same 100 of EBITDA, and you'd conclude B is 40% cheaper. Their EV/EBITDA is identical, because enterprise value and EBITDA both sit above the capital structure.\n\nThen say what EBITDA hides. Capex, working capital and cash taxes, all 3 ignored. For a capital-intensive business, EV/EBIT is often fairer.\n\nSave this before your next technical.\n\n#investmentbanking #ibinterview #valuation #financialmodeling",
       "published_id": null,
       "published_at_utc": null,
@@ -254,7 +254,7 @@
     {
       "id": "w1-07-range",
       "series": "Technical of the Day",
-      "scheduled_utc": "2026-11-05T17:30:00",
+      "scheduled_utc": "2026-11-08T17:30:00",
       "caption": "\"Which method gives the highest valuation?\" There's a usual order, and the reason matters far more than the order does.\n\nPrecedents usually print highest. Comps sit below. The DCF ranges widest of the 4. An LBO sets the floor.\n\nWhy precedents beat comps.\n\nA comp is what 1 share trades at, a minority stake with no say in anything. A precedent is what somebody actually paid to own all 100% of it and run it. That price carries a control premium, often 20 to 30%, plus whatever synergies the buyer talked themselves into.\n\nWhy the DCF ranges widest. WACC, terminal growth and your year 5 margin are 3 numbers nobody can verify, and a 1% move in any of them swings the answer more than a revenue assumption you'd argue about for a week.\n\nWhy the LBO is the floor. A sponsor needs its target return, so there's a hard ceiling on what it can pay. A strategic buyer with synergies goes higher.\n\nThen say which one you'd lean on. Liquid comps, lean on comps. Live sale process, lean on precedents. Stable forecastable business, the DCF earns its place.\n\nSay typically. Then say why.\n\n#investmentbanking #ibinterview #valuation #mergersandacquisitions",
       "published_id": null,
       "published_at_utc": null,
@@ -273,7 +273,7 @@
     {
       "id": "w1-14-call",
       "series": "Technical of the Day",
-      "scheduled_utc": "2026-11-06T13:00:00",
+      "scheduled_utc": "2026-11-09T13:00:00",
       "caption": "Somebody gave you 15 minutes. Most people waste 11 of them talking about themselves.\n\nThe first 60 seconds: thank them, name whoever connected you, 2 lines on you, and 1 on why you asked for this call specifically. Then stop talking.\n\nAsk what only they can answer. \"What's banking like\" is a brochure question and you'll get a brochure answer. \"How did you end up in this group\" and \"what surprised you in year 1\" are questions nobody else can answer for them.\n\nShow the reading without performing it. 1 specific reference, not 3. \"I saw you worked on that deal, what was hard about it?\" One is interest. Three is research, and it reads differently.\n\nMinute 13 is the entire call. 2 questions: is there anyone else in the group worth speaking to, and is there anything I should be doing now. Both are easy to say yes to, and 1 of them hands you the next conversation.\n\nThen follow up inside 24 hours, referencing something specific they said so it's obviously not a template.\n\nSave this before your next one.\n\n#investmentbanking #ibrecruiting #networking #financecareers",
       "published_id": null,
       "published_at_utc": null,
