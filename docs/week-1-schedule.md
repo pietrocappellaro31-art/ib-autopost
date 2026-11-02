@@ -33,6 +33,25 @@ each other.
 Reels take the punchy, list-shaped and recruiting topics, which travel.
 Carousels take the deep technical ones that need a diagram and earn a save.
 
+## Reel slots after the 2 November re-space
+
+The carousels moved when Meta blocked API access, so the Reel slots moved with
+them. All at 21:30 Eastern, keeping three posts a day:
+
+| Date | Reel |
+|---|---|
+| Tue 3 Nov | EV vs equity value |
+| Wed 4 Nov | Eight words that give you away |
+| Thu 5 Nov | Why investment banking |
+| Fri 6 Nov | Five answers that get you dinged |
+| Sat 7 Nov | Accretive or dilutive in five seconds |
+| Sun 8 Nov | Summer 2028 is already open |
+| Mon 9 Nov | Any questions for me |
+
+The recruiting calendar keeps the Sunday evening slot: it is the most
+shareable piece and Sunday night is when people plan and forward things. The
+file names in the handover bundle carry the **old** dates, so go by this table.
+
 ## Week 1, for reference
 
 Carousels: 3 statements, DCF, WACC, how a profitable company runs out of cash,
