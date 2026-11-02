@@ -18,7 +18,16 @@ What has been settled, and what is still open. Newest first.
 
 ## Settled
 
-- **Weekly approval session: Monday morning** (set 2 Nov).
+- **Monthly planning session: first Monday of each month, 9:00 ET** (set 2 Nov,
+  replacing the weekly session). Claude proposes the month's topics, slots,
+  times and cover colours, asks personalisation questions, then builds and
+  queues the month after approval. Runbook: `docs/skill/ib-month-plan`. A
+  scheduled run starts 8:35 ET so the draft is ready at 9:00. Each plan runs
+  to the Sunday after the next first Monday, a one-week buffer.
+- **Cover colours rotate, palette does not** (2 Nov). Slide 1's ground follows
+  a diagonal rotation of red, ink and paper so the grid is not one colour.
+  Chosen over rows or columns because no evidence ties grid layout to reach,
+  and a diagonal stays mixed when a post is late or missing.
 - **Daily cap enforced in code** (2 Nov). `publish.py` publishes at most 2
   manifest posts per Eastern day, and no more than the slots already passed
   that day (the day's scheduled times plus 08:00 and 12:30 ET). Backlog after

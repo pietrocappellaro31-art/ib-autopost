@@ -31,8 +31,14 @@ by inspecting the live account. Check it on every render.
   against ink.
 - **Fonts:** Source Serif 4 700 for headlines, IBM Plex Sans 400 to 600 for
   body. Nothing else. The woff2 files are in `build/fonts/`.
-- **Colour rhythm across a carousel:** red cover, ink stake, paper body slides,
-  ink recap, red call to action. It makes the swipe feel designed.
+- **Colour rhythm across a carousel:** cover, contrasting stake, paper body
+  slides, ink recap, red call to action. It makes the swipe feel designed.
+- **Cover ground rotates** from November 2026 (week-1 covers are all red).
+  Diagonal cycle, one grid row per day: day 1 red / ink / paper, day 2 ink /
+  paper / red, day 3 paper / red / ink, for the 08:00, 12:30 and 21:30 posts.
+  The stake slide never matches the cover; the CTA is red unless the cover is.
+- **Grid crop:** the profile grid shows a 3:4 crop of slide 1, about 34px off
+  each side. The 76/80px padding clears it.
 - **Per slide (1080x1350):** 76/80px padding. Header pinned top with the IB
   mark, the series name and `NN / TT` in the accent. Content centred. Footer
   pinned bottom with the handle and a Swipe or Save cue.
