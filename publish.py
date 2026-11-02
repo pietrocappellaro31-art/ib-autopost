@@ -21,7 +21,17 @@ import sys
 import time
 import urllib.parse
 import urllib.request
-from datetime import datetime, timezone
+from datetime import datetime, time as clock, timezone
+from zoneinfo import ZoneInfo
+
+EASTERN = ZoneInfo("America/New_York")
+
+# The manifest holds carousels only. The page's cap is 3 posts per Eastern day,
+# and the third is a Reel Pietro uploads by hand, so the manifest may publish
+# at most 2 per Eastern day. Backlog never goes out in a burst.
+MAX_PER_EASTERN_DAY = 2
+# Slot times used to release backlog on a day that has no scheduled entry.
+DEFAULT_SLOTS_ET = (clock(8, 0), clock(12, 30))
 
 GRAPH_VERSION = "v21.0"
 GRAPH_ROOT = f"https://graph.facebook.com/{GRAPH_VERSION}"
@@ -192,7 +202,51 @@ def find_due_posts(manifest, now):
         scheduled = datetime.fromisoformat(post["scheduled_utc"]).replace(tzinfo=timezone.utc)
         if scheduled <= now:
             due.append(post)
+    due.sort(key=lambda post: post["scheduled_utc"])
     return due
+
+
+def _utc(stamp):
+    parsed = datetime.fromisoformat(stamp)
+    return parsed if parsed.tzinfo else parsed.replace(tzinfo=timezone.utc)
+
+
+def apply_daily_cap(manifest, due, now):
+    """Trim the due list so no Eastern day gets more than its share.
+
+    Two limits, both counted in America/New_York:
+      - at most MAX_PER_EASTERN_DAY manifest posts publish per Eastern day;
+      - no more posts than slots that have already passed today, so backlog
+        is released one per slot (at slot times) rather than at midnight.
+    Today's slots are the scheduled times of today's manifest entries plus
+    DEFAULT_SLOTS_ET. Held posts stay queued
+    and go out oldest first on later runs.
+    """
+    today = now.astimezone(EASTERN).date()
+
+    published_today = sum(
+        1 for post in manifest["posts"]
+        if post.get("published_id") and post.get("published_at_utc")
+        and _utc(post["published_at_utc"]).astimezone(EASTERN).date() == today
+    )
+
+    slots = {
+        _utc(post["scheduled_utc"]) for post in manifest["posts"]
+        if _utc(post["scheduled_utc"]).astimezone(EASTERN).date() == today
+    }
+    slots |= {datetime.combine(today, t, EASTERN) for t in DEFAULT_SLOTS_ET}
+    slots_passed = sum(1 for slot in slots if slot <= now)
+
+    allowance = min(MAX_PER_EASTERN_DAY, slots_passed) - published_today
+    allowance = max(allowance, 0)
+    if len(due) > allowance:
+        held = [post["id"] for post in due[allowance:]]
+        print(
+            f"Daily cap: {published_today} published today (ET), "
+            f"{slots_passed} slot(s) passed, cap {MAX_PER_EASTERN_DAY}. "
+            f"Holding {len(held)}: {', '.join(held)}"
+        )
+    return due[:allowance]
 
 
 
@@ -263,7 +317,7 @@ def main():
     if "--selftest" in sys.argv:
         return selftest(resolve_ig_user_id(), manifest)
 
-    due = find_due_posts(manifest, now)
+    due = apply_daily_cap(manifest, find_due_posts(manifest, now), now)
 
     if not due:
         # The cron runs every 15 minutes, so most runs end here. Nothing has

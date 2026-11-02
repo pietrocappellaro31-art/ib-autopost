@@ -18,6 +18,13 @@ What has been settled, and what is still open. Newest first.
 
 ## Settled
 
+- **Weekly approval session: Monday morning** (set 2 Nov).
+- **Daily cap enforced in code** (2 Nov). `publish.py` publishes at most 2
+  manifest posts per Eastern day, and no more than the slots already passed
+  that day (the day's scheduled times plus 08:00 and 12:30 ET). Backlog after
+  an outage drains two a day, oldest first, at slot times, instead of going out
+  in one run. The third daily post is the hand-uploaded Reel, which never goes
+  in the manifest. Hard caps: 2 posts on Mon 2 Nov, 3 a day from Tue 3 Nov.
 - **Cadence: 3 posts a day.** Was 2 a day, raised on 2 Nov. The researched
   recommendation was 7 to 8 a week with Reels for reach; Pietro chose volume.
   Flagged twice, decided twice, no longer an open question.
@@ -39,10 +46,6 @@ What has been settled, and what is still open. Newest first.
 
 ## Open
 
-- **The weekly approval session has no recurring day or time.** Asked
-  repeatedly across the build and still unset. Until it exists, "approve ideas
-  at the start of the week" has no slot and the following week cannot be
-  scheduled without prompting.
 - **Posting times are hypotheses, not findings.** 08:00 and 12:30 Eastern for
   carousels, 21:30 for Reels, reasoned from how each format is ranked rather
   than measured on this account. Re-time from the account's own insights after
