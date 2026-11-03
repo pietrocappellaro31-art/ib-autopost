@@ -9,6 +9,10 @@ for time t. Playwright calls seek() once per frame and screenshots, so the
 render is deterministic: the same input always gives the same video.
 
     data-fx   rise | fade | pop | wipe | growX | growY | growYdown | move | count | strike
+              flipin | flipout | draw | float
+    float: data-amp (px), data-w (rad/s), data-ph (phase); always visible, drifts with t
+    draw: on an svg with class "pen"; a hand-drawn loop is fitted to its parent at load
+    scene keys: enter="right" slides the scene in, exit="left" slides it out
     data-at   start, seconds from the scene's start (negative = already in at t=0)
     data-d    duration in seconds
     data-from / data-to / data-dec / data-pre / data-suf   for count
@@ -99,8 +103,34 @@ function place(el, local) {
   else if (fx === 'count') { o = el.dataset.show ? 1 : clamp(raw*4); const q = E.inout(raw);
       el.textContent = fmt(+el.dataset.from + (+el.dataset.to - +el.dataset.from)*q, el); }
   else if (fx === 'strike') { tf = `scaleX(${E.inout(raw)})`; el.style.transformOrigin = 'left center'; }
+  else if (fx === 'flipin') { const q = E.out3(raw); o = raw > 0 ? 1 : 0; tf = `perspective(700px) rotateX(${(1-q)*-90}deg)`; }
+  else if (fx === 'flipout') { const q = E.inout(raw); o = raw < 1 ? 1 : 0; tf = `perspective(700px) rotateX(${q*90}deg)`; }
+  else if (fx === 'float') { const a = +(el.dataset.amp||10), w = +(el.dataset.w||1), ph = +(el.dataset.ph||0);
+      tf = `translate(${Math.cos(local*w*.7+ph)*a*.6}px,${Math.sin(local*w+ph)*a}px)`; }
+  else if (fx === 'draw') { const path = el.querySelector('path'); if (path) { const L = path.getTotalLength();
+      path.style.strokeDasharray = L; path.style.strokeDashoffset = L*(1-E.inout(raw)); } o = raw > 0 ? 1 : 0; }
   el.style.opacity = o; if (tf) el.style.transform = tf;
 }
+window.initPens = function () {
+  // Fit a hand-drawn loop around each .pen's parent: an ellipse that overshoots
+  // its start, wobbles slightly and tilts, like a red pen circling a word.
+  document.querySelectorAll('svg.pen').forEach((svg, k) => {
+    const host = svg.parentElement.getBoundingClientRect();
+    const padX = 34, padY = 26, W = host.width + 2*padX, H = host.height + 2*padY;
+    svg.setAttribute('width', W); svg.setAttribute('height', H);
+    svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+    svg.style.cssText += `;position:absolute;left:${-padX}px;top:${-padY}px;overflow:visible;pointer-events:none`;
+    const cx = W/2, cy = H/2, rx = W/2 - 8, ry = H/2 - 6, tilt = -0.05, pts = [];
+    for (let i = 0; i <= 90; i++) {
+      const a = Math.PI*1.08 + (i/90)*Math.PI*2.18;
+      const wob = 1 + .035*Math.sin(3*a + k) + .025*(i/90);
+      const x = Math.cos(a)*rx*wob, y = Math.sin(a)*ry*wob;
+      pts.push([cx + x*Math.cos(tilt) - y*Math.sin(tilt), cy + x*Math.sin(tilt) + y*Math.cos(tilt)]);
+    }
+    const d = 'M' + pts.map(p => p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join(' L');
+    svg.innerHTML = `<path d="${d}" fill="none" stroke="${svg.dataset.c || '#D93A12'}" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>`;
+  });
+};
 window.seek = function (t) {
   const scenes = window.SCENES, total = window.TOTAL;
   document.querySelector('.bar i').style.width = (100 * Math.min(t/total, 1)) + '%';
@@ -110,13 +140,20 @@ window.seek = function (t) {
   scenes.forEach((s, i) => {
     const el = document.getElementById('s' + i), local = t - s.start;
     const last = i === scenes.length - 1;
-    const on = local >= 0 && (local < s.dur || (last && local <= s.dur + 1));
+    const lead = s.enter === 'right' ? .3 : 0;   // swipe in while the last scene leaves
+    const on = local >= -lead && (local < s.dur || (last && local <= s.dur + 1));
     el.style.visibility = on ? 'visible' : 'hidden';
     if (!on) return;
     const exit = last ? 0 : clamp((local - (s.dur - .32)) / .32);
+    const ent = s.enter === 'right' ? E.inout(clamp((local + lead) / .32)) : 1;
     const e = E.inout(exit);
-    el.querySelector('.safe').style.opacity = 1 - e;
-    el.querySelector('.safe').style.transform = `translateY(${-38*e}px)`;
+    const sf = el.querySelector('.safe');
+    // A swipe moves the full width, in step with the neighbouring scene, and does not fade.
+    const swipeOut = s.exit === 'left', swipeIn = s.enter === 'right';
+    sf.style.opacity = swipeOut ? 1 : 1 - e;
+    const dx = (swipeIn ? (1-ent)*1000 : 0) + (swipeOut ? -1000*e : 0);
+    const dy = s.exit === 'left' ? 0 : -38*e;
+    sf.style.transform = `translate(${dx}px,${dy}px)`;
     const gh = el.querySelector('.ghost');
     if (gh) gh.style.opacity = .055 * clamp(local / .6) * (1 - e);
     el.querySelectorAll('.a').forEach(a => place(a, local));
@@ -150,7 +187,8 @@ def A(html, fx="rise", at=0.0, d=0.5, cls="", style="", **data):
 def page(scenes):
     starts, t = [], 0.0
     for s in scenes:
-        starts.append({"start": round(t, 3), "dur": s["dur"]})
+        starts.append({"start": round(t, 3), "dur": s["dur"],
+                       "enter": s.get("enter", ""), "exit": s.get("exit", "")})
         t += s["dur"]
     body = "".join(
         f'<div class="scene" id="s{i}">'
@@ -189,6 +227,7 @@ def build(slug, scenes):
         pg = browser.new_page(viewport={"width": 1080, "height": 1920}, device_scale_factor=1)
         pg.goto(src.resolve().as_uri())
         pg.evaluate("document.fonts.ready")
+        pg.evaluate("initPens()")
         loaded = pg.evaluate("[...document.fonts].filter(f => f.status === 'loaded').length")
         if loaded < 4:
             raise RuntimeError(f"only {loaded} of 4 brand fonts loaded")

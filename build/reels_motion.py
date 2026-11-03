@@ -176,6 +176,101 @@ def r01():
 
 REELS = {"w1-r01-ev-equity": r01}
 
+
+# ---------------------------------------------------------------------------
+# r06, 8 words that give you away. Each vague word is circled in red pen,
+# then blank cards flip to show the precise versions, so the viewer gets a
+# beat to guess first. The counter and the sideways swipe make it read as a
+# run of eight, which is what keeps people to the end.
+
+WORDS = [
+    ("Profit", ["Net income", "EBIT", "EBITDA"], "Three different lines. Name one."),
+    ("Valuation", ["Enterprise value", "Equity value"], "The bridge between them is the question."),
+    ("Cash flow", ["Operating", "Levered FCF", "Unlevered FCF"], "Levered: cost of equity. Unlevered: WACC."),
+    ("Debt", ["Gross", "Net"], "Net subtracts the cash."),
+    ("Multiple", ["EV / EBITDA", "P / E"], "Of what, and LTM or forward?"),
+    ("Margin", ["Gross", "EBITDA", "Net"], "Same revenue, three different percentages."),
+    ("Shares", ["Basic", "Diluted"], "Equity value uses diluted."),
+    ("Return", ["IRR", "MOIC"], "IRR counts time. MOIC doesn't."),
+]
+
+
+def counter(i):
+    dots = ""
+    for k in range(8):
+        if k < i:
+            dots += f'<span style="width:16px;height:16px;border-radius:50%;background:{TEAL}"></span>'
+        elif k == i:
+            dots += A("", "pop", .1, .4, style=f"width:24px;height:24px;border-radius:50%;background:{TEAL}")
+        else:
+            dots += '<span style="width:16px;height:16px;border-radius:50%;border:3px solid rgba(255,255,255,.3);box-sizing:border-box"></span>'
+    return ('<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:76px">'
+            + num(f'{i + 1:02d}<span style="opacity:.35"> / 08</span>', 58)
+            + f'<div style="display:flex;align-items:center;gap:12px">{dots}</div></div>')
+
+
+def chip(text, at):
+    real = A(text, "flipin", at + .18, .32,
+             style=f"background:{TEAL};color:#0A0A0A;font-size:46px;font-weight:600;padding:18px 32px;"
+                   "border-radius:999px;white-space:nowrap")
+    blank = A(A('<span style="font-family:Serif;font-size:46px;color:rgba(255,255,255,.55)">?</span>',
+                "flipout", at, .2, style="position:absolute;inset:0;display:flex;align-items:center;"
+                "justify-content:center;border:3px dashed rgba(255,255,255,.4);border-radius:999px"),
+              "fade", .85, .25, style="position:absolute;inset:0")
+    return f'<div style="position:relative">{real}{blank}</div>'
+
+
+def word_scene(i, word, precise, why):
+    chips = "".join(chip(c, 1.2 + j * .16) for j, c in enumerate(precise))
+    return dict(dur=4.0, enter="right", exit="left", html=(
+        '<div style="height:980px">' + counter(i)
+        + A('<div class="lbl">You say</div>', "fade", -1, .3)
+        + '<div>' + A(
+            '<div style="display:inline-block;position:relative;background:rgba(255,255,255,.07);'
+            'border:3px solid rgba(255,255,255,.22);border-radius:30px;padding:28px 38px;margin-top:20px">'
+            '<span style="position:relative;display:inline-block;font-family:Serif;font-weight:700;'
+            f'font-size:114px;letter-spacing:-.03em;line-height:1.05">&ldquo;{word}&rdquo;'
+            '<svg class="a pen" data-fx="draw" data-at=".45" data-d=".5" width="0" height="0" style="position:absolute;left:0;top:0"></svg></span></div>',
+            "pop", -1, .45, style="display:inline-block;transform-origin:left center") + '</div>'
+        + A('<div class="lbl" style="color:#5EC8B4;opacity:1;margin-top:88px">Say which</div>', "fade", .8, .3)
+        + f'<div style="display:flex;flex-wrap:wrap;gap:18px;margin-top:26px">{chips}</div>'
+        + A(f'<div class="sub" style="font-size:48px;margin-top:60px">{why}</div>', "rise", 1.85, .45) + '</div>'))
+
+
+def r06():
+    s = []
+    spots = [(16, 70), (300, 30), (490, 160), (120, 250), (30, 880), (420, 900), (170, 1050), (470, 1080)]
+    floats = "".join(
+        A(f'<span style="font-family:Serif;font-weight:700;font-size:46px;opacity:.28">&ldquo;{w}&rdquo;</span>',
+          "float", 0, 1, style=f"position:absolute;left:{x}px;top:{y}px;white-space:nowrap",
+          amp=9 + k % 3 * 3, w=.9 + k % 4 * .15, ph=k * 1.3)
+        for k, ((w, _, _), (x, y)) in enumerate(zip(WORDS, spots)))
+    s.append(dict(dur=3.6, exit="left", html=(
+        '<div style="position:relative;height:1210px">' + floats
+        + '<div style="position:absolute;left:0;right:0;top:400px">'
+          '<h1 style="font-size:100px">8 words that give you <span class="r">away</span>.</h1>'
+          '<div class="sub">The vague version says you haven&rsquo;t done the reading.</div>'
+        + A('<div class="lbl" style="color:#5EC8B4;opacity:1;margin-top:40px">Guess each one before it flips</div>',
+            "rise", 1.3, .45)
+        + '</div></div>')))
+    for i, (w, p, why) in enumerate(WORDS):
+        s.append(word_scene(i, w, p, why))
+    grid = "".join(
+        A(f'<span style="position:relative;display:inline-block;font-family:Serif;font-weight:700;font-size:58px;'
+          f'color:rgba(255,255,255,.8)">&ldquo;{w}&rdquo;'
+          + A("", "strike", .45 + k * .08, .28, style=f"position:absolute;left:-6px;right:-6px;top:54%;height:8px;"
+              f"background:{RED};border-radius:4px") + '</span>', "pop", -1, .35)
+        for k, (w, _, _) in enumerate(WORDS))
+    s.append(dict(dur=4.8, enter="right", html=(
+        f'<div style="display:grid;grid-template-columns:1fr 1fr;row-gap:26px;column-gap:24px">{grid}</div>'
+        + A('<h1 style="font-size:96px;margin-top:70px">Say which one<span class="r">.</span><br>'
+            '<span class="t">Every time.</span></h1>', "rise", 1.4, .5)
+        + A('<div class="lbl" style="margin-top:36px">Save this</div>', "fade", 2.2, .4))))
+    return s
+
+
+REELS["w1-r06-words"] = r06
+
 if __name__ == "__main__":
     for slug in sys.argv[1:] or list(REELS):
         print(slug)

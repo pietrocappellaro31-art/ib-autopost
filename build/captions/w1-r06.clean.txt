@@ -1,16 +1,22 @@
 8 words that tell an interviewer you haven't done the reading.
 
-"Profit." Net income, EBIT or EBITDA? That's 3 different numbers leading 3 different places.
+"Profit." Net income, EBIT or EBITDA? 3 different lines on the income statement. Name one.
 
-"Valuation." Enterprise value or equity value? They differ by net debt, and the entire bridge exists because of it.
+"Valuation." Enterprise value or equity value? The bridge between them is a question you'll get on its own.
 
-"Cash flow." Operating, levered or unlevered? Each takes its own discount rate.
+"Cash flow." Operating, levered or unlevered? If it's levered, you discount at the cost of equity. If it's unlevered, you use WACC.
 
-"Debt." Gross or net?
+"Debt." Gross or net? Net is what's left after you take off the cash.
 
-"Multiple." Of what, over which period, forward or trailing? 12 times earnings means nothing on its own.
+"Multiple." Of what, and LTM or forward? 12 times means nothing on its own.
 
-None of this is vocabulary for its own sake. Precision is the cheapest signal you can send in a first round, and it costs you 1 extra word each time you open your mouth.
+"Margin." Gross, EBITDA or net? Same revenue, 3 very different percentages.
+
+"Shares." Basic or diluted? You'll want diluted for equity value.
+
+"Return." IRR or MOIC? IRR cares how long it took. MOIC doesn't.
+
+None of this is vocabulary for its own sake. Precision is the cheapest signal you can send in a first round, and it costs you exactly 1 extra word every time you open your mouth to answer a technical.
 
 Say which one you mean. Every time.
 
