@@ -1,4 +1,4 @@
-Add cash instead of subtracting it and your interview is over in 5 minutes.
+Add cash instead of subtracting it and the interview ends early.
 
 Equity value is what the shareholders own. Share price times diluted shares. If the stock's at 50 and there are 100 million shares, that's 5 billion.
 
@@ -8,9 +8,9 @@ The bridge: start at equity value, add debt, add preferred and minority interest
 
 That last step is where people slip.
 
-You subtract cash because it comes with the company. Buy a business sitting on 200 of cash and you use that 200 to repay the debt you just borrowed to buy it. Your real cost is 200 lower than the sticker.
+You subtract cash because it comes with the company. Buy a business sitting on 200 million of cash and you use that 200 million to repay the debt you just borrowed to buy it. Your real cost is 200 million lower than the sticker.
 
-So 5 billion of equity, 1 billion of debt, 200 of cash gives you 5.8 billion of enterprise value. Not 6.2.
+So 5 billion of equity, 1 billion of debt and 200 million of cash gives you 5.8 billion of enterprise value. Not 6.2.
 
 Say it out loud now so it's there under pressure. You subtract the cash.
 
