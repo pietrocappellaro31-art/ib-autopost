@@ -1,0 +1,4 @@
+# Build output and Python caches are regenerated, never committed
+build/out/
+__pycache__/
+*.pyc
