@@ -9,7 +9,9 @@ for time t. Playwright calls seek() once per frame and screenshots, so the
 render is deterministic: the same input always gives the same video.
 
     data-fx   rise | fade | pop | wipe | growX | growY | growYdown | move | count | strike
-              flipin | flipout | draw | float
+              flipin | flipout | draw | float | words | roll | stamp | ripple | press
+    words: children with class "w" appear one by one across data-d (typewriter by word)
+    roll: slot-machine word swap; children of .rl are the options, data-hold between swaps
     float: data-amp (px), data-w (rad/s), data-ph (phase); always visible, drifts with t
     draw: on an svg with class "pen"; a hand-drawn loop is fitted to its parent at load
     scene keys: enter="right" slides the scene in, exit="left" slides it out
@@ -72,6 +74,8 @@ h1{margin:0;font-family:'Serif',serif;font-weight:700;line-height:1.03;letter-sp
 .row:last-child{border-bottom:0}
 .row b{font-family:'Serif',serif;font-weight:700;font-size:52px}
 .num{font-family:'Serif',serif;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.roll{display:inline-block;vertical-align:top;overflow:hidden;height:1.3em;border-radius:10px;background:rgba(94,200,180,.28);padding:0 .18em;box-sizing:content-box}
+.rl{display:flex;flex-direction:column}.rl>span{display:block;height:1.3em;line-height:1.3em;white-space:nowrap}
 .lbl{font-size:30px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;opacity:.7}
 """
 
@@ -105,6 +109,18 @@ function place(el, local) {
   else if (fx === 'strike') { tf = `scaleX(${E.inout(raw)})`; el.style.transformOrigin = 'left center'; }
   else if (fx === 'flipin') { const q = E.out3(raw); o = raw > 0 ? 1 : 0; tf = `perspective(700px) rotateX(${(1-q)*-90}deg)`; }
   else if (fx === 'flipout') { const q = E.inout(raw); o = raw < 1 ? 1 : 0; tf = `perspective(700px) rotateX(${q*90}deg)`; }
+  else if (fx === 'words') { const ws = el.querySelectorAll('.w'), n = ws.length;
+      const shown = local < at ? 0 : Math.ceil(raw * n - 1e-6);
+      ws.forEach((w, i) => { w.style.opacity = i < shown ? 1 : 0; }); }
+  else if (fx === 'roll') { const kids = el._kids; if (kids) { const hold = +(el.dataset.hold||.9), tr = .32;
+      let pos = 0; for (let i = 0; i < kids.length - 1; i++) pos += E.inout(clamp((local - at - i*hold) / tr));
+      const i0 = Math.floor(pos), f = pos - i0, i1 = Math.min(i0 + 1, kids.length - 1);
+      el.querySelector('.rl').style.transform = `translateY(${-pos * el._h}px)`;
+      el.style.width = (el._w[i0] + (el._w[i1] - el._w[i0]) * f) + 'px'; } }
+  else if (fx === 'stamp') { const q = E.out3(raw); o = clamp(raw*2.5);
+      tf = `rotate(${(+(el.dataset.rot||-8)) - (1-q)*7}deg) scale(${1 + (1-q)*1.3})`; }
+  else if (fx === 'ripple') { o = raw > 0 && raw < 1 ? (1-raw)*.55 : 0; tf = `scale(${.2 + 2.8*E.out3(raw)})`; }
+  else if (fx === 'press') { tf = `scale(${1 - .08*Math.sin(Math.PI*raw)})`; }
   else if (fx === 'float') { const a = +(el.dataset.amp||10), w = +(el.dataset.w||1), ph = +(el.dataset.ph||0);
       tf = `translate(${Math.cos(local*w*.7+ph)*a*.6}px,${Math.sin(local*w+ph)*a}px)`; }
   else if (fx === 'draw') { const path = el.querySelector('path'); if (path) { const L = path.getTotalLength();
@@ -129,6 +145,14 @@ window.initPens = function () {
     }
     const d = 'M' + pts.map(p => p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join(' L');
     svg.innerHTML = `<path d="${d}" fill="none" stroke="${svg.dataset.c || '#D93A12'}" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>`;
+  });
+};
+window.initRolls = function () {
+  document.querySelectorAll('.roll').forEach(el => {
+    el._kids = [...el.querySelectorAll('.rl>span')];
+    el._w = el._kids.map(k => { const r = document.createRange(); r.selectNodeContents(k); return r.getBoundingClientRect().width; });
+    el._h = el._kids[0].getBoundingClientRect().height;
+    el.style.width = el._w[0] + 'px';
   });
 };
 window.seek = function (t) {
@@ -228,6 +252,7 @@ def build(slug, scenes):
         pg.goto(src.resolve().as_uri())
         pg.evaluate("document.fonts.ready")
         pg.evaluate("initPens()")
+        pg.evaluate("initRolls()")
         loaded = pg.evaluate("[...document.fonts].filter(f => f.status === 'loaded').length")
         if loaded < 4:
             raise RuntimeError(f"only {loaded} of 4 brand fonts loaded")

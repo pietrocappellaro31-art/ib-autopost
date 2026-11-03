@@ -271,6 +271,157 @@ def r06():
 
 REELS["w1-r06-words"] = r06
 
+
+# ---------------------------------------------------------------------------
+# r03, the "Why banking?" swap test. Built for watch time: the hook challenges
+# the viewer's own answer, a generic answer types itself out, its key word
+# spins like a slot machine and the answer survives every swap (FAILS), then
+# the 3-part fix, then a specific answer that breaks when swapped (PASSES),
+# then one follow ask tied to what the page actually posts.
+
+PAPER_C = "#F7F5F2"
+
+
+def typed(tokens, at, d, size=44):
+    """A paragraph that types itself word by word; a token may be raw HTML."""
+    words = "".join(f'<span class="w">{w}</span> ' for w in tokens)
+    return A(f'<div style="font-size:{size}px;line-height:1.3;font-weight:500">{words}</div>', "words", at, d)
+
+
+def roll(options, at, hold):
+    opts = "".join(f"<span>{o}</span>" for o in options)
+    return (f'<span class="a roll" data-fx="roll" data-at="{at}" data-hold="{hold}" '
+            f'style="background:rgba(15,118,110,.2);color:#0F766E;font-weight:600">'
+            f'<span class="rl">{opts}</span></span>')
+
+
+def stamp(text, colour, at, rot=-8):
+    return A(f'<div style="border:8px solid {colour};color:{colour};border-radius:16px;padding:6px 26px;'
+             f'font-family:Serif;font-weight:700;font-size:92px;letter-spacing:.04em;background:rgba(247,245,242,.86)">'
+             f'{text}</div>', "stamp", at, .4, rot=rot,
+             style="position:absolute;right:30px;bottom:-62px")
+
+
+def paper(inner, style=""):
+    return (f'<div style="position:relative;background:{PAPER_C};color:#0A0A0A;border-radius:26px;'
+            f'padding:38px 42px;margin-top:22px;{style}">{inner}</div>')
+
+
+def chips_row(items, colour, ink, at0, step):
+    return ('<div style="display:flex;flex-wrap:wrap;gap:16px;margin-top:30px">'
+            + "".join(A(c, "pop", at0 + k * step, .35,
+                        style=f"background:{colour};color:{ink};font-size:38px;font-weight:600;"
+                              "padding:14px 26px;border-radius:999px;white-space:nowrap")
+                      for k, c in enumerate(items)) + '</div>')
+
+
+def part(n, title, sub, examples):
+    dots = "".join(
+        (A("", "pop", .15, .4, style=f"width:60px;height:10px;border-radius:5px;background:{TEAL}") if k == n
+         else f'<span style="width:60px;height:10px;border-radius:5px;background:'
+              f'{TEAL if k < n else "rgba(255,255,255,.2)"}"></span>')
+        for k in range(1, 4))
+    return dict(dur=3.7, enter="right", exit="left", html=(
+        '<div style="height:900px">'
+        f'<div style="display:flex;gap:12px;margin-bottom:70px">{dots}</div>'
+        + f'<div style="display:flex;align-items:center;gap:26px">'
+          f'<div style="width:96px;height:96px;border-radius:50%;background:{TEAL};color:#0A0A0A;'
+          f'display:flex;align-items:center;justify-content:center;font-family:Serif;font-weight:700;'
+          f'font-size:60px">{n}</div><div class="lbl">Part {n}</div></div>'
+        + f'<h1 style="font-size:100px;margin-top:40px">{title}<span class="r">.</span></h1>'
+        + A(f'<div class="sub" style="font-size:46px">{sub}</div>', "rise", .35, .45)
+        + A('<div class="lbl" style="margin-top:64px">For example</div>', "fade", .9, .3)
+        + chips_row(examples, "rgba(255,255,255,.1)", "#fff", 1.05, .22)
+        + '</div>'))
+
+
+def r03():
+    s = []
+    # 1. Hook, readable at frame 0; the red pen circles "fails" after.
+    s.append(dict(dur=2.9, exit="left", html=(
+        '<h1 style="font-size:100px">Your <span class="t">&ldquo;Why banking?&rdquo;</span> answer '
+        '<span style="position:relative;display:inline-block" class="r">fails'
+        '<svg class="a pen" data-fx="draw" data-at=".35" data-d=".55" data-c="#D93A12" width="0" height="0" '
+        'style="position:absolute;left:0;top:0"></svg></span> this test<span class="r">.</span></h1>'
+        '<div class="sub">Try it on yours. It takes 10 seconds.</div>')))
+
+    # 2. The safe answer types out, then its key word spins through other jobs.
+    generic = (["I", "want", "to", "work", "in", roll(["investment banking", "consulting", "tech", "law"], 4.9, 1.0)]
+               + "because I want a steep learning curve, real responsibility early and smart people around me.".split())
+    s.append(dict(dur=10.6, enter="right", exit="left", html=(
+        '<div style="height:1000px">'
+        + A('<div class="lbl">The safe answer</div>', "fade", -1, .3)
+        + paper(typed(generic, .25, 3.0)
+                + stamp("FAILS", RED, 7.6, rot=-7), style="min-height:400px;box-sizing:border-box;padding-bottom:60px")
+        + A('<div class="sub" style="font-size:46px;margin-top:92px">Sounds fine. Now swap one word.</div>', "rise", 3.7, .45)
+        + chips_row(["Consulting &#10003;", "Tech &#10003;", "Law &#10003;"], TEAL, "#0A0A0A", 5.35, 1.0)
+        + A('<div class="sub" style="font-size:46px;margin-top:40px">If it works for any job, '
+            '<span class="r">it isn&rsquo;t an answer.</span></div>', "rise", 8.3, .45)
+        + '</div>')))
+
+    # 3. Bridge to the fix.
+    s.append(dict(dur=1.9, enter="right", exit="left", html=(
+        '<div style="display:flex;align-items:baseline;gap:30px">'
+        + A(f'<span class="num" style="font-size:380px;line-height:.9;color:{TEAL}">3</span>', "pop", .05, .5)
+        + '<h1 style="font-size:110px">parts<span class="r">.</span></h1></div>'
+        + '<div class="sub" style="font-size:48px">Every answer that passes has them.</div>')))
+
+    # 4-6. The parts.
+    s.append(part(1, "Where it started", "One specific moment. Not &ldquo;an interest in markets.&rdquo;",
+                  ["A deal you followed", "A company you watched get bought"]))
+    s.append(part(2, "What you did about it", "The proof that part 1 really happened.",
+                  ["A model you built", "A stock pitch", "A club you ran"]))
+    s.append(part(3, "Why this seat", "Why banking, and not the next closest thing.",
+                  ["Not equity research", "Not consulting"]))
+
+    # 7. A specific answer, the same swap, and this time it breaks.
+    strong = ("Watching Broadcom buy VMware, I wanted to know why a chip company would pay that much "
+              "for software. So I built the model.").split() + [
+        roll(["Banking", "Consulting"], 2.6, 1.0), "is",
+        '<span style="position:relative;display:inline-block">'
+        + A("", "wipe", 3.25, .4, style="position:absolute;left:-4px;right:-4px;top:4px;bottom:2px;"
+            "background:rgba(217,58,18,.22);border-radius:8px")
+        + "where&nbsp;I&rsquo;d&nbsp;be&nbsp;on&nbsp;the&nbsp;deal,</span>"] + "not reading about it after.".split()
+    s.append(dict(dur=7.4, enter="right", exit="left", html=(
+        '<div style="height:1000px">'
+        + A('<div class="lbl" style="color:#5EC8B4;opacity:1">A specific answer</div>', "fade", -1, .3)
+        + paper(typed(strong, .15, 1.9, size=42) + stamp("PASSES", "#0F766E", 4.3, rot=-6),
+                style="min-height:440px;box-sizing:border-box;padding-bottom:60px")
+        + A('<div class="sub" style="font-size:46px;margin-top:92px">Swap the word and it breaks.</div>', "rise", 2.2, .45)
+        + chips_row(["Consulting &#10007; doesn&rsquo;t fit"], RED, "#fff", 3.6, .2)
+        + A('<div class="sub" style="font-size:46px;margin-top:36px">That&rsquo;s the test. '
+            '<span class="t">Specific survives.</span></div>', "rise", 5.0, .45)
+        + '</div>')))
+
+    # 8. Close and the one ask.
+    s.append(dict(dur=4.8, enter="right", html=(
+        '<h1 style="font-size:92px">Run the swap on yours tonight<span class="r">.</span></h1>'
+        + A('<div style="display:flex;align-items:center;gap:26px;margin-top:80px;background:rgba(255,255,255,.07);'
+            'border:3px solid rgba(255,255,255,.2);border-radius:28px;padding:30px">'
+            f'<div style="width:110px;height:110px;border-radius:50%;background:{RED};display:flex;align-items:center;'
+            'justify-content:center;font-family:Serif;font-weight:700;font-size:48px;color:#fff;flex:none">IB'
+            '<span style="color:#0A0A0A">.</span></div>'
+            '<div style="min-width:0"><div style="font-size:34px;font-weight:600">investmentbankinginterviews</div>'
+            '<div style="font-size:32px;opacity:.7;margin-top:6px">2 interview questions a day</div></div></div>',
+            "rise", .5, .5)
+        + '<div style="position:relative;margin-top:30px">'
+        + A(A(f'<div style="position:relative;overflow:hidden;border-radius:18px;background:{TEAL};color:#0A0A0A;'
+              'font-size:44px;font-weight:600;text-align:center;padding:26px">'
+              + A("Follow", "fade", -1, .1, style="position:relative")
+              + A("", "ripple", 2.0, .7, style="position:absolute;left:50%;top:50%;width:300px;height:300px;"
+                  "margin:-150px 0 0 -150px;border-radius:50%;background:#fff")
+              + '</div>', "press", 2.0, .35)
+            + A('<div style="position:absolute;inset:0;border-radius:18px;background:#16201E;'
+                'border:3px solid rgba(94,200,180,.6);color:#fff;font-size:44px;font-weight:600;'
+                'display:flex;align-items:center;justify-content:center">Following &#10003;</div>',
+                "fade", 2.3, .1, style="position:absolute;inset:0"),
+            "rise", .9, .5)
+        + '</div>')))
+    return s
+
+
+REELS["w1-r03-why-banking"] = r03
+
 if __name__ == "__main__":
     for slug in sys.argv[1:] or list(REELS):
         print(slug)
