@@ -24,6 +24,24 @@ What has been settled, and what is still open. Newest first.
   queues the month after approval. Runbook: `docs/skill/ib-month-plan`. A
   scheduled run starts 8:35 ET so the draft is ready at 9:00. Each plan runs
   to the Sunday after the next first Monday, a one-week buffer.
+- **Carousels are triggered by Claude scheduled tasks** (2 Nov) at 08:03 and
+  12:33 ET daily, because GitHub's own cron started only about 20 runs in
+  three and a half days. The tasks call workflow_dispatch, which GitHub labels
+  "Manually run"; that label does not mean a person did it. The GitHub cron
+  stays on as a backup. Fully independent option still open: an external
+  cron service with a fine-grained token.
+- **Comment replies are fully automatic** (2 Nov). A daily job in the private
+  repo `ib-comments` drafts every reply with Claude and sends it, technical
+  ones included. Coaching and collab questions get a standard reply pointing
+  to DMs and are listed in a weekly report issue. Risk controls instead of a
+  human check: one run a day, a reply cap that ramps 10 then 20 then 30 a day,
+  random pauses between replies, skips spam and emoji-only, stops on any
+  rate-limit or block error.
+- **Reels are scheduled by Pietro in the Instagram app** with trending audio,
+  from files and a schedule delivered at the monthly session. The Planned tab
+  route was re-asked on 2 Nov and is still not possible.
+- **Week-1 queue kept** (option A, 2 Nov): it runs 3 to 8 Nov and the monthly
+  plan starts 9 Nov.
 - **Cover colours rotate, palette does not** (2 Nov). Slide 1's ground follows
   a diagonal rotation of red, ink and paper so the grid is not one colour.
   Chosen over rows or columns because no evidence ties grid layout to reach,
