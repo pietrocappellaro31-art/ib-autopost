@@ -142,7 +142,10 @@ leaves complete weeks queued.
 
 1. Carousels: `build/carousels.py` patterns, `build/brand.py` primitives,
    cover colour from the rotation. Every technical answer worked through.
-2. Captions through `ig-human`, PASS only. Traps: digits not words, "20
+2. Captions through `ig-human`, PASS only. Every post also gets a
+   `first_comment`: one specific question about that post, answerable in a
+   line, no em dashes, never bait. Reels deliver theirs as a file for Pietro.
+   Caption traps: digits not words, "20
    times" not "20x", re-check burstiness after edits. No em dashes.
 3. `build/schedule.py <slug> <scheduled_utc>`. UTC: Eastern is UTC-5 from the
    first Sunday of November and UTC-4 from the second Sunday of March. Convert

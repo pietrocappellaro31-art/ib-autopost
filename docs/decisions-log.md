@@ -42,6 +42,13 @@ What has been settled, and what is still open. Newest first.
   route was re-asked on 2 Nov and is still not possible.
 - **Week-1 queue kept** (option A, 2 Nov): it runs 3 to 8 Nov and the monthly
   plan starts 9 Nov.
+- **Every post gets an engagement question in the comments** (3 Nov).
+  Carousels: `first_comment` in `posts.json`; `publish.py` posts it as the
+  page's own comment right after publishing, and records `first_comment_id`
+  (or `first_comment_error`, never failing the run). Needs
+  `instagram_manage_comments` on the token. Reels: the question is delivered
+  with each Reel for Pietro to post when he uploads. Questions are specific to
+  the post and answerable in a line, never "comment YES" bait.
 - **Cover colours rotate, palette does not** (2 Nov). Slide 1's ground follows
   a diagonal rotation of red, ink and paper so the grid is not one colour.
   Chosen over rows or columns because no evidence ties grid layout to reach,

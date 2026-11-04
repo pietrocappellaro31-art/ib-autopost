@@ -75,6 +75,7 @@ Append to `posts["posts"]` in `posts.json`:
   "scheduled_utc": "2026-11-10T13:00:00",
   "images": ["example-01.jpg", "example-02.jpg"],
   "caption": "...",
+  "first_comment": "A specific question the page posts under it",
   "published_id": null,
   "published_at_utc": null
 }

@@ -141,6 +141,25 @@ def publish_one_post(ig_user_id, post, image_base):
     return media_id
 
 
+def post_first_comment(media_id, post):
+    """Post the page's own engagement question under a just-published post.
+
+    Never fails the run: the post is already live, so a comment error is
+    logged and recorded in the manifest, not raised. Needs the
+    instagram_manage_comments permission on the token.
+    """
+    question = (post.get("first_comment") or "").strip()
+    if not question or post.get("first_comment_id"):
+        return
+    try:
+        result = call_graph(f"{media_id}/comments", {"message": question}, method="POST")
+        post["first_comment_id"] = result.get("id")
+        print(f"  first comment posted: {post['first_comment_id']}")
+    except Exception as error:
+        post["first_comment_error"] = str(error)[:300]
+        print(f"  first comment NOT posted: {error}", file=sys.stderr)
+
+
 
 def create_reel_container(ig_user_id, video_url, caption, cover_url=None):
     """Create a Reel container and return its id.
@@ -341,6 +360,8 @@ def main():
                 ig_user_id, post, manifest["image_base"]
             )
             post["published_at_utc"] = datetime.now(timezone.utc).isoformat()
+            save_manifest(manifest)
+            post_first_comment(post["published_id"], post)
             save_manifest(manifest)
         except Exception as error:
             failures += 1

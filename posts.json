@@ -135,7 +135,8 @@
         "w1-10-premium-07.jpg",
         "w1-10-premium-08.jpg",
         "w1-10-premium-09.jpg"
-      ]
+      ],
+      "first_comment": "Synergies or control: which would you lead with if an interviewer asked why buyers pay a premium?"
     },
     {
       "id": "w1-04-cash",
@@ -154,7 +155,8 @@
         "w1-04-cash-07.jpg",
         "w1-04-cash-08.jpg",
         "w1-04-cash-09.jpg"
-      ]
+      ],
+      "first_comment": "Which line on the cash flow statement would you check first to catch this?"
     },
     {
       "id": "w1-11-goodwill",
@@ -173,7 +175,8 @@
         "w1-11-goodwill-07.jpg",
         "w1-11-goodwill-08.jpg",
         "w1-11-goodwill-09.jpg"
-      ]
+      ],
+      "first_comment": "Quick check: the business you bought underperforms. What happens to the goodwill?"
     },
     {
       "id": "w1-05-lbo",
@@ -192,7 +195,8 @@
         "w1-05-lbo-07.jpg",
         "w1-05-lbo-08.jpg",
         "w1-05-lbo-09.jpg"
-      ]
+      ],
+      "first_comment": "What's the one thing that makes a company a bad LBO candidate, in your view?"
     },
     {
       "id": "w1-12-nwc",
@@ -211,7 +215,8 @@
         "w1-12-nwc-07.jpg",
         "w1-12-nwc-08.jpg",
         "w1-12-nwc-09.jpg"
-      ]
+      ],
+      "first_comment": "Inventory goes up by 10. Does cash go up or down? Answer before you check the slides."
     },
     {
       "id": "w1-06-fcf",
@@ -230,7 +235,8 @@
         "w1-06-fcf-07.jpg",
         "w1-06-fcf-08.jpg",
         "w1-06-fcf-09.jpg"
-      ]
+      ],
+      "first_comment": "Which free cash flow do you discount at WACC, and which at the cost of equity?"
     },
     {
       "id": "w1-13-multiples",
@@ -249,7 +255,8 @@
         "w1-13-multiples-07.jpg",
         "w1-13-multiples-08.jpg",
         "w1-13-multiples-09.jpg"
-      ]
+      ],
+      "first_comment": "Why does EV/Revenue still work for a company with negative earnings when P/E doesn't?"
     },
     {
       "id": "w1-07-range",
@@ -268,7 +275,8 @@
         "w1-07-range-07.jpg",
         "w1-07-range-08.jpg",
         "w1-07-range-09.jpg"
-      ]
+      ],
+      "first_comment": "For a fast-growing tech target, which method would you expect to come out highest, and why?"
     },
     {
       "id": "w1-14-call",
@@ -287,7 +295,8 @@
         "w1-14-call-07.jpg",
         "w1-14-call-08.jpg",
         "w1-14-call-09.jpg"
-      ]
+      ],
+      "first_comment": "What's the best question anyone has asked you on a networking call?"
     }
   ]
 }
