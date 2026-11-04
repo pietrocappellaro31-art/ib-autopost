@@ -144,8 +144,8 @@
       "series": "Technical of the Day",
       "scheduled_utc": "2026-11-04T17:30:00",
       "caption": "A company can post record profit and miss payroll in the same quarter. Here's how.\n\nRevenue is booked when it's earned, not when it's collected. So a business growing 40% a year books profit on cash it hasn't seen yet.\n\nGrowth makes it worse, not better.\n\nYou buy inventory. You pay staff. You ship. You book the revenue. The customer pays you 60 days later, sometimes 90. Every extra unit of growth widens that gap, and you're the one funding it until it closes.\n\nThen there are 3 more that have nothing to do with working capital. Capex outrunning operating cash. Debt coming due. A one-off legal or restructuring payment that lands in 1 quarter.\n\nHere's the part almost everyone misses, and it's the part they're really asking about.\n\nWhere would you look?\n\nThe income statement is the last place this shows up. Operating cash flow falling while net income rises is the signal. Receivables up 50% on a 20% revenue increase is the cause.\n\nSo name the mechanism, name the line, name the statement. 3 sentences and you're done.\n\n\"Bad management\" names nothing, and they move on.\n\nSave this for the night before.\n\n#investmentbanking #ibinterview #accounting #financialmodeling",
-      "published_id": null,
-      "published_at_utc": null,
+      "published_id": "18113448857272612",
+      "published_at_utc": "2026-11-04T17:34:48.033741+00:00",
       "images": [
         "w1-04-cash-01.jpg",
         "w1-04-cash-02.jpg",
@@ -157,7 +157,8 @@
         "w1-04-cash-08.jpg",
         "w1-04-cash-09.jpg"
       ],
-      "first_comment": "Which line on the cash flow statement would you check first to catch this?"
+      "first_comment": "Which line on the cash flow statement would you check first to catch this?",
+      "first_comment_error": "Graph API 400 on 18113448857272612/comments: {\"error\":{\"message\":\"(#10) Application does not have permission for this action\",\"type\":\"OAuthException\",\"code\":10,\"fbtrace_id\":\"AjkHsWrdq9VckXcEyf_wLOZ\"}}"
     },
     {
       "id": "story-2026-11-04",
