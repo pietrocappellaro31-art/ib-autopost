@@ -159,6 +159,18 @@
       "first_comment": "Which line on the cash flow statement would you check first to catch this?"
     },
     {
+      "id": "story-2026-11-04",
+      "type": "story",
+      "series": "Question of the day",
+      "scheduled_utc": "2026-11-04T23:00:00",
+      "images": [
+        "story-2026-11-04.jpg"
+      ],
+      "caption": "",
+      "published_id": null,
+      "published_at_utc": null
+    },
+    {
       "id": "w1-11-goodwill",
       "series": "Technical of the Day",
       "scheduled_utc": "2026-11-05T13:00:00",
@@ -197,6 +209,18 @@
         "w1-05-lbo-09.jpg"
       ],
       "first_comment": "What's the one thing that makes a company a bad LBO candidate, in your view?"
+    },
+    {
+      "id": "story-2026-11-05",
+      "type": "story",
+      "series": "Question of the day",
+      "scheduled_utc": "2026-11-05T23:00:00",
+      "images": [
+        "story-2026-11-05.jpg"
+      ],
+      "caption": "",
+      "published_id": null,
+      "published_at_utc": null
     },
     {
       "id": "w1-12-nwc",
@@ -239,6 +263,18 @@
       "first_comment": "Which free cash flow do you discount at WACC, and which at the cost of equity?"
     },
     {
+      "id": "story-2026-11-06",
+      "type": "story",
+      "series": "Question of the day",
+      "scheduled_utc": "2026-11-06T23:00:00",
+      "images": [
+        "story-2026-11-06.jpg"
+      ],
+      "caption": "",
+      "published_id": null,
+      "published_at_utc": null
+    },
+    {
       "id": "w1-13-multiples",
       "series": "Technical of the Day",
       "scheduled_utc": "2026-11-07T13:00:00",
@@ -279,6 +315,18 @@
       "first_comment": "For a fast-growing tech target, which method would you expect to come out highest, and why?"
     },
     {
+      "id": "story-2026-11-07",
+      "type": "story",
+      "series": "Question of the day",
+      "scheduled_utc": "2026-11-07T23:00:00",
+      "images": [
+        "story-2026-11-07.jpg"
+      ],
+      "caption": "",
+      "published_id": null,
+      "published_at_utc": null
+    },
+    {
       "id": "w1-14-call",
       "series": "Technical of the Day",
       "scheduled_utc": "2026-11-08T13:00:00",
@@ -297,6 +345,30 @@
         "w1-14-call-09.jpg"
       ],
       "first_comment": "What's the best question anyone has asked you on a networking call?"
+    },
+    {
+      "id": "story-2026-11-08",
+      "type": "story",
+      "series": "Question of the day",
+      "scheduled_utc": "2026-11-08T23:00:00",
+      "images": [
+        "story-2026-11-08.jpg"
+      ],
+      "caption": "",
+      "published_id": null,
+      "published_at_utc": null
+    },
+    {
+      "id": "story-2026-11-09",
+      "type": "story",
+      "series": "Question of the day",
+      "scheduled_utc": "2026-11-09T23:00:00",
+      "images": [
+        "story-2026-11-09.jpg"
+      ],
+      "caption": "",
+      "published_id": null,
+      "published_at_utc": null
     }
   ]
 }

@@ -122,6 +122,21 @@ def remaining_quota(ig_user_id):
     return cap - used
 
 
+def is_story(post):
+    return post.get("type") == "story"
+
+
+def publish_one_story(ig_user_id, post, image_base):
+    """Publish one image Story. Stories take no caption and no stickers via the API."""
+    name = post["images"][0]
+    image_url = name if name.startswith("http") else image_base + name
+    result = call_graph(f"{ig_user_id}/media", {"media_type": "STORIES", "image_url": image_url}, method="POST")
+    wait_until_ready(result["id"])
+    media_id = publish_container(ig_user_id, result["id"])
+    print(f"  story published as {media_id}")
+    return media_id
+
+
 def publish_one_post(ig_user_id, post, image_base):
     """Run the three-stage carousel flow for a single manifest entry."""
     print(f"  {len(post['images'])} slides")
@@ -243,14 +258,20 @@ def apply_daily_cap(manifest, due, now):
     """
     today = now.astimezone(EASTERN).date()
 
+    # Stories are outside the cap: they never take a carousel's place, and
+    # their times are not carousel slots.
+    stories = [post for post in due if is_story(post)]
+    due = [post for post in due if not is_story(post)]
+    feed = [post for post in manifest["posts"] if not is_story(post)]
+
     published_today = sum(
-        1 for post in manifest["posts"]
+        1 for post in feed
         if post.get("published_id") and post.get("published_at_utc")
         and _utc(post["published_at_utc"]).astimezone(EASTERN).date() == today
     )
 
     slots = {
-        _utc(post["scheduled_utc"]) for post in manifest["posts"]
+        _utc(post["scheduled_utc"]) for post in feed
         if _utc(post["scheduled_utc"]).astimezone(EASTERN).date() == today
     }
     slots |= {datetime.combine(today, t, EASTERN) for t in DEFAULT_SLOTS_ET}
@@ -265,7 +286,7 @@ def apply_daily_cap(manifest, due, now):
             f"{slots_passed} slot(s) passed, cap {MAX_PER_EASTERN_DAY}. "
             f"Holding {len(held)}: {', '.join(held)}"
         )
-    return due[:allowance]
+    return due[:allowance] + stories
 
 
 
@@ -355,13 +376,15 @@ def main():
     for post in due:
         print(f"Publishing {post['id']} (scheduled {post['scheduled_utc']})")
         try:
-            publisher = publish_one_reel if post.get("video") else publish_one_post
+            publisher = (publish_one_story if is_story(post)
+                         else publish_one_reel if post.get("video") else publish_one_post)
             post["published_id"] = publisher(
                 ig_user_id, post, manifest["image_base"]
             )
             post["published_at_utc"] = datetime.now(timezone.utc).isoformat()
             save_manifest(manifest)
-            post_first_comment(post["published_id"], post)
+            if not is_story(post):
+                post_first_comment(post["published_id"], post)
             save_manifest(manifest)
         except Exception as error:
             failures += 1

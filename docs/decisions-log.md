@@ -42,6 +42,18 @@ What has been settled, and what is still open. Newest first.
   route was re-asked on 2 Nov and is still not possible.
 - **Week-1 queue kept** (option A, 2 Nov): it runs 3 to 8 Nov and the monthly
   plan starts 9 Nov.
+- **One automated Story a day: question of the day** (3 Nov), 18:00 ET.
+  Each story answers yesterday's question and asks today's, so the chain
+  gives people a reason to come back. Rendered by `build/stories.py` (questions
+  and worked answers live there), queued in `posts.json` as `type: story`,
+  published by `publish.py` outside the two-carousel daily cap. The API cannot
+  add polls, links or other stickers, so the image carries everything. The
+  monthly plan includes a story per day, and the chain must never end on an
+  unanswered question.
+- **Highlights are manual** (3 Nov): the API cannot manage them. Three, in
+  this order: Start here (red), Question of the day (ink), Dates (paper,
+  recruiting timeline). Covers are in brand; Pietro adds each daily story to
+  Question of the day with one tap, or weekly from the Archive.
 - **Every post gets an engagement question in the comments** (3 Nov).
   Carousels: `first_comment` in `posts.json`; `publish.py` posts it as the
   page's own comment right after publishing, and records `first_comment_id`

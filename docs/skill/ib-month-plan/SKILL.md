@@ -150,7 +150,11 @@ leaves complete weeks queued.
 3. `build/schedule.py <slug> <scheduled_utc>`. UTC: Eastern is UTC-5 from the
    first Sunday of November and UTC-4 from the second Sunday of March. Convert
    each date individually; never assume one offset across a DST change.
-4. Reels: `build/reel.py`, silent, read-paced, 1080x1920. Deliver to
+4. Stories: one per day at 18:00 ET in `build/stories.py` (question plus a
+   worked answer). Each day's story answers the previous day's question, so
+   the last story of the window must still be answered by the next plan.
+   Queue them as `type: story` entries.
+5. Reels: `build/reel.py`, silent, read-paced, 1080x1920. Deliver to
    Pietro's Mac in `Downloads/IB <Month> Reels/` if the computer is linked,
    otherwise send them. Filenames carry the correct slot date. Include each
    caption and a `SCHEDULE.md`.
