@@ -154,7 +154,8 @@ leaves complete weeks queued.
    worked answer). Each day's story answers the previous day's question, so
    the last story of the window must still be answered by the next plan.
    Queue them as `type: story` entries.
-5. Reels: `build/reel.py`, silent, read-paced, 1080x1920. Deliver to
+5. Reels: `build/reels_motion.py` in the style in `docs/reel-style.md`
+   (kinetic typography, paper theme). Older `build/reel.py`, silent, read-paced, 1080x1920. Deliver to
    Pietro's Mac in `Downloads/IB <Month> Reels/` if the computer is linked,
    otherwise send them. Filenames carry the correct slot date. Include each
    caption and a `SCHEDULE.md`.

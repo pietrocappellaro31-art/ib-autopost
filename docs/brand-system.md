@@ -27,10 +27,12 @@ by inspecting the live account. Check it on every render.
   teal `#0F766E`. Red marks the mistake or the warning. Teal marks the correct
   answer. Teal was chosen over green because red and green is the one pair
   colourblind readers cannot separate.
-- **Reels invert the palette** and use teal `#5EC8B4`, because `#0F766E` dies
-  against ink.
+- **Reels use the paper ground** from 3 Nov 2026, in the kinetic style in
+  `docs/reel-style.md` (red for the mistake, teal `#0F766E` for the fix).
+  Earlier Reels inverted the palette with teal `#5EC8B4` on ink.
 - **Fonts:** Source Serif 4 700 for headlines, IBM Plex Sans 400 to 600 for
-  body. Nothing else. The woff2 files are in `build/fonts/`.
+  body, and Source Serif 4 italic (400, 600) for the tail of a Reel lockup.
+  Nothing else. Adobe's own files, SIL Open Font License. The woff2 files are in `build/fonts/`.
 - **Colour rhythm across a carousel:** cover, contrasting stake, paper body
   slides, ink recap, red call to action. It makes the swipe feel designed.
 - **Cover ground rotates** from November 2026 (week-1 covers are all red).

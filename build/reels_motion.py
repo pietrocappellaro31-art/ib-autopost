@@ -422,7 +422,112 @@ def r03():
 
 REELS["w1-r03-why-banking"] = r03
 
+
+# ---------------------------------------------------------------------------
+# Kinetic style, from the 3 Nov reference Reel (see docs/reel-style.md):
+# paper ground, lockups of small sans + huge serif accent + italic tail,
+# letters revealed out of a blur, whip transitions, slow push-in, marker
+# highlights, soft shadowed cards. A new beat every 2 to 3 seconds.
+
+INK_C, TEAL_D = "#0A0A0A", "#0F766E"
+SHADOW = "0 34px 70px rgba(10,10,10,.13), 0 8px 18px rgba(10,10,10,.07)"
+
+
+def ch(text, at, size, cls="", colour="", st=.032, cd=.38, extra=""):
+    """Text that reveals letter by letter out of a blur. Words never break.
+
+    Takes plain text (real quotes and apostrophes, no HTML entities). Long
+    lines reveal faster, so every line finishes within about a second.
+    """
+    import html as _h
+    text = _h.unescape(text)
+    st = min(st, .95 / max(len(text), 1))
+    words = []
+    for w in text.split(" "):
+        words.append('<span class="wd">' + "".join(f'<span class="c">{_h.escape(c)}</span>' for c in w) + "</span>")
+    style = f"font-size:{size}px;{('color:' + colour + ';') if colour else ''}{extra}"
+    return A(" ".join(words), "chars", at, 1, cls=cls, style=style, st=st, cd=cd)
+
+
+def swoosh(at, colour=TEAL_D, width=520):
+    return (f'<svg class="a" data-fx="draw" data-at="{at}" data-d=".5" width="{width}" height="40" '
+            f'viewBox="0 0 {width} 40" style="display:block;margin-top:-6px;overflow:visible">'
+            f'<path d="M6 26 C {width*.25:.0f} 8, {width*.55:.0f} 34, {width - 8} 12" fill="none" stroke="{colour}" '
+            'stroke-width="9" stroke-linecap="round"/></svg>')
+
+
+def marked(text, at, colour="rgba(217,58,18,.24)"):
+    return ('<span style="position:relative;display:inline;white-space:nowrap">'
+            + f'<span class="a" data-fx="wipe" data-at="{at}" data-d=".45" style="position:absolute;left:-6px;right:-6px;'
+            f'top:12%;bottom:4%;background:{colour};border-radius:8px;z-index:0"></span>'
+            + f'<span style="position:relative;z-index:1">{text}</span></span>')
+
+
+def wrong(n, before, phrase, after):
+    return dict(dur=2.4, enter="whip", exit="whip", push=.035, html=(
+        '<div style="display:flex;align-items:baseline;gap:18px;margin-bottom:34px">'
+        + ch(f"0{n}", -.28, 64, cls="num", colour="#D93A12", st=.06)
+        + ch("/ 05", -.2, 40, cls="num", extra="opacity:.35")
+        + A('<span class="lbl" style="margin-left:18px">You say</span>', "fade", -.15, .3) + '</div>'
+        + A(f'<div style="position:relative;background:#fff;border-radius:30px;padding:46px 44px 54px;margin:0 14px;'
+            f'box-shadow:{SHADOW};transform:rotate(-1.6deg)">'
+            f'<div style="font-size:58px;line-height:1.25;font-weight:500">&ldquo;{before}{marked(phrase, .6)}{after}&rdquo;</div>'
+            + A('<div style="width:104px;height:104px;border-radius:50%;background:#D93A12;color:#fff;display:flex;'
+                'align-items:center;justify-content:center;font-size:62px;font-weight:600">&#10007;</div>',
+                "stamp", 1.0, .35, rot=-6, style="position:absolute;right:18px;top:-46px")
+            + '</div>', "rise", -.3, .45)))
+
+
+def fix(top, big, tail, big_size, count=None):
+    big_el = (count(big_size) if count else ch(big, .12, big_size, cls="num", colour=TEAL_D, st=.045))
+    return dict(dur=2.7, enter="whip", exit="whip", push=.04, html=(
+        A('<div class="lbl" style="color:#0F766E;opacity:1;margin-bottom:30px">Say instead</div>', "fade", -.3, .3)
+        + ch(top, -.22, 60, extra="font-weight:500")
+        + f'<div style="line-height:1;margin:8px 0 4px">{big_el}</div>'
+        + swoosh(.7)
+        + ch(tail, .8, 54, cls="it", extra="line-height:1.25;margin-top:22px")))
+
+
+def r04():
+    s = []
+    rings = "".join(
+        A("", "ripple", k * .4, 1.8, style="position:absolute;left:50%;top:50%;width:620px;height:620px;"
+          "margin:-310px 0 0 -310px;border-radius:50%;border:5px solid rgba(217,58,18,.5);z-index:0")
+        for k in range(2))
+    s.append(dict(dur=2.9, exit="zoom", push=.04, html=(
+        f'<div style="position:relative">{rings}<div style="position:relative;z-index:1">'
+        + ch("5 answers that get you", .05, 60, extra="font-weight:500")
+        + f'<div style="line-height:.95;margin:6px 0 10px">{ch("dinged.", .45, 200, cls="num", colour="#D93A12", st=.06)}</div>'
+        + ch("and the line that fixes each one", 1.05, 58, cls="it")
+        + '</div></div>')))
+    s.append(dict(wrong(1, "A DCF, because it&rsquo;s the ", "most accurate", "."), enter="zoomin"))
+    s.append(fix("It\u2019s the most", "assumption-heavy", "method you have. Say that.", 80))
+    s.append(wrong(2, "Add cash to get ", "enterprise value", "."))
+    s.append(fix("You", "subtract", "the cash. It comes with the company.", 170))
+    s.append(wrong(3, "Depreciation up 10, so ", "net income down 10", "."))
+    s.append(fix("Net income falls", "", "at a 25% tax rate. The tax shield is real.", 0,
+                 count=lambda size: A("10.0", "count", .25, 1.0, cls="num",
+                                      style=f"font-size:240px;color:{TEAL_D}",
+                                      **{"from": 10, "to": 7.5, "dec": 1, "pre": "", "suf": "", "show": 1})))
+    s.append(wrong(4, "Goodwill is the ", "premium paid", "."))
+    s.append(fix("Purchase price", "minus", "the fair value of the net identifiable assets.", 180))
+    s.append(wrong(5, "No, I think you ", "covered everything", "."))
+    s.append(fix("Always bring", "one question", "about something they actually worked on.", 116))
+    star = ('<svg viewBox="0 0 100 100" width="90" height="90"><path d="M50 0 C54 38 62 46 100 50 C62 54 54 62 50 100 '
+            'C46 62 38 54 0 50 C38 46 46 38 50 0Z" fill="#D93A12"/></svg>')
+    s.append(dict(dur=3.6, enter="zoomin", push=.03, html=(
+        A(star, "spin", 0, 1, deg=50, style="position:absolute;right:24px;top:12px")
+        + ch("Every fix costs you", -.25, 60, extra="font-weight:500")
+        + f'<div style="line-height:1;margin:8px 0 10px">{ch("one sentence.", .45, 132, cls="num", st=.04)}</div>'
+        + swoosh(1.2, "#D93A12", 600)
+        + ch("Save this for the night before.", 1.4, 56, cls="it", extra="margin-top:24px"))))
+    return s
+
+
+REELS["w1-r04-dinged"] = r04
+
 if __name__ == "__main__":
     for slug in sys.argv[1:] or list(REELS):
         print(slug)
-        build(slug + "-motion", REELS[slug]())
+        opts = {"w1-r04-dinged": dict(theme="paper", cover_at=2.4)}.get(slug, {})
+        build(slug + "-motion", REELS[slug](), **opts)

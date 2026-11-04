@@ -20,6 +20,10 @@ render is deterministic: the same input always gives the same video.
     data-from / data-to / data-dec / data-pre / data-suf   for count
     data-x / data-y                                         for move (start offset, px)
     data-show=1                                             count is visible before it starts
+    chars: children .c reveal one by one out of a blur (data-st stagger, data-cd per char)
+    spin: rotates continuously at data-deg degrees per second
+    scene keys: enter right|whip|zoomin, exit left|whip|zoom, push (slow camera push-in, e.g. .05)
+    page(theme='paper') gives the light ground used since the 3 Nov reference Reel
 
 Rules carried over from the brand system:
 - Safe area: nothing above y=230 or below y=1440, right 244px clear.
@@ -43,6 +47,8 @@ HANDLE = "@investmentbankinginterviews"
 
 CSS = """
 @font-face{font-family:'Serif';src:url('FONTS/serif700.woff2') format('woff2');font-weight:700}
+@font-face{font-family:'Serif';src:url('FONTS/serif400i.woff2') format('woff2');font-weight:400;font-style:italic}
+@font-face{font-family:'Serif';src:url('FONTS/serif600i.woff2') format('woff2');font-weight:600;font-style:italic}
 @font-face{font-family:'Sans';src:url('FONTS/sans400.woff2') format('woff2');font-weight:400}
 @font-face{font-family:'Sans';src:url('FONTS/sans500.woff2') format('woff2');font-weight:500}
 @font-face{font-family:'Sans';src:url('FONTS/sans600.woff2') format('woff2');font-weight:600}
@@ -76,6 +82,8 @@ h1{margin:0;font-family:'Serif',serif;font-weight:700;line-height:1.03;letter-sp
 .num{font-family:'Serif',serif;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
 .roll{display:inline-block;vertical-align:top;overflow:hidden;height:1.3em;border-radius:10px;background:rgba(94,200,180,.28);padding:0 .18em;box-sizing:content-box}
 .rl{display:flex;flex-direction:column}.rl>span{display:block;height:1.3em;line-height:1.3em;white-space:nowrap}
+.c{display:inline-block;white-space:pre}.wd{display:inline-block;white-space:nowrap}
+.it{font-family:'Serif',serif;font-style:italic;font-weight:400;letter-spacing:-.01em}
 .lbl{font-size:30px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;opacity:.7}
 """
 
@@ -121,6 +129,11 @@ function place(el, local) {
       tf = `rotate(${(+(el.dataset.rot||-8)) - (1-q)*7}deg) scale(${1 + (1-q)*1.3})`; }
   else if (fx === 'ripple') { o = raw > 0 && raw < 1 ? (1-raw)*.55 : 0; tf = `scale(${.2 + 2.8*E.out3(raw)})`; }
   else if (fx === 'press') { tf = `scale(${1 - .08*Math.sin(Math.PI*raw)})`; }
+  else if (fx === 'chars') { const cs = el.querySelectorAll('.c'), st = +(el.dataset.st||.035), cd = +(el.dataset.cd||.38);
+      cs.forEach((c, i) => { const q = E.out3(clamp((local - at - i*st) / cd));
+        c.style.opacity = q; c.style.filter = q < 1 ? `blur(${(1-q)*12}px)` : 'none';
+        c.style.transform = `translateY(${(1-q)*22}px)`; }); }
+  else if (fx === 'spin') { tf = `rotate(${local * +(el.dataset.deg||40)}deg)`; }
   else if (fx === 'float') { const a = +(el.dataset.amp||10), w = +(el.dataset.w||1), ph = +(el.dataset.ph||0);
       tf = `translate(${Math.cos(local*w*.7+ph)*a*.6}px,${Math.sin(local*w+ph)*a}px)`; }
   else if (fx === 'draw') { const path = el.querySelector('path'); if (path) { const L = path.getTotalLength();
@@ -164,20 +177,28 @@ window.seek = function (t) {
   scenes.forEach((s, i) => {
     const el = document.getElementById('s' + i), local = t - s.start;
     const last = i === scenes.length - 1;
-    const lead = s.enter === 'right' ? .3 : 0;   // swipe in while the last scene leaves
+    const lead = ['right', 'whip', 'zoomin'].includes(s.enter) ? .3 : 0;   // arrive while the last scene leaves
     const on = local >= -lead && (local < s.dur || (last && local <= s.dur + 1));
     el.style.visibility = on ? 'visible' : 'hidden';
     if (!on) return;
     const exit = last ? 0 : clamp((local - (s.dur - .32)) / .32);
-    const ent = s.enter === 'right' ? E.inout(clamp((local + lead) / .32)) : 1;
+    const ent = lead ? E.inout(clamp((local + lead) / .32)) : 1;
     const e = E.inout(exit);
     const sf = el.querySelector('.safe');
     // A swipe moves the full width, in step with the neighbouring scene, and does not fade.
-    const swipeOut = s.exit === 'left', swipeIn = s.enter === 'right';
-    sf.style.opacity = swipeOut ? 1 : 1 - e;
+    const swipeOut = s.exit === 'left' || s.exit === 'whip', swipeIn = s.enter === 'right' || s.enter === 'whip';
+    // The push-in is a camera move; the safe-area check measures the layout without it.
+    let op = 1, sc = 1 + (window.NOPUSH ? 0 : (s.push || 0)) * clamp(local / s.dur), blur = 0;
+    if (!swipeOut && s.exit !== 'zoom') op *= 1 - e;
+    if (s.exit === 'zoom') { op *= 1 - e; sc *= 1 + 2.2*e; }
+    if (s.enter === 'zoomin') { op *= ent; sc *= .35 + .65*ent; }
+    if (s.enter === 'whip') blur += (1 - ent) * 26;
+    if (s.exit === 'whip') blur += e * 26;
+    sf.style.opacity = op;
+    sf.style.filter = blur > .3 ? `blur(${blur}px)` : 'none';
     const dx = (swipeIn ? (1-ent)*1000 : 0) + (swipeOut ? -1000*e : 0);
-    const dy = s.exit === 'left' ? 0 : -38*e;
-    sf.style.transform = `translate(${dx}px,${dy}px)`;
+    const dy = (swipeOut || s.exit === 'zoom') ? 0 : -38*e;
+    sf.style.transform = `translate(${dx}px,${dy}px) scale(${sc})`;
     const gh = el.querySelector('.ghost');
     if (gh) gh.style.opacity = .055 * clamp(local / .6) * (1 - e);
     el.querySelectorAll('.a').forEach(a => place(a, local));
@@ -208,10 +229,13 @@ def A(html, fx="rise", at=0.0, d=0.5, cls="", style="", **data):
     return f'<div class="a {cls}" data-fx="{fx}" data-at="{at}" data-d="{d}"{attrs}{st}>{html}</div>'
 
 
-def page(scenes):
+PAPER_CSS = '.f{background:#F7F5F2;color:#0A0A0A}.t{color:#0F766E}.bar{background:rgba(10,10,10,.12)}.tag{opacity:.6}.glow{background:radial-gradient(closest-side,rgba(217,58,18,.07),rgba(217,58,18,0))}.lbl{opacity:.6}.ghost{color:#0A0A0A}'
+
+
+def page(scenes, theme="ink"):
     starts, t = [], 0.0
     for s in scenes:
-        starts.append({"start": round(t, 3), "dur": s["dur"],
+        starts.append({"start": round(t, 3), "dur": s["dur"], "push": s.get("push", 0),
                        "enter": s.get("enter", ""), "exit": s.get("exit", "")})
         t += s["dur"]
     body = "".join(
@@ -220,7 +244,8 @@ def page(scenes):
         + f'<div class="safe">{s["html"]}</div></div>'
         for i, s in enumerate(scenes))
     html = ("<!doctype html><html><head><meta charset='utf-8'><style>"
-            + CSS.replace("FONTS/", f"{FONTS.resolve()}/") + "</style></head><body>"
+            + CSS.replace("FONTS/", f"{FONTS.resolve()}/") + (PAPER_CSS if theme == "paper" else "")
+            + "</style></head><body>"
             + '<div class="f"><div class="glow"></div>'
             + f'<div class="mark">IB<span class="r">.</span></div>{body}'
             + f'<div class="tag">{HANDLE}</div><div class="bar"><i></i></div></div>'
@@ -229,10 +254,12 @@ def page(scenes):
     return html, t, starts
 
 
-def build(slug, scenes):
+def build(slug, scenes, theme="ink", cover_at=0.0):
+    """Render to MP4. cover_at picks the cover frame, so a Reel can open on motion
+    and still have a fully composed cover."""
     work = OUT / slug
     work.mkdir(parents=True, exist_ok=True)
-    html, total, starts = page(scenes)
+    html, total, starts = page(scenes, theme)
     src = work / "motion.html"
     src.write_text(html)
     mp4 = work / f"{slug}.mp4"
@@ -250,21 +277,24 @@ def build(slug, scenes):
         browser = p.chromium.launch()
         pg = browser.new_page(viewport={"width": 1080, "height": 1920}, device_scale_factor=1)
         pg.goto(src.resolve().as_uri())
-        pg.evaluate("document.fonts.ready")
+        pg.evaluate("Promise.all([400, 500, 600].map(w => document.fonts.load(w + ' 40px Sans'))"
+                    ".concat([document.fonts.load(\"700 40px 'Serif'\"), document.fonts.load(\"italic 400 40px 'Serif'\"),"
+                    " document.fonts.load(\"italic 600 40px 'Serif'\")]))")
         pg.evaluate("initPens()")
         pg.evaluate("initRolls()")
         loaded = pg.evaluate("[...document.fonts].filter(f => f.status === 'loaded').length")
-        if loaded < 4:
-            raise RuntimeError(f"only {loaded} of 4 brand fonts loaded")
+        if loaded < 6:
+            raise RuntimeError(f"only {loaded} of 6 brand fonts loaded")
         # Layout check at the settled point of every scene.
         for i, s in enumerate(starts):
-            pg.evaluate(f"seek({s['start'] + s['dur'] - .4})")
+            pg.evaluate(f"window.NOPUSH = true; seek({s['start'] + s['dur'] - .4})")
             problems += pg.evaluate("check()")
+        pg.evaluate("window.NOPUSH = false")
         for f in range(n):
             pg.evaluate(f"seek({f / FPS})")
             shot = pg.screenshot(type="jpeg", quality=93, clip={"x": 0, "y": 0, "width": 1080, "height": 1920})
             ff.stdin.write(shot)
-            if f == 0:
+            if f == int(round(cover_at * FPS)):
                 cover.write_bytes(shot)
         browser.close()
     ff.stdin.close()

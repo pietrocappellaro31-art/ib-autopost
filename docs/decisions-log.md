@@ -42,6 +42,9 @@ What has been settled, and what is still open. Newest first.
   route was re-asked on 2 Nov and is still not possible.
 - **Week-1 queue kept** (option A, 2 Nov): it runs 3 to 8 Nov and the monthly
   plan starts 9 Nov.
+- **Reel style: kinetic typography on paper** (3 Nov), modelled on a
+  reference Reel Pietro chose. The standard is `docs/reel-style.md`; every
+  Reel from now on follows it.
 - **One automated Story a day: question of the day** (3 Nov), 18:00 ET.
   Each story answers yesterday's question and asks today's, so the chain
   gives people a reason to come back. Rendered by `build/stories.py` (questions

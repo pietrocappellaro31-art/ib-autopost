@@ -105,7 +105,7 @@ def render(days):
             src = work / f"{day}.html"
             src.write_text(html_for(day))
             pg.goto(src.resolve().as_uri())
-            pg.evaluate("Promise.all([400, 500, 600].map(w => document.fonts.load(w + ' 40px Sans')).concat([document.fonts.load('700 40px Serif')]))")
+            pg.evaluate("Promise.all([400, 500, 600].map(w => document.fonts.load(w + ' 40px Sans')).concat([document.fonts.load(\"700 40px 'Serif'\")]))")
             if pg.evaluate("[...document.fonts].filter(f => f.status === 'loaded').length") < 4:
                 raise RuntimeError("brand fonts did not load")
             bad = pg.evaluate(CHECK)
