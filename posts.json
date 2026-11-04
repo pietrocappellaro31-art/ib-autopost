@@ -123,8 +123,8 @@
       "series": "Technical of the Day",
       "scheduled_utc": "2026-11-04T13:00:00",
       "caption": "The market already priced it. So why does an acquirer pay 30% above that?\n\n3 reasons, and only 1 of them is synergies.\n\nControl. Buy 2% of a company and you have no say in anything. Buy 51% and you set strategy, appoint the board and direct the cash. A traded share price is what a minority stake costs, and control isn't in it. This is the reason most candidates forget.\n\nSynergies, and say which kind. Cost synergies are overlapping functions and sites. You can count them and they usually land. Revenue synergies are cross-sell and new markets, they're forecast, and they frequently don't arrive. Buyers get discounted accordingly.\n\nScarcity. Sometimes there's no second asset like it, and that's worth paying for on its own.\n\nThen the question underneath all 3. Who captures the value? If the acquirer pays away 100% of the synergies, the deal is great for the seller and does nothing at all for the buyer.\n\nThat's why most large acquisitions disappoint. Closing isn't the test.\n\nSave this.\n\n#investmentbanking #ibinterview #mergersandacquisitions #valuation",
-      "published_id": null,
-      "published_at_utc": null,
+      "published_id": "18453545377130162",
+      "published_at_utc": "2026-11-04T13:05:09.512713+00:00",
       "images": [
         "w1-10-premium-01.jpg",
         "w1-10-premium-02.jpg",
@@ -136,7 +136,8 @@
         "w1-10-premium-08.jpg",
         "w1-10-premium-09.jpg"
       ],
-      "first_comment": "Synergies or control: which would you lead with if an interviewer asked why buyers pay a premium?"
+      "first_comment": "Synergies or control: which would you lead with if an interviewer asked why buyers pay a premium?",
+      "first_comment_error": "Graph API 400 on 18453545377130162/comments: {\"error\":{\"message\":\"(#10) Application does not have permission for this action\",\"type\":\"OAuthException\",\"code\":10,\"fbtrace_id\":\"Al2rBHwDJZ3qDroOIc1Yp1W\"}}"
     },
     {
       "id": "w1-04-cash",
