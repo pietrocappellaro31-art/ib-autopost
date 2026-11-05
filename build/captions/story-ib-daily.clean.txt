@@ -1,0 +1,15 @@
+He read 1 page on the way to his superday. At 9:00 they asked him the exact question.
+
+"Walk me through a DCF." He got the offer. Here's the answer he gave, in 5 steps.
+
+1. Project the company's free cash flow, usually 5 years out.
+2. Discount it back at WACC.
+3. Add a terminal value for everything after year 5, and discount that too.
+4. Sum them. That's enterprise value.
+5. Bridge to equity value: subtract net debt, then divide by diluted shares if they want a price per share.
+
+That's it. If you can say those 5 lines out loud without looking at your notes, and explain why each one comes in that order, you're ready for this question.
+
+We post 2 interview questions every day. Follow the page and tomorrow's will be in your feed.
+
+#investmentbanking #ibinterview #superday #valuation

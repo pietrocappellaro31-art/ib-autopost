@@ -22,6 +22,9 @@ render is deterministic: the same input always gives the same video.
     data-show=1                                             count is visible before it starts
     chars: children .c reveal one by one out of a blur (data-st stagger, data-cd per char)
     spin: rotates continuously at data-deg degrees per second
+    swing: pendulum rotation (data-amp degrees, data-w rad/s, data-ph), for walking limbs
+    slide: straight travel from data-x0,y0 to data-x1,y1 (linear unless data-ease), optional data-r spin
+    Illustration layers inside an element with class "nochk" are skipped by the safe-area check.
     scene keys: enter right|whip|zoomin, exit left|whip|zoom, push (slow camera push-in, e.g. .05)
     page(theme='paper') gives the light ground used since the 3 Nov reference Reel
 
@@ -133,6 +136,11 @@ function place(el, local) {
       cs.forEach((c, i) => { const q = E.out3(clamp((local - at - i*st) / cd));
         c.style.opacity = q; c.style.filter = q < 1 ? `blur(${(1-q)*12}px)` : 'none';
         c.style.transform = `translateY(${(1-q)*22}px)`; }); }
+  else if (fx === 'swing') { const a = +(el.dataset.amp||16), w = +(el.dataset.w||7), ph = +(el.dataset.ph||0);
+      tf = `rotate(${Math.sin(local*w + ph)*a}deg)`; }
+  else if (fx === 'slide') { const q = el.dataset.ease === 'inout' ? E.inout(raw) : el.dataset.ease === 'out' ? E.out3(raw) : raw;
+      const x0 = +(el.dataset.x0||0), x1 = +(el.dataset.x1||0), y0 = +(el.dataset.y0||0), y1 = +(el.dataset.y1||0);
+      tf = `translate(${x0 + (x1-x0)*q}px,${y0 + (y1-y0)*q}px)` + (el.dataset.r ? ` rotate(${q * +el.dataset.r}deg)` : ''); }
   else if (fx === 'spin') { tf = `rotate(${local * +(el.dataset.deg||40)}deg)`; }
   else if (fx === 'float') { const a = +(el.dataset.amp||10), w = +(el.dataset.w||1), ph = +(el.dataset.ph||0);
       tf = `translate(${Math.cos(local*w*.7+ph)*a*.6}px,${Math.sin(local*w+ph)*a}px)`; }
@@ -210,7 +218,7 @@ window.check = function () {
   document.querySelectorAll('.scene').forEach(s => {
     if (s.style.visibility !== 'visible') return;
     s.querySelectorAll('.safe *').forEach(n => {
-      if (!n.childNodes.length || getComputedStyle(n).opacity === '0') return;
+      if (!n.childNodes.length || getComputedStyle(n).opacity === '0' || n.closest('.nochk')) return;
       const r = n.getBoundingClientRect();
       if (r.width === 0) return;
       if (r.left < 83 || r.right > 837 || r.top < 229 || r.bottom > 1441)

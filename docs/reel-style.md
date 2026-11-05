@@ -60,3 +60,20 @@ this page's brand. The first Reel built to it is `w1-r04-dinged` in
    just settled frames. Most problems only show mid-move.
 8. Every Reel ships with: the MP4, the cover JPG, the caption (PASS on
    ig-human, one ask, up to 4 hashtags) and the comment question.
+
+## Second format: the story Reel (4 Nov reference)
+
+Modelled on a cinematic ad Pietro chose: a man so absorbed in a newspaper that
+he walks through the whole city reading it, arrives at the place it was about,
+and the paper flies off and loops back to the first shot. We cannot make
+photoreal footage, so ours is illustrated (`build/reels_story.py`):
+
+- **One object carries the story.** Our newspaper, *The IB. Daily*, is the
+  page itself; the reveal at the end is that it was this page.
+- **A character whose face is always hidden** by the paper: comic, and it
+  keeps the account faceless. Built in SVG, walking with swinging limbs.
+- **Escalating obliviousness** (taxi, building site, fountain) with a clock
+  counting down, so there is tension every few seconds.
+- **The payoff is the question the paper asked**, answered correctly on screen.
+- **It loops**: the last shot is the first shot, so a second play feels free.
+- One ask at the end, tied to what the page actually posts.
