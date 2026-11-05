@@ -198,8 +198,8 @@
       "series": "Technical of the Day",
       "scheduled_utc": "2026-11-05T17:30:00",
       "caption": "Most people say an LBO is buying a company with debt, then stop talking. That's the setup, not the answer.\n\n5 steps. Sources and uses at entry. Project free cash flow. Sweep that cash against the debt. Exit on EBITDA times a multiple, usually after 5 years. Divide exit equity by entry equity.\n\nSo why use debt?\n\nTake a 1,000 purchase funded 60% debt and 40% equity. Your cheque is 400, not 1,000. The same gain in enterprise value now lands on a much thinner slice, so a deal that would have returned 2.0x returns closer to 3.0x. Interest is deductible. And a repayment schedule keeps management honest.\n\nSay the other half too. Use multiplies your losses on exactly the same maths, and if you don't volunteer that, they'll ask.\n\nReturns come from 3 places and they aren't equally reliable. Debt paydown and EBITDA growth are things a sponsor can influence. Multiple expansion is a market call. Build on the first 2 and assume you exit at the same 10x you paid.\n\nGood target? Steady cash flow, low existing debt, low capex. Not a software company growing 80% a year. It burns cash and it can't carry the debt.\n\nThen finish with the number. Exit enterprise value, minus net debt, over your 400.\n\nSave this one.\n\n#investmentbanking #ibinterview #privateequity #lbo",
-      "published_id": null,
-      "published_at_utc": null,
+      "published_id": "17965929825247896",
+      "published_at_utc": "2026-11-05T17:34:47.993570+00:00",
       "images": [
         "w1-05-lbo-01.jpg",
         "w1-05-lbo-02.jpg",
@@ -211,7 +211,8 @@
         "w1-05-lbo-08.jpg",
         "w1-05-lbo-09.jpg"
       ],
-      "first_comment": "What's the one thing that makes a company a bad LBO candidate, in your view?"
+      "first_comment": "What's the one thing that makes a company a bad LBO candidate, in your view?",
+      "first_comment_error": "Graph API 400 on 17965929825247896/comments: {\"error\":{\"message\":\"(#10) Application does not have permission for this action\",\"type\":\"OAuthException\",\"code\":10,\"fbtrace_id\":\"A_hRpZbPhaIKLr2qmpCMH3W\"}}"
     },
     {
       "id": "story-2026-11-05",
