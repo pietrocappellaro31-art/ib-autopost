@@ -79,3 +79,12 @@ photoreal footage, so ours is illustrated (`build/reels_story.py`):
 - **The payoff is the question the paper asked**, answered correctly on screen.
 - **It loops**: the last shot is the first shot, so a second play feels free.
 - One ask at the end, tied to what the page actually posts.
+
+## Third format: the suspense Reel (4 Nov reference)
+
+Modelled on a macro shot of a balloon and a needle: a camera HUD, "FRAMES TO
+IMPACT" counting down, then the fourth wall ("you just watched a balloon for
+7 seconds... still here, waiting for it to pop"), a pivot, and the pop held
+back until the end. `build/reels_pop.py`, dark ground. The pivot must teach
+something true: ours makes the balloon a DCF and the needle WACC, with a
+worked perpetuity example. Key words over a red object go in ink, never red.

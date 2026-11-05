@@ -1,0 +1,15 @@
+You waited 24 seconds for a balloon to pop. Your DCF pops a lot faster.
+
+Here's the math from the video, and it's simpler than it looks: take $300M of cash flow that grows at 2% a year forever, and value it as a growing perpetuity.
+
+At an 8% WACC, that's 300 divided by 6%. $5.0B.
+
+Now push WACC to 9%. It's 300 divided by 7%, which is about $4.3B.
+
+1 point. $714M gone.
+
+That's why interviewers love asking which input matters most. Don't guess. The honest answer is WACC and the terminal assumptions, because a small move in either one runs through every year of cash flow and through the terminal value too, so say that and then show them the math.
+
+We post 2 interview questions every day. Follow the page and tomorrow's will be in your feed.
+
+#investmentbanking #ibinterview #valuation #dcf

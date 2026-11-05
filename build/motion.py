@@ -23,6 +23,9 @@ render is deterministic: the same input always gives the same video.
     chars: children .c reveal one by one out of a blur (data-st stagger, data-cd per char)
     spin: rotates continuously at data-deg degrees per second
     swing: pendulum rotation (data-amp degrees, data-w rad/s, data-ph), for walking limbs
+    count: data-lin=1 counts linearly, data-pad=N zero-pads to N digits
+    life: visible from data-at for data-d seconds, fading in and out (data-fi, data-fo)
+    scale: data-s0 to data-s1, eased; set transform-origin in style
     slide: straight travel from data-x0,y0 to data-x1,y1 (linear unless data-ease), optional data-r spin
     Illustration layers inside an element with class "nochk" are skipped by the safe-area check.
     scene keys: enter right|whip|zoomin, exit left|whip|zoom, push (slow camera push-in, e.g. .05)
@@ -115,8 +118,15 @@ function place(el, local) {
   else if (fx === 'growY') { tf = `scaleY(${E.inout(raw)})`; el.style.transformOrigin = 'center bottom'; }
   else if (fx === 'growYdown') { tf = `scaleY(${E.inout(raw)})`; el.style.transformOrigin = 'center top'; }
   else if (fx === 'move') { const q = E.inout(raw); tf = `translate(${(1-q)*(+el.dataset.x||0)}px,${(1-q)*(+el.dataset.y||0)}px)`; }
-  else if (fx === 'count') { o = el.dataset.show ? 1 : clamp(raw*4); const q = E.inout(raw);
-      el.textContent = fmt(+el.dataset.from + (+el.dataset.to - +el.dataset.from)*q, el); }
+  else if (fx === 'count') { o = el.dataset.show ? 1 : clamp(raw*4); const q = el.dataset.lin ? raw : E.inout(raw);
+      const v = +el.dataset.from + (+el.dataset.to - +el.dataset.from)*q;
+      el.textContent = el.dataset.pad ? (el.dataset.pre || '') + String(Math.round(v)).padStart(+el.dataset.pad, '0') + (el.dataset.suf || '')
+                                      : fmt(v, el); }
+  else if (fx === 'life') { const fi = +(el.dataset.fi || .3), fo = +(el.dataset.fo || .3);
+      const a = clamp((local - at) / fi), b = clamp((at + d - local) / fo); o = Math.min(a, b);
+      tf = `translateY(${(1 - E.out3(a)) * 26}px)`; }
+  else if (fx === 'scale') { const q = E.inout(raw), s0 = +(el.dataset.s0 || 1), s1 = +(el.dataset.s1 || 1);
+      tf = `scale(${s0 + (s1 - s0) * q})`; }
   else if (fx === 'strike') { tf = `scaleX(${E.inout(raw)})`; el.style.transformOrigin = 'left center'; }
   else if (fx === 'flipin') { const q = E.out3(raw); o = raw > 0 ? 1 : 0; tf = `perspective(700px) rotateX(${(1-q)*-90}deg)`; }
   else if (fx === 'flipout') { const q = E.inout(raw); o = raw < 1 ? 1 : 0; tf = `perspective(700px) rotateX(${q*90}deg)`; }
@@ -189,7 +199,7 @@ window.seek = function (t) {
     const on = local >= -lead && (local < s.dur || (last && local <= s.dur + 1));
     el.style.visibility = on ? 'visible' : 'hidden';
     if (!on) return;
-    const exit = last ? 0 : clamp((local - (s.dur - .32)) / .32);
+    const exit = (last || s.exit === 'cut') ? 0 : clamp((local - (s.dur - .32)) / .32);   // 'cut' = hard cut
     const ent = lead ? E.inout(clamp((local + lead) / .32)) : 1;
     const e = E.inout(exit);
     const sf = el.querySelector('.safe');
