@@ -60,6 +60,8 @@ this page's brand. The first Reel built to it is `w1-r04-dinged` in
    just settled frames. Most problems only show mid-move.
 8. Every Reel ships with: the MP4, the cover JPG, the caption (PASS on
    ig-human, one ask, up to 4 hashtags) and the comment question.
+   The description (caption with hashtags) and the comment question are
+   always pasted in the reply too, ready to copy, not only sent as files.
 
 ## Second format: the story Reel (4 Nov reference)
 
