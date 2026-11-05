@@ -177,8 +177,8 @@
       "series": "Technical of the Day",
       "scheduled_utc": "2026-11-05T13:00:00",
       "caption": "\"Goodwill is the premium paid.\" That's the most commonly half-right answer in accounting, and half-right loses the question.\n\nIt's purchase price less the fair value of net identifiable assets acquired. Not book value. Fair value.\n\nHere's why that distinction matters. Book value of net assets is 600. On acquisition, property and brands get written up and customer relationships get recognised for the first time, taking you to 750. You paid 1,000. Goodwill is 250, not 400.\n\nThe step-up happens first. The residual is what's left.\n\nIt's tested, never amortised. Finite-life intangibles get amortised. Goodwill sits on the balance sheet indefinitely and gets tested for impairment at least once a year. Amortising it over 10 years was the old rule and it hasn't applied for 2 decades.\n\nAnd when it's written down, nothing leaves the building. The charge hits the income statement and equity. It's added straight back on the cash flow statement. Cash is untouched.\n\nWhat it really is: the buyer admitting in public that it overpaid.\n\nSave this one.\n\n#investmentbanking #ibinterview #accounting #mergersandacquisitions",
-      "published_id": null,
-      "published_at_utc": null,
+      "published_id": "18120321530091647",
+      "published_at_utc": "2026-11-05T13:07:40.646148+00:00",
       "images": [
         "w1-11-goodwill-01.jpg",
         "w1-11-goodwill-02.jpg",
@@ -190,7 +190,8 @@
         "w1-11-goodwill-08.jpg",
         "w1-11-goodwill-09.jpg"
       ],
-      "first_comment": "Quick check: the business you bought underperforms. What happens to the goodwill?"
+      "first_comment": "Quick check: the business you bought underperforms. What happens to the goodwill?",
+      "first_comment_error": "Graph API 400 on 18120321530091647/comments: {\"error\":{\"message\":\"(#10) Application does not have permission for this action\",\"type\":\"OAuthException\",\"code\":10,\"fbtrace_id\":\"AciKZbrThfzaFvwcCKO2Er3\"}}"
     },
     {
       "id": "w1-05-lbo",
