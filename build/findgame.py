@@ -25,7 +25,8 @@ import numpy as np
 from PIL import Image
 
 from motion import A, build, OUT
-from voice import Voice, passage, write_wav, SR, MASTER
+from voice import passage, write_wav, SR, MASTER
+from voice_clone import make_voice
 
 RED, TEAL = "#D93A12", "#5EC8B4"
 COUNT = 10.0
@@ -43,7 +44,7 @@ def words_in(voice, sentence, dur):
 
 
 def synth(ep, voice_name):
-    v = Voice(voice_name)
+    v = make_voice(voice_name)                         # Kokoro name, or clone:/path/to/reference.wav
     # Fail before rendering anything if a word has no pronunciation.
     for block in [ep["hook"], ep["go"], ep["look"], "Three. Two. One.", "Time.", *[" ".join(x[0] for x in p) for p in ep["reveal"]],
                   " ".join(ep["close"])]:

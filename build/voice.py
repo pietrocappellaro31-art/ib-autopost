@@ -38,6 +38,8 @@ PHONEMES = {
     "irr": "ˌIˌɑɹˈɑɹ",
     "you've": "juv",
     "here's": "hˈɪɹz",
+    "what's": "wˈʌts",
+    "borrows": "bˈɑɹOz",
     "compound": "kəmpˈWnd",   # the verb; the dictionary has the noun
     "a": "ɐ",          # the article is reduced; the dictionary gives the letter name
 }
@@ -134,17 +136,22 @@ def passage(voice, text, speed=None):
     hop = int(.01 * SR)
     rms = np.array([np.sqrt(np.mean(audio[i:i + hop] ** 2)) for i in range(0, len(audio) - hop, hop)])
     quiet = rms < max(.006, np.percentile(rms, 95) * .06)
-    runs, i = [], 0
+    allruns, i = [], 0
     while i < len(quiet):
         if quiet[i]:
             j = i
             while j < len(quiet) and quiet[j]:
                 j += 1
-            if j - i >= 9:                                   # pauses of 90 ms or more
-                runs.append((i * .01, j * .01))
+            allruns.append((i * .01, j * .01, j - i))
             i = j
         else:
             i += 1
+    # Pauses of 90 ms or more; if a sentence end was spoken faster than that,
+    # accept shorter ones (down to 40 ms) rather than fail.
+    for min_len in (9, 6, 4):
+        runs = [(a, b) for a, b, n in allruns if n >= min_len]
+        if len(runs) >= len(sents) - 1:
+            break
     lens = [len(voice.phonemes(x)) for x in sents]
     total = len(audio) / SR
     bounds, used = [], -1

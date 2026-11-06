@@ -24,7 +24,10 @@ render is deterministic: the same input always gives the same video.
     spin: rotates continuously at data-deg degrees per second
     swing: pendulum rotation (data-amp degrees, data-w rad/s, data-ph), for walking limbs
     count: data-lin=1 counts linearly, data-pad=N zero-pads to N digits
-    kara: karaoke captions; children .w light up at data-t seconds after data-at (data-c colour)
+    kara: karaoke captions; children .w light up at data-t seconds after data-at (data-c colour);
+          data-hide=1 keeps words invisible until spoken (answers)
+    pass: whip in from the right and out to the left with blur over data-fi / data-fo (0 = none; data-out=fade)
+    shrinkX: a bar that empties left to right over data-d (think timers)
     kf: keyframes data-kf=[[t,x,y,scale,opacity,rot],...] in scene seconds, eased between keys
     grain: film grain; a noise tile jittered every 1/24 s (data-op opacity)
     life: visible from data-at for data-d seconds, fading in and out (data-fi, data-fo)
@@ -128,9 +131,19 @@ function place(el, local) {
   else if (fx === 'beat') { const k = local - at;
       const n = +(el.dataset.n || 1), ph = k - Math.floor(k);
       const on = k >= 0 && k < n; tf = `scale(${1 + (on ? .14 * Math.exp(-ph * 7) : 0)})`; }
-  else if (fx === 'kara') { el.querySelectorAll('.w').forEach(w => {
-      const on = local >= at + +(w.dataset.t || 0);
-      w.style.opacity = on ? 1 : .32; w.style.color = on ? (w.dataset.c || '') : ''; }); }
+  else if (fx === 'kara') { const pre = el.dataset.hide ? 0 : .32; el.querySelectorAll('.w').forEach(w => {
+      const k = clamp((local - at - +(w.dataset.t || 0)) / (el.dataset.hide ? .14 : .001));
+      w.style.opacity = pre + (1 - pre) * k; w.style.color = k > 0 ? (w.dataset.c || '') : '';
+      if (el.dataset.hide) w.style.transform = `translateY(${(1 - E.out3(k)) * 14}px)`; }); }
+  else if (fx === 'pass') { const fi = +(el.dataset.fi ?? .34), fo = +(el.dataset.fo ?? .34);
+      // whip in from the right and out to the left, with motion blur; data-out="fade" fades instead
+      const a = fi > 0 ? E.inout(clamp((local - at) / fi)) : 1, b = fo > 0 ? E.inout(clamp((local - (at + d - fo)) / fo)) : 0;
+      o = local < at || local > at + d ? 0 : 1;
+      const fade = el.dataset.out === 'fade';
+      if (fade) o *= 1 - b;
+      const x = (1 - a) * 1000 - (fade ? 0 : b * 1000), bl = (1 - a) * 26 + (fade ? 0 : b * 26);
+      tf = `translate(${x}px,0)`; el.style.filter = bl > .3 ? `blur(${bl}px)` : 'none'; }
+  else if (fx === 'shrinkX') { tf = `scaleX(${1 - raw})`; el.style.transformOrigin = 'left center'; }
   else if (fx === 'kf') { const k = el._kf || (el._kf = JSON.parse(el.dataset.kf)); let i = 0;
       while (i < k.length - 2 && local >= k[i + 1][0]) i++;
       const a = k[i], b = k[Math.min(i + 1, k.length - 1)];
@@ -246,6 +259,8 @@ window.check = function () {
     if (s.style.visibility !== 'visible') return;
     s.querySelectorAll('.safe *').forEach(n => {
       if (!n.childNodes.length || getComputedStyle(n).opacity === '0' || n.closest('.nochk')) return;
+      for (let q = n.parentElement; q && q !== s; q = q.parentElement)      // inside something hidden
+        if (getComputedStyle(q).opacity === '0') return;
       const r = n.getBoundingClientRect();
       if (r.width === 0) return;
       if (r.left < 83 || r.right > 837 || r.top < 229 || r.bottom > 1441)
@@ -289,7 +304,7 @@ def page(scenes, theme="ink"):
     return html, t, starts
 
 
-def build(slug, scenes, theme="ink", cover_at=0.0, crf=18):
+def build(slug, scenes, theme="ink", cover_at=0.0, crf=18, check_at=()):
     """Render to MP4. cover_at picks the cover frame, so a Reel can open on motion
     and still have a fully composed cover."""
     work = OUT / slug
@@ -324,6 +339,9 @@ def build(slug, scenes, theme="ink", cover_at=0.0, crf=18):
         for i, s in enumerate(starts):
             pg.evaluate(f"window.NOPUSH = true; seek({s['start'] + s['dur'] - .4})")
             problems += pg.evaluate("check()")
+        for t in check_at:                       # extra settled moments inside long scenes
+            pg.evaluate(f"window.NOPUSH = true; seek({t})")
+            problems += [f"t={t:.1f} " + x for x in pg.evaluate("check()")]
         pg.evaluate("window.NOPUSH = false")
         for f in range(n):
             pg.evaluate(f"seek({f / FPS})")

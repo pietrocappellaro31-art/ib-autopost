@@ -1,0 +1,13 @@
+Can enterprise value be negative? That's level 4. You'll need levels 1 to 3 to get there.
+
+Level 1: income statement, balance sheet, cash flow statement. Easy.
+
+Level 2: depreciation goes up $10 at a 25% tax rate. Profit before tax falls $10, but you pay $2.50 less tax, so net income is down $7.50.
+
+Level 3: a company borrows $100 and keeps it as cash. EV = equity + debt - cash. Debt's up $100, cash is up $100, and enterprise value doesn't move.
+
+Level 4: yes. It's the level 3 formula again, and once you see it the logic is simple: when a company holds more cash than its equity value and its debt put together, EV drops below zero, which means the market is valuing the business itself at less than nothing.
+
+Be honest and comment your score out of 4.
+
+#investmentbanking #ibinterview #valuation #finance

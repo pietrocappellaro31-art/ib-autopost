@@ -48,6 +48,13 @@ What has been settled, and what is still open. Newest first.
   get hand-written phonemes. Mixed to -16 LUFS, -1.5 dB true peak, so music
   added in the app sits under it. **Every voiced Reel must carry Instagram's
   AI label**: Meta requires it for realistic AI voiceovers.
+- **Voice cloning: Pietro's own voice only** (6 Nov). Cloning a real
+  person's voice is possible here (Kyutai Pocket TTS run locally through
+  sherpa-onnx, about 20 to 30 seconds of clean reference audio; weights CC BY
+  4.0, credit Kyutai). Its terms forbid cloning anyone without their explicit
+  consent, so cloning a public figure (the JPMorgan CEO was asked about) is
+  ruled out: it would be impersonation. Pietro's own voice, or someone who
+  has explicitly agreed, is fine. Until a recording arrives, Reels use `af_heart`.
 - **Captions are burned in, word by word**, on every voiced Reel, because most
   people watch muted.
 - **Reel style: kinetic typography on paper** (3 Nov), modelled on a

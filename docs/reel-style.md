@@ -108,3 +108,25 @@ pauses, and checked against voice onsets), a slightly unhurried pace with
 small variation, a recording chain (warmth, de-harsh, gentle compression, a
 small room), a faint room tone, captions chunked to 7 words with no overlap.
 Keep episodes at or under about 45 seconds.
+
+## Fifth format: the levels Reel (6 Nov)
+
+`build/levels.py`, episodes like `build/reels_levels1.py`. Interview questions
+that get harder, read by the voice; the viewer keeps score and comments it.
+
+- **The hook asks the last question first** ("Can enterprise value be
+  negative? That's level four.") and the final level answers it, so the Reel
+  opens a loop only the end closes. The hook question is fully readable at
+  frame 0 and is the cover.
+- **Each level is one card**: lockup (big red numeral, LEVEL, italic tail
+  from "easy." to "final boss."), the question lit word by word as it is read,
+  a think bar with ticks that gets longer as the levels get harder, then the
+  answer. The verdict ("Nothing.", "Yes.") is said on its own, a beat, then
+  the reason, and a worked chip pops in. Answer words stay hidden until said.
+- **Levels whip** left to right with motion blur; the level meter at the top
+  stays and fills, red for the current level, ink for the ones done.
+- **Callbacks pay off**: level 3 teaches the formula level 4 needs, and the
+  voice says so ("Remember level three").
+- Close: "What's your score out of four?", a spinning score, "Comment it
+  below", follow, brand. Comment question: a bonus level.
+- Four levels keeps it near 52 seconds; five ran past a minute.
