@@ -1,0 +1,17 @@
+1 number on that income statement is wrong. Did you find it in 10 seconds?
+
+If you didn't, here's the walk-through.
+
+Depreciation goes up by 10. EBIT falls by 10, from 40 to 30.
+
+But tax is 25% of EBIT, so tax falls too, from 10 to 7.5. That's a 2.5 saving, and it's real cash the company keeps.
+
+So net income falls by 7.5, not 10. It should read 22.5, not 20.
+
+That 2.5 is the tax shield, and it's the whole reason interviewers ask this question. They want to see if you remember that a non-cash expense still saves real tax.
+
+Practise it out loud once tonight and it'll be there when you need it.
+
+We post 2 interview questions every day. Follow the page and tomorrow's will be in your feed.
+
+#investmentbanking #ibinterview #accounting #interviewprep

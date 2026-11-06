@@ -24,6 +24,9 @@ render is deterministic: the same input always gives the same video.
     spin: rotates continuously at data-deg degrees per second
     swing: pendulum rotation (data-amp degrees, data-w rad/s, data-ph), for walking limbs
     count: data-lin=1 counts linearly, data-pad=N zero-pads to N digits
+    kara: karaoke captions; children .w light up at data-t seconds after data-at (data-c colour)
+    kf: keyframes data-kf=[[t,x,y,scale,opacity,rot],...] in scene seconds, eased between keys
+    grain: film grain; a noise tile jittered every 1/24 s (data-op opacity)
     life: visible from data-at for data-d seconds, fading in and out (data-fi, data-fo)
     scale: data-s0 to data-s1, eased; set transform-origin in style
     slide: straight travel from data-x0,y0 to data-x1,y1 (linear unless data-ease), optional data-r spin
@@ -120,8 +123,22 @@ function place(el, local) {
   else if (fx === 'move') { const q = E.inout(raw); tf = `translate(${(1-q)*(+el.dataset.x||0)}px,${(1-q)*(+el.dataset.y||0)}px)`; }
   else if (fx === 'count') { o = el.dataset.show ? 1 : clamp(raw*4); const q = el.dataset.lin ? raw : E.inout(raw);
       const v = +el.dataset.from + (+el.dataset.to - +el.dataset.from)*q;
-      el.textContent = el.dataset.pad ? (el.dataset.pre || '') + String(Math.round(v)).padStart(+el.dataset.pad, '0') + (el.dataset.suf || '')
+      el.textContent = el.dataset.pad ? (el.dataset.pre || '') + String(el.dataset.ceil ? Math.ceil(v - 1e-6) : Math.round(v)).padStart(+el.dataset.pad, '0') + (el.dataset.suf || '')
                                       : fmt(v, el); }
+  else if (fx === 'beat') { const k = local - at;
+      const n = +(el.dataset.n || 1), ph = k - Math.floor(k);
+      const on = k >= 0 && k < n; tf = `scale(${1 + (on ? .14 * Math.exp(-ph * 7) : 0)})`; }
+  else if (fx === 'kara') { el.querySelectorAll('.w').forEach(w => {
+      const on = local >= at + +(w.dataset.t || 0);
+      w.style.opacity = on ? 1 : .32; w.style.color = on ? (w.dataset.c || '') : ''; }); }
+  else if (fx === 'kf') { const k = el._kf || (el._kf = JSON.parse(el.dataset.kf)); let i = 0;
+      while (i < k.length - 2 && local >= k[i + 1][0]) i++;
+      const a = k[i], b = k[Math.min(i + 1, k.length - 1)];
+      const q = b[0] > a[0] ? E.inout(clamp((local - a[0]) / (b[0] - a[0]))) : 1;
+      const L = (j, dflt) => (a[j] ?? dflt) + ((b[j] ?? dflt) - (a[j] ?? dflt)) * q;
+      tf = `translate(${L(1, 0)}px,${L(2, 0)}px) scale(${L(3, 1)}) rotate(${L(5, 0)}deg)`; o = L(4, 1); }
+  else if (fx === 'grain') { const f = Math.floor(local * (+(el.dataset.fps || 24))), r = (n) => ((Math.sin(f * 12.9898 + n * 78.233) * 43758.5453) % 1 + 1) % 1;
+      tf = `translate(${-r(1) * 200}px,${-r(2) * 200}px)`; o = +(el.dataset.op || .07); }
   else if (fx === 'life') { const fi = +(el.dataset.fi || .3), fo = +(el.dataset.fo || .3);
       const a = clamp((local - at) / fi), b = clamp((at + d - local) / fo); o = Math.min(a, b);
       tf = `translateY(${(1 - E.out3(a)) * 26}px)`; }
@@ -155,7 +172,7 @@ function place(el, local) {
   else if (fx === 'float') { const a = +(el.dataset.amp||10), w = +(el.dataset.w||1), ph = +(el.dataset.ph||0);
       tf = `translate(${Math.cos(local*w*.7+ph)*a*.6}px,${Math.sin(local*w+ph)*a}px)`; }
   else if (fx === 'draw') { const path = el.querySelector('path'); if (path) { const L = path.getTotalLength();
-      path.style.strokeDasharray = L; path.style.strokeDashoffset = L*(1-E.inout(raw)); } o = raw > 0 ? 1 : 0; }
+      path.style.strokeDasharray = L; path.style.strokeDashoffset = L*(1-(el.dataset.lin ? raw : E.inout(raw))); } o = raw > 0 ? 1 : 0; }
   el.style.opacity = o; if (tf) el.style.transform = tf;
 }
 window.initPens = function () {
@@ -272,7 +289,7 @@ def page(scenes, theme="ink"):
     return html, t, starts
 
 
-def build(slug, scenes, theme="ink", cover_at=0.0):
+def build(slug, scenes, theme="ink", cover_at=0.0, crf=18):
     """Render to MP4. cover_at picks the cover frame, so a Reel can open on motion
     and still have a fully composed cover."""
     work = OUT / slug
@@ -287,7 +304,7 @@ def build(slug, scenes, theme="ink", cover_at=0.0):
     ff = subprocess.Popen([
         "ffmpeg", "-y", "-v", "error", "-f", "image2pipe", "-framerate", str(FPS),
         "-c:v", "mjpeg", "-i", "-", "-an",
-        "-c:v", "libx264", "-preset", "slow", "-crf", "18", "-pix_fmt", "yuv420p",
+        "-c:v", "libx264", "-preset", "slow", "-crf", str(crf), "-pix_fmt", "yuv420p",
         "-movflags", "+faststart", str(mp4)], stdin=subprocess.PIPE)
 
     problems = []

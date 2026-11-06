@@ -42,6 +42,14 @@ What has been settled, and what is still open. Newest first.
   route was re-asked on 2 Nov and is still not possible.
 - **Week-1 queue kept** (option A, 2 Nov): it runs 3 to 8 Nov and the monthly
   plan starts 9 Nov.
+- **Voiceover is back** (6 Nov, Pietro's call, reversing 30 Oct). Kokoro-82M,
+  voice `af_heart` (warm, confident, kind), run locally by `build/voice.py`
+  with misaki's own pronunciation dictionaries; unknown words fail loudly and
+  get hand-written phonemes. Mixed to -16 LUFS, -1.5 dB true peak, so music
+  added in the app sits under it. **Every voiced Reel must carry Instagram's
+  AI label**: Meta requires it for realistic AI voiceovers.
+- **Captions are burned in, word by word**, on every voiced Reel, because most
+  people watch muted.
 - **Reel style: kinetic typography on paper** (3 Nov), modelled on a
   reference Reel Pietro chose. The standard is `docs/reel-style.md`; every
   Reel from now on follows it.

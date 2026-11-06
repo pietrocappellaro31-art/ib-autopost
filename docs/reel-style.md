@@ -88,3 +88,13 @@ IMPACT" counting down, then the fourth wall ("you just watched a balloon for
 back until the end. `build/reels_pop.py`, dark ground. The pivot must teach
 something true: ours makes the balloon a DCF and the needle WACC, with a
 worked perpetuity example. Key words over a red object go in ink, never red.
+
+## Fourth format: the voiced game Reel (6 Nov)
+
+`build/reels_find.py`. The viewer plays: "One number on this screen is wrong.
+You have ten seconds." A countdown ring with real ticks, a spotlight that
+searches the statement, then the voice walks the answer row by row, the wrong
+cell is circled, struck and replaced, and the close is kind ("If you didn't,
+that's okay. Now you are."). Voice, captions, ticks and visuals are all
+generated from one timeline, so they cannot drift. Needs the Kokoro model
+files in `$KOKORO_DIR` (see `build/voice.py`). AI label on when posting.
