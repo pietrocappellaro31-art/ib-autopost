@@ -98,3 +98,13 @@ cell is circled, struck and replaced, and the close is kind ("If you didn't,
 that's okay. Now you are."). Voice, captions, ticks and visuals are all
 generated from one timeline, so they cannot drift. Needs the Kokoro model
 files in `$KOKORO_DIR` (see `build/voice.py`). AI label on when posting.
+
+### The format is now an engine: `build/findgame.py` (6 Nov)
+
+Each episode is a small config (`build/reels_find2.py` is #2, the LBO IRR).
+Voice delivery upgraded for naturalness: whole passages per call so intonation
+flows across sentences (sentence timings recovered from the audio's own
+pauses, and checked against voice onsets), a slightly unhurried pace with
+small variation, a recording chain (warmth, de-harsh, gentle compression, a
+small room), a faint room tone, captions chunked to 7 words with no overlap.
+Keep episodes at or under about 45 seconds.

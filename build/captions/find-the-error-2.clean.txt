@@ -1,0 +1,13 @@
+This LBO doubled the money in 5 years. 1 number on the screen is still wrong. Did you catch it?
+
+The MOIC is right. 100 of equity in, 200 out, so 2.0x.
+
+The IRR isn't. 20% looks right because 100% over 5 years is 20 a year, but returns compound. 20% a year for 5 years is about 2.5x, not 2x.
+
+Doubling in 5 years is about 15%. The exact number is 14.9%.
+
+Here's the shortcut interviewers expect you to know cold: double in 5 years, about 15%. Triple in 5 years, about 25%. Learn those 2 and you can sanity-check a paper LBO return in your head, without a calculator, while they wait for your answer.
+
+We post 2 interview questions every day. Follow the page and tomorrow's will be in your feed.
+
+#investmentbanking #privateequity #lbo #ibinterview

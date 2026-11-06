@@ -34,6 +34,11 @@ PHONEMES = {
     "dcf": "dˌisˌiˈɛf",
     "that's": "ðæts",
     "questions": "kwˈɛsʧᵊnz",
+    "moic": "mˈYk",
+    "irr": "ˌIˌɑɹˈɑɹ",
+    "you've": "juv",
+    "here's": "hˈɪɹz",
+    "compound": "kəmpˈWnd",   # the verb; the dictionary has the noun
     "a": "ɐ",          # the article is reduced; the dictionary gives the letter name
 }
 
@@ -77,7 +82,7 @@ class Voice:
         s = " ".join(out)
         return re.sub(r" ([.,!?;:])", r"\1", s)
 
-    def say(self, text):
+    def say(self, text, speed=None):
         ps = self.phonemes(text)
         ids = [self.vocab[c] for c in ps if c in self.vocab]
         missing = {c for c in ps if c not in self.vocab}
@@ -86,7 +91,7 @@ class Voice:
         style = self.style[min(len(ids), len(self.style)) - 1]
         audio = self.sess.run(None, {"tokens": np.array([[0, *ids, 0]], dtype=np.int64),
                                      "style": np.asarray(style, dtype=np.float32),
-                                     "speed": np.array([self.speed], dtype=np.float32)})[0]
+                                     "speed": np.array([speed or self.speed], dtype=np.float32)})[0]
         return trim(np.asarray(audio, dtype=np.float32).ravel())
 
 
@@ -106,3 +111,63 @@ def write_wav(path, audio, sr=SR):
         w.setsampwidth(2)
         w.setframerate(sr)
         w.writeframes((a * 32767).astype(np.int16).tobytes())
+
+
+def split_sentences(text):
+    import re as _re
+    return [x.strip() for x in _re.split(r"(?<=[.!?])\s+", text.strip()) if x.strip()]
+
+
+def passage(voice, text, speed=None):
+    """Synthesise several sentences in one pass, for natural intonation across
+    them, then find where each sentence starts and ends.
+
+    Kokoro leaves a pause at every sentence end. Each expected boundary (from
+    the sentences' share of the phonemes) is matched to the nearest real pause,
+    so the timings come from the audio itself. Returns (audio, [(sentence,
+    start, end), ...]) in seconds.
+    """
+    sents = split_sentences(text)
+    audio = voice.say(" ".join(sents), speed=speed)
+    if len(sents) == 1:
+        return audio, [(sents[0], 0.0, len(audio) / SR)]
+    hop = int(.01 * SR)
+    rms = np.array([np.sqrt(np.mean(audio[i:i + hop] ** 2)) for i in range(0, len(audio) - hop, hop)])
+    quiet = rms < max(.006, np.percentile(rms, 95) * .06)
+    runs, i = [], 0
+    while i < len(quiet):
+        if quiet[i]:
+            j = i
+            while j < len(quiet) and quiet[j]:
+                j += 1
+            if j - i >= 9:                                   # pauses of 90 ms or more
+                runs.append((i * .01, j * .01))
+            i = j
+        else:
+            i += 1
+    lens = [len(voice.phonemes(x)) for x in sents]
+    total = len(audio) / SR
+    bounds, used = [], -1
+    for k in range(1, len(sents)):
+        expect = total * sum(lens[:k]) / sum(lens)
+        cands = [(abs((a + b) / 2 - expect) - (b - a) * .5, n) for n, (a, b) in enumerate(runs) if n > used]
+        if not cands:
+            raise ValueError(f"Could not find the pause before: {sents[k]!r}")
+        _, n = min(cands)
+        used = n
+        bounds.append(runs[n])
+    out, start = [], 0.0
+    for k, x in enumerate(sents):
+        end = bounds[k][0] if k < len(bounds) else total
+        out.append((x, round(start, 3), round(end, 3)))
+        if k < len(bounds):
+            start = max(bounds[k][1] - .03, 0)
+    return audio, out
+
+
+# A voice-recording chain for ffmpeg: rumble cut, a little warmth, the
+# synthetic fizz around 7 kHz taken down, gentle compression and a very small
+# room, so the voice sounds recorded rather than generated.
+MASTER = ("highpass=f=75,equalizer=f=220:t=q:w=1:g=1.5,equalizer=f=7200:t=q:w=1.3:g=-2.5,"
+          "acompressor=threshold=-20dB:ratio=2.5:attack=12:release=140:makeup=1.5,"
+          "aecho=0.9:0.85:19|31:0.09|0.05")
