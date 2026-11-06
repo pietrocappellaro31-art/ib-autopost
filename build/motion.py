@@ -40,7 +40,8 @@ render is deterministic: the same input always gives the same video.
 Rules carried over from the brand system:
 - Safe area: nothing above y=230 or below y=1440, right 244px clear.
 - Frame 0 is the cover, so the first scene's text is fully in at t=0.
-- No audio stream: Pietro adds a trending track in the app.
+- No audio stream here; sound is added after (sfx.py for effects, voice.py for voice),
+  and Pietro adds a trending track in the app.
 """
 
 import json

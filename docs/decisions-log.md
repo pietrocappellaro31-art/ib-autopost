@@ -48,6 +48,10 @@ What has been settled, and what is still open. Newest first.
   get hand-written phonemes. Mixed to -16 LUFS, -1.5 dB true peak, so music
   added in the app sits under it. **Every voiced Reel must carry Instagram's
   AI label**: Meta requires it for realistic AI voiceovers.
+- **Sound effects are the standard on every Reel** (6 Nov, Pietro's call,
+  after Levels #1). Synthesised in `build/sfx.py` (no licensing), mixed under
+  the voice and under the music Pietro adds. Reels without voice now ship
+  with an effects track rather than silent.
 - **Voice cloning: Pietro's own voice only** (6 Nov). Cloning a real
   person's voice is possible here (Kyutai Pocket TTS run locally through
   sherpa-onnx, about 20 to 30 seconds of clean reference audio; weights CC BY
@@ -55,6 +59,14 @@ What has been settled, and what is still open. Newest first.
   consent, so cloning a public figure (the JPMorgan CEO was asked about) is
   ruled out: it would be impersonation. Pietro's own voice, or someone who
   has explicitly agreed, is fine. Until a recording arrives, Reels use `af_heart`.
+  Checked 6 Nov against Kyutai's own model card (huggingface.co/kyutai/pocket-tts):
+  licence CC BY 4.0, which allows commercial use with credit; prohibited uses
+  include cloning without explicit and lawful consent and presenting generated
+  audio as a genuine recording, so the AI label stays on. Tested on Kyutai's
+  sample voice: a take can drop or add a word, so `voice_clone.py` transcribes
+  every line (`voice_check.py`) and retakes it until the words match, and the
+  reference must be cut at a pause (`prepare_reference`). When a cloned-voice Reel ships, its
+  caption ends with the credit "Voice model: Pocket TTS by Kyutai".
 - **Captions are burned in, word by word**, on every voiced Reel, because most
   people watch muted.
 - **Reel style: kinetic typography on paper** (3 Nov), modelled on a

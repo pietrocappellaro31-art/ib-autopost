@@ -29,6 +29,7 @@ from findgame import noise_tile
 from motion import A, build, OUT
 from voice import passage, write_wav, SR, MASTER
 from voice_clone import make_voice
+import sfx as sfx_lib
 
 RED, TEAL, INK = "#D93A12", "#0F766E", "#0A0A0A"
 W = 752                                    # safe-area width
@@ -285,17 +286,7 @@ def soundtrack(parts, at, lv, total):
 
     for k, (a, _) in parts.items():
         put(voice, a, at[k])
-    tt = np.arange(int(.05 * SR)) / SR
-    tick = (np.sin(2 * np.pi * 1900 * tt) * np.exp(-tt * 70)).astype(np.float32)
-    rng = np.random.default_rng(3)
-    m = int(.34 * SR)
-    noise = rng.standard_normal(m).astype(np.float32)
-    k = 24
-    noise = np.convolve(noise, np.ones(k) / k, "same")                      # soft, low whoosh
-    env = np.sin(np.pi * np.arange(m) / m) ** 2
-    whoosh = (noise * env / np.abs(noise).max()).astype(np.float32)
-    tt = np.arange(SR) / SR
-    ding = ((np.sin(2 * np.pi * 1318.5 * tt) + .5 * np.sin(2 * np.pi * 1975.5 * tt)) * np.exp(-tt * 5)).astype(np.float32)
+    tick, whoosh, ding = sfx_lib.tick(), sfx_lib.whoosh(), sfx_lib.ding()     # the house sounds (sfx.py)
     for i, L in enumerate(lv):
         put(sfx, whoosh, L["start"] - .2, .5)
         for j in range(int(round(L["think"] / .5))):

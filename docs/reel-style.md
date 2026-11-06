@@ -30,7 +30,7 @@ this page's brand. The first Reel built to it is `w1-r04-dinged` in
 | Mustard accent | Red `#D93A12` for the mistake, teal `#0F766E` for the fix |
 | Condensed sans + italic serif | Source Serif 4 700 for the huge word, Source Serif 4 italic for the tail, IBM Plex Sans for connectors |
 | Photos and 3D renders | No stock imagery. Objects are built in HTML: quote cards, scorecards, charts, counters, all with soft shadows |
-| Voiceover | None. Reels ship silent and Pietro adds a trending track, so the text alone must carry the idea: short phrases, readable at a glance |
+| Voiceover | Since 6 Nov: the Kokoro voice `af_heart` (or Pietro's cloned voice once recorded), captions burned in word by word, and sound effects; Pietro adds a trending track under it. The text must still carry the idea muted |
 
 ## The toolkit (`build/motion.py`)
 
@@ -58,7 +58,14 @@ this page's brand. The first Reel built to it is `w1-r04-dinged` in
    the layout without the push-in, which is a camera move of a few percent.
 7. **Watch it in motion before shipping**: contact sheets at transitions, not
    just settled frames. Most problems only show mid-move.
-8. Every Reel ships with: the MP4, the cover JPG, the caption (PASS on
+8. **Sound effects on every Reel** (6 Nov, Pietro: "that's the standard we're
+   going to use every time from now on"). Every beat with a physical feel gets
+   a sound from `build/sfx.py`: whoosh on a swipe, ticks on a timer, a soft
+   ding on a reveal, a thump when time is up, a pop when something lands.
+   Quiet and short, under the voice and under the music added in the app.
+   A Reel without voice still ships with its effects track (`sfx.mux`, -24
+   LUFS) instead of silent.
+9. Every Reel ships with: the MP4, the cover JPG, the caption (PASS on
    ig-human, one ask, up to 4 hashtags) and the comment question.
    The description (caption with hashtags) and the comment question are
    always pasted in the reply too, ready to copy, not only sent as files.
