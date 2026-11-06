@@ -231,8 +231,8 @@
       "series": "Technical of the Day",
       "scheduled_utc": "2026-11-06T13:00:00",
       "caption": "An increase in net working capital is a use of cash. Get that sign backwards and every forecast you build for the rest of your career is wrong in the same direction.\n\nIn: receivables, inventory, prepaid expenses, payables, accrued expenses.\n\nOut: cash and short-term debt. Those are financing.\n\nSo the textbook version, current assets minus current liabilities, is the wrong number, because it quietly includes both of the things you were supposed to strip out.\n\nHere's the mechanic. Receivables up 50, inventory up 30. That's 80 of cash sitting somewhere other than your bank account. Payables up 20 hands you 20 back, an interest-free loan from your suppliers. Net change: 60 used.\n\nThat's it. That's the whole thing.\n\nThe cycle in days is DSO plus DIO minus DPO. Days to collect, plus days of inventory, minus the days you take to pay, which is how long your cash is tied up before it comes home.\n\nSome businesses run it negative. A supermarket collects at the till and pays suppliers in 45 days, so growth throws off cash instead of eating it.\n\nDrop the term from your DCF because it looks small in year 1 and you've valued a company that never funds its own growth.\n\nSave this.\n\n#investmentbanking #ibinterview #financialmodeling #accounting",
-      "published_id": null,
-      "published_at_utc": null,
+      "published_id": "18118597441812030",
+      "published_at_utc": "2026-11-06T13:07:04.350584+00:00",
       "images": [
         "w1-12-nwc-01.jpg",
         "w1-12-nwc-02.jpg",
@@ -244,7 +244,8 @@
         "w1-12-nwc-08.jpg",
         "w1-12-nwc-09.jpg"
       ],
-      "first_comment": "Inventory goes up by 10. Does cash go up or down? Answer before you check the slides."
+      "first_comment": "Inventory goes up by 10. Does cash go up or down? Answer before you check the slides.",
+      "first_comment_error": "Graph API 400 on 18118597441812030/comments: {\"error\":{\"message\":\"(#10) Application does not have permission for this action\",\"type\":\"OAuthException\",\"code\":10,\"fbtrace_id\":\"A7IoOgAIGbhZ4SlQtjND4eh\"}}"
     },
     {
       "id": "w1-06-fcf",
