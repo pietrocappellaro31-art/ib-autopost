@@ -285,8 +285,8 @@
       "series": "Technical of the Day",
       "scheduled_utc": "2026-11-07T13:00:00",
       "caption": "Why is there no P/EBITDA? 1 rule answers that, and every other multiple question you'll get.\n\nThe numerator and the denominator have to belong to the same people.\n\nEnterprise value is the whole business, so it pairs with anything measured before lenders are paid. That's 4 of them: EV/Revenue, EV/EBITDA, EV/EBIT, and EV over unlevered free cash flow.\n\nEquity value is the shareholders' slice, so it pairs with what's left after lenders. That's 3: P/E, price to book, and price over levered free cash flow.\n\nP/EBITDA mixes them. Price is after debt. EBITDA is before it. The ratio describes nobody.\n\nHere's why EV/EBITDA does the heavy lifting. Take 2 identical businesses. Company A has no debt and trades at a P/E of 20. Company B is heavily levered and trades at 12. Same operations, same 100 of EBITDA, and you'd conclude B is 40% cheaper. Their EV/EBITDA is identical, because enterprise value and EBITDA both sit above the capital structure.\n\nThen say what EBITDA hides. Capex, working capital and cash taxes, all 3 ignored. For a capital-intensive business, EV/EBIT is often fairer.\n\nSave this before your next technical.\n\n#investmentbanking #ibinterview #valuation #financialmodeling",
-      "published_id": null,
-      "published_at_utc": null,
+      "published_id": "18120670676080419",
+      "published_at_utc": "2026-11-07T13:05:27.753091+00:00",
       "images": [
         "w1-13-multiples-01.jpg",
         "w1-13-multiples-02.jpg",
@@ -298,7 +298,8 @@
         "w1-13-multiples-08.jpg",
         "w1-13-multiples-09.jpg"
       ],
-      "first_comment": "Why does EV/Revenue still work for a company with negative earnings when P/E doesn't?"
+      "first_comment": "Why does EV/Revenue still work for a company with negative earnings when P/E doesn't?",
+      "first_comment_error": "Graph API 400 on 18120670676080419/comments: {\"error\":{\"message\":\"(#10) Application does not have permission for this action\",\"type\":\"OAuthException\",\"code\":10,\"fbtrace_id\":\"Adgu7JvFg8WSIFWI_rlXkIl\"}}"
     },
     {
       "id": "w1-07-range",
