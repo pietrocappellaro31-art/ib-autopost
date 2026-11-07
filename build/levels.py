@@ -76,11 +76,22 @@ def kara(display, start, dur, cols=None, hide=False, hl=(), cls="", style="", li
 # --------------------------------------------------------------- voice ----
 
 def synth(ep, voice_name):
-    v = make_voice(voice_name)                         # Kokoro name, or clone:/path/to/reference.wav
+    """voice_name: a Kokoro voice ('af_heart'), 'clone:/path/to/reference.wav'
+    (Pietro's cloned voice) or 'real:/path/to/memo' (Pietro reading the
+    script himself; see voice_real.py)."""
     texts = {"hook": [s for s, _ in ep["hook"]["say"]], "close": [s for s, _ in ep["close"]["say"]]}
     for i, lv in enumerate(ep["levels"]):
         texts[f"q{i}"] = ([lv["label"]] if lv.get("label") else []) + [s for s, _ in lv["q"] if s]   # "" = on the card, not said
         texts[f"a{i}"] = [s for s, *_ in lv["a"]]
+    if voice_name.startswith("real:"):
+        from voice_real import parts_from_recording
+        order = ([("hook", texts["hook"])]
+                 + [x for i in range(len(ep["levels"])) for x in ((f"q{i}", texts[f"q{i}"]), (f"a{i}", texts[f"a{i}"]))]
+                 + [("close", texts["close"])])
+        parts, err = parts_from_recording(order, voice_name[5:])
+        print(f"  real voice: script matched with {err:.0%} word differences (mostly the recogniser mishearing)")
+        return None, parts
+    v = make_voice(voice_name)
     for k, ss in texts.items():
         v.phonemes(" ".join(ss))                       # fail before rendering on an unknown word
     sp = ep.get("speed", 1.0)
@@ -349,7 +360,7 @@ def mux(ep, voice_name, voice, sfx, total, mp4):
     write_wav(work / "voice.wav", voice)
     write_wav(work / "sfx.wav", sfx)
     final = work / f"{ep['slug']}.mp4"
-    chain = CLONE_MASTER if voice_name.startswith("clone:") else MASTER
+    chain = CLONE_MASTER if voice_name.startswith(("clone:", "real:")) else MASTER
     graph = (f"[1:a]{chain}[v];anoisesrc=color=brown:amplitude=0.0012:sample_rate={SR}:duration={total + .6:.2f}[room];"
              "[v][2:a][room]amix=inputs=3:normalize=0,loudnorm=I=-16:TP=-1.5:LRA=11[a]")
     subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", str(mp4), "-i", str(work / "voice.wav"), "-i", str(work / "sfx.wav"),

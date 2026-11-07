@@ -1,0 +1,13 @@
+Can a profitable company go bankrupt? That's level 4. Start at level 1 and keep score.
+
+Level 1: dividends, or buying back its own shares. Both send cash back to the people who own the company.
+
+Level 2: nothing happens to net income today. Paying $100 for a machine swaps $100 of cash for $100 of PP&E on the balance sheet. The cost reaches the income statement later, as depreciation, a slice each year.
+
+Level 3: cash from operations falls by $20. You booked the revenue, so it's in net income, but the customer hasn't paid you. The cash flow statement takes that $20 back out.
+
+Level 4: yes. Profit isn't cash. If customers pay late while suppliers, salaries and interest all have to be paid now, a company can show a profit on paper and still run out of money to pay its bills.
+
+Comment your score out of 4.
+
+#investmentbanking #ibinterview #accounting #finance

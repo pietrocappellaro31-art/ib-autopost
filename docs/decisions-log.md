@@ -94,6 +94,18 @@ What has been settled, and what is still open. Newest first.
   for the first memo's sample on the same test), now the reference for quiz
   formats. Levels #2 is the first Reel voiced with it. Pietro's recordings
   and references stay out of this public repo.
+- **Pietro's real voice is now a third option** (6 Nov). He reads a Reel's
+  script in one memo; `voice_real.py` transcribes it with word timings,
+  aligns the script, cuts each passage, shortens pauses over 0.45 s to 0.3 s
+  and hands the passages to the Reel engine (`real:/path/to/memo`). No AI
+  label needed. Measured on the same 34 held-out clips of his real speech:
+  real-voice Levels #2 0.914 and #3 0.901, the cloned Levels #2 0.867, the
+  first clone 0.794, the stock Kokoro voice 0.551. A second reference
+  search over 13 memos (34 windows) found nothing meaningfully better than
+  the last one (0.794 against 0.784, within take-to-take noise of about
+  0.04): the clone has plateaued, and only the real recording closes the gap.
+  The real reads run longer (Levels #2 71 s against 62 s cloned) because
+  Pietro speaks more slowly than the clone.
 - **Captions are burned in, word by word**, on every voiced Reel, because most
   people watch muted.
 - **Reel style: kinetic typography on paper** (3 Nov), modelled on a
