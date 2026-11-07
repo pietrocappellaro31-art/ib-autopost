@@ -306,8 +306,8 @@
       "series": "Technical of the Day",
       "scheduled_utc": "2026-11-07T17:30:00",
       "caption": "\"Which method gives the highest valuation?\" There's a usual order, and the reason matters far more than the order does.\n\nPrecedents usually print highest. Comps sit below. The DCF ranges widest of the 4. An LBO sets the floor.\n\nWhy precedents beat comps.\n\nA comp is what 1 share trades at, a minority stake with no say in anything. A precedent is what somebody actually paid to own all 100% of it and run it. That price carries a control premium, often 20 to 30%, plus whatever synergies the buyer talked themselves into.\n\nWhy the DCF ranges widest. WACC, terminal growth and your year 5 margin are 3 numbers nobody can verify, and a 1% move in any of them swings the answer more than a revenue assumption you'd argue about for a week.\n\nWhy the LBO is the floor. A sponsor needs its target return, so there's a hard ceiling on what it can pay. A strategic buyer with synergies goes higher.\n\nThen say which one you'd lean on. Liquid comps, lean on comps. Live sale process, lean on precedents. Stable forecastable business, the DCF earns its place.\n\nSay typically. Then say why.\n\n#investmentbanking #ibinterview #valuation #mergersandacquisitions",
-      "published_id": null,
-      "published_at_utc": null,
+      "published_id": "17987360625088076",
+      "published_at_utc": "2026-11-07T17:35:18.544198+00:00",
       "images": [
         "w1-07-range-01.jpg",
         "w1-07-range-02.jpg",
@@ -319,7 +319,8 @@
         "w1-07-range-08.jpg",
         "w1-07-range-09.jpg"
       ],
-      "first_comment": "For a fast-growing tech target, which method would you expect to come out highest, and why?"
+      "first_comment": "For a fast-growing tech target, which method would you expect to come out highest, and why?",
+      "first_comment_error": "Graph API 400 on 17987360625088076/comments: {\"error\":{\"message\":\"(#10) Application does not have permission for this action\",\"type\":\"OAuthException\",\"code\":10,\"fbtrace_id\":\"A3VqCXSeafcMIlyXnslA7tE\"}}"
     },
     {
       "id": "story-2026-11-07",
