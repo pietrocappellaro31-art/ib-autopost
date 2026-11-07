@@ -1,15 +1,19 @@
 """
 Sound design for Reels: the standard from 6 Nov (Pietro: "that's the standard
-we're going to use every time from now on"). Every motion beat that has a
-physical feel gets a sound: a whoosh on a swipe, ticks on a timer, a soft
-ding on a reveal, a low thump when time runs out, a pop when something lands.
+we're going to use every time from now on", and "the more you add, the
+better"). Every motion beat that has a physical feel gets a sound: ticks on a
+timer or a spinning number, a soft ding on a reveal, a low thump when time
+runs out, a pop when something lands.
+
+No whoosh on swipes between scenes: Pietro found it annoying (6 Nov), the
+only effect he did. whoosh() stays here for reference and is not in SOUNDS.
 All synthesised here, so there is nothing to license.
 
 They sit under the voice and under the music Pietro adds in the app: quiet,
 short, never more than one at a time where it matters.
 
     from sfx import track, mux
-    wav = track([("whoosh", 4.9), ("tick", 7.4), ("ding", 9.1)], total=30)
+    wav = track([("pop", 4.9), ("tick", 7.4), ("ding", 9.1)], total=30)
     mux("reel-silent.mp4", wav, "reel.mp4")        # for a Reel without voice
 """
 
@@ -53,7 +57,7 @@ def pop():
     return (np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-t * 45)).astype(np.float32)
 
 
-SOUNDS = {"tick": (tick, .22), "whoosh": (whoosh, .5), "ding": (ding, .13), "thump": (thump, .55), "pop": (pop, .3)}
+SOUNDS = {"tick": (tick, .22), "ding": (ding, .13), "thump": (thump, .55), "pop": (pop, .3)}
 
 
 def track(events, total, gain=1.0):

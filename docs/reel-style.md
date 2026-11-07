@@ -60,8 +60,11 @@ this page's brand. The first Reel built to it is `w1-r04-dinged` in
    just settled frames. Most problems only show mid-move.
 8. **Sound effects on every Reel** (6 Nov, Pietro: "that's the standard we're
    going to use every time from now on"). Every beat with a physical feel gets
-   a sound from `build/sfx.py`: whoosh on a swipe, ticks on a timer, a soft
-   ding on a reveal, a thump when time is up, a pop when something lands.
+   a sound from `build/sfx.py`: ticks on a timer or a spinning number, a soft
+   ding on a reveal, a thump when time is up, a pop when something lands
+   (a level number, a chip, a score). More is better (Pietro, 6 Nov), with one
+   exception: **no whoosh on the swipe between scenes**, which he found
+   annoying.
    Quiet and short, under the voice and under the music added in the app.
    A Reel without voice still ships with its effects track (`sfx.mux`, -24
    LUFS) instead of silent.
@@ -130,7 +133,7 @@ that get harder, read by the voice; the viewer keeps score and comments it.
   a think bar with ticks that gets longer as the levels get harder, then the
   answer. The verdict ("Nothing.", "Yes.") is said on its own, a beat, then
   the reason, and a worked chip pops in. Answer words stay hidden until said.
-- **Levels whip** left to right with motion blur; the level meter at the top
+- **Levels whip** left to right with motion blur (silent: no whoosh); the level meter at the top
   stays and fills, red for the current level, ink for the ones done.
 - **Callbacks pay off**: level 3 teaches the formula level 4 needs, and the
   voice says so ("Remember level three").

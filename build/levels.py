@@ -282,23 +282,36 @@ SCORE = ('<div class="a roll num nochk" data-fx="roll" data-at="{at:.2f}" data-d
 
 # --------------------------------------------------------------- sound ----
 
-def soundtrack(parts, at, lv, total):
+def soundtrack(parts, at, lv, total, ep=None):
+    """Voice plus effects. No whoosh on the swipes (Pietro, 6 Nov: the one
+    sound he found annoying); everything else that moves can make a sound."""
     n = int(total * SR) + SR
     voice, sfx = np.zeros(n, np.float32), np.zeros(n, np.float32)
 
     def put(buf, sig, t, gain=1.0):
-        i = int(t * SR)
+        i = int(max(t, 0) * SR)
         buf[i:i + len(sig)] += sig[: max(0, n - i)] * gain
 
     for k, (a, _) in parts.items():
         put(voice, a, at[k])
-    tick, whoosh, ding = sfx_lib.tick(), sfx_lib.whoosh(), sfx_lib.ding()     # the house sounds (sfx.py)
+    tick, ding, pop = sfx_lib.tick(), sfx_lib.ding(), sfx_lib.pop()            # the house sounds (sfx.py)
+    n_lv = len(lv)
+    for i in range(n_lv):                                     # the meter filling in the first second
+        put(sfx, tick, .1 + i * .09, .1)
     for i, L in enumerate(lv):
-        put(sfx, whoosh, L["start"] - .2, .5)
+        put(sfx, pop, L["start"] + .28, .26)                      # the level numeral lands
         for j in range(int(round(L["think"] / .5))):
             put(sfx, tick, L["think0"] + .05 + j * .5, .22 + .04 * j)
-        put(sfx, ding, at[f"a{i}"] + .02, .12)
-    put(sfx, whoosh, at["close"] - .5, .5)
+        put(sfx, ding, at[f"a{i}"] + .02, .12)                      # the answer
+        if ep and ep["levels"][i].get("chip"):                     # the worked chip pops in
+            segs = parts[f"a{i}"][1]
+            put(sfx, pop, at[f"a{i}"] + segs[ep["levels"][i].get("chip_at", 0)][1] + .27, .18)
+    ca = at["close"]
+    for j in range(12):                                         # the score spinning like a slot
+        put(sfx, tick, ca + .4 + j * .17 + .16, .09)
+    put(sfx, pop, ca + .4 + 12 * .17 + .3, .26)                   # ... and landing on "?"
+    end_voice = ca + parts["close"][1][-1][2]
+    put(sfx, ding, end_voice + .78, .07)                          # the brand
     g = .12 / max(np.sqrt(np.mean(voice[voice != 0] ** 2)), 1e-6)
     return voice * g, sfx * g
 
@@ -320,6 +333,31 @@ def reuse(work):
             for k, segs in t["segments"].items()}
 
 
+def remix(ep, voice_name):
+    """Rebuild only the sound of an earlier render (same picture, same voice
+    takes) after a change to the effects."""
+    work = OUT / ep["slug"]
+    parts = reuse(work)
+    at, hook_end, lv, total = timeline(ep, parts)
+    voice, sfx = soundtrack(parts, at, lv, total + .6, ep)
+    mux(ep, voice_name, voice, sfx, total, OUT / (ep["slug"] + "-silent") / (ep["slug"] + "-silent.mp4"))
+    print(f"  -> remixed {ep['slug']}.mp4")
+
+
+def mux(ep, voice_name, voice, sfx, total, mp4):
+    work = OUT / ep["slug"]
+    write_wav(work / "voice.wav", voice)
+    write_wav(work / "sfx.wav", sfx)
+    final = work / f"{ep['slug']}.mp4"
+    chain = CLONE_MASTER if voice_name.startswith("clone:") else MASTER
+    graph = (f"[1:a]{chain}[v];anoisesrc=color=brown:amplitude=0.0012:sample_rate={SR}:duration={total + .6:.2f}[room];"
+             "[v][2:a][room]amix=inputs=3:normalize=0,loudnorm=I=-16:TP=-1.5:LRA=11[a]")
+    subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", str(mp4), "-i", str(work / "voice.wav"), "-i", str(work / "sfx.wav"),
+                    "-filter_complex", graph, "-map", "0:v", "-map", "[a]", "-c:v", "copy", "-c:a", "aac", "-b:a", "192k",
+                    "-ar", "48000", "-shortest", "-movflags", "+faststart", str(final)], check=True)
+    return final
+
+
 def make(ep, voice_name="af_heart", keep_voice=False):
     if keep_voice:
         parts = reuse(OUT / ep["slug"])
@@ -330,18 +368,10 @@ def make(ep, voice_name="af_heart", keep_voice=False):
     sc, check_at = scene(ep, parts, at, hook_end, lv, total)
     mp4, cover, problems = build(ep["slug"] + "-silent", [sc], theme="paper", cover_at=hook_end - .2, crf=21,
                                  check_at=check_at)
-    voice, sfx = soundtrack(parts, at, lv, total + .6)
+    voice, sfx = soundtrack(parts, at, lv, total + .6, ep)
     work = OUT / ep["slug"]
     work.mkdir(parents=True, exist_ok=True)
-    write_wav(work / "voice.wav", voice)
-    write_wav(work / "sfx.wav", sfx)
-    final = work / f"{ep['slug']}.mp4"
-    chain = CLONE_MASTER if voice_name.startswith("clone:") else MASTER
-    graph = (f"[1:a]{chain}[v];anoisesrc=color=brown:amplitude=0.0012:sample_rate={SR}:duration={total + .6:.2f}[room];"
-             "[v][2:a][room]amix=inputs=3:normalize=0,loudnorm=I=-16:TP=-1.5:LRA=11[a]")
-    subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", str(mp4), "-i", str(work / "voice.wav"), "-i", str(work / "sfx.wav"),
-                    "-filter_complex", graph, "-map", "0:v", "-map", "[a]", "-c:v", "copy", "-c:a", "aac", "-b:a", "192k",
-                    "-ar", "48000", "-shortest", "-movflags", "+faststart", str(final)], check=True)
+    final = mux(ep, voice_name, voice, sfx, total, mp4)
     (work / "cover.jpg").write_bytes(pathlib.Path(cover).read_bytes())
     json.dump({"at": at, "hook_end": hook_end, "levels": lv, "total": total, "voice": voice_name,
                "segments": {k: p[1] for k, p in parts.items()}}, open(work / "timeline.json", "w"), indent=1)

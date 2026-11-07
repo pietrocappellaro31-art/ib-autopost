@@ -51,7 +51,11 @@ What has been settled, and what is still open. Newest first.
 - **Sound effects are the standard on every Reel** (6 Nov, Pietro's call,
   after Levels #1). Synthesised in `build/sfx.py` (no licensing), mixed under
   the voice and under the music Pietro adds. Reels without voice now ship
-  with an effects track rather than silent.
+  with an effects track rather than silent. Same day: the whoosh on swipes is
+  retired (Pietro found it annoying, the only one), and more effects are
+  welcome: pops when a level number, chip or score lands, ticks when the
+  meter fills and the score spins, a soft ding on the brand. Levels #1, its
+  cloned-voice cut and #2 were remixed without it (`levels.remix`).
 - **Voice cloning: Pietro's own voice only** (6 Nov). Cloning a real
   person's voice is possible here (Kyutai Pocket TTS run locally through
   sherpa-onnx, about 20 to 30 seconds of clean reference audio; weights CC BY
