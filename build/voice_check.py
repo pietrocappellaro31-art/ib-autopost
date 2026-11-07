@@ -7,10 +7,13 @@ does, so this matters most for voice_clone.CloneVoice.
 
     python build/voice_check.py audio.wav "the script it should say"
 
-Files (not in the repo): $SHERPA_DIR as in voice_clone.py, $MOONSHINE_DIR the
-folder sherpa-onnx-moonshine-tiny-en-int8 (sherpa-onnx releases, asr-models).
+Files (not in the repo): $SHERPA_DIR as in voice_clone.py, and either
+$PARAKEET_DIR, the folder sherpa-onnx-nemo-parakeet-tdt-0.6b-v2-int8 (use this:
+Moonshine tiny mishears Pietro's own recordings), or $MOONSHINE_DIR,
+sherpa-onnx-moonshine-tiny-en-int8. Both from sherpa-onnx releases, asr-models.
 """
 
+import json
 import os
 import pathlib
 import re
@@ -22,6 +25,7 @@ import numpy as np
 
 SHERPA = os.environ.get("SHERPA_DIR", "")
 MOON = os.environ.get("MOONSHINE_DIR", "")
+PARAKEET = os.environ.get("PARAKEET_DIR", "")       # preferred when set: far better on accented speech
 
 ONES = {w: i for i, w in enumerate("zero one two three four five six seven eight nine ten eleven twelve thirteen fourteen "
                                     "fifteen sixteen seventeen eighteen nineteen".split())}
@@ -69,21 +73,77 @@ def words(text):
     return out
 
 
-def transcribe(wav_path):
+def transcribe(wav_path, with_words=False):
     b = pathlib.Path(SHERPA)
     m = pathlib.Path(MOON)
     with tempfile.TemporaryDirectory() as d:
         w16 = pathlib.Path(d) / "a.wav"
         subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", str(wav_path), "-ac", "1", "-ar", "16000", str(w16)], check=True)
-        r = subprocess.run([str(b / "bin" / "sherpa-onnx-offline"), f"--moonshine-preprocessor={m / 'preprocess.onnx'}",
-                            f"--moonshine-encoder={m / 'encode.int8.onnx'}",
-                            f"--moonshine-uncached-decoder={m / 'uncached_decode.int8.onnx'}",
-                            f"--moonshine-cached-decoder={m / 'cached_decode.int8.onnx'}", f"--tokens={m / 'tokens.txt'}",
-                            "--num-threads=2", str(w16)],
+        if PARAKEET:
+            k = pathlib.Path(PARAKEET)
+            model = [f"--encoder={k / 'encoder.int8.onnx'}", f"--decoder={k / 'decoder.int8.onnx'}",
+                     f"--joiner={k / 'joiner.int8.onnx'}", f"--tokens={k / 'tokens.txt'}", "--model-type=nemo_transducer"]
+        else:
+            model = [f"--moonshine-preprocessor={m / 'preprocess.onnx'}", f"--moonshine-encoder={m / 'encode.int8.onnx'}",
+                     f"--moonshine-uncached-decoder={m / 'uncached_decode.int8.onnx'}",
+                     f"--moonshine-cached-decoder={m / 'cached_decode.int8.onnx'}", f"--tokens={m / 'tokens.txt'}"]
+        r = subprocess.run([str(b / "bin" / "sherpa-onnx-offline"), *model, "--num-threads=4", str(w16)],
                            env={**os.environ, "LD_LIBRARY_PATH": str(b / "lib")}, capture_output=True, text=True, check=True)
     out = r.stdout + r.stderr
     hits = re.findall(r'"text":\s*"([^"]*)"', out)
-    return hits[-1].strip() if hits else ""
+    text = hits[-1].strip() if hits else ""
+    # Word timings, where the recogniser gives token times (Parakeet does).
+    ws = []
+    try:
+        line = [l for l in out.splitlines() if l.startswith("{") and '"tokens"' in l][-1]
+        j = json.loads(line)
+        for tok, t0, du in zip(j["tokens"], j["timestamps"], j.get("durations") or [0] * len(j["timestamps"])):
+            if tok.startswith(" ") or not ws:
+                ws.append([tok.strip(), t0, t0 + du])
+            else:
+                ws[-1][0] += tok
+                ws[-1][2] = t0 + du
+    except (IndexError, ValueError, KeyError):
+        ws = []
+    return (text, [tuple(w) for w in ws if w[0]]) if with_words else text
+
+
+def sentence_times(sents, heard_words, total):
+    """Where each sentence starts and ends in a take, from the recogniser's
+    word timings: script and heard words are aligned (edit distance), and
+    each sentence spans its first to last aligned word. Returns
+    [(sentence, start, end)] like voice.passage, or None if it cannot."""
+    ref = [(t, k) for k, x in enumerate(sents) for t in words(x)]
+    hyp = [(t, a, b) for w, a, b in heard_words for t in words(w)]
+    if not ref or not hyp:
+        return None
+    n, m = len(ref), len(hyp)
+    d = np.zeros((n + 1, m + 1), int)
+    d[:, 0] = range(n + 1)
+    d[0, :] = range(m + 1)
+    for i in range(1, n + 1):
+        for j in range(1, m + 1):
+            d[i, j] = min(d[i - 1, j] + 1, d[i, j - 1] + 1, d[i - 1, j - 1] + (ref[i - 1][0] != hyp[j - 1][0]))
+    i, j, link = n, m, {}
+    while i > 0 and j > 0:
+        if d[i, j] == d[i - 1, j - 1] + (ref[i - 1][0] != hyp[j - 1][0]):
+            link[i - 1] = j - 1
+            i, j = i - 1, j - 1
+        elif d[i, j] == d[i - 1, j] + 1:
+            i -= 1
+        else:
+            j -= 1
+    out = []
+    for k, x in enumerate(sents):
+        idx = [link[i] for i, (_, kk) in enumerate(ref) if kk == k and i in link]
+        if not idx:
+            return None
+        out.append([x, hyp[min(idx)][1], hyp[max(idx)][2]])
+    out[0][1] = 0.0
+    for k in range(len(out) - 1):                        # no gaps or overlaps between captions
+        out[k][2] = min(max(out[k][2] + .06, out[k][1] + .1), out[k + 1][1])
+    out[-1][2] = total
+    return [(x, round(a, 3), round(b, 3)) for x, a, b in out]
 
 
 def wer(ref, hyp):
@@ -106,3 +166,69 @@ def check(wav_path, script, limit=.12):
 if __name__ == "__main__":
     ok, e, heard = check(sys.argv[1], sys.argv[2])
     print(("OK  " if ok else "BAD ") + f"WER {e:.0%}  heard: {heard}")
+
+
+# ------------------------------------------------- does it sound like him ----
+# Speaker similarity: the cosine between speaker embeddings (WeSpeaker ResNet34,
+# VoxCeleb) of two recordings, through sherpa-onnx's C library. Two real
+# recordings of one person score high, two different people low; a clone is
+# judged by how close it gets to Pietro's real recordings.
+# $SPEAKER_MODEL is wespeaker_en_voxceleb_resnet34.onnx (sherpa-onnx releases,
+# speaker-recongition-models; the tag is spelt that way).
+
+import ctypes
+
+SPEAKER_MODEL = os.environ.get("SPEAKER_MODEL", "")
+_ex = None
+
+
+class _Cfg(ctypes.Structure):
+    _fields_ = [("model", ctypes.c_char_p), ("num_threads", ctypes.c_int32), ("debug", ctypes.c_int32),
+                ("provider", ctypes.c_char_p)]
+
+
+def _lib():
+    global _ex
+    lib = ctypes.CDLL(str(pathlib.Path(SHERPA) / "lib" / "libsherpa-onnx-c-api.so"))
+    for name, res, args in [
+        ("SherpaOnnxCreateSpeakerEmbeddingExtractor", ctypes.c_void_p, [ctypes.POINTER(_Cfg)]),
+        ("SherpaOnnxSpeakerEmbeddingExtractorDim", ctypes.c_int32, [ctypes.c_void_p]),
+        ("SherpaOnnxSpeakerEmbeddingExtractorCreateStream", ctypes.c_void_p, [ctypes.c_void_p]),
+        ("SherpaOnnxOnlineStreamAcceptWaveform", None, [ctypes.c_void_p, ctypes.c_int32, ctypes.POINTER(ctypes.c_float), ctypes.c_int32]),
+        ("SherpaOnnxOnlineStreamInputFinished", None, [ctypes.c_void_p]),
+        ("SherpaOnnxSpeakerEmbeddingExtractorIsReady", ctypes.c_int32, [ctypes.c_void_p, ctypes.c_void_p]),
+        ("SherpaOnnxSpeakerEmbeddingExtractorComputeEmbedding", ctypes.POINTER(ctypes.c_float), [ctypes.c_void_p, ctypes.c_void_p]),
+        ("SherpaOnnxSpeakerEmbeddingExtractorDestroyEmbedding", None, [ctypes.POINTER(ctypes.c_float)]),
+        ("SherpaOnnxDestroyOnlineStream", None, [ctypes.c_void_p])]:
+        f = getattr(lib, name)
+        f.restype, f.argtypes = res, args
+    if _ex is None:
+        cfg = _Cfg(SPEAKER_MODEL.encode(), 2, 0, b"cpu")
+        _ex = lib.SherpaOnnxCreateSpeakerEmbeddingExtractor(ctypes.byref(cfg))
+        if not _ex:
+            raise RuntimeError("could not load the speaker model; set $SPEAKER_MODEL")
+    return lib
+
+
+def embedding(wav_path):
+    lib = _lib()
+    with tempfile.TemporaryDirectory() as d:
+        w16 = pathlib.Path(d) / "a.raw"
+        subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", str(wav_path), "-ac", "1", "-ar", "16000", "-f", "f32le", str(w16)],
+                       check=True)
+        a = np.fromfile(w16, np.float32)
+    s = lib.SherpaOnnxSpeakerEmbeddingExtractorCreateStream(_ex)
+    lib.SherpaOnnxOnlineStreamAcceptWaveform(s, 16000, a.ctypes.data_as(ctypes.POINTER(ctypes.c_float)), len(a))
+    lib.SherpaOnnxOnlineStreamInputFinished(s)
+    if not lib.SherpaOnnxSpeakerEmbeddingExtractorIsReady(_ex, s):
+        raise ValueError(f"{wav_path}: too short for a speaker embedding")
+    p = lib.SherpaOnnxSpeakerEmbeddingExtractorComputeEmbedding(_ex, s)
+    n = lib.SherpaOnnxSpeakerEmbeddingExtractorDim(_ex)
+    v = np.array([p[i] for i in range(n)], np.float32)
+    lib.SherpaOnnxSpeakerEmbeddingExtractorDestroyEmbedding(p)
+    lib.SherpaOnnxDestroyOnlineStream(s)
+    return v / np.linalg.norm(v)
+
+
+def similarity(a_path, b_path):
+    return float(embedding(a_path) @ embedding(b_path))

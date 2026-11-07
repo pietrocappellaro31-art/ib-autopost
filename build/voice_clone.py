@@ -58,7 +58,7 @@ class CloneVoice:
         or swap a word. Every take is transcribed (voice_check) and compared
         with the script; the first exact take wins, else the closest one."""
         import voice_check
-        if not voice_check.MOON:
+        if not (voice_check.MOON or voice_check.PARAKEET):
             return self._take(text, speed)
         best = None
         for k in range(tries):
@@ -66,20 +66,33 @@ class CloneVoice:
             with tempfile.TemporaryDirectory() as d:
                 w = pathlib.Path(d) / "t.wav"
                 write_wav(w, a)
-                heard = voice_check.transcribe(w)
+                heard, ws = voice_check.transcribe(w, with_words=True)
             e = voice_check.wer(text, heard)
             if best is None or e < best[0]:
-                best = (e, a, heard, k + 1)
+                best = (e, a, heard, ws)
             if e == 0:
                 break
         self.log.append(dict(text=text, wer=round(best[0], 3), heard=best[2], takes=k + 1))
+        self._words = best[3]
         return best[1]
 
+    def align(self, sents, audio):
+        """Sentence timings for voice.passage, from the recogniser's word
+        times on the chosen take (a real voice's pauses are too irregular for
+        the pause matching that works on Kokoro). None falls back to it."""
+        import voice_check
+        return voice_check.sentence_times(sents, getattr(self, "_words", []), len(audio) / SR)
+
+    LEAD = "Okay."
+
     def _take(self, text, speed=None):
+        """One take. The model tends to swallow the first word of a line
+        ("Can", "What's"), so every line is spoken after a throwaway "Okay."
+        that is cut off at the first pause (tested 6 Nov on Pietro's voice)."""
         with tempfile.TemporaryDirectory() as d:
             out = pathlib.Path(d) / "out.wav"
             subprocess.run([str(self.bin), *self.args, f"--reference-audio={self.ref}", f"--num-steps={self.steps}",
-                            "--num-threads=4", f"--output-filename={out}", text],
+                            "--num-threads=4", f"--output-filename={out}", f"{self.LEAD} {text}"],
                            env={**os.environ, "LD_LIBRARY_PATH": self.lib}, check=True, capture_output=True)
             if speed and abs(speed - 1) > .005:              # Pocket has no speed control: stretch, keeping pitch
                 st = pathlib.Path(d) / "st.wav"
@@ -90,7 +103,30 @@ class CloneVoice:
                 if w.getframerate() != SR:
                     raise ValueError(f"expected {SR} Hz from Pocket TTS, got {w.getframerate()}")
                 a = np.frombuffer(w.readframes(w.getnframes()), np.int16).astype(np.float32) / 32768
-        return trim(a)
+        return trim(cut_lead(a))
+
+
+def cut_lead(a):
+    """Drop everything up to the first pause of 100 ms or more after the
+    first 0.2 s (the lead-in word); if there is none, keep the take whole and
+    let the transcript check decide."""
+    hop = SR // 100
+    rms = np.array([np.sqrt(np.mean(a[i:i + hop] ** 2)) for i in range(0, len(a) - hop, hop)])
+    if not len(rms):
+        return a
+    quiet = rms < max(.006, np.percentile(rms, 95) * .06)
+    i = 20
+    while i < min(len(quiet), 150):
+        if quiet[i]:
+            j = i
+            while j < len(quiet) and quiet[j]:
+                j += 1
+            if j - i >= 10:
+                return a[(j - 3) * hop:]
+            i = j
+        else:
+            i += 1
+    return a
 
 
 def prepare_reference(src, out, max_s=25.0, min_s=12.0):

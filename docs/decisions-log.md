@@ -67,6 +67,20 @@ What has been settled, and what is still open. Newest first.
   every line (`voice_check.py`) and retakes it until the words match, and the
   reference must be cut at a pause (`prepare_reference`). When a cloned-voice Reel ships, its
   caption ends with the credit "Voice model: Pocket TTS by Kyutai".
+  First clone from Pietro's own recordings (6 Nov, two memos, 55 s and 25 s,
+  quiet room, no clipping). Measured with a speaker-ID model (WeSpeaker, in
+  `voice_check.similarity`): two real recordings of Pietro score 0.89, a
+  different voice about 0.5, the clone 0.74 to 0.83, so it reads as him.
+  Reference length made no difference (11 s, 22 s and 47 s references all
+  averaged 0.74 to 0.75), so longer recordings do not help this model; the
+  delivery and recording conditions of the sample are what it copies. The
+  transcript check uses Parakeet (6% word error on Pietro's real voice, where
+  Moonshine tiny misheard him), and every line is spoken after a throwaway
+  "Okay." that is cut, because the model swallowed first words. Sentence
+  timings for a cloned voice come from the recogniser's word times (a real
+  voice's pauses are too irregular for Kokoro's pause matching). Levels #1
+  in the clone: 13 of 13 lines word-perfect, 21 of 22 caption onsets within
+  0.15 s, likeness 0.82 against a held-out real recording.
 - **Captions are burned in, word by word**, on every voiced Reel, because most
   people watch muted.
 - **Reel style: kinetic typography on paper** (3 Nov), modelled on a

@@ -131,6 +131,10 @@ def passage(voice, text, speed=None):
     """
     sents = split_sentences(text)
     audio = voice.say(" ".join(sents), speed=speed)
+    if hasattr(voice, "align"):                       # a cloned voice: timings from the transcript check
+        segs = voice.align(sents, audio)
+        if segs:
+            return audio, segs
     if len(sents) == 1:
         return audio, [(sents[0], 0.0, len(audio) / SR)]
     hop = int(.01 * SR)

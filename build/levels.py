@@ -297,6 +297,11 @@ def soundtrack(parts, at, lv, total):
     return voice * g, sfx * g
 
 
+# A real voice (the clone of Pietro) already has a room and no synthetic
+# fizz: only the rumble cut and gentle compression.
+CLONE_MASTER = "highpass=f=75,acompressor=threshold=-20dB:ratio=2.5:attack=12:release=140:makeup=1.5"
+
+
 def make(ep, voice_name="af_heart"):
     v, parts = synth(ep, voice_name)
     at, hook_end, lv, total = timeline(ep, parts)
@@ -309,7 +314,8 @@ def make(ep, voice_name="af_heart"):
     write_wav(work / "voice.wav", voice)
     write_wav(work / "sfx.wav", sfx)
     final = work / f"{ep['slug']}.mp4"
-    graph = (f"[1:a]{MASTER}[v];anoisesrc=color=brown:amplitude=0.0012:sample_rate={SR}:duration={total + .6:.2f}[room];"
+    chain = CLONE_MASTER if voice_name.startswith("clone:") else MASTER
+    graph = (f"[1:a]{chain}[v];anoisesrc=color=brown:amplitude=0.0012:sample_rate={SR}:duration={total + .6:.2f}[room];"
              "[v][2:a][room]amix=inputs=3:normalize=0,loudnorm=I=-16:TP=-1.5:LRA=11[a]")
     subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", str(mp4), "-i", str(work / "voice.wav"), "-i", str(work / "sfx.wav"),
                     "-filter_complex", graph, "-map", "0:v", "-map", "[a]", "-c:v", "copy", "-c:a", "aac", "-b:a", "192k",
@@ -317,5 +323,7 @@ def make(ep, voice_name="af_heart"):
     (work / "cover.jpg").write_bytes(pathlib.Path(cover).read_bytes())
     json.dump({"at": at, "hook_end": hook_end, "levels": lv, "total": total, "voice": voice_name,
                "segments": {k: p[1] for k, p in parts.items()}}, open(work / "timeline.json", "w"), indent=1)
+    if getattr(v, "log", None):                              # a cloned voice: how each line was heard
+        json.dump(v.log, open(work / "takes.json", "w"), indent=1)
     print(f"  -> {final.name}  {total:.1f}s  voice {voice_name}")
     return final, problems
