@@ -197,3 +197,16 @@ What has been settled, and what is still open. Newest first.
   word-perfect, pitch 154 to 210 Hz by passage. A feminised voice can drift
   back towards a male pitch in some takes, so `CloneVoice(min_pitch=...)`
   retakes any take below the floor.
+  Pietro's verdict (7 Nov): not there yet; one sounded Indian, the Reel was
+  too fast with an "h" breath before words, and not clear enough. Measured on
+  the same three lines (6 takes each): voices made from his voice slipped 22
+  to 28% of words; the same clone engine given a clean synthetic woman's
+  sample (Kokoro af_heart, Apache 2.0, the voice he liked on 6 Nov) slipped
+  3%. The clone also spoke at 3.0 to 3.4 words a second against his own 1.9
+  to 2.3. New voices F1 (af_heart sample) and F2 (af_heart and af_bella
+  blend): 16 flow steps instead of 8, every take slowed to 0.76 with
+  rubberband (pitch and tone kept), a pitch floor, and a presence EQ matched
+  to the clean sample. Levels #3 in F1: 14 of 14 lines word-perfect, 13 on the
+  first take, pitch 170 to 192 Hz throughout, 2.6 words a second. Trade-off:
+  F1 and F2 are no longer made from Pietro's voice, and nobody real is
+  cloned. Awaiting his pick; L2 and L3 stay the rotation until then.

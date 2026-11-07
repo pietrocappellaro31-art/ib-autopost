@@ -37,8 +37,9 @@ POCKET = os.environ.get("POCKET_DIR", "")
 
 
 class CloneVoice:
-    def __init__(self, reference, steps=8, sherpa=SHERPA, model=POCKET, min_pitch=None):
+    def __init__(self, reference, steps=8, sherpa=SHERPA, model=POCKET, min_pitch=None, tempo=None):
         self.ref = str(pathlib.Path(reference).resolve())
+        self.tempo = tempo                              # < 1 slows every take (rubberband, pitch and tone kept)
         self.min_pitch = min_pitch                      # Hz; a take below it is retaken (feminised voices)
         self.steps = steps
         self.log = []                                   # one entry per line: takes used, how it was heard
@@ -97,10 +98,12 @@ class CloneVoice:
             subprocess.run([str(self.bin), *self.args, f"--reference-audio={self.ref}", f"--num-steps={self.steps}",
                             "--num-threads=4", f"--output-filename={out}", f"{self.LEAD} {text}"],
                            env={**os.environ, "LD_LIBRARY_PATH": self.lib}, check=True, capture_output=True)
-            if speed and abs(speed - 1) > .005:              # Pocket has no speed control: stretch, keeping pitch
+            rate = (speed or 1) * (self.tempo or 1)
+            if abs(rate - 1) > .005:                         # Pocket has no speed control: stretch, keeping pitch
                 st = pathlib.Path(d) / "st.wav"
-                subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", str(out), "-af", f"atempo={speed}", "-ar", str(SR), str(st)],
-                               check=True)
+                af = (f"rubberband=tempo={rate:.4f}:pitchq=quality:transients=crisp:formant=preserved" if self.tempo
+                      else f"atempo={rate}")
+                subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", str(out), "-af", af, "-ar", str(SR), str(st)], check=True)
                 out = st
             with wave.open(str(out)) as w:
                 if w.getframerate() != SR:
@@ -187,6 +190,8 @@ def voices():
 
 def sample(name):
     """'L2' -> the decrypted sample in $VOICE_DIR; a path is returned as is."""
+    if name in voices() and voices()[name].get("plain"):     # a synthetic sample, kept in the repo as is
+        return str(VOICES / voices()[name]["sample"].split("/")[-1])
     if name in voices():
         p = pathlib.Path(VOICE_DIR) / f"{name}.wav"
         if not p.exists():
@@ -229,6 +234,6 @@ def make_voice(name):
     if name.startswith("clone:"):
         ref = name.split(":", 1)[1]
         v = voices().get(ref, {})
-        return CloneVoice(sample(ref), min_pitch=v.get("min_pitch"))
+        return CloneVoice(sample(ref), steps=v.get("steps", 8), min_pitch=v.get("min_pitch"), tempo=v.get("tempo"))
     from voice import Voice
     return Voice(name)
