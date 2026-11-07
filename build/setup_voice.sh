@@ -19,8 +19,9 @@ get() { [ -d "$2" ] || { echo "downloading $2"; curl -sSL "$R/$1/$2.tar.bz2" | t
 get v2.0.1 sherpa-onnx-v2.0.1-linux-x64-shared
 get tts-models sherpa-onnx-pocket-tts-int8-2026-01-26
 get asr-models sherpa-onnx-nemo-parakeet-tdt-0.6b-v2-int8
-for n in L2 L3; do
-  openssl enc -d -aes-256-cbc -pbkdf2 -iter 200000 -in "$REPO/build/voices/$n.flac.enc" -pass env:VOICE_KEY \
+for enc in "$REPO"/build/voices/*.flac.enc; do                # every encrypted voice sample (L2, L3, ...)
+  n=$(basename "$enc" .flac.enc)
+  openssl enc -d -aes-256-cbc -pbkdf2 -iter 200000 -in "$enc" -pass env:VOICE_KEY \
     | ffmpeg -v error -y -f flac -i - -ac 1 -ar 24000 "voices/$n.wav"
 done
 cat > env.sh <<ENV

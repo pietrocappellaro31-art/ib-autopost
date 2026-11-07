@@ -1,0 +1,15 @@
+You double your money in 3 years. Is your IRR above or below 25%? That's level 4. Start at level 1 and keep score.
+
+Level 1: mostly debt. Put in less of your own money and every dollar the business gains is a bigger percentage gain on your equity. It works the other way too, and that's the risk.
+
+Level 2: three ways. Grow the profits, sell at a higher multiple than you paid, or pay down the debt with the company's own cash flow.
+
+Level 3: 2.0x. MOIC is money out divided by money in, so $200 over $100.
+
+Level 4: above. Doubling in 3 years is about 26% a year. Quick check: 25% a year for 3 years gets you to 1.95x, just short of double.
+
+Comment your score out of 4.
+
+Voice model: Pocket TTS by Kyutai
+
+#investmentbanking #privateequity #lbo #ibinterview

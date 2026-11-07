@@ -210,3 +210,16 @@ What has been settled, and what is still open. Newest first.
   first take, pitch 170 to 192 Hz throughout, 2.6 words a second. Trade-off:
   F1 and F2 are no longer made from Pietro's voice, and nobody real is
   cloned. Awaiting his pick; L2 and L3 stay the rotation until then.
+- **A third clone of Pietro, L4, from five new memos** (7 Nov, about 7.5
+  minutes, read in a quieter setting: noise floor -75 to -84 dB against about
+  -60 before). The new memos sound different from the earlier ones (likeness
+  between them about 0.80 against 0.90 among the earlier ones), so every
+  sample was judged against both sets. 21 windows searched; L4 is the 21 to
+  41 s window of the first new memo. Levels #4 voiced in L4: 14 of 14 lines
+  word-perfect; likeness 0.86 to the new memos and 0.83 to the earlier ones,
+  where L2 and L3 score about 0.86 to the earlier memos and 0.79 to 0.81 to
+  the new. Tested on the same lines, L4 slipped fewer words than L2 and L3.
+  L4 also gets 16 quality steps, a pace matched to Pietro's (every take
+  slowed to 0.82; he reads at about 2.3 words a second, the raw clone at
+  about 3) and its own tone match. Not in the L2/L3 rotation until Pietro
+  says so.
