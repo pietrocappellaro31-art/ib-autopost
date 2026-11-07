@@ -106,6 +106,18 @@ What has been settled, and what is still open. Newest first.
   0.04): the clone has plateaued, and only the real recording closes the gap.
   The real reads run longer (Levels #2 71 s against 62 s cloned) because
   Pietro speaks more slowly than the clone.
+- **Every Reel is voiced in Pietro's clone, alternating two voices** (7 Nov,
+  Pietro's call): L2 (the Levels #2 voice) and L3 (the Levels #3 voice), one
+  then the other, to test which goes more viral; a named voice overrides the
+  rotation. The record is `build/voices/voice_log.json`. The procedure is the
+  `ib-voiced-reel` skill (copy in `docs/skill/ib-voiced-reel/SKILL.md`).
+  Clarity: both clones were duller than his real recordings (less presence
+  above 4 kHz, more mud at 150 to 500 Hz); each now gets an EQ curve matched
+  to his real voice (tone gap 2.8 to 1.2 dB for L2, 2.2 to 1.3 dB for L3,
+  likeness unchanged), a light de-esser and gentle compression. The two
+  samples are encrypted in `build/voices/`; the key is in the claude.ai
+  Project (`claude/voice-samples-key.md`), and `build/setup_voice.sh` sets up
+  a fresh session.
 - **Captions are burned in, word by word**, on every voiced Reel, because most
   people watch muted.
 - **Reel style: kinetic typography on paper** (3 Nov), modelled on a

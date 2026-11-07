@@ -163,9 +163,67 @@ def prepare_reference(src, out, max_s=25.0, min_s=12.0):
     return len(ref) / SR
 
 
+# ------------------------------------------------- Pietro's two voices ----
+# Two cloned voices, both approved by Pietro on 7 Nov: L2 (the voice of
+# Levels #2) and L3 (the voice of Levels #3). Reels alternate between them
+# unless Pietro names one. Their samples are encrypted in voices/ (the key is
+# in the claude.ai Project, never in this public repo); setup_voice.sh
+# decrypts them into $VOICE_DIR. Each voice has an EQ curve that matches its
+# tone to Pietro's real recordings (measured 7 Nov: the clones were duller,
+# with less presence above 4 kHz and more mud at 150 to 500 Hz).
+
+import json
+
+VOICES = pathlib.Path(__file__).parent / "voices"
+VOICE_DIR = os.environ.get("VOICE_DIR", "")
+
+
+def voices():
+    return json.load(open(VOICES / "voices.json"))
+
+
+def sample(name):
+    """'L2' -> the decrypted sample in $VOICE_DIR; a path is returned as is."""
+    if name in voices():
+        p = pathlib.Path(VOICE_DIR) / f"{name}.wav"
+        if not p.exists():
+            raise FileNotFoundError(f"{p} missing: run build/setup_voice.sh first (see the ib-voiced-reel skill)")
+        return str(p)
+    return name
+
+
+def master_chain(voice_name):
+    """The ffmpeg chain for a named clone: rumble cut, the voice's EQ curve,
+    a light de-esser and gentle compression. None for anything else."""
+    ref = voice_name.split(":", 1)[1] if voice_name.startswith("clone:") else None
+    v = voices().get(ref)
+    if not v:
+        return None
+    entries = ";".join(f"entry({b},{g})" for b, g in v["eq"])
+    return (f"highpass=f=75,firequalizer=gain_entry='{entries}',deesser=i=0.3,"
+            "acompressor=threshold=-20dB:ratio=2.5:attack=12:release=140:makeup=1.5")
+
+
+def next_voice():
+    """The voice for the next Reel: whichever of L2 and L3 was not used last."""
+    log = json.load(open(VOICES / "voice_log.json"))
+    last = log[-1]["voice"] if log else "L3"
+    return "L3" if last == "L2" else "L2"
+
+
+def log_voice(reel, voice, date=None):
+    """Record which voice a Reel used (one entry per Reel; a re-render updates it)."""
+    import datetime
+    path = VOICES / "voice_log.json"
+    log = [x for x in json.load(open(path)) if x["reel"] != reel]
+    log.append(dict(reel=reel, voice=voice, date=date or datetime.date.today().isoformat()))
+    json.dump(log, open(path, "w"), indent=1)
+
+
 def make_voice(name):
-    """'af_heart' (Kokoro) or 'clone:/path/to/reference.wav' (Pocket TTS)."""
+    """'af_heart' (Kokoro), 'clone:L2' / 'clone:L3' (Pietro's two voices) or
+    'clone:/path/to/reference.wav' (Pocket TTS on any consenting sample)."""
     if name.startswith("clone:"):
-        return CloneVoice(name.split(":", 1)[1])
+        return CloneVoice(sample(name.split(":", 1)[1]))
     from voice import Voice
     return Voice(name)

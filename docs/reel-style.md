@@ -140,6 +140,6 @@ that get harder, read by the voice; the viewer keeps score and comments it.
 - Close: "What's your score out of four?", a spinning score, "Comment it
   below", follow, brand. Comment question: a bonus level.
 - Four levels keeps it near 52 seconds; five ran past a minute.
-- Three voices, same engine: Kokoro `af_heart`, Pietro's clone
-  (`clone:` reference) or Pietro himself (`real:` memo of the script, read
-  as the Reel, with a two-second pause after each question).
+- Voice: Pietro's clone, alternating `clone:L2` and `clone:L3` (7 Nov; see
+  the `ib-voiced-reel` skill). The engine can also take Pietro himself
+  (`real:` memo of the script) if he asks for it.
