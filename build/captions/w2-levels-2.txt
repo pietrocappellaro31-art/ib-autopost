@@ -1,0 +1,15 @@
+A company at 20x earnings buys one at 10x, all in stock. Accretive or dilutive? That's level 4. Start at level 1 and keep score.
+
+Level 1: a P/E multiple uses equity value. Net income is what's left for shareholders after interest, so you match it with what shareholders own.
+
+Level 2: EV/EBITDA uses enterprise value. EBITDA is earned before lenders get paid, so it belongs to everyone who funds the business.
+
+Level 3: $100 of equity value plus $50 of net debt is $150 of EV. The share price doubles, the equity becomes $200, the debt doesn't move, so EV is $250. Not $300.
+
+Level 4: accretive, before fees and synergies. Say the buyer earns $100 on 100 shares at $20, so EPS is $1.00, and it buys $50 of earnings for $500 by issuing 25 new shares at $20 each. Now it's $150 of earnings over 125 shares, which is $1.20. Expensive paper bought cheaper earnings.
+
+Comment your score out of 4.
+
+Voice model: Pocket TTS by Kyutai
+
+#investmentbanking #ibinterview #mergersandacquisitions #valuation

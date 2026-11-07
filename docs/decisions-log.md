@@ -81,6 +81,15 @@ What has been settled, and what is still open. Newest first.
   voice's pauses are too irregular for Kokoro's pause matching). Levels #1
   in the clone: 13 of 13 lines word-perfect, 21 of 22 caption onsets within
   0.15 s, likeness 0.82 against a held-out real recording.
+  Refined 6 Nov with three longer memos (about 4.5 minutes, seven delivery
+  styles). `voice_refsearch.py` cut them into 12 windows of 14 to 20 s,
+  cloned the same lines from each and scored them against real speech from
+  the other memos (real against real across memos: 0.92). Best: the quiz-host
+  window from the first new memo (0.785 likeness over 8 takes and the
+  fewest slipped words; one story window scored 0.80 but slipped more), against 0.71
+  for the first memo's sample on the same test), now the reference for quiz
+  formats. Levels #2 is the first Reel voiced with it. Pietro's recordings
+  and references stay out of this public repo.
 - **Captions are burned in, word by word**, on every voiced Reel, because most
   people watch muted.
 - **Reel style: kinetic typography on paper** (3 Nov), modelled on a

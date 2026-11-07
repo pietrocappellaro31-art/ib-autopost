@@ -56,7 +56,7 @@ def kara(display, start, dur, cols=None, hide=False, hl=(), cls="", style="", li
         key = re.sub(r"[^\w$%×/]", "", w).lower()
         c = cols.get(key)
         spans.append(f'<span class="w" data-t="{tt}"' + (f' data-c="{c}"' if c else "")
-                     + f' style="display:inline-block">{H.escape(w)}</span>')
+                     + f' style="display:inline-block">{H.escape(H.unescape(w))}</span>')
     # Highlighter behind a phrase, swiped on as its first word is said.
     for phrase in hl:
         p = phrase.split()
@@ -79,7 +79,7 @@ def synth(ep, voice_name):
     v = make_voice(voice_name)                         # Kokoro name, or clone:/path/to/reference.wav
     texts = {"hook": [s for s, _ in ep["hook"]["say"]], "close": [s for s, _ in ep["close"]["say"]]}
     for i, lv in enumerate(ep["levels"]):
-        texts[f"q{i}"] = ([lv["label"]] if lv.get("label") else []) + [s for s, _ in lv["q"]]
+        texts[f"q{i}"] = ([lv["label"]] if lv.get("label") else []) + [s for s, _ in lv["q"] if s]   # "" = on the card, not said
         texts[f"a{i}"] = [s for s, *_ in lv["a"]]
     for k, ss in texts.items():
         v.phonemes(" ".join(ss))                       # fail before rendering on an unknown word
@@ -190,7 +190,7 @@ def scene(ep, parts, at, hook_end, lv, total):
     hk = ep["hook"]
     hs = seg("hook")
     q_html = kara(hk["say"][0][1], at["hook"] + hs[0][1], hs[0][2] - hs[0][1], hk.get("cols"), hl=hk.get("hl", ()), lit=True,
-                  style="font-family:'Serif',serif;font-weight:700;font-size:86px;line-height:1.06;letter-spacing:-.02em")
+                  style=f"font-family:'Serif',serif;font-weight:700;font-size:{hk.get('qsize', 86)}px;line-height:1.06;letter-spacing:-.02em")
     lines = "".join(kara(d, at["hook"] + a, b - a, hk.get("cols"), hide=True,
                          style="font-family:'Serif',serif;font-style:italic;font-weight:600;font-size:70px;line-height:1.12;margin-top:6px")
                     for (s, d), (_, a, b) in zip(hk["say"][1:], hs[1:]))
@@ -208,8 +208,14 @@ def scene(ep, parts, at, hook_end, lv, total):
         last = i == n_lv - 1
         qs = seg(f"q{i}")[1:] if L.get("label") else seg(f"q{i}")      # a spoken "Level N." is not on the card
         qa = at[f"q{i}"]
-        q_html = "".join(kara(d, qa + a, b - a, L.get("cols"), hl=L.get("hl", ()), style="display:inline")
-                         + " " for (s, d), (_, a, b) in zip(L["q"], qs))
+        spoken = iter(qs)
+        q_html = ""
+        for s_, d in L["q"]:
+            if not s_:                                    # already asked (the hook): shown, not read again
+                q_html += kara(d, qa, .01, L.get("cols"), lit=True, style="display:inline;opacity:.55") + " "
+                continue
+            _, a, b = next(spoken)
+            q_html += kara(d, qa + a, b - a, L.get("cols"), hl=L.get("hl", ()), style="display:inline") + " "
         qcard = card(f'<div style="font-family:\'Serif\',serif;font-weight:700;font-size:{L.get("qsize", 62)}px;line-height:1.12;'
                      f'letter-spacing:-.015em">{q_html}</div>', accent=RED if last else None)
         think = A(f'<div style="display:flex;align-items:center;gap:24px"><span class="lbl" style="font-size:30px;letter-spacing:.22em;'
@@ -302,8 +308,24 @@ def soundtrack(parts, at, lv, total):
 CLONE_MASTER = "highpass=f=75,acompressor=threshold=-20dB:ratio=2.5:attack=12:release=140:makeup=1.5"
 
 
-def make(ep, voice_name="af_heart"):
-    v, parts = synth(ep, voice_name)
+def reuse(work):
+    """The voice parts of an earlier render (timeline.json and voice.wav in
+    out/<slug>), so a layout fix does not need the voice generated again:
+    a cloned voice takes minutes and gives different takes each time."""
+    import wave
+    t = json.load(open(work / "timeline.json"))
+    with wave.open(str(work / "voice.wav")) as w:
+        a = np.frombuffer(w.readframes(w.getnframes()), np.int16).astype(np.float32) / 32768
+    return {k: (a[int(t["at"][k] * SR): int(t["at"][k] * SR) + int(segs[-1][2] * SR)], [tuple(x) for x in segs])
+            for k, segs in t["segments"].items()}
+
+
+def make(ep, voice_name="af_heart", keep_voice=False):
+    if keep_voice:
+        parts = reuse(OUT / ep["slug"])
+        v = None
+    else:
+        v, parts = synth(ep, voice_name)
     at, hook_end, lv, total = timeline(ep, parts)
     sc, check_at = scene(ep, parts, at, hook_end, lv, total)
     mp4, cover, problems = build(ep["slug"] + "-silent", [sc], theme="paper", cover_at=hook_end - .2, crf=21,
