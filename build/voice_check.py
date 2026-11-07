@@ -232,3 +232,24 @@ def embedding(wav_path):
 
 def similarity(a_path, b_path):
     return float(embedding(a_path) @ embedding(b_path))
+
+
+def pitch(a, sr=24000):
+    """Median pitch (Hz) of the voiced part of a take, YIN-style. Used to catch
+    a feminised clone drifting back to a male pitch (a woman's speaking
+    voice is mostly 165 to 255 Hz, Pietro's own about 120)."""
+    hop, win, tmin, tmax = 240, 960, sr // 400, sr // 70
+    frames = [a[i:i + win + tmax] for i in range(0, len(a) - win - tmax, hop)]
+    if not frames:
+        return 0.0
+    thr = np.percentile([np.sqrt(np.mean(x[:win] ** 2)) for x in frames], 40)
+    out = []
+    for x in frames:
+        if np.sqrt(np.mean(x[:win] ** 2)) < thr:
+            continue
+        d = np.array([np.sum((x[:win] - x[t:t + win]) ** 2) for t in range(tmin, tmax)])
+        cm = d / (np.cumsum(d) / np.arange(1, len(d) + 1) + 1e-9)
+        k = int(np.argmin(cm))
+        if cm[k] < .25:
+            out.append(sr / (k + tmin))
+    return float(np.median(out)) if out else 0.0

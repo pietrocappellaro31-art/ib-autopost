@@ -186,3 +186,14 @@ What has been settled, and what is still open. Newest first.
   size, university finance societies, student investment clubs.
 - **Alt text** is not settable through the publishing API. Add in-app on the
   posts that matter.
+- **Experiment: a woman's voice made from Pietro's own** (7 Nov, Pietro's
+  request, awaiting his pick). `build/voice_feminise.py` raises the formants
+  (spectral envelope warp) and the pitch of one of his samples, and Pocket TTS
+  clones the result, keeping his delivery. No real woman's voice is used, so
+  there is nobody else's consent to get; the AI label still applies. Three
+  candidates were put in a lineup: A calm (about 182 Hz, the clearest, 4% word
+  errors over 8 takes), B bright (215 Hz, 10%), C warm (202 Hz, 9%); his male
+  clone runs about 11%. A full Levels #3 in voice A: 14 of 14 lines
+  word-perfect, pitch 154 to 210 Hz by passage. A feminised voice can drift
+  back towards a male pitch in some takes, so `CloneVoice(min_pitch=...)`
+  retakes any take below the floor.

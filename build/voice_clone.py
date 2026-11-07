@@ -37,8 +37,9 @@ POCKET = os.environ.get("POCKET_DIR", "")
 
 
 class CloneVoice:
-    def __init__(self, reference, steps=8, sherpa=SHERPA, model=POCKET):
+    def __init__(self, reference, steps=8, sherpa=SHERPA, model=POCKET, min_pitch=None):
         self.ref = str(pathlib.Path(reference).resolve())
+        self.min_pitch = min_pitch                      # Hz; a take below it is retaken (feminised voices)
         self.steps = steps
         self.log = []                                   # one entry per line: takes used, how it was heard
         self.bin = pathlib.Path(sherpa) / "bin" / "sherpa-onnx-offline-tts"
@@ -68,6 +69,8 @@ class CloneVoice:
                 write_wav(w, a)
                 heard, ws = voice_check.transcribe(w, with_words=True)
             e = voice_check.wer(text, heard)
+            if self.min_pitch and voice_check.pitch(a) < self.min_pitch:
+                e += 1                                   # drifted towards a male pitch: never the take to keep
             if best is None or e < best[0]:
                 best = (e, a, heard, ws)
             if e == 0:
@@ -224,6 +227,8 @@ def make_voice(name):
     """'af_heart' (Kokoro), 'clone:L2' / 'clone:L3' (Pietro's two voices) or
     'clone:/path/to/reference.wav' (Pocket TTS on any consenting sample)."""
     if name.startswith("clone:"):
-        return CloneVoice(sample(name.split(":", 1)[1]))
+        ref = name.split(":", 1)[1]
+        v = voices().get(ref, {})
+        return CloneVoice(sample(ref), min_pitch=v.get("min_pitch"))
     from voice import Voice
     return Voice(name)
