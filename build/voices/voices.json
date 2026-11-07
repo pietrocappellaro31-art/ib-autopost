@@ -89,7 +89,8 @@
     10159,
     4.5
    ]
-  ]
+  ],
+  "rotation": true
  },
  "L3": {
   "name": "the Levels #3 voice",
@@ -181,7 +182,8 @@
     10159,
     1.1
    ]
-  ]
+  ],
+  "rotation": true
  },
  "F1": {
   "name": "the woman's voice F1 (sweet, calm)",

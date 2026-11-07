@@ -389,7 +389,7 @@ def make(ep, voice_name="af_heart", keep_voice=False):
                "segments": {k: p[1] for k, p in parts.items()}}, open(work / "timeline.json", "w"), indent=1)
     named = voice_name.split(":", 1)[1] if voice_name.startswith("clone:") else None
     from voice_clone import voices, log_voice
-    if named in voices():
+    if voices().get(named, {}).get("rotation"):
         log_voice(ep["slug"], named)                         # keeps the L2 / L3 alternation across sessions
     if getattr(v, "log", None):                              # a cloned voice: how each line was heard
         json.dump(v.log, open(work / "takes.json", "w"), indent=1)

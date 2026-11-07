@@ -214,9 +214,10 @@ def master_chain(voice_name):
 
 def next_voice():
     """The voice for the next Reel: whichever of L2 and L3 was not used last."""
-    log = json.load(open(VOICES / "voice_log.json"))
-    last = log[-1]["voice"] if log else "L3"
-    return "L3" if last == "L2" else "L2"
+    rot = [k for k, v in voices().items() if v.get("rotation")]      # L2 and L3; test voices are never logged
+    log = [x for x in json.load(open(VOICES / "voice_log.json")) if x["voice"] in rot]
+    last = log[-1]["voice"] if log else rot[-1]
+    return rot[(rot.index(last) + 1) % len(rot)]
 
 
 def log_voice(reel, voice, date=None):
