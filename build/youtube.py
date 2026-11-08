@@ -139,7 +139,7 @@ def scenes(ep, items):
             chapters.append((t, ch["title"]))
             html = (f'<div class="lbl" style="margin-bottom:26px">Part {c + 1} of {n_ch}</div>'
                     + words_kara(H.escape(ch["title"]), .25, dur, size=120, hide=True))
-            sc.append(dict(dur=dur + 1.1, push=.03, enter="zoomin", ghost=str(c + 1), html=html, voice=(a, .35)))
+            sc.append(dict(dur=dur + 1.1, push=.03, enter="", ghost=str(c + 1), html=html, voice=(a, .35)))
             sounds.append(("ding", t + .3, .1))
         else:
             beat = ch["beats"][b]
@@ -147,7 +147,7 @@ def scenes(ep, items):
             vis = visual(show, .25, dur)
             cap = "" if show.get("kind", "statement") == "statement" else (
                 f'<div class="cap nochk">{words_kara(H.escape(beat["say"]), .25, dur, size=40, serif=False)}</div>')
-            sc.append(dict(dur=dur + .75, push=.02, enter="right" if b % 2 == 0 else "whip", html=vis + cap,
+            sc.append(dict(dur=dur + .75, push=.02, enter="", html=vis + cap,
                            chap=ch["title"], voice=(a, .25)))
             sounds.append(("pop", t + .3, .14))
         t += sc[-1]["dur"]
