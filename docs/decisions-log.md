@@ -223,3 +223,11 @@ What has been settled, and what is still open. Newest first.
   slowed to 0.82; he reads at about 2.3 words a second, the raw clone at
   about 3) and its own tone match. Not in the L2/L3 rotation until Pietro
   says so.
+- **One default voice, and a female voice on request** (8 Nov, Pietro). P1, cloned from
+  Pietro's own read of the Levels #1 script (levels-1-pietro-voice.mp4, first 20.6 s), is
+  the voice of every Reel and YouTube video from now on; the L2/L3 alternation ends
+  (`next_voice()` returns P1). F3, cloned from the Levels #1 Reel voice (levels-1.mp4, the
+  synthetic Kokoro af_heart voice, nobody real), is used only when Pietro asks for a female
+  voice. Both run at 16 quality steps with a tone match measured against the original
+  recording; F3 is also slowed to 0.84 (the raw clone read 4.1 words a second against 3.5)
+  with a pitch floor of 165 Hz. P1 is encrypted like L2 to L4; F3 is synthetic, kept plain.

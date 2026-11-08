@@ -213,12 +213,14 @@ def master_chain(voice_name):
             "acompressor=threshold=-20dB:ratio=2.5:attack=12:release=140:makeup=1.5")
 
 
+DEFAULT_VOICE = "P1"      # Pietro (8 Nov): his own voice for every Reel and video unless he names another
+FEMALE_VOICE = "F3"       # only when he asks for a female voice
+
+
 def next_voice():
-    """The voice for the next Reel: whichever of L2 and L3 was not used last."""
-    rot = [k for k, v in voices().items() if v.get("rotation")]      # L2 and L3; test voices are never logged
-    log = [x for x in json.load(open(VOICES / "voice_log.json")) if x["voice"] in rot]
-    last = log[-1]["voice"] if log else rot[-1]
-    return rot[(rot.index(last) + 1) % len(rot)]
+    """The voice for the next Reel or video. Since 8 Nov always the default, P1:
+    the L2/L3 alternation has ended (Pietro's call)."""
+    return DEFAULT_VOICE
 
 
 def log_voice(reel, voice, date=None):
