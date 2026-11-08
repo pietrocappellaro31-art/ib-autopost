@@ -339,8 +339,8 @@
       "series": "Technical of the Day",
       "scheduled_utc": "2026-11-08T13:00:00",
       "caption": "Somebody gave you 15 minutes. Most people waste 11 of them talking about themselves.\n\nThe first 60 seconds: thank them, name whoever connected you, 2 lines on you, and 1 on why you asked for this call specifically. Then stop talking.\n\nAsk what only they can answer. \"What's banking like\" is a brochure question and you'll get a brochure answer. \"How did you end up in this group\" and \"what surprised you in year 1\" are questions nobody else can answer for them.\n\nShow the reading without performing it. 1 specific reference, not 3. \"I saw you worked on that deal, what was hard about it?\" One is interest. Three is research, and it reads differently.\n\nMinute 13 is the entire call. 2 questions: is there anyone else in the group worth speaking to, and is there anything I should be doing now. Both are easy to say yes to, and 1 of them hands you the next conversation.\n\nThen follow up inside 24 hours, referencing something specific they said so it's obviously not a template.\n\nSave this before your next one.\n\n#investmentbanking #ibrecruiting #networking #financecareers",
-      "published_id": null,
-      "published_at_utc": null,
+      "published_id": "18137539429784084",
+      "published_at_utc": "2026-11-08T13:08:13.531564+00:00",
       "images": [
         "w1-14-call-01.jpg",
         "w1-14-call-02.jpg",
@@ -352,7 +352,8 @@
         "w1-14-call-08.jpg",
         "w1-14-call-09.jpg"
       ],
-      "first_comment": "What's the best question anyone has asked you on a networking call?"
+      "first_comment": "What's the best question anyone has asked you on a networking call?",
+      "first_comment_error": "Graph API 400 on 18137539429784084/comments: {\"error\":{\"message\":\"(#10) Application does not have permission for this action\",\"type\":\"OAuthException\",\"code\":10,\"fbtrace_id\":\"AcEwmJzzQhl7yfLaWvQjaUk\"}}"
     },
     {
       "id": "story-2026-11-08",
