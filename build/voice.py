@@ -42,7 +42,40 @@ PHONEMES = {
     "borrows": "bˈɑɹOz",
     "compound": "kəmpˈWnd",   # the verb; the dictionary has the noun
     "a": "ɐ",          # the article is reduced; the dictionary gives the letter name
+    "mackay": "məkˈI",
+    "goldgar": "ɡˈOldɡɑɹ",
+    "garber": "ɡˈɑɹbəɹ",
 }
+
+VOICELESS = set("ptkfθsʃʧ")
+SIBILANT = ("s", "z", "ʃ", "ʒ", "ʧ", "ʤ")
+
+
+def inflect(w, look):
+    """Plurals, -ed and -ing from the stem, for words the dictionary only has in
+    their base form (it has 'tulip', not 'tulips'). Same rules a speaker uses:
+    s/z/iz after the stem's last sound, t/d/id for the past."""
+    def end(p):
+        return p.rstrip("ˈˌ")[-1:]
+    for suf, stems in (("ies", ("y",)), ("es", ("",)), ("s", ("",)), ("'s", ("",))):
+        if w.endswith(suf) and len(w) > len(suf) + 2:
+            for st in stems:
+                p = look(w[: -len(suf)] + st)
+                if p:
+                    e = end(p)
+                    return p + ("ɪz" if p.endswith(SIBILANT) else "s" if e in VOICELESS else "z")
+    if w.endswith("ed") and len(w) > 4:
+        for stem in (w[:-2], w[:-1], w[:-3] if w[-3] == w[-4] else None):
+            p = stem and look(stem)
+            if p:
+                e = end(p)
+                return p + ("ɪd" if e in "td" else "t" if e in VOICELESS else "d")
+    if w.endswith("ing") and len(w) > 5:
+        for stem in (w[:-3], w[:-3] + "e", w[:-4] if w[-4] == w[-5] else None):
+            p = stem and look(stem)
+            if p:
+                return p + "ɪŋ"
+    return None
 
 
 class Voice:
@@ -77,7 +110,8 @@ class Voice:
                 out.append(tok)
                 continue
             w = tok.lower()
-            p = PHONEMES.get(w) or self.dict.get(w) or self.dict.get(w.strip("'"))
+            look = lambda x: PHONEMES.get(x) or self.dict.get(x)
+            p = look(w) or self.dict.get(w.strip("'")) or inflect(w, look)
             if not p:
                 raise KeyError(f"No pronunciation for {tok!r}; add it to PHONEMES")
             out.append(p)

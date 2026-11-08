@@ -9,7 +9,9 @@ in this repo.
 
 | Voice | What it is | Rights | Status |
 |---|---|---|---|
-| P1 | Clone of Pietro (default since 8 Nov) | Pietro's own voice, consent on record (his requests, 6 to 8 Nov). Note: the P1 sample was cut from `levels-1-pietro-voice.mp4`, which is itself a clone of Pietro, not a raw recording | Allowed |
+| G2, BELLA, EMMA | The Reel rotation from 8 Nov (one month test). G2: Kokoro bm_george read slowly, re-spoken by Pocket TTS from that synthetic sample; BELLA: Kokoro af_bella; EMMA: Kokoro bf_emma | Kokoro-82M Apache 2.0; Pocket TTS CC BY 4.0 for G2 (credit line). No real person | Allowed, Reels |
+| GEORGE | Kokoro bm_george, YouTube long-form and Shorts from 8 Nov | Kokoro-82M, Apache 2.0; no real person | Allowed, YouTube |
+| P1 | Clone of Pietro (default 8 Nov, replaced the same day by the rotation) | Pietro's own voice, consent on record (his requests, 6 to 8 Nov). Note: the P1 sample was cut from `levels-1-pietro-voice.mp4`, which is itself a clone of Pietro, not a raw recording | Re-renders only |
 | L2, L3, L4 | Earlier clones of Pietro | Same consent; samples from his own memos of 6 and 7 Nov | Re-renders only |
 | F1, F2, F3 | Clones of synthetic Kokoro voices (af_heart, af_bella blend) | Kokoro-82M, Apache 2.0; not a real person | F3 allowed on request |
 | Kokoro stock voices (am_michael, am_fenrir, am_puck, bm_george, af_heart, af_bella, bf_emma, af_sarah) | Synthetic voices, auditioned 8 Nov | Kokoro-82M, Apache 2.0 (hexgrad/Kokoro-82M); the model card names no real speaker for the English voices | Candidates |

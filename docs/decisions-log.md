@@ -241,3 +241,20 @@ What has been settled, and what is still open. Newest first.
   person is cloned, so the licence-clean pool is Kokoro's own voices (Apache
   2.0); eight were auditioned (`voice-audition.mp4`), all 0 to 3% word errors,
   DNSMOS 3.27 to 3.54. Rights recorded in `docs/rights/ledger.md`.
+- **Reels rotate three voices for a month; YouTube is GEORGE; daily automation** (8 Nov,
+  Pietro). From the 8 Nov auditions: Reels alternate, one per Reel and in this order, G2
+  ("E, slower": Kokoro bm_george read at 0.82, re-spoken by Pocket TTS, 8 exact takes per
+  line, the most consistent kept), BELLA (Kokoro af_bella, bright and warm, US) and EMMA
+  (Kokoro bf_emma, British, calm), for one month; then Pietro picks one from the results.
+  `next_voice()` runs the rotation from `build/voices/voice_log.json`. YouTube long-form and
+  Shorts always use GEORGE (Kokoro bm_george, British, measured). All four are synthetic;
+  no key is needed. P1 and F3 end as defaults. Three scheduled tasks now make the content
+  every day, posting stays manual: YouTube long video and YouTube Short (6:35 and 6:40am New
+  York, ready by 7) and the IG Reel (8:16am, ready by about 8:30). Each delivers in its own
+  task thread, logs to `docs/daily/`, and starts from the previous run's "next improvement"
+  in `docs/daily/quality-log.md`. New long-form engine: `build/youtube.py` (1920x1080,
+  chapters, captions, sound effects, -14 LUFS, thumbnail, description with chapter times).
+  YouTube rule checked 8 Nov: an AI voice that does not imitate a real person needs no label
+  on its own, and the label does not affect earnings; we tick "altered or synthetic" anyway.
+  The monetisation risk is "inauthentic content" (mass-produced, template-identical), so
+  every video carries original, sourced analysis and varies in structure and visuals.

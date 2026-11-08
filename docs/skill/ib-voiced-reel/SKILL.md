@@ -1,93 +1,108 @@
 ---
-name: ib-voiced-reel
-description: Make every Reel for @investmentbankinginterviews voiced in Pietro's cloned voice, alternating the L2 and L3 voices, with sound effects, voice checks, caption and comment question.
+name: "ib-voiced-reel"
+description: "Make every Instagram Reel for @investmentbankinginterviews voiced: the voice rotates G2, BELLA, EMMA (one per Reel, a one-month test from 8 Nov), with sound effects, voice and quality checks, caption, comment question and the daily quality log. YouTube videos use GEORGE (see youtube-videos-creator)."
 ---
 
 # Voiced Reels for @investmentbankinginterviews
 
-Every Reel is voiced in Pietro's cloned voice. There are exactly two approved
-voices:
+## The voice rule (from 8 Nov, a one-month test)
 
-- **L2**: the voice of Levels #2.
-- **L3**: the voice of Levels #3.
+Reels rotate three voices, one per Reel, in this order. After a month Pietro
+picks the winner from the results, so the rotation must stay strict:
 
-## The voice rule
+| Name | What it is | Engine |
+|---|---|---|
+| **G2** | "E, slower": Kokoro bm_george read slowly, re-spoken by Pocket TTS, 8 exact takes per line, the most consistent kept | Pocket TTS (CC BY 4.0) |
+| **BELLA** | Kokoro af_bella, bright and warm, US | Kokoro (Apache 2.0) |
+| **EMMA** | Kokoro bf_emma, British, calm | Kokoro (Apache 2.0) |
 
-1. **Alternate L2 and L3.** One Reel L2, the next L3, and so on. To see which
-   is next, run from `build/`:
-   `python3 -c "import voice_clone; print(voice_clone.next_voice())"`.
-   The record is `build/voices/voice_log.json`; it updates itself when a
-   Reel renders.
-2. **If Pietro names a voice** ("use L2", "use the level 3 voice"), use that
-   one instead.
-3. **Only these two voices.** Not the stock voice, not anyone else's voice.
-4. Why: an A/B test of which voice goes more viral. Keep the log accurate
-   and say in every delivery which voice the Reel used.
+1. `voice_clone.next_voice()` returns the next one in the rotation (it reads
+   `build/voices/voice_log.json`). Use it. Do not pick by taste.
+2. If Pietro names a voice for a Reel, use that one; it still counts in the
+   log.
+3. **YouTube (long-form and Shorts) is always GEORGE** (Kokoro bm_george,
+   British, measured). Never in the Reel rotation.
+4. All four are synthetic voices, not a real person. Never clone anyone.
+   Older voices (P1, L2 to L4, F1 to F3) are kept only to re-render old Reels.
+5. Say in every delivery which voice was used.
 
 ## Before making anything
 
-Read `docs/brand-system.md`, `docs/decisions-log.md` and `docs/reel-style.md`.
+Read `docs/brand-system.md`, `docs/decisions-log.md`, `docs/reel-style.md`,
+`docs/daily/quality-log.md` (the last row's "next improvement" is today's
+job) and `docs/daily/topics.md` in the ib-autopost repo.
 
 ## Setup, once per new session
 
-1. Read the Project doc `claude/voice-samples-key.md` (Projects tool,
-   `project_read`) to get the key.
-2. From the repo root run
-   `VOICE_KEY=<key> bash build/setup_voice.sh && source ~/voice-tools/env.sh`.
-   It downloads the voice model and the speech recogniser (about 0.7 GB) and
-   decrypts the two voice samples. Never print, paste or commit the key.
+From the repo root:
+`bash build/setup_voice.sh && source ~/voice-tools/env.sh`
+It downloads Kokoro, Pocket TTS, the speech recogniser, the speaker model and
+the DNSMOS quality model (about 1 GB, a few minutes). No key is needed for
+G2, BELLA, EMMA or GEORGE. Never print or commit a key if one is around.
 
 ## Make the Reel
 
-1. **Format**: the Levels quiz by default (`build/levels.py`; copy
-   `build/reels_levels2.py` or `build/reels_levels3.py`). Other formats take
-   the same voice names.
+1. **Format**: the Levels quiz by default (`build/levels.py`; copy the latest
+   `build/reels_levels<N>.py`). Pick a topic not in `docs/daily/topics.md`
+   "Used" for Reels; IB interview technicals first.
 2. **Write the episode file** `build/reels_<slug>.py`. Work every answer in
    its docstring. Never invent a number, statistic or credential. No em
-   dashes. Spoken text uses words for numbers ("twenty five percent"); the
-   on-screen text uses digits ("25%").
-3. **Render**: `python3 build/reels_<slug>.py clone:L2` (or `clone:L3`). About
-   10 to 12 minutes.
-4. **Layout problems** ("SAFE-AREA PROBLEMS" in the output): make the type
-   smaller (`qsize`, `bigsize`) or shorten the chip, then re-render only the
-   visuals with `make(EP, "clone:L2", keep_voice=True)`, so the voice takes
-   stay the same.
+   dashes. Spoken text uses words for numbers; on-screen text uses digits.
+   Each hook is one sentence in one `say` entry.
+3. **New words**: the voice stops on a word it cannot pronounce. Add it to
+   `PHONEMES` in `build/voice.py` (plurals, -ed and -ing are worked out from
+   the stem automatically).
+4. **Render**: `python3 build/reels_<slug>.py <VOICE>` with the name from
+   `next_voice()`. Kokoro voices take a few minutes, G2 about 30 to 45.
+5. **Layout problems** ("SAFE-AREA PROBLEMS"): smaller type (`qsize`,
+   `bigsize`) or a shorter chip, then
+   `make(EP, "<VOICE>", keep_voice=True)` so the voice stays the same. A
+   wrong line: `make(EP, "<VOICE>", keep_voice=True, redo=["a2"])`.
 
-## Make sure the voice is clear
+## Checks before delivering
 
-Check all of these before delivering:
-
-- `build/out/<slug>/takes.json`: every line has `"wer": 0`, meaning the
-  speech recogniser heard exactly the script. If a line is not 0, render
-  again (each take is different) or reword that line.
-- Loudness about -16 LUFS and true peak no higher than -1.5 dB:
-  `ffmpeg -i build/out/<slug>/<slug>.mp4 -af ebur128=peak=true -f null -`.
-- The voice's EQ (in `build/voices/voices.json`) is applied automatically. It
-  makes the clone as bright and clear as Pietro's real recordings. Do not
-  remove it.
-- Look at frames: the cover, each level settled, and the transitions.
+- `build/out/<slug>/takes.json`: every line `"wer": 0` (heard word for word).
+- Quality: `python3 -c "import quality; print(quality.score('build/out/<slug>/<slug>.mp4'))"`
+  (DNSMOS overall; about 3.1 to 3.5 is studio-clean).
+- Loudness about -16 LUFS, true peak no higher than -1.5 dB
+  (`ffmpeg -i <mp4> -af ebur128=peak=true -f null -`).
+- Look at frames: the cover, each level settled, the transitions.
 
 ## Sound
 
 Sound effects on every Reel (`build/sfx.py`): ticks, pops, dings, thump. The
-more the better. **Never a whoosh on the swipe between scenes**: Pietro finds
-it annoying.
+more the better. **Never a whoosh on the swipe between scenes.** No music:
+Pietro adds it in the app.
+
+## Compliance
+
+Run the content-compliance gate. Write `docs/rights/posts/<slug>.md`.
 
 ## Deliver
 
 1. Send the MP4 and the cover with SendUserFile.
-2. Caption: PASS on ig-human, one ask, up to 4 hashtags, and this line just
-   before the hashtags: `Voice model: Pocket TTS by Kyutai` (the voice
-   model's licence requires the credit).
+2. Caption: PASS on ig-human, one ask, up to 4 hashtags, then just before the
+   hashtags: `Narration: AI-generated voice; script is our original work.`
+   and, for G2 only, `Voice model: Pocket TTS by Kyutai`.
 3. Comment question: a bonus level.
 4. Paste the description and the comment question in the reply, ready to
    copy.
 5. Remind Pietro to turn on Instagram's AI label when he posts.
-6. Say which voice (L2 or L3) the Reel used.
-7. Commit the episode file, the captions and `build/voices/voice_log.json`,
+6. Say which voice was used.
+7. Add a row to `docs/daily/ig-reels.md`, the topic to `docs/daily/topics.md`
+   and the measures plus one improvement to `docs/daily/quality-log.md`.
+8. Commit the episode file, captions, logs and `build/voices/voice_log.json`,
    and push.
+
+## Get better every day
+
+Every run fixes the "next improvement" from yesterday's quality-log row
+before anything else (a pacing issue, a clearer chip, a new sound cue, a
+sharper hook), measures it, and names the next one. Pietro's notes on a Reel
+outrank the metrics.
 
 ## Never
 
-- Clone anyone but Pietro (a public figure's voice is ruled out).
-- Put Pietro's recordings, the decrypted samples or the key in the repo.
+- Clone any real person. Use only the four voices above.
+- Put recordings, decrypted samples or keys in the repo.
+- Add a whoosh, or music.
