@@ -231,3 +231,13 @@ What has been settled, and what is still open. Newest first.
   voice. Both run at 16 quality steps with a tone match measured against the original
   recording; F3 is also slowed to 0.84 (the raw clone read 4.1 words a second against 3.5)
   with a pitch floor of 165 Hz. P1 is encrypted like L2 to L4; F3 is synthetic, kept plain.
+- **"The voice is no good" (8 Nov), measured.** DNSMOS (Microsoft's speech
+  quality model, 1 to 5) on whole tracks: Pietro's first memos 3.3; the L2
+  and L3 Reels 3.33 and 3.26; Levels #4 and #5 in L4 2.84 and 2.80; F1 2.74;
+  the stock Kokoro voices 3.27 to 3.54. Two causes: the five 7 Nov memos score
+  low themselves (3.02 and 2.83, consistent with phone noise reduction), and
+  slowing takes with rubberband costs quality. P1's sample comes from a clone,
+  not a raw recording. Free voices from the web are only usable when no real
+  person is cloned, so the licence-clean pool is Kokoro's own voices (Apache
+  2.0); eight were auditioned (`voice-audition.mp4`), all 0 to 3% word errors,
+  DNSMOS 3.27 to 3.54. Rights recorded in `docs/rights/ledger.md`.
