@@ -1,0 +1,16 @@
+Can goodwill ever be negative? That's level 4. Start at level 1 and keep score.
+
+Level 1: assets = liabilities + equity. Everything a company owns was paid for by someone, either lenders or owners.
+
+Level 2: nothing. Cash goes down $50, inventory goes up $50, so total assets don't move. You swapped one asset for another.
+
+Level 3: $200. Goodwill is the price paid above the fair value of the net assets you buy: $500 - $300.
+
+Level 4: not on the balance sheet. If you pay less than the net assets are worth, you check the values again and then book the difference as a gain straight away. It's called a bargain purchase.
+
+Comment your score out of 4.
+
+Narration: AI-generated voice; script is our original work.
+Voice model: Pocket TTS by Kyutai
+
+#investmentbanking #accounting #ibinterview #mergersandacquisitions
