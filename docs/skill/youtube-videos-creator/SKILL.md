@@ -75,12 +75,14 @@ moment. Rules:
 
 Aim for 8 to 12 minutes; vary the scenes and structure so no two videos look
 alike. Render: `python3 build/youtube_ep<NNN>.py`. Outputs in
-`build/out/<slug>/`: the MP4 (-14 LUFS, sound effects, no music), two
+`build/out/<slug>/`: the MP4 (-14 LUFS, sound effects, original music bed), two
 thumbnails, `<slug>.srt` captions, `metadata.json`, `description.txt` with
 chapter times. Look at a contact sheet of frames before delivering: if it
 looks plainer than the last video, it is not done.
 
 ## 4. Short (9:16)
+
+Set `music=True` in the Short's EP so it carries the music bed.
 
 A four-level quiz with the Levels engine (`build/levels.py`, copy the latest
 `build/reels_levels<N>.py` to `build/shorts_<slug>.py`), rendered with
@@ -104,7 +106,12 @@ Run the content-compliance gate, then:
 - Description ends with `Narration: AI-generated voice; script and analysis
   are our original work.` and the not-financial-advice line (added by the
   engine).
-- No music in the master. No third-party footage, logos or photos of real
+- **Music on every YouTube video (Pietro, 8 Nov), and always our own**: `build/music.py`
+  synthesises an upbeat track per video in the style that trends (four-chord pop loop,
+  kick, clap, hats, pluck, bass), ducked under the voice. Never a real song, however
+  viral: Content ID would claim the video's revenue. Shorts: `music=True` in the EP.
+  Instagram Reels stay without music (Pietro adds it in the app).
+- No third-party footage, logos or photos of real
   people. Fonts, sounds and visuals are ours (see `docs/rights/ledger.md`).
 - Not "made for kids".
 - Rights block in `docs/rights/posts/<slug>.md`.

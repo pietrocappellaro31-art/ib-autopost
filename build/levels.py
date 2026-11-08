@@ -372,7 +372,18 @@ def mux(ep, voice_name, voice, sfx, total, mp4):
     chain = master_chain(voice_name) or (CLONE_MASTER if voice_name.startswith(("clone:", "real:")) else MASTER)
     graph = (f"[1:a]{chain}[v];anoisesrc=color=brown:amplitude=0.0012:sample_rate={SR}:duration={total + .6:.2f}[room];"
              "[v][2:a][room]amix=inputs=3:normalize=0,loudnorm=I=-16:TP=-1.5:LRA=11[a]")
-    subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", str(mp4), "-i", str(work / "voice.wav"), "-i", str(work / "sfx.wav"),
+    extra = []
+    if ep.get("music"):
+        # YouTube Shorts (8 Nov): an original music bed (music.py), ducked under the voice, -14 LUFS.
+        # Instagram Reels stay without music: Pietro adds it in the app.
+        import music
+        bed, info = music.track(total + .5, seed=ep.get("music_seed", sum(map(ord, ep["slug"]))))
+        music.write(work / "music.wav", bed)
+        extra = ["-i", str(work / "music.wav")]
+        graph = (f"[1:a]{chain},aresample=48000,asplit=2[v][key];[2:a]aresample=48000[fx];"
+                 f"[3:a]volume={ep.get('music_level', .2)}[m];[m][key]sidechaincompress=threshold=0.02:ratio=5:attack=30:release=350[md];"
+                 "[v][fx][md]amix=inputs=3:normalize=0,loudnorm=I=-14:TP=-1.5:LRA=11[a]")
+    subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", str(mp4), "-i", str(work / "voice.wav"), "-i", str(work / "sfx.wav"), *extra,
                     "-filter_complex", graph, "-map", "0:v", "-map", "[a]", "-c:v", "copy", "-c:a", "aac", "-b:a", "192k",
                     "-ar", "48000", "-shortest", "-movflags", "+faststart", str(final)], check=True)
     return final

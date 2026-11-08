@@ -399,6 +399,28 @@ def srt(sc, items, path):
     path.write_text("\n".join(out))
 
 
+def mix(ep, work):
+    """Voice, sound effects and the video's own music bed, ducked under the
+    voice, mastered to -14 LUFS (what YouTube plays at). Rerunnable on its own
+    (remix) since the silent video and the stems stay in out/<slug>/."""
+    import music
+    tm = json.load(open(work / "timing.json"))
+    seed = ep.get("music_seed", sum(map(ord, ep["slug"])))
+    bed, info = music.track(tm["total"], seed=seed, breaks=tm["chapters"][1:])
+    music.write(work / "music.wav", bed)
+    json.dump(info, open(work / "music.json", "w"))
+    final = work / f"{ep['slug']}.mp4"
+    mv = ep.get("music_level", .2)
+    graph = (f"[1:a]{MASTER},aresample=48000,asplit=2[v][key];[2:a]aresample=48000[fx];"
+             f"[3:a]volume={mv}[m];[m][key]sidechaincompress=threshold=0.02:ratio=5:attack=30:release=350:makeup=1[md];"
+             f"[v][fx][md]amix=inputs=3:normalize=0,loudnorm=I=-14:TP=-1.5:LRA=11[a]")
+    subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", str(work / f"{ep['slug']}-silent.mp4"), "-i", str(work / "voice.wav"),
+                    "-i", str(work / "sfx.wav"), "-i", str(work / "music.wav"),
+                    "-filter_complex", graph, "-map", "0:v", "-map", "[a]", "-c:v", "copy", "-c:a", "aac", "-b:a", "192k", "-ar", "48000",
+                    "-shortest", "-movflags", "+faststart", str(final)], check=True)
+    return final
+
+
 def make(ep, voice_name=YOUTUBE_VOICE):
     work = OUT / ep["slug"]
     work.mkdir(parents=True, exist_ok=True)
@@ -418,11 +440,8 @@ def make(ep, voice_name=YOUTUBE_VOICE):
     write_wav(work / "voice.wav", voice * g)
     write_wav(work / "sfx.wav", fx[:n] * g)
     silent = render(ep["slug"], html, total, work)
-    final = work / f"{ep['slug']}.mp4"
-    graph = (f"[1:a]{MASTER}[v];[v][2:a]amix=inputs=2:normalize=0,loudnorm=I=-14:TP=-1.5:LRA=11[a]")   # YouTube plays at -14 LUFS
-    subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", str(silent), "-i", str(work / "voice.wav"), "-i", str(work / "sfx.wav"),
-                    "-filter_complex", graph, "-map", "0:v", "-map", "[a]", "-c:v", "copy", "-c:a", "aac", "-b:a", "192k", "-ar", "48000",
-                    "-shortest", "-movflags", "+faststart", str(final)], check=True)
+    json.dump(dict(total=total, chapters=[c for c, _ in chapters]), open(work / "timing.json", "w"))
+    final = mix(ep, work)
     thumbnail(ep, work)
     srt(sc, items, work / f"{ep['slug']}.srt")
     stamp = lambda s: f"{int(s // 60)}:{int(s % 60):02d}"
@@ -432,7 +451,7 @@ def make(ep, voice_name=YOUTUBE_VOICE):
         "Educational content, not financial advice. Not affiliated with any bank mentioned.")
     meta = dict(title=ep["title"], description=desc, tags=ep.get("tags", []), duration_s=round(total, 1), voice=voice_name,
                 youtube_altered_or_synthetic="Yes: realistic synthetic narration voice (not a real person). Tick it in YouTube Studio.",
-                made_for_kids=False, music_in_master=False)
+                made_for_kids=False, music="original, made for this video by build/music.py (no licence needed)")
     json.dump(meta, open(work / "metadata.json", "w"), indent=1)
     (work / "description.txt").write_text(desc)
     print(f"  -> {final.name}  {total / 60:.1f} min  voice {voice_name}")

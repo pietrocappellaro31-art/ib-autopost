@@ -266,3 +266,11 @@ What has been settled, and what is still open. Newest first.
   with the voice), keeps the icon, timeline, flow, stamp and quote layouts, opens each
   chapter on a red card with a drawing, and outputs two thumbnails and an .srt, like the
   Lehman and 100% videos.
+- **Music on every YouTube video, made by us** (8 Nov, Pietro: "always put some viral
+  music in the background"). Trending songs are copyrighted and would be claimed by Content
+  ID (revenue to the rights holder, or blocked), so `build/music.py` makes an original
+  track for each video in the trending style (vi-IV-I-V loop, four-on-the-floor kick,
+  clap, off-beat hats, pluck arpeggio, bass, sidechain pump, 96 to 118 BPM; the seed
+  varies key, tempo and pattern). It drops out at chapter cards and is ducked under the
+  voice; mixed at -14 LUFS. Long-form always; Shorts with `music=True`. Instagram Reels
+  are unchanged: no music in the file, Pietro adds it in the app.
