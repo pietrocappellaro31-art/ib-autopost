@@ -11,3 +11,5 @@ problems, **loudness** (LUFS, true peak), and any note from Pietro.
 
 | Date | Run | Voice | DNSMOS | Exact lines | Range st | Safe-area | Loudness | Improved today | Next improvement |
 |---|---|---|---|---|---|---|---|---|---|
+| 2026-11-08 | IG Reel | G2 | 3.29 | 13/13 (2 re-said) | | 0 after chip fix | -16.4 LUFS, -1.4 dBTP | First Reel of the rotation | Short verdict lines ("Nothing.") came out unclear in G2 on the first pass: check them first and redo early |
+| 2026-11-08 | YouTube long (test) | GEORGE | 3.34 | | | 0 | -14.3 LUFS, -1.5 dBTP | Drawn scene on most beats, red chapter cards, 2 thumbnails, .srt, original music bed | Go to 8 to 12 minutes and add new sketch scenes for the topic |

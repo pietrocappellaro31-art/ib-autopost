@@ -8,6 +8,8 @@ number with no source is cut.
 
 | Date | Format | Topic |
 |---|---|---|
+| 2026-11-08 | Reel | Balance sheet: accounting equation, inventory, goodwill, bargain purchase |
+| 2026-11-08 | YouTube long (test) | Tulip mania: what the archives show |
 
 ## Ideas (YouTube long and Shorts)
 

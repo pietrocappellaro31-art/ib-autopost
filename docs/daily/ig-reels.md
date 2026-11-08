@@ -2,3 +2,4 @@
 
 | Date | Slug | Title | Voice | Length | Posted? |
 |---|---|---|---|---|---|
+| 2026-11-08 | w2-levels-6 | IB Interview Levels #6: can goodwill be negative? | G2 | 54.5 s | |
