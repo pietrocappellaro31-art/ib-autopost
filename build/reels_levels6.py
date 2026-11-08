@@ -57,7 +57,7 @@ EP = dict(
                 ("If you pay less than the net assets are worth, you book the difference as a gain straight away.",
                  "If you pay less than the net assets are worth, you book the difference as a gain straight away."),
                 ("It's called a bargain purchase.", "It's called a bargain purchase.")],
-             bigsize=88, chip="Price &lt; fair value &rarr; gain, not negative goodwill", chip_at=1),
+             bigsize=88, chip="Price &lt; fair value &rarr; a gain", chip_at=1),
     ],
     close=dict(say=[("What's your score out of four?", "What's your score out of 4?"),
                     ("Put it in the comments.", "Put it in the comments."),
