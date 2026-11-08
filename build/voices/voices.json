@@ -476,7 +476,6 @@
   "name": "Pietro's voice, the default (8 Nov)",
   "sample": "voices/P1.flac.enc",
   "source": "Pietro's own read of the Levels #1 script (levels-1-pietro-voice.mp4, sent 8 Nov), first 20.6 s",
-  "default": true,
   "steps": 16,
   "rotation": false,
   "eq": [
@@ -662,5 +661,41 @@
     1.7
    ]
   ]
+ },
+ "G2": {
+  "name": "G2: British male, human delivery, slower (Reels rotation)",
+  "sample": "voices/G2.wav",
+  "plain": true,
+  "source": "synthetic: Kokoro bm_george (Apache 2.0) reading a 21 s passage at 0.82 speed, cloned by Pocket TTS; audition 'E, slower' (B), 8 Nov",
+  "steps": 32,
+  "chain": "bright",
+  "coherent": true,
+  "takes": 8,
+  "rotation": true
+ },
+ "BELLA": {
+  "name": "BELLA: American female, bright and warm (Reels rotation)",
+  "engine": "kokoro",
+  "kokoro_voice": "af_bella",
+  "speed": 0.97,
+  "source": "Kokoro af_bella (Apache 2.0), said directly; first audition F, 8 Nov",
+  "rotation": true
+ },
+ "EMMA": {
+  "name": "EMMA: British female, calm (Reels rotation)",
+  "engine": "kokoro",
+  "kokoro_voice": "bf_emma",
+  "speed": 0.97,
+  "source": "Kokoro bf_emma (Apache 2.0), said directly; first audition G, 8 Nov",
+  "rotation": true
+ },
+ "GEORGE": {
+  "name": "GEORGE: British male, measured (every YouTube video)",
+  "engine": "kokoro",
+  "kokoro_voice": "bm_george",
+  "speed": 0.97,
+  "source": "Kokoro bm_george (Apache 2.0), said directly; first audition D, 8 Nov",
+  "youtube": true,
+  "rotation": false
  }
 }

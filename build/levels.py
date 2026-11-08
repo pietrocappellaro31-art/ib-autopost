@@ -102,12 +102,16 @@ def synth(ep, voice_name, only=None):
     parts = {}
     for n, (k, ss) in enumerate(texts.items()):
         pace = sp + (.015 if n % 3 == 1 else -.01 if n % 3 == 2 else 0)      # small variation in pace
+        pace *= getattr(v, "pace_scale", 1.0)                             # a Kokoro voice's own pace (voices.json)
         if k.startswith("a") and len(ss) > 1:
             # The verdict is said on its own, then a beat, then the reasoning,
             # the way a person answers: "Nothing." ... "Debt is up a hundred..."
             parts[k] = joined(v, [ss[:1], ss[1:]], pace, gap=.2)
         else:
-            parts[k] = passage(v, " ".join(ss), pace)
+            try:
+                parts[k] = passage(v, " ".join(ss), pace)
+            except ValueError:                           # a voice that barely pauses: say the sentences one by one
+                parts[k] = joined(v, [[x] for x in ss], pace, gap=.18)
         if len(parts[k][1]) != len(ss):
             raise ValueError(f"{k}: expected {len(ss)} sentences, aligned {len(parts[k][1])}")
     return v, parts
@@ -402,8 +406,8 @@ def make(ep, voice_name="af_heart", keep_voice=False, redo=()):
     (work / "cover.jpg").write_bytes(pathlib.Path(cover).read_bytes())
     json.dump({"at": at, "hook_end": hook_end, "levels": lv, "total": total, "voice": voice_name,
                "segments": {k: p[1] for k, p in parts.items()}}, open(work / "timeline.json", "w"), indent=1)
-    named = voice_name.split(":", 1)[1] if voice_name.startswith("clone:") else None
-    from voice_clone import voices, log_voice
+    from voice_clone import voices, log_voice, key
+    named = key(voice_name)
     if voices().get(named, {}).get("rotation"):
         log_voice(ep["slug"], named)                         # keeps the L2 / L3 alternation across sessions
     if getattr(v, "log", None):                              # a cloned voice: how each line was heard

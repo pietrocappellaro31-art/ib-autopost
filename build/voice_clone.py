@@ -73,11 +73,20 @@ class CloneVoice:
             e = voice_check.wer(text, heard)
             if self.min_pitch and voice_check.pitch(a) < self.min_pitch:
                 e += 1                                   # drifted towards a male pitch: never the take to keep
+            if getattr(self, "anchor", None) is not None:
+                # Coherence (8 Nov): of the exact takes, keep the one that sounds most
+                # like the sample, so every line sounds like the same speaker.
+                if isinstance(self.anchor, bool):
+                    self.anchor = voice_check.embedding(self.ref)
+                with tempfile.TemporaryDirectory() as d2:
+                    w2 = pathlib.Path(d2) / "t.wav"
+                    write_wav(w2, a)
+                    e = e - .001 * float(voice_check.embedding(w2) @ self.anchor)
             if best is None or e < best[0]:
                 best = (e, a, heard, ws)
-            if e == 0:
+            if e == 0 and getattr(self, "anchor", None) is None:
                 break
-        self.log.append(dict(text=text, wer=round(best[0], 3), heard=best[2], takes=k + 1))
+        self.log.append(dict(text=text, wer=round(max(best[0], 0), 3), heard=best[2], takes=k + 1))
         self._words = best[3]
         return best[1]
 
@@ -201,26 +210,49 @@ def sample(name):
     return name
 
 
+BRIGHT = ("highpass=f=110,equalizer=f=150:t=q:w=1:g=-3,equalizer=f=300:t=q:w=1:g=-2,equalizer=f=3500:t=q:w=1.2:g=3,"
+          "equalizer=f=7000:t=q:w=1:g=1.5,deesser=i=0.3,acompressor=threshold=-20dB:ratio=2:attack=12:release=140:makeup=1.5")
+
+
+def key(voice_name):
+    """'clone:G2' or 'G2' -> 'G2' (the voices.json key), or None."""
+    k = voice_name.split(":", 1)[1] if voice_name.startswith("clone:") else voice_name
+    return k if k in voices() else None
+
+
 def master_chain(voice_name):
-    """The ffmpeg chain for a named clone: rumble cut, the voice's EQ curve,
-    a light de-esser and gentle compression. None for anything else."""
-    ref = voice_name.split(":", 1)[1] if voice_name.startswith("clone:") else None
-    v = voices().get(ref)
+    """The ffmpeg chain for a named voice: its own chain if it has one
+    ("bright" = the 8 Nov audition chain, "kokoro" = voice.MASTER), else the
+    clone chain built from its EQ curve. None for unnamed voices."""
+    v = voices().get(key(voice_name) or "")
     if not v:
         return None
+    if v.get("chain") == "bright":
+        return BRIGHT
+    if v.get("chain") == "kokoro" or v.get("engine") == "kokoro":
+        from voice import MASTER
+        return MASTER
     entries = ";".join(f"entry({b},{g})" for b, g in v["eq"])
     return (f"highpass=f=75,firequalizer=gain_entry='{entries}',deesser=i=0.3,"
             "acompressor=threshold=-20dB:ratio=2.5:attack=12:release=140:makeup=1.5")
 
 
-DEFAULT_VOICE = "P1"      # Pietro (8 Nov): his own voice for every Reel and video unless he names another
-FEMALE_VOICE = "F3"       # only when he asks for a female voice
+# Since 8 Nov (Pietro): Reels rotate G2, BELLA, EMMA, one each time, for a month
+# (to about 8 Dec), then he decides. YouTube (long-form and Shorts) always GEORGE.
+YOUTUBE_VOICE = "GEORGE"
+
+
+def rotation():
+    return [k for k, v in voices().items() if v.get("rotation")]
 
 
 def next_voice():
-    """The voice for the next Reel or video. Since 8 Nov always the default, P1:
-    the L2/L3 alternation has ended (Pietro's call)."""
-    return DEFAULT_VOICE
+    """The voice for the next Reel: the rotation voice after the last one logged."""
+    rot = rotation()
+    log = [x for x in json.load(open(VOICES / "voice_log.json")) if x["voice"] in rot]
+    if not log:
+        return rot[0]
+    return rot[(rot.index(log[-1]["voice"]) + 1) % len(rot)]
 
 
 def log_voice(reel, voice, date=None):
@@ -233,11 +265,21 @@ def log_voice(reel, voice, date=None):
 
 
 def make_voice(name):
-    """'af_heart' (Kokoro), 'clone:L2' / 'clone:L3' (Pietro's two voices) or
-    'clone:/path/to/reference.wav' (Pocket TTS on any consenting sample)."""
-    if name.startswith("clone:"):
-        ref = name.split(":", 1)[1]
-        v = voices().get(ref, {})
-        return CloneVoice(sample(ref), steps=v.get("steps", 8), min_pitch=v.get("min_pitch"), tempo=v.get("tempo"))
+    """A voices.json name ('G2', 'BELLA', 'EMMA', 'GEORGE', also 'clone:G2'),
+    a Kokoro voice ('af_heart'), or 'clone:/path/to/reference.wav'."""
+    k = key(name)
+    v = voices().get(k, {}) if k else {}
+    if v.get("engine") == "kokoro":                       # stock Kokoro voice, said directly
+        from voice import Voice
+        voice = Voice(v["kokoro_voice"], speed=v.get("speed", 1.0))
+        voice.pace_scale = v.get("speed", 1.0)
+        return voice
+    if k or name.startswith("clone:"):
+        ref = k or name.split(":", 1)[1]
+        cv = CloneVoice(sample(ref), steps=v.get("steps", 8), min_pitch=v.get("min_pitch"), tempo=v.get("tempo"))
+        if v.get("coherent"):                             # pick, of every line's takes, the one closest to the sample
+            cv.anchor = True
+            cv.tries = v.get("takes", 8)
+        return cv
     from voice import Voice
     return Voice(name)
