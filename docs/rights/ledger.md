@@ -21,7 +21,7 @@ in this repo.
 |---|---|---|
 | Pocket TTS (Kyutai), clone engine | CC BY 4.0 | Credit line in captions: `Voice model: Pocket TTS by Kyutai`; no cloning without consent; no passing output off as a real recording |
 | Kokoro-82M | Apache 2.0 | Keep this entry |
-| sherpa-onnx (runtime), Parakeet, WeSpeaker, DNSMOS (quality checks only, not in any output) | Apache 2.0 / CC BY 4.0 / CC BY 4.0 / MIT | Internal checks |
+| sherpa-onnx (runtime), Parakeet, WeSpeaker, DNSMOS (quality checks only, not in any output) | Apache 2.0 / CC BY 4.0 / CC BY 4.0 / MIT code and CC BY 4.0 models | Internal checks |
 
 ## Fonts, sound, visuals
 
