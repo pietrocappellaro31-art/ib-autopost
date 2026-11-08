@@ -33,7 +33,7 @@ EP = dict(
             dict(say="In the sixteen thirties, the Dutch went mad for tulips.",
                  show=dict(kind="sketch", art="tulip", opts=dict(n=3), label="The Dutch Republic, 1630s", text="The Dutch went mad for tulips.", hl=["tulips."], size=100)),
             dict(say="Or so the story goes. Chimney sweeps and rich merchants, all trading bulbs. A single flower worth more than a house. Then, in February sixteen thirty seven, it all collapsed.",
-                 shows=[dict(kind="verdict", text="The legend.", stamp="LEGEND", size=150),
+                 shows=[dict(kind="verdict", text="Or so the story goes.", stamp="LEGEND", size=130),
                         dict(kind="sketch", art="figures", opts=dict(n=5, hi=4), label="Who was trading", text="Chimney sweeps and rich merchants.", hl=["merchants."], size=88),
                         dict(kind="sketch", art="house", opts=dict(price="= 1 bulb"), label="The famous price", text="A single flower worth more than a house.", hl=["house."], size=88),
                         dict(kind="sketch", art="chart", opts=dict(values=[1, 2, 3, 5, 8, 9, 3, 1], label="1637"), label="The crash", text="February 1637. It all collapsed.", hl=["collapsed."], size=92)]),
