@@ -258,3 +258,11 @@ What has been settled, and what is still open. Newest first.
   on its own, and the label does not affect earnings; we tick "altered or synthetic" anyway.
   The monetisation risk is "inauthentic content" (mass-produced, template-identical), so
   every video carries original, sourced analysis and varies in structure and visuals.
+- **YouTube visuals: a drawing on every beat** (8 Nov, Pietro: "the visuals were much
+  better in the other YouTube videos ... quality should go up, not down, and the videos
+  should include as much visuals as possible"). The first `youtube.py` test was text-led.
+  The engine now draws a hand-made scene for most sentences (`build/sketch.py`: clocks,
+  bricks, dominoes, charts, figures, stamped documents, towers and more, drawn on in time
+  with the voice), keeps the icon, timeline, flow, stamp and quote layouts, opens each
+  chapter on a red card with a drawing, and outputs two thumbnails and an .srt, like the
+  Lehman and 100% videos.

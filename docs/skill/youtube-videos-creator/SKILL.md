@@ -51,13 +51,34 @@ Short on different topics the same day.
 ## 3. Long-form (16:9)
 
 Copy `build/youtube_ep001.py` to `build/youtube_ep<NNN>.py`. Chapters of
-3 to 6 beats; each beat is one or two spoken sentences and one visual:
-`statement`, `number`, `list`, `compare` or `term`. Aim for 8 to 12 minutes
-once the format is proven; vary the visual kinds so no two videos look
+3 to 6 beats; each beat is one or two spoken sentences.
+
+**Visuals on everything (Pietro, 8 Nov: "as much visuals as possible";
+quality only goes up).** The reference is the style of the earlier videos
+(Lehman's Last Weekend, 100% Is the Only Standard): a drawn scene for every
+moment. Rules:
+- Give each sentence its own visual with `shows=[...]` (one per sentence).
+- Most beats use a hand-drawn scene from `build/sketch.py` (`kind="sketch"`,
+  a drawing that draws itself beside the line, or `kind="scene"`, the drawing
+  alone): clock, calendar, bricks, dominoes, chart, bars, figures (with
+  magnifying glasses), document with a stamp, tower (cracked), bank, seesaw,
+  scale, coins, flow, phone, magnifier, ship, book, speech bubble, bulb,
+  globe, arrows, house with a price tag, pie, tulip. Add a new scene to
+  `sketch.py` when the story needs one (that is a good daily improvement).
+- Mix in the other kinds for rhythm: icon, icons, split, timeline, flow,
+  verdict (claim plus MYTH/TRUE stamp), quote, number, compare, list.
+- No more than one text-only beat per chapter. Every chapter card gets an
+  `art=` drawing.
+- Thumbnail: `thumb=dict(art=..., big=..., big_a=..., small=...)` gives two
+  options, `thumbnail_a.jpg` (red, with the drawing) and `thumbnail_b.jpg`
+  (paper, big type), for YouTube's Test & compare.
+
+Aim for 8 to 12 minutes; vary the scenes and structure so no two videos look
 alike. Render: `python3 build/youtube_ep<NNN>.py`. Outputs in
-`build/out/<slug>/`: the MP4 (-14 LUFS, sound effects, no music),
-`thumbnail.jpg` (1280x720), `metadata.json`, `description.txt` with chapter
-times.
+`build/out/<slug>/`: the MP4 (-14 LUFS, sound effects, no music), two
+thumbnails, `<slug>.srt` captions, `metadata.json`, `description.txt` with
+chapter times. Look at a contact sheet of frames before delivering: if it
+looks plainer than the last video, it is not done.
 
 ## 4. Short (9:16)
 
@@ -90,7 +111,7 @@ Run the content-compliance gate, then:
 
 ## 7. Deliver
 
-Send with SendUserFile: the MP4, the thumbnail and `description.txt`. In the
+Send with SendUserFile: the MP4, both thumbnails, the `.srt` and `description.txt`. In the
 reply paste the title, the description (with chapters), the tags, and the
 pinned-comment question, plus the Studio settings to tick. Add a row to the
 log, the topic to `topics.md` "Used", the measures and one improvement to
