@@ -1,0 +1,15 @@
+$100 a year, growing 2% forever, at a 10% discount rate. What's it worth today? That's level 4. Start at level 1 and keep score.
+
+Level 1: equity. Shareholders get paid after everyone else, so they need a higher return to take that risk. Interest on debt is also tax deductible, which makes debt cheaper still.
+
+Level 2: the value falls. A higher discount rate shrinks every future cash flow when you bring it back to today.
+
+Level 3: $1,000. A payment that never ends is worth the cash flow divided by the rate, so $100 / 10%.
+
+Level 4: $1,250. Same idea as level 3, but you divide by the rate minus the growth: $100 / (10% - 2%) = $100 / 8%. It's the growing perpetuity behind the terminal value in a DCF.
+
+Comment your score out of 4.
+
+Voice model: Pocket TTS by Kyutai
+
+#investmentbanking #dcf #valuation #ibinterview

@@ -41,6 +41,7 @@ class CloneVoice:
         self.ref = str(pathlib.Path(reference).resolve())
         self.tempo = tempo                              # < 1 slows every take (rubberband, pitch and tone kept)
         self.min_pitch = min_pitch                      # Hz; a take below it is retaken (feminised voices)
+        self.tries = 6                                  # takes per line before keeping the closest
         self.steps = steps
         self.log = []                                   # one entry per line: takes used, how it was heard
         self.bin = pathlib.Path(sherpa) / "bin" / "sherpa-onnx-offline-tts"
@@ -55,7 +56,7 @@ class CloneVoice:
         """passage() only uses this for relative sentence lengths."""
         return text
 
-    def say(self, text, speed=None, tries=6):
+    def say(self, text, speed=None, tries=None):
         """Pocket TTS samples, so each take differs and a take can drop, add
         or swap a word. Every take is transcribed (voice_check) and compared
         with the script; the first exact take wins, else the closest one."""
@@ -63,7 +64,7 @@ class CloneVoice:
         if not (voice_check.MOON or voice_check.PARAKEET):
             return self._take(text, speed)
         best = None
-        for k in range(tries):
+        for k in range(tries or self.tries):
             a = self._take(text, speed)
             with tempfile.TemporaryDirectory() as d:
                 w = pathlib.Path(d) / "t.wav"

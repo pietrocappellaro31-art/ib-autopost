@@ -75,7 +75,7 @@ def kara(display, start, dur, cols=None, hide=False, hl=(), cls="", style="", li
 
 # --------------------------------------------------------------- voice ----
 
-def synth(ep, voice_name):
+def synth(ep, voice_name, only=None):
     """voice_name: a Kokoro voice ('af_heart'), 'clone:/path/to/reference.wav'
     (Pietro's cloned voice) or 'real:/path/to/memo' (Pietro reading the
     script himself; see voice_real.py)."""
@@ -92,6 +92,10 @@ def synth(ep, voice_name):
         print(f"  real voice: script matched with {err:.0%} word differences (mostly the recogniser mishearing)")
         return None, parts
     v = make_voice(voice_name)
+    if only:                                            # re-say only these passages (see make(redo=...))
+        texts = {k: ss for k, ss in texts.items() if k in only}
+        if hasattr(v, "tries"):
+            v.tries = 10
     for k, ss in texts.items():
         v.phonemes(" ".join(ss))                       # fail before rendering on an unknown word
     sp = ep.get("speed", 1.0)
@@ -370,10 +374,21 @@ def mux(ep, voice_name, voice, sfx, total, mp4):
     return final
 
 
-def make(ep, voice_name="af_heart", keep_voice=False):
+def make(ep, voice_name="af_heart", keep_voice=False, redo=()):
+    """keep_voice: reuse the last render's voice takes (a layout fix).
+    redo: with keep_voice, say these passages again ("hook", "q0", "a0", ...,
+    "close"), with up to 10 takes each, and keep the rest."""
     if keep_voice:
         parts = reuse(OUT / ep["slug"])
         v = None
+        if redo:
+            v, again = synth(ep, voice_name, only=set(redo))
+            parts.update(again)
+            old_takes = OUT / ep["slug"] / "takes.json"
+            if old_takes.exists() and getattr(v, "log", None):      # keep the record of the passages not redone
+                kept = " ".join(x for k, (_, segs) in parts.items() if k not in redo for x, _, _ in segs)
+                keep = [r for r in json.load(open(old_takes)) if r["text"] in kept]     # lines still in the Reel
+                v.log[:0] = keep
     else:
         v, parts = synth(ep, voice_name)
     at, hook_end, lv, total = timeline(ep, parts)

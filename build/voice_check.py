@@ -34,9 +34,12 @@ TENS = {w: 10 * i for i, w in enumerate("_ _ twenty thirty forty fifty sixty sev
 
 def words(text):
     """Lower-case words with every number, spelled or in digits, as one
-    canonical token ("seven and a half" and "7.5" both become "7.5")."""
-    t = text.lower().replace("%", " percent ").replace("-", " ").replace(",", " ")
+    canonical token ("seven and a half" and "7.5" both become "7.5", "one
+    thousand two hundred and fifty" and "1,250" both become "1250")."""
+    t = re.sub(r"(\d),(\d)", r"\1\2", text.lower())
+    t = t.replace("%", " percent ").replace("-", " ").replace(",", " ")
     toks = re.findall(r"\d+(?:\.\d+)?|[a-z']+", t)
+    num = lambda w: w in ONES or w in TENS or w in ("hundred", "thousand")
     out, i = [], 0
     while i < len(toks):
         w = toks[i]
@@ -44,32 +47,37 @@ def words(text):
             out.append(str(float(w)).rstrip("0").rstrip("."))
             i += 1
             continue
-        n, j = None, i
-        if w == "a" and i + 1 < len(toks) and toks[i + 1] == "hundred":
-            n, j = 100, i + 2
-        elif w in ONES or w in TENS:
-            n, j = 0, i
-            if toks[j] in TENS:
-                n += TENS[toks[j]]
-                j += 1
-                if j < len(toks) and toks[j] in ONES and ONES[toks[j]] < 10:
-                    n += ONES[toks[j]]
-                    j += 1
-            elif toks[j] in ONES:
-                n += ONES[toks[j]]
-                j += 1
-            if j < len(toks) and toks[j] == "hundred":
-                n *= 100
-                j += 1
-        if n is not None:
-            if toks[j:j + 3] == ["and", "a", "half"]:
-                n += .5
-                j += 3
-            out.append(str(float(n)).rstrip("0").rstrip("."))
-            i = j
+        starts = num(w) and w not in ("hundred", "thousand")
+        starts = starts or (w == "a" and i + 1 < len(toks) and toks[i + 1] in ("hundred", "thousand"))
+        if not starts:
+            out.append(w)
+            i += 1
             continue
-        out.append(w)
-        i += 1
+        total, cur, j = 0, 0, i
+        while j < len(toks):
+            x = toks[j]
+            if x == "a" and j + 1 < len(toks) and toks[j + 1] in ("hundred", "thousand") and cur == 0:
+                cur = 1
+            elif x in ONES:
+                cur += ONES[x]
+            elif x in TENS:
+                cur += TENS[x]
+            elif x == "hundred":
+                cur = (cur or 1) * 100
+            elif x == "thousand":
+                total += (cur or 1) * 1000
+                cur = 0
+            elif x == "and" and j + 1 < len(toks) and num(toks[j + 1]) and toks[j + 1] not in ("hundred", "thousand"):
+                pass                                         # "two hundred and fifty"
+            else:
+                break
+            j += 1
+        n = total + cur
+        if toks[j:j + 3] == ["and", "a", "half"]:
+            n += .5
+            j += 3
+        out.append(str(float(n)).rstrip("0").rstrip("."))
+        i = j
     return out
 
 
