@@ -250,7 +250,7 @@ def scene(ep, parts, at, hook_end, lv, total):
             if kind == "big":
                 ans += kara(d, aa + a, b - a, L.get("acols"), hide=True,
                             style=f"font-family:'Serif',serif;font-weight:700;font-size:{L.get('bigsize', 122)}px;line-height:1.02;"
-                                  f"letter-spacing:-.03em;color:{TEAL}")
+                                  f"letter-spacing:-.03em;color:{TEAL};text-wrap:balance")
             else:
                 ans += kara(d, aa + a, b - a, L.get("acols"), hide=True,
                             style="font-size:47px;font-weight:500;line-height:1.26;margin-top:14px;text-wrap:balance")
@@ -337,7 +337,7 @@ def soundtrack(parts, at, lv, total, ep=None):
     lev = np.convolve(np.abs(voice), np.ones(k) / k, "same")
     talking = (lev > .02 * max(lev.max(), 1e-9)).astype(np.float32)
     talking = np.convolve(talking, np.ones(int(.12 * SR)) / int(.12 * SR), "same")    # soft 120 ms edges
-    sfx *= 1 - .5 * np.clip(talking, 0, 1)
+    sfx *= 1 - (ep or {}).get("duck", .5) * np.clip(talking, 0, 1)
     g = .12 / max(np.sqrt(np.mean(voice[voice != 0] ** 2)), 1e-6)
     return voice * g, sfx * g
 
@@ -456,5 +456,38 @@ def make(ep, voice_name="af_heart", keep_voice=False, redo=()):
         json.dump(log, open(work / "takes.json", "w"), indent=1)
         bad = [x for x in log if x["wer"] > 0]
         print(f"  lines heard word for word: {len(log) - len(bad)}/{len(log)}" + "".join(f"\n    CHECK {x['part']}: {x['text']!r} heard {x['heard']!r}" for x in bad))
-    print(f"  -> {final.name}  {total:.1f}s  voice {voice_name}")
+    report = sound_report(work, final, voice, sfx)
+    json.dump(report, open(work / "sound.json", "w"), indent=1)
+    print(f"  sound: DNSMOS voice {report['voice']['ovrl']} / mix {report['mix']['ovrl']} (bak {report['mix']['bak']}), "
+          f"voice over effects {report['voice_over_fx_db']} dB while speaking, {report['lufs']} LUFS, {report['tp']} dBTP"
+          + ("" if report["mix"]["ovrl"] >= 3.1 else "  CHECK mix below 3.1"))
+    print(f"  -> {final.name}  {total:.1f}s  voice {voice_name}" + ("  CHECK over 60 s" if total > 60 else ""))
     return final, problems
+
+
+def sound_report(work, final, voice, sfx):
+    """The sound measures of every render (9 Nov), printed next to the takes line
+    so they are never left to a manual pass: DNSMOS on the voice stem and on the
+    final mix, how far the voice sits over the effects while it speaks, and the
+    loudness of the file."""
+    import re
+    rep = {}
+    try:
+        import quality
+        rep["voice"], rep["mix"] = quality.score(work / "voice.wav"), quality.score(final)
+    except Exception as e:                                 # no DNSMOS model in this session
+        rep["voice"] = rep["mix"] = dict(sig=None, bak=None, ovrl=None, error=str(e)[:80])
+    talking = np.abs(voice) > .02 * max(np.abs(voice).max(), 1e-9)
+    k = int(.25 * SR)
+    talking = np.convolve(talking.astype(np.float32), np.ones(k) / k, "same") > 0
+    m = min(len(voice), len(sfx))
+    v_rms = np.sqrt(np.mean(voice[:m][talking[:m]] ** 2) + 1e-12)
+    f = sfx[:m][talking[:m]]
+    f_rms = np.sqrt(np.mean(f[f != 0] ** 2) + 1e-12) if np.any(f != 0) else 1e-12
+    rep["voice_over_fx_db"] = round(float(20 * np.log10(v_rms / f_rms)), 1)
+    out = subprocess.run(["ffmpeg", "-i", str(final), "-af", "ebur128=peak=true", "-f", "null", "-"],
+                         capture_output=True, text=True).stderr
+    summ = out[out.rfind("Summary:"):]
+    i, p = re.search(r"I:\s+(-?[\d.]+) LUFS", summ), re.search(r"Peak:\s+(-?[\d.]+) dBFS", summ)
+    rep["lufs"], rep["tp"] = (float(i.group(1)) if i else None), (float(p.group(1)) if p else None)
+    return rep

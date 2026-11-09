@@ -65,6 +65,7 @@ PHONEMES = {
     "hans": "hˈɑns",
     "karl": "kˈɑɹl",
     "janet": "ʤˈænɪt",
+    "unlevered": "ʌnlˈɛvəɹd",
 }
 
 VOICELESS = set("ptkfθsʃʧ")

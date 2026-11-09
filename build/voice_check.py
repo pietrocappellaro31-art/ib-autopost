@@ -38,6 +38,8 @@ def words(text):
     thousand two hundred and fifty" and "1,250" both become "1250")."""
     t = re.sub(r"(\d),(\d)", r"\1\2", text.lower())
     t = t.replace("%", " percent ").replace("-", " ").replace(",", " ")
+    t = re.sub(r"\bper cent\b", "percent", t)              # British spelling (EMMA, GEORGE), same words
+    t = re.sub(r"\b(\d+) and a half\b", r"\1.5", t)          # "2 and a half" as a recogniser writes it
     # Spoken years and prices (9 Nov): "twenty twenty four" is 2024, and "four
     # ninety seven" is $4.97, which a recogniser writes "4.97" or "497".
     o = "one two three four five six seven eight nine".split()
