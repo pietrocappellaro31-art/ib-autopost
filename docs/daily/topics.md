@@ -12,6 +12,7 @@ number with no source is cut.
 | 2026-11-08 | YouTube long (test) | Tulip mania: what the archives show |
 | 2026-11-09 | Reel | Share count and dilution: diluted EPS, treasury stock method, out of the money options |
 | 2026-11-09 | YouTube Short | The penny one year on: cost to make, cash rounding, card payments, the nickel's loss per coin |
+| 2026-11-09 | YouTube long | Berlin Wall anniversary: the 1990 Ostmark to D-Mark conversion rate (1 to 1 vs 2 to 1) and who paid |
 
 ## Ideas (YouTube long and Shorts)
 

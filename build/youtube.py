@@ -427,6 +427,7 @@ def make(ep, voice_name=YOUTUBE_VOICE):
     items = synth(ep, voice_name)
     sc, chapters, sounds, total = scenes(ep, items)
     html, total = page(sc)
+    print(f"  timing: {total / 60:.2f} min, {len(sc)} scenes, {int((total + .5) * FPS)} frames to render", flush=True)
     n = int((total + 1) * SR)
     voice = np.zeros(n, np.float32)
     t = 0.0

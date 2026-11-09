@@ -23,6 +23,9 @@ Scenes (opts in brackets):
   magnifier(label="")   tulip(n=1, broken=False)   ship()   book(title)
   speech(text, who="")  quote(text, who="")   bulb(text="")
   globe()  arrows(up="", down="")   house(price="")   cake(slices, hi)
+  9 Nov: wall(gap, label)  notes(left, right, lab_l, lab_r, n_left)  podium(words)
+  queue(n, label)  factory(closed, label)  car(kicked)  fireworks()  rateboard(rate, sub)
+  handshake(left, right)  suitcase(n)
 """
 
 import html as H
@@ -421,9 +424,159 @@ def cake(p, slices=8, hi=1, **_):
                f'fill="{RED if i < hi else "#fff"}" stroke="{INK}" stroke-width="6"/>', .05 + .06 * i)
 
 
+# ---- 9 Nov scenes (Berlin Wall and the currency union)
+
+def wall(p, gap=False, label="", **_):
+    """A concrete wall of slabs with a rounded top; gap=True knocks the middle slabs out."""
+    for i in range(8):
+        x = 70 + i * 84
+        if gap and i in (3, 4):
+            p.fill(f'<rect x="{x + 10}" y="{470 + 18 * (i - 3)}" width="70" height="60" rx="6" fill="#C9C4BC" stroke="{INK}" stroke-width="5" '
+                   f'transform="rotate({-18 + 36 * (i - 3)} {x + 45} {500})"/>', .55 + .05 * (i - 3))
+            continue
+        p.fill(f'<rect x="{x}" y="200" width="80" height="360" rx="4" fill="#E4E0D9" stroke="{INK}" stroke-width="5"/>'
+               f'<rect x="{x - 4}" y="180" width="88" height="34" rx="17" fill="#D6D1C9" stroke="{INK}" stroke-width="5"/>', .05 + .05 * i)
+    for i, (x, y) in enumerate(((120, 330), (300, 260), (560, 400), (650, 300))):
+        p.line([(x, y), (x + 40, y - 20), (x + 70, y + 10)], .5 + .05 * i, .15, color=RED if i % 2 else TEAL, w=7)
+    p.line([(40, 562), (760, 562)], 0, .3, w=6)
+    if gap:
+        figure(p, 400, 552, .9, .7, RED)
+    if label:
+        p.text(400, 130, label, .6, size=40, serif=True, weight=700, color=RED)
+
+
+def banknote(p, x, y, label, value, color, frac, w=300, h=150):
+    p.fill(f'<rect x="{x}" y="{y}" width="{w}" height="{h}" rx="10" fill="#fff" stroke="{color}" stroke-width="7"/>'
+           f'<rect x="{x + 14}" y="{y + 14}" width="{w - 28}" height="{h - 28}" rx="6" fill="none" stroke="{color}" stroke-width="2" stroke-dasharray="6 6"/>'
+           f'<circle cx="{x + w - 70}" cy="{y + h / 2}" r="38" fill="none" stroke="{color}" stroke-width="5"/>', frac)
+    p.text(x + 90, y + h / 2 + 26, value, frac + .05, size=74, serif=True, weight=700, color=color)
+    p.text(x + w / 2, y + h + 46, label, frac + .1, size=30, weight=700, color=color)
+
+
+def notes(p, left="1", right="1", lab_l="Ostmark", lab_r="D-Mark", n_left=1, **_):
+    """Old notes on the left, new note on the right, an exchange arrow between."""
+    for k in range(n_left):
+        banknote(p, 30 + 16 * k, 150 + 22 * k, lab_l if k == n_left - 1 else "", left, GREY if k < n_left - 1 else INK, .05 + .1 * k)
+    banknote(p, 470, 250, lab_r, right, TEAL, .45)
+    p.line([(345, 300), (455, 300)], .35, .15, color=RED, w=9)
+    p.line([(430, 280), (458, 300), (430, 320)], .4, .1, color=RED, w=9)
+
+
+def podium(p, words="", **_):
+    """A press conference: a lectern, a man reading a sheet, two microphones, flashes."""
+    figure(p, 400, 360, 1.1, 0)
+    p.fill(f'<rect x="320" y="334" width="160" height="28" rx="5" fill="#fff" stroke="{INK}" stroke-width="5" transform="rotate(-4 400 348)"/>', .2)
+    p.fill(f'<path d="M260 360 H540 L510 560 H290 Z" fill="{INK}"/>', .1)
+    p.line([(330, 290), (360, 345)], .15, .1, w=7)
+    p.line([(470, 290), (440, 345)], .15, .1, w=7)
+    p.box(345, 420, 110, 60, RED, .2, rx=6)
+    for x in (360, 440):
+        p.line([(x, 360), (x + (x - 400) * .4, 300)], .3, .15, w=6)
+        p.fill(f'<circle cx="{x + (x - 400) * .4}" cy="296" r="12" fill="{INK}"/>', .35)
+    for i, (x, y) in enumerate(((110, 120), (690, 160), (150, 420), (660, 440))):
+        for a in range(0, 360, 60):
+            r = math.radians(a)
+            p.line([(x + 14 * math.cos(r), y + 14 * math.sin(r)), (x + 34 * math.cos(r), y + 34 * math.sin(r))], .45 + .08 * i, .08, color=RED, w=5)
+    if words:
+        p.box(170, 40, 460, 80, "#fff", .6)
+        p.text(400, 96, words, .62, size=44, serif=True, weight=700, color=RED)
+    p.line([(140, 562), (660, 562)], 0, .3, w=6)
+
+
+def queue(p, n=7, label="", **_):
+    """People lined up outside a bank door."""
+    p.rect(600, 220, 160, 340, 0, .3, w=8)
+    p.rect(640, 330, 80, 230, .15, .2, w=6)
+    p.box(600, 180, 160, 40, RED, .2, rx=4)
+    p.text(680, 210, label or "BANK", .25, size=26, color="#fff", weight=700)
+    for i in range(n):
+        x = 545 - i * 74
+        figure(p, x, 555, .8, .25 + .06 * i, RED if i == 0 else None)
+    p.line([(30, 562), (780, 562)], 0, .3, w=6)
+
+
+def factory(p, closed=False, label="", **_):
+    p.line([(90, 560), (90, 330), (230, 250), (230, 330), (370, 250), (370, 330), (510, 250), (510, 330), (650, 330), (650, 560)], 0, .5, w=8)
+    p.rect(560, 120, 60, 210, .3, .2, w=8)
+    for i, x in enumerate((140, 280, 420)):
+        p.box(x, 400, 80, 70, INK if closed else TEAL, .4 + .04 * i, rx=4)
+    if not closed:
+        for i in range(3):
+            p.circle(600 + 25 * i, 90 - 40 * i, 22 + 6 * i, .55 + .05 * i, .2, color=GREY, w=5)
+    else:
+        p.line([(150, 330), (620, 540)], .7, .12, color=RED, w=12)
+        p.line([(620, 330), (150, 540)], .74, .12, color=RED, w=12)
+    p.line([(40, 562), (760, 562)], 0, .3, w=6)
+    if label:
+        p.text(400, 612, label, .6, size=32, weight=700, color=RED if closed else INK)
+
+
+def car(p, kicked=False, **_):
+    """A small boxy 1960s-style two-door car (generic, no make)."""
+    p.fill(f'<path d="M120 470 L150 380 Q170 340 230 330 L300 260 H520 L600 330 Q670 340 690 380 L700 470 Z" fill="#9DC7C1" stroke="{INK}" stroke-width="7"/>', 0)
+    p.fill(f'<path d="M318 280 H405 V330 H270 Z" fill="#fff" stroke="{INK}" stroke-width="5"/><path d="M425 280 H505 L560 330 H425 Z" fill="#fff" stroke="{INK}" stroke-width="5"/>', .2)
+    for x in (240, 580):
+        p.fill(f'<circle cx="{x}" cy="480" r="52" fill="{INK}"/><circle cx="{x}" cy="480" r="20" fill="#E4E0D9"/>', .3)
+    p.line([(40, 534), (760, 534)], 0, .3, w=6)
+    if kicked:
+        figure(p, 80, 530, .9, .5)
+        for i, a in enumerate((-30, 0, 30)):
+            r = math.radians(a)
+            p.line([(150 + 30 * math.cos(r), 420 + 30 * math.sin(r)), (150 + 70 * math.cos(r), 420 + 70 * math.sin(r))], .7 + .03 * i, .08, color=RED, w=7)
+
+
+def fireworks(p, **_):
+    for i, (x, y, c) in enumerate(((220, 200, RED), (520, 150, TEAL), (400, 320, "#E8B04A"), (650, 330, RED))):
+        p.line([(x, 600), (x + 10, y + 40)], .05 + .12 * i, .12, color=GREY, w=4, dash="10 10")
+        for a in range(0, 360, 30):
+            r = math.radians(a)
+            p.line([(x + 18 * math.cos(r), y + 18 * math.sin(r)), (x + 90 * math.cos(r), y + 90 * math.sin(r))], .18 + .12 * i, .12, color=c, w=6)
+    p.fill(f'<path d="M40 640 V560 H120 V520 H200 V580 H300 V500 H360 V560 H460 V530 H560 V590 H640 V540 H760 V640 Z" fill="{INK}"/>', 0)
+
+
+def rateboard(p, rate="1 : 1", sub="", **_):
+    """A bank's exchange-rate board with flip digits."""
+    p.fill(f'<rect x="120" y="120" width="560" height="380" rx="20" fill="{INK}"/>', 0)
+    p.fill(f'<rect x="150" y="150" width="500" height="70" rx="8" fill="#1E1E1E"/>', .1)
+    p.text(400, 200, sub or "EXCHANGE RATE", .15, size=34, color="#E8B04A", weight=700)
+    p.fill(f'<rect x="170" y="260" width="460" height="190" rx="10" fill="#1E1E1E"/><line x1="170" y1="355" x2="630" y2="355" stroke="{INK}" stroke-width="5"/>', .25)
+    p.text(400, 400, rate, .35, size=140, serif=True, weight=700, color="#fff", fx="pop")
+    for x in (220, 580):
+        p.line([(x, 500), (x, 580)], .05, .2, w=8)
+    p.line([(160, 582), (640, 582)], .1, .2, w=8)
+
+
+def handshake(p, left="", right="", **_):
+    """Two hands meeting over a signed treaty."""
+    p.fill(f'<rect x="230" y="380" width="340" height="200" rx="8" fill="#fff" stroke="{INK}" stroke-width="6"/>', 0)
+    for i in range(3):
+        p.line([(260, 420 + 35 * i), (540, 420 + 35 * i)], .1 + .05 * i, .1, color=GREY, w=6)
+    p.line([(290, 545), (330, 530), (360, 548), (400, 528)], .3, .15, color=INK, w=5)
+    p.line([(440, 545), (470, 528), (500, 548), (530, 530)], .35, .15, color=INK, w=5)
+    p.fill(f'<path d="M60 250 H300 L360 230 Q400 240 380 270 L330 300 H60 Z" fill="{RED}"/>', .45)
+    p.fill(f'<path d="M740 250 H500 L430 228 Q370 230 390 262 L470 300 H740 Z" fill="{TEAL}"/>', .5)
+    if left:
+        p.text(160, 220, left, .6, size=30, weight=700, color=RED)
+    if right:
+        p.text(640, 220, right, .65, size=30, weight=700, color=TEAL)
+
+
+def suitcase(p, n=3, **_):
+    """People leaving with suitcases, walking to the right past a sign."""
+    for i in range(n):
+        x = 160 + i * 190
+        figure(p, x, 540, .95, .05 + .1 * i, RED if i == n - 1 else None)
+        p.fill(f'<rect x="{x + 30}" y="460" width="56" height="44" rx="6" fill="#E8B04A" stroke="{INK}" stroke-width="4"/>', .12 + .1 * i)
+    p.line([(700, 560), (700, 330)], .4, .15, w=7)
+    p.fill(f'<path d="M640 300 H750 L780 330 L750 360 H640 Z" fill="{TEAL}"/>', .45)
+    p.text(700, 340, "WEST", .5, size=26, color="#fff", weight=700)
+    p.line([(40, 562), (760, 562)], 0, .3, w=6)
+
+
 SCENES = {f.__name__: f for f in (clock, bricks, dominoes, chart, bars, figures, document, stamp, tower, bank, seesaw, scale,
                                   coins, flow, calendar, phone, magnifier, tulip, ship, book, speech, quote, bulb, globe,
-                                  arrows, house, cake)}
+                                  arrows, house, cake, wall, notes, podium, queue, factory, car, fireworks, rateboard,
+                                  handshake, suitcase)}
 
 
 def scene(name, t0, dur, seed=1, **opts):
