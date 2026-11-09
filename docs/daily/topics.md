@@ -11,6 +11,7 @@ number with no source is cut.
 | 2026-11-08 | Reel | Balance sheet: accounting equation, inventory, goodwill, bargain purchase |
 | 2026-11-08 | YouTube long (test) | Tulip mania: what the archives show |
 | 2026-11-09 | Reel | Share count and dilution: diluted EPS, treasury stock method, out of the money options |
+| 2026-11-09 | YouTube Short | The penny one year on: cost to make, cash rounding, card payments, the nickel's loss per coin |
 
 ## Ideas (YouTube long and Shorts)
 

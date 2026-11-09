@@ -38,6 +38,17 @@ def words(text):
     thousand two hundred and fifty" and "1,250" both become "1250")."""
     t = re.sub(r"(\d),(\d)", r"\1\2", text.lower())
     t = t.replace("%", " percent ").replace("-", " ").replace(",", " ")
+    # Spoken years and prices (9 Nov): "twenty twenty four" is 2024, and "four
+    # ninety seven" is $4.97, which a recogniser writes "4.97" or "497".
+    o = "one two three four five six seven eight nine".split()
+    tn = "twenty thirty forty fifty sixty seventy eighty ninety".split()
+    two = lambda m: (tn.index(m.group(1)) + 2) * 10 + (o.index(m.group(2)) + 1 if m.group(2) else 0)
+    pair = r"(" + "|".join(tn) + r")(?: (" + "|".join(o) + r"))?\b"
+    t = re.sub(r"\b(nineteen|twenty) " + pair,
+               lambda m: str((19 if m.group(1) == "nineteen" else 20) * 100 + two(re.match(pair, m.group(0).split(" ", 1)[1]))), t)
+    t = re.sub(r"\b(" + "|".join(o) + r") " + pair,
+               lambda m: str(o.index(m.group(1)) + 1) + "%02d" % two(re.match(pair, m.group(0).split(" ", 1)[1])), t)
+    t = re.sub(r"\b(\d+)\.(\d\d)\b", lambda m: m.group(0) if m.group(2) == "00" else m.group(1) + m.group(2), t)
     toks = re.findall(r"\d+(?:\.\d+)?|[a-z']+", t)
     num = lambda w: w in ONES or w in TENS or w in ("hundred", "thousand")
     out, i = [], 0

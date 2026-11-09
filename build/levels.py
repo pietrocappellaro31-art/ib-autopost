@@ -331,8 +331,36 @@ def soundtrack(parts, at, lv, total, ep=None):
     put(sfx, pop, ca + .4 + 12 * .17 + .3, .26)                   # ... and landing on "?"
     end_voice = ca + parts["close"][1][-1][2]
     put(sfx, ding, end_voice + .78, .07)                          # the brand
+    # Duck the effects about 6 dB while the voice is speaking (9 Nov: DNSMOS on the
+    # BELLA mix was 2.87 against 3.34 for the voice alone), back up in the pauses.
+    k = int(.03 * SR)
+    lev = np.convolve(np.abs(voice), np.ones(k) / k, "same")
+    talking = (lev > .02 * max(lev.max(), 1e-9)).astype(np.float32)
+    talking = np.convolve(talking, np.ones(int(.12 * SR)) / int(.12 * SR), "same")    # soft 120 ms edges
+    sfx *= 1 - .5 * np.clip(talking, 0, 1)
     g = .12 / max(np.sqrt(np.mean(voice[voice != 0] ** 2)), 1e-6)
     return voice * g, sfx * g
+
+
+def takes_from_track(work, parts, at):
+    """How every line was heard, cut from the final voice track and transcribed
+    on its own (9 Nov): Kokoro voices have no take log of their own, so this
+    writes takes.json for them, one entry per sentence, as the clone does."""
+    import wave
+    from voice_check import transcribe, wer
+    with wave.open(str(work / "voice.wav")) as w:
+        sr = w.getframerate()
+        a = np.frombuffer(w.readframes(w.getnframes()), np.int16).astype(np.float32) / 32768
+    log = []
+    for k, (_, segs) in parts.items():
+        for text, x, y in segs:
+            i0, i1 = int((at[k] + x - .12) * sr), int((at[k] + y + .15) * sr)
+            clip = work / "_line.wav"
+            write_wav(clip, a[max(i0, 0):i1] / max(np.abs(a).max(), 1e-6) * .7, sr)
+            heard = transcribe(clip)
+            log.append(dict(part=k, text=text, wer=round(wer(text, heard), 3), heard=heard, takes=1))
+    (work / "_line.wav").unlink(missing_ok=True)
+    return log
 
 
 # A real voice (the clone of Pietro) already has a room and no synthetic
@@ -423,5 +451,10 @@ def make(ep, voice_name="af_heart", keep_voice=False, redo=()):
         log_voice(ep["slug"], named)                         # keeps the L2 / L3 alternation across sessions
     if getattr(v, "log", None):                              # a cloned voice: how each line was heard
         json.dump(v.log, open(work / "takes.json", "w"), indent=1)
+    elif not keep_voice or redo:                             # a Kokoro voice: check every line from the track itself
+        log = takes_from_track(work, parts, at)
+        json.dump(log, open(work / "takes.json", "w"), indent=1)
+        bad = [x for x in log if x["wer"] > 0]
+        print(f"  lines heard word for word: {len(log) - len(bad)}/{len(log)}" + "".join(f"\n    CHECK {x['part']}: {x['text']!r} heard {x['heard']!r}" for x in bad))
     print(f"  -> {final.name}  {total:.1f}s  voice {voice_name}")
     return final, problems
