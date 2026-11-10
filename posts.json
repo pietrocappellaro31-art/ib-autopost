@@ -384,8 +384,8 @@
       "series": "Technical of the Day",
       "scheduled_utc": "2026-11-10T13:00:00",
       "caption": "Depreciation goes up by $10. You'll probably get the income statement right, and then lose it on cash.\n\nPre-tax income drops $10. At a 25% tax rate you pay $2.50 less tax, so net income falls $7.50, not $10.\n\nOn the cash flow statement you start from that -7.5 and add the 10 back, because depreciation is an accounting charge and not a single dollar of it actually left the bank. Cash ends up $2.50 higher.\n\nThat's the tax you saved.\n\nBalance sheet: PP&E down 10, cash up 2.5, assets down 7.5. Retained earnings down 7.5. It balances.\n\nIf yours doesn't, check the tax line first.\n\nSave this for your next technical round.\n\n#investmentbanking #ibinterview #accounting #threestatements",
-      "published_id": null,
-      "published_at_utc": null,
+      "published_id": "17900533632398436",
+      "published_at_utc": "2026-11-10T13:07:27.859509+00:00",
       "images": [
         "n1-01-depreciation-01.jpg",
         "n1-01-depreciation-02.jpg",
