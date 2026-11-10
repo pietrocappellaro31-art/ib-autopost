@@ -30,6 +30,9 @@ Scenes (opts in brackets):
   card_tap(amount), lineup(first, others), last_coin(stamp)
   10 Nov, later (buy now, pay later): bag_later(tag), split4(total, parts), pay_dots(labels), credit_report(line),
   interest_stack(base, rate)
+  10 Nov, long video (the dot-com crash): bubble(label, pop), ticker(price, change, up), server(lights),
+  parcel(label, n), ballot(), payback(years, paid, label), petbowl(closed), bell(label), rocket(fall)
+  youtube.py now fits every drawing to its box (the drawn part fills its half of the frame).
 """
 
 import html as H
@@ -91,7 +94,7 @@ class Pen:
                           f'font-size="{size}" fill="{color or self.ink}">{H.escape(str(s))}</text></g>')
 
     def svg(self):
-        return (f'<svg viewBox="0 0 {W} {Hh}" width="{W}" height="{Hh}" style="overflow:visible" aria-hidden="true">'
+        return (f'<svg class="sk" viewBox="0 0 {W} {Hh}" width="{W}" height="{Hh}" style="overflow:visible" aria-hidden="true">'
                 + "".join(self.parts) + "</svg>")
 
 
@@ -821,3 +824,159 @@ def interest_stack(p, base="$1,000", rate="36%", **_):
 
 
 SCENES.update({f.__name__: f for f in (bag_later, split4, pay_dots, credit_report, interest_stack)})
+
+
+# ---- 10 Nov (long video) scenes: the dot-com crash. All generic shapes of our own (no logos, no products, no mascots).
+
+def bubble(p, label="", pop=False, **_):
+    """A soap bubble with a shine, swelling over a ground line; pop=True bursts it into shards."""
+    cx, cy = 400, 300
+    if not pop:
+        p.parts.append(f'<g class="a" data-fx="scale" data-at="{p.at(0)}" data-d="{.9 * p.dur:.2f}" data-s0=".55" data-s1="1.06" '
+                       f'style="transform-box:fill-box;transform-origin:center bottom">'
+                       f'<circle cx="{cx}" cy="{cy}" r="230" fill="#D8EEEA" fill-opacity=".55" stroke="{TEAL}" stroke-width="7"/>'
+                       f'<path d="M260 230 Q290 150 370 120" fill="none" stroke="#fff" stroke-width="18" stroke-linecap="round"/>'
+                       f'<circle cx="250" cy="275" r="11" fill="#fff"/></g>')
+        if label:
+            p.text(cx, cy + 25, label, .35, size=74, serif=True, weight=700, color=INK, fx="pop")
+    else:
+        p.circle(cx, cy, 230, 0, .15, color=GREY, w=4)
+        for k in range(12):
+            a = 2 * math.pi * k / 12 + .2
+            r0, r1 = 120 + 20 * (k % 3), 230 + 50 * (k % 2)
+            p.line([(cx + r0 * math.cos(a), cy + r0 * math.sin(a)), (cx + r1 * math.cos(a), cy + r1 * math.sin(a))], .2 + .02 * k, .12, color=RED, w=8)
+        p.text(cx, cy + 30, label or "POP", .35, size=110, serif=True, weight=700, color=RED, fx="stamp")
+    p.line([(80, 580), (720, 580)], 0, .3, w=6)
+
+
+def ticker(p, price="$80.06", change="-90%", up=False, **_):
+    """A trading screen: a price, a change chip and a little line chart."""
+    col = TEAL if up else RED
+    p.fill(f'<rect x="70" y="90" width="660" height="440" rx="26" fill="{INK}"/>', 0)
+    p.fill(f'<rect x="100" y="120" width="600" height="380" rx="14" fill="#141414"/>', .05)
+    vals = (2, 3, 2.6, 4, 5.5, 5, 7, 6.6) if up else (6.8, 7.4, 6, 4.5, 4.9, 3, 2, 1.4)
+    pts = [(130 + 540 * i / (len(vals) - 1), 470 - 30 * v) for i, v in enumerate(vals)]
+    p.line(pts, .15, .45, color=col, w=9, j=1.5)
+    p.text(130, 200, price, .3, size=88, serif=True, weight=700, color="#fff", anchor="start", fx="pop")
+    p.box(500, 150, 175, 66, col, .45, rx=33)
+    p.text(587, 196, change, .5, size=40, weight=700, color="#fff")
+    p.line([(330, 530), (300, 600), (500, 600), (470, 530)], .1, .2, w=8)
+
+
+def server(p, lights=True, **_):
+    """A rack of network boxes with blinking lights and cables: the kit the internet ran on."""
+    p.fill(f'<rect x="230" y="60" width="340" height="520" rx="18" fill="#2A2A2A" stroke="{INK}" stroke-width="6"/>', 0)
+    for i in range(6):
+        y = 90 + 80 * i
+        p.box(255, y, 290, 60, "#3A3A3A", .08 + .05 * i, rx=8)
+        for k in range(5):
+            c = TEAL if (i + k) % 3 else "#E8B04A"
+            p.parts.append(f'<g class="a" data-fx="{"beat" if lights else "fade"}" data-at="{p.at(.4 + .03 * k)}" data-d="0.4" data-n="40" '
+                           f'style="transform-box:fill-box;transform-origin:center"><circle cx="{285 + 28 * k}" cy="{y + 30}" r="9" fill="{c}"/></g>')
+        p.box(440, y + 22, 85, 16, "#555", .12 + .05 * i, rx=4)
+    for k, (x0, c) in enumerate(((570, RED), (570, TEAL), (230, INK))):
+        y0 = 150 + 140 * k
+        x1 = 760 if x0 > 400 else 40
+        p.line([(x0, y0), ((x0 + x1) / 2, y0 + 60), (x1, y0 + 30)], .5 + .06 * k, .25, color=c, w=8)
+    p.line([(160, 590), (640, 590)], 0, .3, w=6)
+
+
+def parcel(p, label="", n=3, **_):
+    """Cardboard boxes stacked up, taped, a delivery arrow: online shopping (no brand)."""
+    xs = [(250, 400, 260, 170), (420, 400, 240, 170), (330, 240, 240, 160)][:max(1, min(n, 3))]
+    for i, (x, y, w_, h_) in enumerate(xs):
+        p.fill(f'<rect x="{x}" y="{y}" width="{w_}" height="{h_}" rx="6" fill="#D9B27C" stroke="{INK}" stroke-width="6"/>'
+               f'<rect x="{x + w_ / 2 - 22}" y="{y}" width="44" height="{h_}" fill="#C79A5E"/>'
+               f'<rect x="{x + 20}" y="{y + h_ - 50}" width="70" height="30" fill="#fff" stroke="{INK}" stroke-width="3"/>', .1 + .15 * i, fx="pop")
+    p.line([(70, 330), (190, 330)], .6, .15, color=RED, w=10)
+    p.line([(165, 305), (192, 330), (165, 355)], .66, .1, color=RED, w=10)
+    p.line([(120, 572), (720, 572)], 0, .3, w=6)
+    if label:
+        p.text(470, 625, label, .7, size=36, weight=700, color=RED)
+
+
+def ballot(p, **_):
+    """Benjamin Graham's line as a picture: a ballot box (voting machine) beside a weighing scale."""
+    p.fill(f'<rect x="70" y="300" width="270" height="230" rx="12" fill="#fff" stroke="{INK}" stroke-width="7"/>'
+           f'<rect x="150" y="296" width="110" height="16" rx="6" fill="{INK}"/>', 0)
+    for k in range(3):
+        p.parts.append(f'<g class="a" data-fx="slide" data-at="{p.at(.1 + .12 * k)}" data-d=".35" data-x0="{-40 + 40 * k}" data-x1="0" '
+                       f'data-y0="-160" data-y1="0" data-ease="out">'
+                       f'<rect x="{165 + 8 * k}" y="{230}" width="70" height="90" rx="4" fill="#fff" stroke="{GREY}" stroke-width="4" transform="rotate({-10 + 10 * k} 200 275)"/></g>')
+    p.text(205, 590, "SHORT TERM", .4, size=30, weight=700, color=RED)
+    p.line([(590, 200), (590, 520)], .3, .2, w=8)
+    p.line([(470, 520), (710, 520)], .35, .15, w=8)
+    p.line([(460, 230), (720, 230)], .4, .2, w=8)
+    for x in (480, 700):
+        p.line([(x, 230), (x - 50, 340), (x + 50, 340)], .5, .15, w=6, closed=True)
+    p.fill(f'<rect x="450" y="290" width="60" height="44" rx="6" fill="{TEAL}"/>', .62)
+    p.text(590, 590, "LONG TERM", .7, size=30, weight=700, color=TEAL)
+
+
+def payback(p, years=10, paid=10, label="", **_):
+    """Years in a row, each filling with a coin as it is 'paid back'; the last one lands in red."""
+    n = years
+    cols = min(n, 5)
+    rows = math.ceil(n / cols)
+    for k in range(n):
+        r, c = divmod(k, cols)
+        x, y = 110 + c * 120, 140 + r * 200
+        p.rect(x, y, 100, 150, .02 + .02 * k, .15, color=GREY, w=4)
+        p.text(x + 50, y + 185, f"Y{k + 1}", .05 + .02 * k, size=26, weight=600, color=GREY)
+        if k < paid:
+            p.parts.append(f'<g class="a" data-fx="slide" data-at="{p.at(.25 + .055 * k)}" data-d=".3" data-y0="-90" data-y1="0" data-ease="out">'
+                           f'<circle cx="{x + 50}" cy="{y + 75}" r="38" fill="{RED if k == n - 1 else "#E0A93B"}" stroke="{INK}" stroke-width="5"/>'
+                           f'<text x="{x + 50}" y="{y + 88}" text-anchor="middle" font-family="\'Serif\',serif" font-weight="700" font-size="34" fill="#fff">$</text></g>')
+    if label:
+        p.text(400, 60, label, .1, size=40, serif=True, weight=700, color=INK)
+
+
+def petbowl(p, closed=True, **_):
+    """A pet food bowl, and a shop sign flipped to CLOSED."""
+    p.fill(f'<path d="M180 470 Q200 560 400 560 Q600 560 620 470 Z" fill="{RED}" stroke="{INK}" stroke-width="7"/>'
+           f'<ellipse cx="400" cy="470" rx="220" ry="34" fill="#B82F0E" stroke="{INK}" stroke-width="6"/>', 0)
+    for k in range(7):
+        p.fill(f'<circle cx="{290 + 36 * k}" cy="{462 - 10 * (k % 2)}" r="14" fill="#8A5A2B"/>', .15 + .02 * k)
+    p.line([(400, 90), (300, 200)], .3, .1, w=5)
+    p.line([(400, 90), (500, 200)], .32, .1, w=5)
+    p.fill(f'<circle cx="400" cy="88" r="10" fill="{INK}"/>', .3)
+    p.parts.append(f'<g class="a" data-fx="swing" data-at="0" data-d="1" data-amp="5" data-w="2.2" style="transform-origin:400px 90px">'
+                   f'<rect x="250" y="200" width="300" height="120" rx="12" fill="#fff" stroke="{INK}" stroke-width="7"/>'
+                   f'<text x="400" y="280" text-anchor="middle" font-family="\'Serif\',serif" font-weight="700" font-size="62" fill="{RED if closed else TEAL}">'
+                   f'{"CLOSED" if closed else "OPEN"}</text></g>')
+    p.line([(120, 562), (680, 562)], 0, .3, w=6)
+
+
+def bell(p, label="", **_):
+    """A bell that nobody rings: drawn, hanging still, a red cross through the sound lines."""
+    p.line([(400, 60), (400, 130)], 0, .15, w=8)
+    p.fill(f'<path d="M260 430 Q270 240 330 190 Q400 130 470 190 Q530 240 540 430 Q560 450 580 470 H220 Q240 450 260 430 Z" fill="#E8B04A" stroke="{INK}" stroke-width="7"/>'
+           f'<circle cx="400" cy="495" r="30" fill="{INK}"/>', .1)
+    for k, s in enumerate((-1, 1)):
+        for j in range(2):
+            x = 400 + s * (220 + 45 * j)
+            p.line([(x, 260), (x + s * 25, 320), (x, 380)], .4 + .05 * j, .12, color=GREY, w=6)
+    p.line([(120, 200), (680, 460)], .65, .15, color=RED, w=12)
+    if label:
+        p.text(400, 600, label, .7, size=36, weight=700, color=RED)
+
+
+def rocket(p, fall=False, **_):
+    """A little rocket climbing a dotted path; fall=True tips it over at the top and drops it."""
+    path = [(110, 560), (260, 470), (390, 330), (500, 190), (560, 110)]
+    p.line(path, 0, .5, color=GREY, w=5, dash="12 14")
+    body = (f'<g transform="scale(1.8)"><path d="M-30 40 L0 -70 L30 40 Z" fill="#fff" stroke="{INK}" stroke-width="6"/>'
+            f'<circle cx="0" cy="-10" r="12" fill="{TEAL}" stroke="{INK}" stroke-width="4"/>'
+            f'<path d="M-30 40 L-50 70 L-20 46 Z M30 40 L50 70 L20 46 Z" fill="{RED}"/>'
+            f'<path d="M-14 46 Q0 90 14 46 Z" fill="#E8B04A"/></g>')
+    if not fall:
+        p.parts.append(f'<g class="a" data-fx="slide" data-at="{p.at(.1)}" data-d="{.6 * p.dur:.2f}" data-x0="0" data-x1="420" '
+                       f'data-y0="0" data-y1="-420" data-ease="inout"><g transform="translate(130 560) rotate(40)">{body}</g></g>')
+    else:
+        p.parts.append(f'<g class="a" data-fx="slide" data-at="{p.at(.2)}" data-d="{.55 * p.dur:.2f}" data-x0="0" data-x1="60" '
+                       f'data-y0="0" data-y1="430" data-ease="inout" data-r="150"><g transform="translate(560 120) rotate(40)">{body}</g></g>')
+        p.line([(560, 560), (620, 520), (680, 570)], .8, .1, color=RED, w=8)
+    p.line([(60, 590), (740, 590)], 0, .3, w=6)
+
+
+SCENES.update({f.__name__: f for f in (bubble, ticker, server, parcel, ballot, payback, petbowl, bell, rocket)})

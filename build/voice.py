@@ -45,6 +45,12 @@ PHONEMES = {
     "compound": "kəmpˈWnd",   # the verb; the dictionary has the noun
     "a": "ɐ",          # the article is reduced; the dictionary gives the letter name
     "mackay": "məkˈI",
+    "mcnealy": "məknˈili",          # 10 Nov, YouTube #3
+    "greenspan": "ɡɹˈinspæn",
+    "microsystems": "mˈIkɹOsˌɪstəmz",
+    "businessweek": "bˈɪznəswˌik",
+    "buyback": "bˈIbˌæk",
+    "buybacks": "bˈIbˌæks",
     "goldgar": "ɡˈOldɡɑɹ",
     "garber": "ɡˈɑɹbəɹ",
     "schabowski": "ʃəbˈɔfski",

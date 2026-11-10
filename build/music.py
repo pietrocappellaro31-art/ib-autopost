@@ -1,8 +1,10 @@
 """
 Original background music for YouTube videos (8 Nov, Pietro: "always put some
-viral music in the background"). From 10 Nov the default, track(), is a
-dramatic piano and cello piece (see the bottom of this file); the pop style
-described below is kept as track_pop() for re-renders only.
+viral music in the background"). The default, track(), is the warm bed at the
+bottom of this file (10 Nov, after Pietro found the piano and cello "even too
+dramatic": warm, mid tempo, major key, not dramatic). Earlier styles stay for
+re-renders only: track_pop() (8 Nov, the pop loop described below) and
+track_drama() (10 Nov morning, piano and cello).
 
 Real trending songs are not an option: every one is copyrighted, Content ID
 would claim the video and its ad revenue, and the channel is aiming for
@@ -248,8 +250,9 @@ def hall(x, seconds=2.6, wet=.28, rng=None):
 PROGS = ([0, 8, 3, 10], [0, 5, 8, 7], [0, 8, 5, 7], [0, 3, 8, 7])     # i VI III VII, i iv VI V, i VI iv V, i III VI V
 
 
-def track(total_s, seed=1, breaks=(), level=.9):
-    """The default bed from 10 Nov: dramatic piano and cello in a minor key."""
+def track_drama(total_s, seed=1, breaks=(), level=.9):
+    """The 10 Nov bed: dramatic piano and cello in a minor key. Retired the same day (Pietro: "even too
+    dramatic"); kept for re-renders. The default is now track(), the warm bed below."""
     rng = np.random.default_rng(seed)
     bpm = float(rng.choice([66, 70, 72, 76, 80]))
     key = int(rng.choice([NOTE[k] for k in ("A", "C", "D", "E", "F", "G")]))
@@ -303,3 +306,122 @@ def track(total_s, seed=1, breaks=(), level=.9):
     mix = np.tanh(mix * .9)
     mix = mix / (np.abs(mix).max() + 1e-9) * level
     return mix[: int((total_s + .5) * SR)].astype(np.float32), dict(bpm=bpm, key=list(NOTE)[key], prog=prog, seed=seed, style="piano and cello")
+
+
+# ------------------------------------------------------------ warm (10 Nov) ----
+# Pietro, 10 Nov, on the piano and cello: "even too dramatic". Long videos get a
+# lighter bed: warm, mid tempo, not dramatic. A major-key four-chord loop on a soft
+# electric piano (syncopated chords), a low pad, a round bass, a soft kick and
+# rim with a quiet shaker, and a sparse bell melody on the pentatonic scale every
+# other phrase. Synthesised here; nothing sampled.
+
+WARM_PROGS = ([0, 7, 9, 5], [0, 9, 5, 7], [5, 0, 7, 9], [0, 4, 5, 7])     # I V vi IV, I vi IV V, IV I V vi, I iii IV V
+
+
+def epiano(f, dur, vel=.5, rng=None):
+    """A soft electric piano: the piano model, darker, with a slow tremolo."""
+    x = piano(f, dur, vel * .8, rng)
+    t = np.arange(len(x)) / SR
+    return lp(x * (1 + .12 * np.sin(2 * np.pi * 4.6 * t)), 1500 + 900 * vel)
+
+
+def pad(freqs, dur, rng):
+    n = int(dur * SR)
+    t = np.arange(n) / SR
+    x = np.zeros(n)
+    for f in freqs:
+        for dt in (-.004, .004):
+            ph = rng.random()
+            x += 2 * ((f * (1 + dt) * t + ph) % 1) - 1
+    e = np.minimum(t / .9, 1) * np.clip((dur - t) / .9, 0, 1)
+    return lp(lp(x, 700), 700) * e / max(len(freqs), 1) * .5
+
+
+def soft_kick():
+    n = int(.35 * SR)
+    t = np.arange(n) / SR
+    f = 48 + 60 * np.exp(-t * 28)
+    return lp(np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-t * 11), 900)
+
+
+def rim(rng):
+    n = int(.09 * SR)
+    t = np.arange(n) / SR
+    return hp(lp(rng.standard_normal(n), 4200), 1400) * np.exp(-t * 55) * .5
+
+
+def shaker(rng):
+    n = int(.06 * SR)
+    t = np.arange(n) / SR
+    return hp(rng.standard_normal(n), 5000) * np.minimum(t / .01, 1) * np.exp(-t * 60) * .25
+
+
+def bellnote(f, dur):
+    n = int(dur * SR)
+    t = np.arange(n) / SR
+    return (np.sin(2 * np.pi * f * t) + .3 * np.sin(2 * np.pi * 3 * f * t) * np.exp(-t * 6)) * np.exp(-t * 2.6) * np.minimum(t / .004, 1)
+
+
+def track(total_s, seed=1, breaks=(), level=.9):
+    """The default bed from 10 Nov (afternoon): warm, mid tempo, major key."""
+    rng = np.random.default_rng(seed)
+    bpm = float(rng.choice([88, 90, 92, 96, 100]))
+    key = int(rng.choice([NOTE[k] for k in ("C", "D", "E", "F", "G", "A")]))
+    prog = WARM_PROGS[int(rng.integers(len(WARM_PROGS)))]
+    beat = 60 / bpm
+    bar = 4 * beat
+    swing = beat * .06
+    n = int((total_s + 3) * SR)
+    out = {k: np.zeros(n) for k in ("keys", "pad", "bass", "drums", "bell")}
+    tonic = 48 + key if key <= 6 else 36 + key                        # around C3
+    K, R = soft_kick(), rim(rng)
+
+    def put(buf, x, at):
+        i = int(at * SR)
+        if 0 <= i < n:
+            buf[i:i + len(x)] += x[: n - i]
+
+    nbars = int(np.ceil(total_s / bar)) + 1
+    brk = sorted(breaks)
+    penta = [0, 2, 4, 7, 9, 12, 14, 16]
+    rhythm = [(0, 1.4), (1.5, .9), (3, .9)]                          # chord hits: 1, the and of 2, 4
+    for b in range(nbars):
+        t0 = b * bar
+        quiet = any(br - bar * .5 <= t0 < br + bar for br in brk)
+        deg = prog[b % 4]
+        minor = deg in (2, 4, 9)
+        root = tonic + deg
+        chord = [root, root + (3 if minor else 4), root + 7, root + (10 if minor else 11) if b % 2 else root + 12]
+        for k, (pos, ln) in enumerate(rhythm):
+            v = (.5 if k == 0 else .38) * (.75 if quiet else 1) + rng.uniform(-.03, .03)
+            for j, m in enumerate(chord):
+                put(out["keys"], epiano(hz(m + 12), beat * ln, v, rng) * .3, t0 + pos * beat + (swing if pos % 1 else 0) + j * .006)
+        put(out["pad"], pad([hz(m) for m in chord[:3]], bar + .9, rng), t0)
+        if not quiet:
+            for pos, ln, m in ((0, 1.2, root - 12), (1.5, .45, root - 12), (2.5, .45, root - 5), (3, .9, root - 12)):
+                f = hz(m)
+                nn = int(beat * ln * SR)
+                tt = np.arange(nn) / SR
+                x = (np.sin(2 * np.pi * f * tt) + .25 * np.sin(4 * np.pi * f * tt)) * np.minimum(tt / .01, 1) * np.clip((beat * ln - tt) / .06, 0, 1)
+                put(out["bass"], lp(x, 380) * .55, t0 + pos * beat + (swing if pos % 1 else 0))
+            if b >= 1:
+                for k in range(4):
+                    if k in (0, 2):
+                        put(out["drums"], K * .8, t0 + k * beat)
+                    else:
+                        put(out["drums"], R * .55, t0 + k * beat)
+                for k in range(8):
+                    put(out["drums"], shaker(rng) * (.5 if k % 2 else .3), t0 + k * beat / 2 + (swing if k % 2 else 0))
+            if b >= 4 and (b // 4) % 2 == 1:                                # a sparse bell line every other phrase
+                for k in range(3):
+                    if rng.random() < .7:
+                        m = tonic + 24 + penta[int(rng.integers(len(penta)))]
+                        put(out["bell"], bellnote(hz(m), beat * 1.8) * .16, t0 + (k * 1.5 + rng.choice([0, .5])) * beat)
+    t = np.arange(n) / SR
+    mix = out["keys"] * 1.0 + out["pad"] * .55 + out["bass"] * .9 + out["drums"] * .5 + out["bell"] * .8
+    mix = hall(mix, seconds=1.8, wet=.16, rng=rng)
+    fade = np.minimum(1, t / 1.5) * np.clip((total_s + 2 - t) / 3, 0, 1)
+    mix = mix * fade / (np.percentile(np.abs(mix), 99.9) + 1e-9)
+    mix = np.tanh(mix * .9)
+    mix = mix / (np.abs(mix).max() + 1e-9) * level
+    return mix[: int((total_s + .5) * SR)].astype(np.float32), dict(bpm=bpm, key=list(NOTE)[key], prog=prog, seed=seed, style="warm")

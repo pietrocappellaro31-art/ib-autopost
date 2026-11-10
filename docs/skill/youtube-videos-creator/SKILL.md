@@ -137,7 +137,7 @@ Run the content-compliance gate, then:
     Pietro confirmed this way (10 Nov) and asked for **clear instructions every time**:
     every Short delivery ends with the block below, filled in for that video.
   - **Long-form**: popular songs cannot be added to long videos without a claim. Use our
-    own bed from `build/music.py`, but lighter than the 10 Nov piano and cello: warm, mid
+    own bed from `build/music.py` (`track()`, the warm bed since 10 Nov, YouTube #3), lighter than the 10 Nov piano and cello: warm, mid
     tempo, not dramatic, low under the voice; or a YouTube Audio Library track Pietro adds
     in Studio (log any attribution). Never a commercial song in the master.
   - Instagram Reels stay without music (Pietro adds it in the app).

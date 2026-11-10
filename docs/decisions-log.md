@@ -319,3 +319,10 @@ What has been settled, and what is still open. Newest first.
   Pietro agreed (10 Nov): he adds the music in the YouTube app himself; every Short
   delivery gives him clear step-by-step music instructions (template in the
   youtube-videos-creator skill, section 7).
+- **Long-form music is the warm bed; drawings fill their boxes** (10 Nov, YouTube #3). Following Pietro's
+  note that the piano and cello was "even too dramatic", `music.track()` now writes a warm, mid-tempo,
+  major-key bed (soft electric piano, pad, round bass, soft kick, rim and shaker, sparse bell; 88 to 100
+  BPM), ducked under the voice (20.1 dB below it while speaking on #3). The piano and cello is kept as
+  `track_drama()` for re-renders. `youtube.py` now zooms each drawing onto what is drawn (`fitSketches`),
+  puts a drawing on thumbnail B, checks the 16:9 layout during the render (`layout.json`) and writes
+  `sound.json` (voice over music, DNSMOS, loudness) on every render. Waiting on Pietro's view of the new bed.

@@ -2,7 +2,7 @@
 YouTube long-form explainer engine (8 Nov) for The Banker's Notebook / the
 @investmentbankinginterviews channel: 1920x1080, paper ground, brand fonts,
 voiced by GEORGE (Kokoro bm_george, Apache 2.0), sound effects from sfx.py,
-no music in the master.
+and an original music bed from music.py ducked under the voice.
 
 An episode is a config (see youtube_ep001.py):
 
@@ -20,8 +20,10 @@ An episode is a config (see youtube_ep001.py):
 
 Each beat is spoken in one pass (Kokoro, phoneme-exact), its visual builds
 while it is spoken, and captions run under it. Chapters open on a title card.
-Outputs in out/<slug>/: <slug>.mp4, thumbnail.jpg, metadata.json (title,
-description with chapter times, tags, AI-disclosure setting), quality.json.
+Outputs in out/<slug>/: <slug>.mp4, thumbnail_a.jpg and thumbnail_b.jpg, <slug>.srt,
+metadata.json (title, description with chapter times, tags, AI-disclosure setting),
+description.txt, layout.json (drawings fitted, layout problems found while rendering)
+and sound.json (voice over music, DNSMOS, loudness).
 
     python build/youtube_ep001.py
 """
@@ -240,7 +242,7 @@ def visual(show, t0, dur):
         left, right = (art, txt) if show.get("flip") else (txt, art)
         lw = "820px" if not show.get("flip") else "800px"
         return (f'<div style="display:flex;align-items:center;gap:60px;margin:0 -60px">'
-                f'<div style="width:{lw};flex:none">{left}</div><div style="flex:1;display:flex;justify-content:center">{right}</div></div>')
+                f'<div style="width:{lw};flex:none">{left}</div><div style="flex:1;display:flex;justify-content:center"><div>{right}</div></div></div>')
     if k == "scene":           # the drawing alone, big, with a heading above
         art = sketch.scene(show["art"], t0 + .1, max(dur * .8, 1.2), **show.get("opts", {}))
         return ((A(H.escape(show["label"]), "fade", t0, .4, cls="lbl", style="margin-bottom:10px;text-align:center") if show.get("label") else "")
@@ -303,6 +305,57 @@ def scenes(ep, items):
     return sc, chapters, sounds, t
 
 
+FIT_JS = r"""
+window.fitSvg = function (svg, zmax, zmin) {
+  // Zoom the viewBox onto what was actually drawn, so a small drawing fills its box (10 Nov, after
+  // "drawings that are small in their box look lost"). Keeps the 800 x 640 shape and the element size.
+  if (svg.dataset.fit === 'no' || svg.dataset.fitted) return 0;
+  let b; try { b = svg.getBBox(); } catch (e) { return 0; }
+  if (!b.width || !b.height) return 0;
+  const pad = 30, ar = 800 / 640;
+  let x = b.x - pad, y = b.y - pad, w = b.width + 2 * pad, h = b.height + 2 * pad;
+  if (w / h > ar) { const nh = w / ar; y -= (nh - h) / 2; h = nh; } else { const nw = h * ar; x -= (nw - w) / 2; w = nw; }
+  const lim = (k) => { x -= (w * k - w) / 2; y -= (h * k - h) / 2; w *= k; h *= k; };
+  if (w < 800 / zmax) lim(800 / zmax / w);
+  if (w > 800 / zmin) lim(800 / zmin / w);
+  svg.setAttribute('viewBox', `${x.toFixed(1)} ${y.toFixed(1)} ${w.toFixed(1)} ${h.toFixed(1)}`);
+  svg.dataset.fitted = (800 / w).toFixed(2);
+  return 1;
+};
+window.fitSketches = function (zmax = 1.5, zmin = .8) {
+  // Each scene is measured at its end, when everything in it has been drawn.
+  let n = 0;
+  window.SCENES.forEach((s, i) => {
+    seek(s.start + s.dur - .05);
+    document.getElementById('s' + i).querySelectorAll('svg.sk').forEach(svg => { n += fitSvg(svg, zmax, zmin); });
+  });
+  seek(0);
+  return n;
+};
+window.check16 = function () {
+  // 16:9 layout check: no visible text or drawing off the frame or under the header, and the main
+  // content clear of the caption line.
+  const bad = [];
+  document.querySelectorAll('.scene').forEach(s => {
+    if (s.style.visibility !== 'visible') return;
+    const cap = s.querySelector('.cap');
+    const capTop = cap ? cap.getBoundingClientRect().top : 2000;
+    s.querySelectorAll('.safe *').forEach(n => {
+      if (n.closest('.cap') || !n.childNodes.length || n.tagName === 'tspan') return;
+      for (let q = n; q && q !== s; q = q.parentElement) if (getComputedStyle(q).opacity === '0') return;
+      const r = n.getBoundingClientRect();
+      if (r.width === 0 || r.height === 0) return;
+      const isText = n.tagName === 'text' || [...n.childNodes].some(c => c.nodeType === 3 && c.textContent.trim());
+      if (!isText && n.tagName !== 'svg') return;
+      if (r.left < 30 || r.right > 1890 || r.top < 105 || r.bottom > 1050 || (r.bottom > capTop - 6 && r.top < capTop))
+        bad.push(`${s.id} <${n.tagName.toLowerCase()}> "${(n.textContent || '').trim().slice(0, 30)}" ${Math.round(r.left)},${Math.round(r.top)} to ${Math.round(r.right)},${Math.round(r.bottom)}`);
+    });
+  });
+  return bad;
+};
+"""
+
+
 def page(sc):
     starts, t = [], 0.0
     for s in sc:
@@ -312,7 +365,8 @@ def page(sc):
         """Moving background for every scene: a drifting dot grid and slow rings, so no frame is ever still."""
         r = 520 + 140 * (i % 3)
         x, y = [(1500, -180), (-260, 560), (1380, 640), (-200, -220)][i % 4]
-        tabs = "".join(f'<i class="{"on" if k == s["ci"] else "done" if k < s["ci"] else ""}"></i>' for k in range(s["nc"]))
+        tw = min(90, 380 // max(s["nc"], 1))                      # 10 Nov: narrower tabs for 5+ chapters, clear of the chapter name
+        tabs = "".join(f'<i class="{"on" if k == s["ci"] else "done" if k < s["ci"] else ""}" style="width:{tw}px"></i>' for k in range(s["nc"]))
         return (A("", "float", 0, 1, cls="dots", amp=14, w=.35, ph=i)
                 + A("", "spin", 0, 1, cls="ring", deg=4 if i % 2 else -4, style=f"left:{x}px;top:{y}px;width:{r}px;height:{r}px")
                 + A("", "spin", 0, 1, cls="ring2", deg=-7 if i % 2 else 7, style=f"left:{x + 90}px;top:{y + 90}px;width:{r - 180}px;height:{r - 180}px")
@@ -325,7 +379,7 @@ def page(sc):
     return ("<!doctype html><html><head><meta charset='utf-8'><style>" + CSS.replace("FONTS/", f"{FONTS.resolve()}/") + "</style></head><body>"
             + '<div class="f"><div class="glow"></div><div class="mark">IB<span style="color:#D93A12">.</span></div>'
             + body + '<div class="bar"><i></i></div></div>'
-            + f"<script>window.SCENES={json.dumps(starts)};window.TOTAL={t};{JS}</script></body></html>"), t
+            + f"<script>window.SCENES={json.dumps(starts)};window.TOTAL={t};{JS}{FIT_JS}</script></body></html>"), t
 
 
 def render(slug, html, total, work):
@@ -342,12 +396,21 @@ def render(slug, html, total, work):
         pg.goto(src.resolve().as_uri())
         pg.evaluate("Promise.all([400,500,600].map(w => document.fonts.load(w + ' 40px Sans')).concat([document.fonts.load(\"700 40px 'Serif'\"),"
                     " document.fonts.load(\"italic 600 40px 'Serif'\")]))")
+        fitted = pg.evaluate("fitSketches()")
+        zooms = pg.evaluate("[...document.querySelectorAll('svg.sk')].map(s => +(s.dataset.fitted || 1))")
+        print(f"  fitted {fitted} drawings to their boxes (zoom {min(zooms):.2f} to {max(zooms):.2f}, median {sorted(zooms)[len(zooms) // 2]:.2f})", flush=True)
+        bad = {}
         for f in range(n):
             pg.evaluate(f"seek({f / FPS})")
+            if f % 12 == 6:
+                for x in pg.evaluate("check16()"):
+                    bad.setdefault(x.split(" ")[0] + " " + x.split('"')[1], f"{f / FPS:.1f}s {x}")
             ff.stdin.write(pg.screenshot(type="jpeg", quality=90))
         b.close()
     ff.stdin.close()
     ff.wait()
+    json.dump(dict(layout_problems=list(bad.values()), drawings_fitted=fitted, zoom=[min(zooms), max(zooms)]), open(work / "layout.json", "w"), indent=1)
+    print(f"  layout: {len(bad)} problems" + "".join(f"\n    {v}" for v in list(bad.values())[:20]), flush=True)
     return mp4
 
 
@@ -367,11 +430,17 @@ def thumbnail(ep, work):
          f"<div style='position:absolute;left:70px;width:{560 if art else 1100}px;top:170px;font-family:\"Serif\";font-weight:700;font-size:{t.get('size_a', 104)}px;"
          f"line-height:1.0;letter-spacing:-.02em;color:#fff'>{t.get('big_a', t['big'])}</div>"
          f"<div style='position:absolute;left:70px;bottom:60px;background:{INK};color:#fff;font-size:38px;font-weight:600;padding:12px 22px'>{H.escape(t.get('small', ''))}</div></div>")
+    artb = ""
+    if t.get("art_b", t.get("art")):                               # 10 Nov: B carries a drawing too, so both test options have art
+        name, opts = t.get("art_b", t.get("art"))
+        artb = (f"<div style='position:absolute;right:20px;top:50%;transform:translateY(-46%) scale(.66);transform-origin:right center'>"
+                f"{sketch.scene(name, 0, 1, seed=3, **opts)}</div>")
     b = ("<div class='t' style='background:#F7F5F2'>"
          f"<div style='position:absolute;left:0;top:0;bottom:0;width:26px;background:{RED}'></div>"
          f"<div style='position:absolute;right:-40px;bottom:-120px;font-family:\"Serif\";font-weight:700;font-size:520px;line-height:1;color:#0A0A0A;opacity:.06'>{H.escape(t.get('ghost', ''))}</div>"
+         + artb +
          f"<div style='position:absolute;left:80px;top:70px;font-family:\"Serif\";font-weight:700;font-size:40px'>IB<span style='color:{RED}'>.</span></div>"
-         f"<div style='position:absolute;left:80px;right:70px;top:150px;font-family:\"Serif\";font-weight:700;font-size:{t.get('size', 132)}px;line-height:1.0;letter-spacing:-.03em'>{t['big']}</div>"
+         f"<div style='position:absolute;left:80px;{'width:660px' if artb else 'right:70px'};top:150px;font-family:\"Serif\";font-weight:700;font-size:{t.get('size', 132)}px;line-height:1.0;letter-spacing:-.03em'>{t['big']}</div>"
          f"<div style='position:absolute;left:80px;bottom:70px;font-size:46px;font-weight:600;color:{RED};letter-spacing:.02em'>{H.escape(t.get('small', ''))}</div></div>")
     with sync_playwright() as p:
         br = p.chromium.launch()
@@ -380,6 +449,8 @@ def thumbnail(ep, work):
             (work / "thumb.html").write_text(f"<!doctype html><html><head><style>{css}</style></head><body>{body}</body></html>")
             pg.goto((work / "thumb.html").resolve().as_uri())
             pg.evaluate("Promise.all([document.fonts.load(\"700 40px 'Serif'\"), document.fonts.load('600 40px Sans')])")
+            pg.add_script_tag(content=FIT_JS)
+            pg.evaluate("document.querySelectorAll('svg.sk').forEach(s => fitSvg(s, 1.5, .8))")
             pg.wait_for_timeout(300)
             pg.screenshot(path=str(work / name), type="jpeg", quality=92)
         br.close()
@@ -418,7 +489,36 @@ def mix(ep, work):
                     "-i", str(work / "sfx.wav"), "-i", str(work / "music.wav"),
                     "-filter_complex", graph, "-map", "0:v", "-map", "[a]", "-c:v", "copy", "-c:a", "aac", "-b:a", "192k", "-ar", "48000",
                     "-shortest", "-movflags", "+faststart", str(final)], check=True)
+    # the ducked music on its own, to measure how far the voice sits above it
+    subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", str(work / "voice.wav"), "-i", str(work / "music.wav"), "-filter_complex",
+                    f"[0:a]{MASTER},aresample=48000[key];[1:a]aresample=48000,volume={mv}[m];"
+                    f"[m][key]sidechaincompress=threshold=0.02:ratio=5:attack=30:release=350:makeup=1[md]",
+                    "-map", "[md]", "-ac", "1", str(work / "music_ducked.wav")], check=True)
     return final
+
+
+def sound_report(work, final):
+    """10 Nov: the long video's sound measured on every render, like the Shorts: voice over the ducked
+    music while speaking, DNSMOS of the voice and of the final mix, loudness and true peak."""
+    import quality
+    v, m = quality.load16(work / "voice.wav"), quality.load16(work / "music_ducked.wav")
+    k = min(len(v), len(m))
+    v, m = v[:k], m[:k]
+    win = 1600
+    rv = np.sqrt(np.convolve(v ** 2, np.ones(win) / win, "same"))
+    on = rv > .25 * np.percentile(rv[rv > 1e-4], 90)
+    vom = 20 * np.log10(np.sqrt(np.mean(v[on] ** 2)) / max(np.sqrt(np.mean(m[on] ** 2)), 1e-9))
+    lo = subprocess.run(["ffmpeg", "-hide_banner", "-i", str(final), "-af", "ebur128=peak=true", "-f", "null", "-"],
+                        capture_output=True, text=True).stderr
+    tail = lo[lo.rfind("Summary:"):]
+    lufs = float(re.search(r"I:\s+(-?[\d.]+) LUFS", tail).group(1))
+    tp = float(re.search(r"Peak:\s+(-?[\d.]+) dBFS", tail).group(1))
+    rep = dict(voice_over_music_db=round(float(vom), 1), dnsmos_voice=quality.score(work / "voice.wav"),
+               dnsmos_mix=quality.score(final), lufs=lufs, true_peak_dbtp=tp)
+    json.dump(rep, open(work / "sound.json", "w"), indent=1)
+    print(f"  sound: voice {rep['voice_over_music_db']} dB over the music while speaking, DNSMOS voice {rep['dnsmos_voice']['ovrl']} / mix "
+          f"{rep['dnsmos_mix']['ovrl']}, {lufs} LUFS, {tp} dBTP" + ("  (voice under 15 dB over the music: lower music_level)" if vom < 15 else ""), flush=True)
+    return rep
 
 
 def make(ep, voice_name=YOUTUBE_VOICE):
@@ -443,6 +543,10 @@ def make(ep, voice_name=YOUTUBE_VOICE):
     silent = render(ep["slug"], html, total, work)
     json.dump(dict(total=total, chapters=[c for c, _ in chapters]), open(work / "timing.json", "w"))
     final = mix(ep, work)
+    try:
+        sound_report(work, final)
+    except Exception as e:                                          # a report must never cost the render
+        print("  sound report failed:", e)
     thumbnail(ep, work)
     srt(sc, items, work / f"{ep['slug']}.srt")
     stamp = lambda s: f"{int(s // 60)}:{int(s % 60):02d}"
