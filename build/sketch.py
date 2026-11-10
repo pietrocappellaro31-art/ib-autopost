@@ -26,6 +26,8 @@ Scenes (opts in brackets):
   9 Nov: wall(gap, label)  notes(left, right, lab_l, lab_r, n_left)  podium(words)
   queue(n, label)  factory(closed, label)  car(kicked)  fireworks()  rateboard(rate, sub)
   handshake(left, right)  suitcase(n)
+  10 Nov (coins, in colour): coin(...) helper, pricetag(value, tag), receipt(total, circle),
+  card_tap(amount), lineup(first, others), last_coin(stamp)
 """
 
 import html as H
@@ -583,3 +585,124 @@ def scene(name, t0, dur, seed=1, **opts):
     p = Pen(t0, dur, seed)
     SCENES[name](p, **opts)
     return p.svg()
+
+
+# ---- 10 Nov scenes: coins and money in colour (Pietro: "pictures and colors and more animated")
+# Generic coins of our own design: a value and a rim, no portraits or national designs.
+
+METALS = {"copper": ("#F6C19A", "#C9703F", "#7E3B1B"), "nickel": ("#F4F6F8", "#B9C1C7", "#69737B"),
+          "gold": ("#FBE7A1", "#E0A93B", "#8A5F12")}
+
+
+_COIN_N = 0
+
+
+def coin(p, cx, cy, r, value="1\u00a2", metal="copper", frac=0.0, flip=0, fx="pop", d=.35):
+    """A shaded coin with a rim, its value in the middle and a shine. flip=N spins it N turns as it lands."""
+    c0, c1, c2 = METALS[metal]
+    global _COIN_N
+    _COIN_N += 1
+    g = f"coin{_COIN_N}"                                   # unique across every drawing on the page
+    shape = (f'<defs><radialGradient id="{g}" cx="38%" cy="32%" r="78%"><stop offset="0" stop-color="{c0}"/>'
+             f'<stop offset=".58" stop-color="{c1}"/><stop offset="1" stop-color="{c2}"/></radialGradient></defs>'
+             f'<circle cx="{cx}" cy="{cy + r * .07}" r="{r}" fill="{c2}"/>'
+             f'<circle cx="{cx}" cy="{cy}" r="{r}" fill="url(#{g})" stroke="{c2}" stroke-width="{max(r * .05, 3):.1f}"/>'
+             f'<circle cx="{cx}" cy="{cy}" r="{r * .83:.1f}" fill="none" stroke="{c0}" stroke-opacity=".75" stroke-width="{max(r * .03, 2):.1f}" '
+             f'stroke-dasharray="{r * .06:.1f} {r * .05:.1f}"/>'
+             f'<text x="{cx}" y="{cy + r * .25:.1f}" text-anchor="middle" font-family="\'Serif\',serif" font-weight="700" '
+             f'font-size="{r * .74:.1f}" fill="{c2}">{H.escape(value)}</text>'
+             f'<ellipse cx="{cx - r * .38:.1f}" cy="{cy - r * .42:.1f}" rx="{r * .32:.1f}" ry="{r * .14:.1f}" fill="#fff" fill-opacity=".45" '
+             f'transform="rotate(-35 {cx - r * .38:.1f} {cy - r * .42:.1f})"/>')
+    if flip:
+        shape = (f'<g class="a" data-fx="coinflip" data-at="{p.at(frac)}" data-d="{1.1 + .25 * flip}" data-turns="{flip}" '
+                 f'style="transform-box:fill-box;transform-origin:center">{shape}</g>')
+    p.fill(shape, frac, d, fx=fx)
+
+
+def pricetag(p, value="1\u00a2", tag="?", **_):
+    """A big coin, spinning as it lands, with a price tag swinging from a string."""
+    coin(p, 300, 330, 190, value, "copper", .02, flip=3)
+    p.parts.append(f'<g class="a" data-fx="swing" data-at="0" data-d="1" data-amp="9" data-w="2.6" '
+                   f'style="transform-box:view-box;transform-origin:520px 170px">'
+                   f'<g class="a" data-fx="pop" data-at="{p.at(.3)}" data-d=".4" style="transform-box:fill-box;transform-origin:center">'
+                   f'<path d="M520 170 L600 250" stroke="{INK}" stroke-width="4"/>'
+                   f'<path d="M585 235 L705 235 L760 300 L705 365 L585 365 Z" fill="{RED}" stroke="{INK}" stroke-width="5" '
+                   f'transform="rotate(38 600 250)"/>'
+                   f'<circle cx="603" cy="262" r="9" fill="#fff" stroke="{INK}" stroke-width="3"/>'
+                   f'<text x="678" y="330" text-anchor="middle" font-family="\'Serif\',serif" font-weight="700" font-size="70" fill="#fff" '
+                   f'transform="rotate(38 600 250)">{H.escape(tag)}</text></g></g>')
+    p.circle(520, 170, 8, .28, .1, w=5)
+
+
+def receipt(p, total="$4.97", circle=-1, **_):
+    """A shop receipt printing out, the total at the bottom; circle=k rings the k-th character of the total in red."""
+    zig = " ".join(f"L{170 + 20 * i} {612 if i % 2 else 600}" for i in range(1, 24))
+    p.parts.append(f'<g class="a" data-fx="growYdown" data-at="{p.at(.0)}" data-d="{.5 * p.dur:.2f}">'
+                   f'<path d="M170 40 H630 V600 {zig} L170 600 Z" fill="#fff" stroke="{GREY}" stroke-width="3"/></g>')
+    for i, w_ in enumerate((300, 220, 260, 190)):
+        p.box(215, 120 + 62 * i, w_, 20, "#DCD7CF", .12 + .06 * i, rx=10, fx="growX")
+        p.box(500, 120 + 62 * i, 85, 20, "#DCD7CF", .14 + .06 * i, rx=10, fx="growX")
+    p.line([(210, 400), (590, 400)], .38, .12, color=GREY, w=4, dash="10 10")
+    p.text(215, 490, "TOTAL", .45, size=44, anchor="start", weight=700)
+    p.text(590, 495, total, .5, size=84, anchor="end", serif=True, weight=700, color=INK)
+    if circle >= 0:
+        cx = 590 - (len(total) - 1 - circle) * 42 - 21
+        p.circle(cx, 467, 46, .65, .3, color=RED, w=7)
+    coin(p, 690, 520, 62, "5\u00a2", "nickel", .55, fx="pop")
+    coin(p, 110, 540, 56, "1\u00a2", "copper", .6, fx="pop")
+    p.line([(62, 492), (158, 588)], .72, .12, color=RED, w=10)
+    p.line([(158, 492), (62, 588)], .76, .12, color=RED, w=10)
+
+
+def card_tap(p, amount="$4.97", **_):
+    """A payment card sliding onto a terminal, contactless waves, the amount on the screen."""
+    p.fill(f'<rect x="420" y="120" width="300" height="470" rx="40" fill="{INK}"/>'
+           f'<rect x="450" y="160" width="240" height="140" rx="16" fill="#123B37"/>'
+           + "".join(f'<rect x="{462 + 78 * (k % 3)}" y="{340 + 60 * (k // 3)}" width="60" height="42" rx="10" fill="#2A2A2A"/>'
+                     for k in range(9)), .02)
+    p.text(570, 252, amount, .2, size=62, serif=True, weight=700, color="#7FE0CF")
+    for k in range(3):
+        p.parts.append(f'<g class="a" data-fx="ripple" data-at="{p.at(.5 + .12 * k)}" data-d=".9" '
+                       f'style="transform-box:fill-box;transform-origin:center"><circle cx="420" cy="300" r="70" fill="none" '
+                       f'stroke="{TEAL}" stroke-width="8"/></g>')
+    card = (f'<defs><linearGradient id="cardg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#14A08F"/>'
+            f'<stop offset="1" stop-color="#0B4F49"/></linearGradient></defs>'
+            f'<rect x="60" y="220" width="330" height="210" rx="22" fill="url(#cardg)" stroke="#0A3B36" stroke-width="4"/>'
+            f'<rect x="100" y="280" width="62" height="48" rx="8" fill="#F2C35B"/>'
+            f'<rect x="100" y="370" width="210" height="16" rx="8" fill="#fff" fill-opacity=".55"/>'
+            f'<text x="350" y="265" text-anchor="end" font-family="\'Sans\',sans-serif" font-weight="600" font-size="26" fill="#fff">CARD</text>')
+    p.parts.append(f'<g class="a" data-fx="slide" data-at="{p.at(.15)}" data-d="{.35 * p.dur:.2f}" data-x0="-420" data-x1="40" '
+                   f'data-y0="60" data-y1="-20" data-ease="out" data-r="-8">{card}</g>')
+
+
+def lineup(p, first="1\u00a2", others=3, **_):
+    """The penny, then a row of mystery coins bobbing with question marks."""
+    coin(p, 130, 320, 125, first, "copper", .02, flip=2)
+    p.text(130, 500, "PENNY", .15, size=34, weight=700)
+    for k in range(others):
+        x = 400 + 155 * k
+        p.parts.append(f'<g class="a" data-fx="float" data-at="0" data-d="1" data-amp="14" data-w="2.4" data-ph="{k * 1.3}">')
+        coin(p, x, 320, 80, "?", "nickel", .3 + .12 * k)
+        p.parts.append("</g>")
+    p.line([(270, 320), (308, 320)], .55, .12, color=RED, w=8)
+    p.line([(292, 302), (310, 320), (292, 338)], .6, .08, color=RED, w=8)
+    p.text(580, 500, "WHICH ONE?", .7, size=40, serif=True, weight=700, color=RED)
+
+
+def last_coin(p, value="1\u00a2", stamp="LAST ONE", **_):
+    """One coin spinning down to a stop, then a red stamp across it."""
+    coin(p, 400, 300, 220, value, "copper", 0, flip=4)
+    p.parts.append(f'<g class="a" data-fx="stamp" data-at="{p.at(.55)}" data-d=".45" data-rot="-12" '
+                   f'style="transform-box:fill-box;transform-origin:center">'
+                   f'<rect x="150" y="250" width="500" height="110" rx="14" fill="#fff" fill-opacity=".85" stroke="{RED}" stroke-width="10"/>'
+                   f'<text x="400" y="330" text-anchor="middle" font-family="\'Serif\',serif" font-weight="700" font-size="70" '
+                   f'letter-spacing="4" fill="{RED}">{H.escape(stamp)}</text></g>')
+
+
+def picture(name, t0, dur, w=752, h=None, seed=1, **opts):
+    """A scene sized for the 9:16 engine (levels.py): the 800 x 640 drawing scaled to w."""
+    h = h or round(w * 640 / 800)
+    return scene(name, t0, dur, seed, **opts).replace(f'width="{W}" height="{Hh}"', f'width="{w}" height="{h}"', 1)
+
+
+SCENES.update({f.__name__: f for f in (pricetag, receipt, card_tap, lineup, last_coin)})

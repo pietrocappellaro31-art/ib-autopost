@@ -8,7 +8,7 @@ data attributes, and one JavaScript function, seek(t), places every element
 for time t. Playwright calls seek() once per frame and screenshots, so the
 render is deterministic: the same input always gives the same video.
 
-    data-fx   rise | fade | pop | wipe | growX | growY | growYdown | move | count | strike
+    data-fx   rise | fade | pop | wipe | growX | growY | growYdown | move | count | strike | coinflip (10 Nov: a coin spinning on its axis, data-turns)
               flipin | flipout | draw | float | words | roll | stamp | ripple | press
     words: children with class "w" appear one by one across data-d (typewriter by word)
     roll: slot-machine word swap; children of .rl are the options, data-hold between swaps
@@ -182,6 +182,9 @@ function place(el, local) {
   else if (fx === 'slide') { const q = el.dataset.ease === 'inout' ? E.inout(raw) : el.dataset.ease === 'out' ? E.out3(raw) : raw;
       const x0 = +(el.dataset.x0||0), x1 = +(el.dataset.x1||0), y0 = +(el.dataset.y0||0), y1 = +(el.dataset.y1||0);
       tf = `translate(${x0 + (x1-x0)*q}px,${y0 + (y1-y0)*q}px)` + (el.dataset.r ? ` rotate(${q * +el.dataset.r}deg)` : ''); }
+  else if (fx === 'coinflip') { const k = Math.max(0, local - at), turns = +(el.dataset.turns || 3);
+      const sx = Math.cos(turns * 2 * Math.PI * E.out3(clamp(k / d))); o = local >= at ? 1 : 0;
+      tf = `scaleX(${Math.abs(sx) < .05 ? .05 : sx})`; }
   else if (fx === 'spin') { tf = `rotate(${local * +(el.dataset.deg||40)}deg)`; }
   else if (fx === 'float') { const a = +(el.dataset.amp||10), w = +(el.dataset.w||1), ph = +(el.dataset.ph||0);
       tf = `translate(${Math.cos(local*w*.7+ph)*a*.6}px,${Math.sin(local*w+ph)*a}px)`; }

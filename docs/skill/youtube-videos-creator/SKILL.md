@@ -90,6 +90,21 @@ A four-level quiz with the Levels engine (`build/levels.py`, copy the latest
 single sharp idea from the long-form, said in its own words (not a cut of the
 same file). Title under 70 characters with #Shorts in the description.
 
+**Pictures, colour and motion on every Short (Pietro, 10 Nov: "make the video more
+engaging with pictures and colors and more animated").** The reference is
+`build/shorts_penny-one-year.py`:
+- a colour ground per part (`bg=` on the hook, each level and the close), cross-faded
+  at the swipes;
+- a drawing in each level's empty answer zone while the question is read and the clock
+  runs (`art=`, with `ans_min` about 520), fading as the answer lands; `art_after=` for a
+  small picture beside the answer; `art=` on the hook sits beside "That's level 4";
+- `floaters=` (faint shapes drifting at the edges) and `art=` on the close (coins falling
+  in under the score);
+- drawings from `build/sketch.py`, sized for 9:16 with `picture(name, t0, dur, w=650)`;
+  add a new scene for the topic when none fits (coins, receipt, card and terminal, price
+  tag, coin line-up and a stamped last coin exist).
+Keep the safe area clear (the render lists any problem) and look at a contact sheet.
+
 ## 5. Checks
 
 - Every line the recogniser checks is word for word (`takes.json` where
@@ -107,8 +122,10 @@ Run the content-compliance gate, then:
   are our original work.` and the not-financial-advice line (added by the
   engine).
 - **Music on every YouTube video (Pietro, 8 Nov), and always our own**: `build/music.py`
-  synthesises an upbeat track per video in the style that trends (four-chord pop loop,
-  kick, clap, hats, pluck, bass), ducked under the voice. Never a real song, however
+  synthesises a dramatic piano and cello piece per video (slow, minor key, piano
+  ostinato, low cello line, a soft low drum per phrase, hall reverb), ducked under the
+  voice. Pietro, 10 Nov: "we are not at a lunapark. We prefer piano or cello. Something
+  more dramatic." No pop beats, no drum kits. Never a real song, however
   viral: Content ID would claim the video's revenue. Shorts: `music=True` in the EP.
   Instagram Reels stay without music (Pietro adds it in the app).
 - No third-party footage, logos or photos of real

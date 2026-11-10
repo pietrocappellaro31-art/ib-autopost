@@ -217,7 +217,10 @@ def scene(ep, parts, at, hook_end, lv, total):
             + card(f'<div class="lbl" style="font-size:28px;letter-spacing:.2em;color:{RED};opacity:1;margin-bottom:20px">'
                    f'THE LAST QUESTION</div>{q_html}', accent=RED)
             + f'<div style="margin-top:44px"><div style="font-size:44px;font-weight:500;opacity:.7;margin-bottom:20px;text-wrap:balance">{hk["sub"]}</div>'
-              f'{lines}</div>')
+            + (f'<div style="display:flex;align-items:center;justify-content:space-between;gap:20px"><div>{lines}</div>'    # 10 Nov: a picture
+               f'<div class="nochk" style="position:relative;flex:none;width:{hk.get("art_w", 280)}px;height:{hk.get("art_h", 224)}px">'   # beside the
+               f'{hk["art"](at["hook"], hook_end - at["hook"])}</div></div>' if hk.get("art") else lines)                     # hook lines
+            + '</div>')
     els.append(group(column(hook), -1, hook_end + 1 + T_SW, fi=0, fo=T_SW))
 
     # The levels.
@@ -263,7 +266,18 @@ def scene(ep, parts, at, hook_end, lv, total):
             chip = A(f'<div style="display:inline-block;border:3px solid {TEAL};background:rgba(15,118,110,.08);border-radius:24px;'
                      f'padding:18px 30px;font-size:44px;font-weight:600;line-height:1.3">{L["chip"]}</div>{foot}',
                      "pop", t0, .45, style="margin-top:30px;transform-origin:left center")
-        answer = f'<div style="position:relative;margin-top:22px;min-height:{L.get("ans_min", 0)}px">{rip}{ans}{chip}</div>'
+        art = ""
+        if L.get("art"):
+            # 10 Nov (Pietro: "pictures and colors and more animated"): a drawing fills the
+            # empty answer zone while the question is read and the clock runs, then fades as
+            # the answer lands on top of it.
+            art = A(L["art"](T["start"] + .3, aa - T["start"] - .3), "life", T["start"] + .25, aa - T["start"] - .05, fi=.35, fo=.3,
+                    cls="nochk", style=f"position:absolute;left:0;top:0;width:{W}px;height:{L.get('ans_min', 420)}px;z-index:-1")
+            if L.get("art_after"):
+                art += A(L["art_after"](aa), "life", aa + .1, T["end"] - aa + .3, fi=.35, fo=.2, cls="nochk",
+                         style=f"position:absolute;right:0;top:0;z-index:-1")
+        answer = (f'<div style="position:relative;margin-top:22px;min-height:{L.get("ans_min", 420 if L.get("art") else 0)}px">'
+                  f'{art}{rip}{ans}{chip}</div>')
         grp = ghost(i + 1) + lockup(i + 1, L["tail"], RED if last else INK) + qcard + think + answer
         els.append(group(column(grp), T["start"] - .02, T["end"] - T["start"] + T_SW + .02))
         check_at.append(T["end"] - .2)
@@ -289,6 +303,25 @@ def scene(ep, parts, at, hook_end, lv, total):
               style=f"position:absolute;left:0;top:0;width:1300px;height:2150px;background:url({noise_tile()});mix-blend-mode:multiply")
     layer = (f'<div class="nochk" style="position:absolute;left:-84px;top:-230px;width:1080px;height:1920px;z-index:9;'
              f'pointer-events:none;overflow:hidden">{grain}</div>')
+    # Colour grounds (10 Nov): each part of the Short gets its own full-bleed colour,
+    # cross-faded at the swipes, under everything else. ep["hook"]["bg"], levels[i]["bg"],
+    # ep["close"]["bg"]; none set keeps the paper ground.
+    spans = [(ep["hook"].get("bg"), -1, hook_end)] + [(L.get("bg"), lv[i]["start"], lv[i]["end"]) for i, L in enumerate(ep["levels"])] \
+        + [(ep["close"].get("bg"), at["close"] - .35, total + 1)]
+    under = ""
+    for col, s0, s1 in spans:
+        if not col:
+            continue
+        kf = json.dumps([[round(s0, 3), 0, 0, 1, 0 if s0 > 0 else 1], [round(s0 + .4, 3), 0, 0, 1, 1], [round(s1, 3), 0, 0, 1, 1],
+                         [round(s1 + .45, 3), 0, 0, 1, 0]])
+        under += A("", "kf", 0, 1, cls="nochk", kf=H.escape(kf),
+                   style=f"position:absolute;left:-84px;top:-230px;width:1080px;height:1920px;background:{col}")
+    if ep.get("floaters"):                               # slow drifting shapes behind everything, for life
+        under += ep["floaters"](total)
+    if ep["close"].get("art"):                           # behind the score, above the ground
+        under += ep["close"]["art"](at["close"], total - at["close"])
+    if under:
+        els.insert(0, f'<div class="nochk" style="position:absolute;left:0;top:0;width:{W}px;height:10px;z-index:0">{under}</div>')
     html = "".join(els) + brand + layer
     return dict(dur=total, push=.025, html=html), check_at
 

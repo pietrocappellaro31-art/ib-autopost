@@ -292,3 +292,19 @@ What has been settled, and what is still open. Newest first.
   varies key, tempo and pattern). It drops out at chapter cards and is ducked under the
   voice; mixed at -14 LUFS. Long-form always; Shorts with `music=True`. Instagram Reels
   are unchanged: no music in the file, Pietro adds it in the app.
+- **YouTube music is piano and cello, dramatic; Shorts get pictures and colour** (10 Nov,
+  Pietro on the first Short: "The music is terrible, we are not at a lunapark. We prefer
+  piano or cello. Something more dramatic. Also, make the video more engaging with
+  pictures and colors and more animated"). `music.track()` now writes a slow minor-key
+  piece (66 to 80 BPM, piano ostinato with left-hand octaves, a cello line in its low
+  register from bar 3, a soft low drum every fourth bar, hall reverb), synthesised from
+  scratch like before; the pop style is retired (`track_pop()`, re-renders only). Sample
+  libraries were not an option in the build environment, so the instruments are modelled
+  (additive piano with stretched, decaying partials; bowed cello with body resonances and
+  late vibrato). Voice sits about 16 dB over the bed while speaking at the default level.
+  Shorts now carry a colour ground per part, a drawing in each level's answer zone, coins
+  drifting at the edges and an animated close (`levels.py`: `bg`, `art`, `art_after`,
+  `floaters`; `sketch.py`: coin, pricetag, receipt, card_tap, lineup, last_coin;
+  `motion.py`: coinflip). Instagram Reels keep the paper ground and no music unless
+  Pietro says otherwise.
+
