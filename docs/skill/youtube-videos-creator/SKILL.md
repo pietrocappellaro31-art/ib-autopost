@@ -75,14 +75,15 @@ moment. Rules:
 
 Aim for 8 to 12 minutes; vary the scenes and structure so no two videos look
 alike. Render: `python3 build/youtube_ep<NNN>.py`. Outputs in
-`build/out/<slug>/`: the MP4 (-14 LUFS, sound effects, original music bed), two
+`build/out/<slug>/`: the MP4 (-14 LUFS, sound effects, a light original music bed), two
 thumbnails, `<slug>.srt` captions, `metadata.json`, `description.txt` with
 chapter times. Look at a contact sheet of frames before delivering: if it
 looks plainer than the last video, it is not done.
 
 ## 4. Short (9:16)
 
-Set `music=True` in the Short's EP so it carries the music bed.
+**Shorts ship without music in the file** (`music=False`, the default): Pietro adds a
+trending sound in the YouTube app when he uploads (see section 6, Music).
 
 A four-level quiz with the Levels engine (`build/levels.py`, copy the latest
 `build/reels_levels<N>.py` to `build/shorts_<slug>.py`), rendered with
@@ -91,8 +92,10 @@ single sharp idea from the long-form, said in its own words (not a cut of the
 same file). Title under 70 characters with #Shorts in the description.
 
 **Pictures, colour and motion on every Short (Pietro, 10 Nov: "make the video more
-engaging with pictures and colors and more animated").** The reference is
-`build/shorts_penny-one-year.py`:
+engaging with pictures and colors and more animated"; after seeing it: "much better,
+that is what we are gonna use as standard from now on").** The penny Short,
+`build/shorts_penny-one-year.py`, is the minimum standard: every Short matches or beats
+it. Copy its structure:
 - a colour ground per part (`bg=` on the hook, each level and the close), cross-faded
   at the swipes;
 - a drawing in each level's empty answer zone while the question is read and the clock
@@ -121,13 +124,20 @@ Run the content-compliance gate, then:
 - Description ends with `Narration: AI-generated voice; script and analysis
   are our original work.` and the not-financial-advice line (added by the
   engine).
-- **Music on every YouTube video (Pietro, 8 Nov), and always our own**: `build/music.py`
-  synthesises a dramatic piano and cello piece per video (slow, minor key, piano
-  ostinato, low cello line, a soft low drum per phrase, hall reverb), ducked under the
-  voice. Pietro, 10 Nov: "we are not at a lunapark. We prefer piano or cello. Something
-  more dramatic." No pop beats, no drum kits. Never a real song, however
-  viral: Content ID would claim the video's revenue. Shorts: `music=True` in the EP.
-  Instagram Reels stay without music (Pietro adds it in the app).
+- **Music (Pietro, 10 Nov: "try to find the most viral ones and use it"; the piano and
+  cello bed was "even too dramatic").** Viral songs are copyrighted, so they never go into
+  our file (Content ID would claim the video, and the compliance gate treats it as STOP).
+  The way to use them is YouTube's own licensed library:
+  - **Shorts**: the MP4 has voice and sound effects only (`music=False`). Each run
+    searches the web for the sounds trending on YouTube Shorts that week and suggests two
+    or three in the delivery, with the mood that fits the video. Pietro picks one with
+    "Add sound" in the YouTube app at upload (licensed for Shorts) and keeps it low under
+    the voice. If a suggested song is not in the app's library, he picks another from it.
+  - **Long-form**: popular songs cannot be added to long videos without a claim. Use our
+    own bed from `build/music.py`, but lighter than the 10 Nov piano and cello: warm, mid
+    tempo, not dramatic, low under the voice; or a YouTube Audio Library track Pietro adds
+    in Studio (log any attribution). Never a commercial song in the master.
+  - Instagram Reels stay without music (Pietro adds it in the app).
 - No third-party footage, logos or photos of real
   people. Fonts, sounds and visuals are ours (see `docs/rights/ledger.md`).
 - Not "made for kids".
@@ -137,7 +147,8 @@ Run the content-compliance gate, then:
 
 Send with SendUserFile: the MP4, both thumbnails, the `.srt` and `description.txt`. In the
 reply paste the title, the description (with chapters), the tags, and the
-pinned-comment question, plus the Studio settings to tick. Add a row to the
+pinned-comment question, plus the Studio settings to tick and, for a Short, the
+two or three trending sounds to try in the app. Add a row to the
 log, the topic to `topics.md` "Used", the measures and one improvement to
 `quality-log.md`. Commit the episode file and logs (not the MP4) and push.
 

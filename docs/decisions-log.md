@@ -307,4 +307,13 @@ What has been settled, and what is still open. Newest first.
   `floaters`; `sketch.py`: coin, pricetag, receipt, card_tap, lineup, last_coin;
   `motion.py`: coinflip). Instagram Reels keep the paper ground and no music unless
   Pietro says otherwise.
+- **The penny Short is the standard; viral music only through YouTube's library** (10 Nov,
+  Pietro: "The quality of the video is much better - that is what we are gonna use as
+  standard from now on. For the music, try to find the most viral ones and use it. This
+  was even too dramatic."). Every Short matches or beats `shorts_penny-one-year.py`
+  (colour grounds, drawings, motion). Viral songs are copyrighted, so they never go in our
+  file: Shorts ship with voice and effects only and each run suggests two or three sounds
+  trending on Shorts that week, which Pietro adds with "Add sound" in the YouTube app at
+  upload (licensed for Shorts). Long-form keeps an original bed, lighter than the 10 Nov
+  piano and cello (warm, mid tempo, not dramatic), or an Audio Library track Pietro adds.
 
