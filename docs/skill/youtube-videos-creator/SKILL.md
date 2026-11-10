@@ -166,8 +166,14 @@ Steps:
      not on a vocal chorus, so it does not fight the voice.
   4. Tap "Volume": keep "Original sound" at 100 and set the added track to about 15 to 25,
      then play the first 10 seconds. The voice must be easy to follow; lower the track if not.
-  5. Tap Next, paste the title and description, set "Altered or synthetic content: Yes"
-     and "No, it's not made for kids", then upload.
+     If you see no sound button: you went past the editor. After picking the file, the
+     trim screen must get "Next" (not "Add details"); the sound button is on the editor
+     screen that follows. Songs from the app's library may be cut to a short clip
+     (YouTube Help says 15 seconds for uploaded videos): place it on the hook.
+  5. Tap Next, paste the title and description, set "No, it's not made for kids", and upload.
+  6. AI label (the phone app may not show it): on a computer open studio.youtube.com,
+     Content, the Shorts tab, click the Short, "Show more", and under "Altered content"
+     (newer Studio: Attributes, "AI use") answer Yes. Save.
 The app's labels can differ slightly between versions; the order stays the same.
 ```
 

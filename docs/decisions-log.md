@@ -326,3 +326,10 @@ What has been settled, and what is still open. Newest first.
   `track_drama()` for re-renders. `youtube.py` now zooms each drawing onto what is drawn (`fitSketches`),
   puts a drawing on thumbnail B, checks the 16:9 layout during the render (`layout.json`) and writes
   `sound.json` (voice over music, DNSMOS, loudness) on every render. Waiting on Pietro's view of the new bed.
+- **Where the AI label and the music are (10 Nov, Pietro: "I cannot find how to add the AI
+  label and music").** The phone upload flow may not show the AI question; it is set in
+  YouTube Studio on a computer after upload (Content, Shorts, the Short, Show more,
+  "Altered content", or Attributes, "AI use", in newer Studio). The sound button is on the
+  Shorts editor screen reached with "Next" after the trim screen; YouTube Help says library
+  audio on uploaded videos is limited to 15 second clips. The music template in the
+  youtube-videos-creator skill now says both.
