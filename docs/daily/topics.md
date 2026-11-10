@@ -16,6 +16,7 @@ number with no source is cut.
 | 2026-11-09 | Reel | Unlevered free cash flow: before interest, the formula, working capital build, depreciation tax shield |
 | 2026-11-10 | YouTube Short | Buy now, pay later before Black Friday: Pay in 4 at checkout, every two weeks, Affirm reporting to Experian, $1,000 at 36% APR = $206 interest |
 | 2026-11-10 | YouTube long | The dot-com crash: right about the internet, wrong about the price (Nasdaq 2000 to 2015, Amazon 2000 letter, Cisco's 25 years, McNealy's 10x revenue arithmetic, Pets.com, Greenspan 1996), pegged to the November 2026 AI sell-off |
+| 2026-11-10 | Reel | WACC: why debt is cheaper, after-tax cost of debt (8% x 75% = 6%), 60/40 WACC = 8.4%, more debt does not always lower WACC |
 
 ## Ideas (YouTube long and Shorts)
 

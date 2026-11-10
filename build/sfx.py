@@ -41,9 +41,9 @@ def whoosh(sec=.34, seed=3):
     return (x * env / np.abs(x).max()).astype(np.float32)
 
 
-def ding():
+def ding(decay=5):
     t = _t(1.0)
-    return ((np.sin(2 * np.pi * 1318.5 * t) + .5 * np.sin(2 * np.pi * 1975.5 * t)) * np.exp(-t * 5)).astype(np.float32)
+    return ((np.sin(2 * np.pi * 1318.5 * t) + .5 * np.sin(2 * np.pi * 1975.5 * t)) * np.exp(-t * decay)).astype(np.float32)
 
 
 def thump():

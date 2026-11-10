@@ -364,6 +364,11 @@ def soundtrack(parts, at, lv, total, ep=None):
     # on the last word of the previous part (the voice was 11.7 dB over the effects while
     # speaking; 15.8 dB after, mix DNSMOS unchanged). Ticks keep their rhythm and the answer
     # ding stays on the reveal (moving it into the pause before cost 0.24 mix DNSMOS).
+    # 11 Nov: the answer ding rings for about a quarter of a second (decay 12, was 5: a full
+    # second under the first words of the answer). On Levels #9's stems: the answer dings were
+    # about 60% of the effect energy under speech; decay 12 took the voice margin from 16.2 to
+    # 18.3 dB and the mix DNSMOS from 2.98 to 3.14. Leading it into the pause, or a lower gain,
+    # did worse (2.86, 3.05). ep["ding_decay"], ep["ding_lead"], ep["ding_gain"] to override.
     env = np.convolve(voice ** 2, np.ones(int(.01 * SR)) / int(.01 * SR), "same")
     put_raw = put
 
@@ -382,7 +387,7 @@ def soundtrack(parts, at, lv, total, ep=None):
         put(sfx, pop, L["start"] + .28, .26)                      # the level numeral lands
         for j in range(int(round(L["think"] / .5))):
             put(sfx, tick, L["think0"] + .05 + j * .5, .22 + .04 * j, lo=0, hi=0)
-        put(sfx, ding, at[f"a{i}"] + .02, .12, lo=0, hi=0)     # the answer
+        put(sfx, sfx_lib.ding((ep or {}).get("ding_decay", 12)), at[f"a{i}"] + .02 - (ep or {}).get("ding_lead", 0), (ep or {}).get("ding_gain", .12), lo=0, hi=0)     # the answer
         if ep and ep["levels"][i].get("chip"):                     # the worked chip pops in
             segs = parts[f"a{i}"][1]
             put(sfx, pop, at[f"a{i}"] + chip_time(segs, ep["levels"][i].get("chip_at", 0)), .18)

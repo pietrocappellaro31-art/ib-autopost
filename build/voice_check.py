@@ -40,6 +40,10 @@ def words(text):
     t = t.replace("%", " percent ").replace("-", " ").replace(",", " ")
     t = re.sub(r"\bper cent\b", "percent", t)              # British spelling (EMMA, GEORGE), same words
     t = re.sub(r"\b(\d+) and a half\b", r"\1.5", t)
+    t = re.sub(r"\bwhack\b", "wacc", t)                      # 11 Nov: WACC is said "whack"; a recogniser spells it that way
+    _o = "zero one two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen sixteen seventeen eighteen nineteen".split()
+    t = re.sub(r"\b(" + "|".join(_o) + r") point (" + "|".join(_o[:10]) + r")\b",       # 11 Nov: "eight point four" is 8.4
+               lambda m: f"{_o.index(m.group(1))}.{_o.index(m.group(2))}", t)
     t = re.sub(r"\ba firm\b", "affirm", t)                   # 10 Nov: the lender's name and "a firm" sound the same          # "2 and a half" as a recogniser writes it
     # Spoken years and prices (9 Nov): "twenty twenty four" is 2024, and "four
     # ninety seven" is $4.97, which a recogniser writes "4.97" or "497".

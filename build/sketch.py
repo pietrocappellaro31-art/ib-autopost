@@ -980,3 +980,81 @@ def rocket(p, fall=False, **_):
 
 
 SCENES.update({f.__name__: f for f in (bubble, ticker, server, parcel, ballot, payback, petbowl, bell, rocket)})
+
+
+# ---- 11 Nov scenes (IG Reel, Levels #9, WACC): the capital structure, drawn as diagrams of the mechanism
+# on the paper ground (red for the risky or costly part, teal for the cheap one). Generic shapes of our own.
+
+def capital_stack(p, top="EQUITY", bottom="DEBT", **_):
+    """Two blocks stacked like a balance sheet's right side: debt at the bottom, paid first (a coin drops on
+    it with a 1), equity on top, paid last (a red 2), a dashed arrow climbing the order of payment."""
+    p.parts.append(f'<g class="a" data-fx="slide" data-at="{p.at(0)}" data-d=".5" data-x0="0" data-x1="0" data-y0="120" data-y1="0" data-ease="out">'
+                   f'<rect x="150" y="360" width="420" height="230" rx="18" fill="{TEAL}" stroke="{INK}" stroke-width="6"/>'
+                   f'<text x="360" y="500" text-anchor="middle" font-family="\'Serif\',serif" font-weight="700" font-size="76" fill="#fff">{H.escape(bottom)}</text></g>')
+    p.parts.append(f'<g class="a" data-fx="slide" data-at="{p.at(.15)}" data-d=".5" data-x0="0" data-x1="0" data-y0="-200" data-y1="0" data-ease="out">'
+                   f'<rect x="150" y="60" width="420" height="280" rx="18" fill="#fff" stroke="{RED}" stroke-width="7"/>'
+                   f'<text x="360" y="225" text-anchor="middle" font-family="\'Serif\',serif" font-weight="700" font-size="76" fill="{RED}">{H.escape(top)}</text></g>')
+    for k, (y, n, col) in enumerate(((475, "1", TEAL), (200, "2", RED))):
+        p.parts.append(f'<g class="a" data-fx="float" data-at="0" data-d="1" data-amp="8" data-w="2.2" data-ph="{k}">')
+        p.fill(f'<circle cx="680" cy="{y}" r="58" fill="#F2C35B" stroke="{INK}" stroke-width="6"/>'
+               f'<text x="680" y="{y + 26}" text-anchor="middle" font-family="\'Serif\',serif" font-weight="700" font-size="74" fill="{col}">{n}</text>',
+               .4 + .2 * k)
+        p.parts.append("</g>")
+    p.line([(70, 570), (70, 90)], .45, .5, w=6, dash="16 14")
+    p.line([(48, 120), (70, 84), (92, 120)], .7, .15, w=6)
+
+
+def tax_cut(p, before="8%", after="6%", rate="25%", **_):
+    """A tall teal bar for the cost of debt before tax; a red dashed slice across its top is the tax saved,
+    and it falls away, leaving the after-tax bar with a question mark."""
+    p.line([(120, 600), (680, 600)], .0, .25, w=6)
+    p.box(260, 160, 280, 440, TEAL, .08, rx=12, fx="growY")
+    p.text(400, 410, before, .2, size=96, serif=True, weight=700, color="#fff")
+    p.parts.append(f'<g class="a" data-fx="slide" data-at="{p.at(.5)}" data-d=".7" data-x0="0" data-x1="170" data-y0="0" data-y1="-60" data-ease="in">'
+                   f'<rect x="260" y="160" width="280" height="110" rx="12" fill="#F6CFC3" stroke="{RED}" stroke-width="6" stroke-dasharray="18 12"/>'
+                   f'<text x="400" y="232" text-anchor="middle" font-family="\'Sans\',sans-serif" font-weight="700" font-size="44" fill="{RED}">TAX {H.escape(rate)}</text></g>')
+    p.line([(230, 270), (570, 270)], .4, .2, color=RED, w=7, dash="20 12")
+    p.parts.append(f'<g class="a" data-fx="float" data-at="0" data-d="1" data-amp="9" data-w="2.4">')
+    p.text(640, 470, "?", .75, size=130, serif=True, weight=700, color=RED)
+    p.parts.append("</g>")
+
+
+def mix_bar(p, left="EQUITY 60%", right="DEBT 40%", lcost="10%", rcost="6%", split=.6, **_):
+    """One bar of the company's funding split into its two parts, each with its cost on a tag above it,
+    and a scale weighing them underneath."""
+    x0, x1, y = 60, 740, 250
+    xm = x0 + (x1 - x0) * split
+    p.box(x0, y, xm - x0, 170, "#fff", .05, rx=14, fx="growX")
+    p.rect(x0, y, xm - x0, 170, .05, .4, color=RED, w=7)
+    p.box(xm + 10, y, x1 - xm - 10, 170, TEAL, .25, rx=14, fx="growX")
+    p.text((x0 + xm) / 2, y + 108, left, .3, size=46, weight=700, color=RED)
+    p.text((xm + 10 + x1) / 2, y + 108, right, .45, size=46, weight=700, color="#fff")
+    for k, (cx, s, col) in enumerate((((x0 + xm) / 2, lcost, RED), ((xm + 10 + x1) / 2, rcost, TEAL))):
+        p.parts.append(f'<g class="a" data-fx="float" data-at="0" data-d="1" data-amp="7" data-w="2.1" data-ph="{k}">')
+        p.box(cx - 90, 70, 180, 110, "#F2C35B", .55 + .12 * k, rx=18)
+        p.text(cx, 147, s, .6 + .12 * k, size=72, serif=True, weight=700, color=col)
+        p.parts.append("</g>")
+    p.line([(400, 470), (400, 560)], .7, .2, w=6)
+    p.line([(250, 600), (550, 600)], .75, .2, w=8)
+    p.text(400, 640, "WEIGHTED", .8, size=34, weight=700)
+
+
+def wacc_curve(p, **_):
+    """WACC against debt: a marker U-curve drawn left to right, a dot rolling down it and then up past the
+    bottom, a red question mark at the high right end."""
+    p.line([(90, 40), (90, 560), (740, 560)], .0, .35, w=7)
+    p.text(115, 60, "WACC", .1, size=40, weight=700, anchor="start", fx="fade")
+    p.text(560, 615, "MORE DEBT", .15, size=38, weight=700)
+    p.line([(700, 595), (740, 560), (700, 525)], .3, .1, w=6)
+    pts = [(x, 470 - .0028 * (x - 400) ** 2) for x in range(130, 731, 12)]
+    p.line(pts, .2, .55, color=RED, w=9, j=1.0)
+    lo = max(pts, key=lambda q: q[1])
+    p.line([(lo[0], lo[1] + 20), (lo[0], 560)], .7, .2, color=TEAL, w=5, dash="12 10")
+    p.parts.append(f'<g class="a" data-fx="pop" data-at="{p.at(.75)}" data-d=".35" style="transform-box:fill-box;transform-origin:center">'
+                   f'<circle cx="{lo[0]}" cy="{lo[1]}" r="20" fill="{TEAL}" stroke="{INK}" stroke-width="5"/></g>')
+    p.parts.append(f'<g class="a" data-fx="float" data-at="0" data-d="1" data-amp="10" data-w="2.3">')
+    p.text(pts[-1][0] - 10, pts[-1][1] - 30, "?", .85, size=110, serif=True, weight=700, color=RED)
+    p.parts.append("</g>")
+
+
+SCENES.update({f.__name__: f for f in (capital_stack, tax_cut, mix_bar, wacc_curve)})
