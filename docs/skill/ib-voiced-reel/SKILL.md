@@ -1,6 +1,6 @@
 ---
 name: "ib-voiced-reel"
-description: "Make every Instagram Reel for @investmentbankinginterviews voiced: the voice rotates G2, BELLA, EMMA (one per Reel, a one-month test from 8 Nov), with sound effects, voice and quality checks, caption, comment question and the daily quality log. YouTube videos use GEORGE (see youtube-videos-creator)."
+description: "Make every Instagram Reel for @investmentbankinginterviews voiced: the voice rotates G2, BELLA, EMMA (one per Reel, a one-month test from 8 Nov), with sound effects, voice and quality checks, caption, comment question and the daily quality log. YouTube videos run their own daily voice trial (see youtube-videos-creator)."
 ---
 
 # Voiced Reels for @investmentbankinginterviews
@@ -20,8 +20,9 @@ picks the winner from the results, so the rotation must stay strict:
    `build/voices/voice_log.json`). Use it. Do not pick by taste.
 2. If Pietro names a voice for a Reel, use that one; it still counts in the
    log.
-3. **YouTube (long-form and Shorts) is always GEORGE** (Kokoro bm_george,
-   British, measured). Never in the Reel rotation.
+3. **YouTube (long-form and Shorts) runs its own trial from 11 Nov**: a different
+   Kokoro voice each day (`voice_clone.youtube_voice()`), never the Reel voices.
+   Never in the Reel rotation.
 4. All four are synthetic voices, not a real person. Never clone anyone.
    Older voices (P1, L2 to L4, F1 to F3) are kept only to re-render old Reels.
 5. Say in every delivery which voice was used.

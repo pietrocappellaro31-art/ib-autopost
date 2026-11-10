@@ -5,8 +5,8 @@ Three scheduled tasks make the content every day; posting stays manual.
 | Task | Time (New York) | Makes | Log |
 |---|---|---|---|
 | IG Reels | 8:30am | one voiced Reel (voice rotates G2, BELLA, EMMA) | `ig-reels.md` |
-| YouTube long videos | 7:00am | one long-form 16:9 video, voice GEORGE | `youtube-long.md` |
-| YouTube Shorts | 7:00am | one Short, voice GEORGE | `youtube-shorts.md` |
+| YouTube long videos | 7:00am | one long-form 16:9 video, the day's trial voice | `youtube-long.md` |
+| YouTube Shorts | 7:00am | one Short, the same trial voice | `youtube-shorts.md` |
 
 Each run sends its files (video, cover or thumbnail, description, comment
 question) into its own task's thread in Claude, adds one line to its log here,

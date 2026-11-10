@@ -690,12 +690,146 @@
   "rotation": true
  },
  "GEORGE": {
-  "name": "GEORGE: British male, measured (every YouTube video)",
+  "name": "GEORGE: British male, measured (YouTube until 10 Nov; trial baseline)",
   "engine": "kokoro",
   "kokoro_voice": "bm_george",
   "speed": 0.97,
   "source": "Kokoro bm_george (Apache 2.0), said directly; first audition D, 8 Nov",
   "youtube": true,
+  "rotation": false
+ },
+ "HEART": {
+  "name": "HEART: American female, warm (YouTube voice trial, day 1)",
+  "engine": "kokoro",
+  "kokoro_voice": "af_heart",
+  "speed": 0.97,
+  "source": "Kokoro af_heart (Apache 2.0), said directly; audition 10 Nov: DNSMOS and word check on 3 lines, speed set for about 2.8 words a second",
+  "youtube_trial": 1,
+  "rotation": false
+ },
+ "MICHAEL": {
+  "name": "MICHAEL: American male, steady (YouTube voice trial, day 2)",
+  "engine": "kokoro",
+  "kokoro_voice": "am_michael",
+  "speed": 1.0,
+  "source": "Kokoro am_michael (Apache 2.0), said directly; audition 10 Nov: DNSMOS and word check on 3 lines, speed set for about 2.8 words a second",
+  "youtube_trial": 2,
+  "rotation": false
+ },
+ "ISABELLA": {
+  "name": "ISABELLA: British female, clear (YouTube voice trial, day 3)",
+  "engine": "kokoro",
+  "kokoro_voice": "bf_isabella",
+  "speed": 0.89,
+  "source": "Kokoro bf_isabella (Apache 2.0), said directly; audition 10 Nov: DNSMOS and word check on 3 lines, speed set for about 2.8 words a second",
+  "youtube_trial": 3,
+  "rotation": false
+ },
+ "LEWIS": {
+  "name": "LEWIS: British male, deep (YouTube voice trial, day 4)",
+  "engine": "kokoro",
+  "kokoro_voice": "bm_lewis",
+  "speed": 1.0,
+  "source": "Kokoro bm_lewis (Apache 2.0), said directly; audition 10 Nov: DNSMOS and word check on 3 lines, speed set for about 2.8 words a second",
+  "youtube_trial": 4,
+  "rotation": false
+ },
+ "SARAH": {
+  "name": "SARAH: American female, even (YouTube voice trial, day 5)",
+  "engine": "kokoro",
+  "kokoro_voice": "af_sarah",
+  "speed": 0.93,
+  "source": "Kokoro af_sarah (Apache 2.0), said directly; audition 10 Nov: DNSMOS and word check on 3 lines, speed set for about 2.8 words a second",
+  "youtube_trial": 5,
+  "rotation": false
+ },
+ "FENRIR": {
+  "name": "FENRIR: American male, strong (YouTube voice trial, day 6)",
+  "engine": "kokoro",
+  "kokoro_voice": "am_fenrir",
+  "speed": 0.93,
+  "source": "Kokoro am_fenrir (Apache 2.0), said directly; audition 10 Nov: DNSMOS and word check on 3 lines, speed set for about 2.8 words a second",
+  "youtube_trial": 6,
+  "rotation": false
+ },
+ "KORE": {
+  "name": "KORE: American female, crisp (YouTube voice trial, day 7)",
+  "engine": "kokoro",
+  "kokoro_voice": "af_kore",
+  "speed": 0.91,
+  "source": "Kokoro af_kore (Apache 2.0), said directly; audition 10 Nov: DNSMOS and word check on 3 lines, speed set for about 2.8 words a second",
+  "youtube_trial": 7,
+  "rotation": false
+ },
+ "FABLE": {
+  "name": "FABLE: British male, storyteller (YouTube voice trial, day 8)",
+  "engine": "kokoro",
+  "kokoro_voice": "bm_fable",
+  "speed": 0.85,
+  "source": "Kokoro bm_fable (Apache 2.0), said directly; audition 10 Nov: DNSMOS and word check on 3 lines, speed set for about 2.8 words a second",
+  "youtube_trial": 8,
+  "rotation": false
+ },
+ "RIVER": {
+  "name": "RIVER: American female, quick (YouTube voice trial, day 9)",
+  "engine": "kokoro",
+  "kokoro_voice": "af_river",
+  "speed": 0.85,
+  "source": "Kokoro af_river (Apache 2.0), said directly; audition 10 Nov: DNSMOS and word check on 3 lines, speed set for about 2.8 words a second",
+  "youtube_trial": 9,
+  "rotation": false
+ },
+ "PUCK": {
+  "name": "PUCK: American male, lively (YouTube voice trial, day 10)",
+  "engine": "kokoro",
+  "kokoro_voice": "am_puck",
+  "speed": 0.92,
+  "source": "Kokoro am_puck (Apache 2.0), said directly; audition 10 Nov: DNSMOS and word check on 3 lines, speed set for about 2.8 words a second",
+  "youtube_trial": 10,
+  "rotation": false
+ },
+ "ALICE": {
+  "name": "ALICE: British female, light (YouTube voice trial, day 11)",
+  "engine": "kokoro",
+  "kokoro_voice": "bf_alice",
+  "speed": 0.88,
+  "source": "Kokoro bf_alice (Apache 2.0), said directly; audition 10 Nov: DNSMOS and word check on 3 lines, speed set for about 2.8 words a second",
+  "youtube_trial": 11,
+  "rotation": false
+ },
+ "DANIEL": {
+  "name": "DANIEL: British male, brisk (YouTube voice trial, day 12)",
+  "engine": "kokoro",
+  "kokoro_voice": "bm_daniel",
+  "speed": 0.85,
+  "source": "Kokoro bm_daniel (Apache 2.0), said directly; audition 10 Nov: DNSMOS and word check on 3 lines, speed set for about 2.8 words a second",
+  "youtube_trial": 12,
+  "rotation": false
+ },
+ "AOEDE": {
+  "name": "AOEDE: American female, soft (YouTube voice trial, day 13)",
+  "engine": "kokoro",
+  "kokoro_voice": "af_aoede",
+  "speed": 0.92,
+  "source": "Kokoro af_aoede (Apache 2.0), said directly; audition 10 Nov: DNSMOS and word check on 3 lines, speed set for about 2.8 words a second",
+  "youtube_trial": 13,
+  "rotation": false
+ },
+ "ERIC": {
+  "name": "ERIC: American male, quick (out of the YouTube trial: Kokoro ran sentences together at the slower speed, 10 Nov)",
+  "engine": "kokoro",
+  "kokoro_voice": "am_eric",
+  "speed": 0.85,
+  "source": "Kokoro am_eric (Apache 2.0), said directly; audition 10 Nov: DNSMOS and word check on 3 lines, speed set for about 2.8 words a second",
+  "rotation": false
+ },
+ "LIAM": {
+  "name": "LIAM: American male, young (YouTube voice trial, day 14)",
+  "engine": "kokoro",
+  "kokoro_voice": "am_liam",
+  "speed": 0.85,
+  "source": "Kokoro am_liam (Apache 2.0), said directly; audition 10 Nov: DNSMOS and word check on 3 lines, speed set for about 2.8 words a second",
+  "youtube_trial": 14,
   "rotation": false
  }
 }

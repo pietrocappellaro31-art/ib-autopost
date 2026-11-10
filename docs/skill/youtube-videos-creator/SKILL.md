@@ -1,6 +1,6 @@
 ---
 name: "youtube-videos-creator"
-description: "Daily YouTube run for the finance channel: research a topic that could travel, write and render one long-form 16:9 video and one Short voiced by GEORGE, with thumbnail, title, description, chapters and tags, checked against YouTube's AI and monetisation rules. Posting stays manual."
+description: "Daily YouTube run for the finance channel: research a topic that could travel, write and render one long-form 16:9 video and one Short in the day's trial voice, with thumbnail, title, description, chapters and tags, checked against YouTube's AI and monetisation rules. Posting stays manual."
 ---
 
 # YouTube Videos Creator
@@ -21,8 +21,20 @@ repo root.
 
 ## Voice
 
-Always **GEORGE** (Kokoro bm_george, British, measured; Apache 2.0). It is a
-synthetic voice, not a person. The narrator has no name, face or invented
+**A different voice every day, until Pietro picks one** (Pietro, 10 Nov: "experiment with
+different voices. A different one each day, until we find the perfect one"; from 11 Nov).
+Today's voice, the same for the day's long video and Short:
+
+    python3 -c "import sys; sys.path.insert(0,'build'); from voice_clone import youtube_voice; print(youtube_voice())"
+
+The order is `youtube_trial` in `build/voices/voices.json` (14 Kokoro voices, Apache 2.0,
+auditioned 10 Nov; the Reel voices BELLA, EMMA and G2 are left out so the channels stay
+distinct). It goes round again when the list ends. `youtube.make` uses it by default; render
+a Short with `python3 build/shorts_<slug>.py <VOICE>`. In every delivery say which voice it
+was and ask Pietro for a one-line verdict; log the voice and the measures in
+`docs/daily/youtube-voice-trial.md`. When he picks one, set `YOUTUBE_PICK` in
+`build/voice_clone.py` and the trial ends. GEORGE (every video to 10 Nov) is the baseline.
+Every voice is synthetic, not a person. The narrator has no name, face or invented
 life story: never "when I worked at a bank".
 
 ## 1. Pick the topic
@@ -91,7 +103,7 @@ trending sound in the YouTube app when he uploads (see section 6, Music).
 
 A four-level quiz with the Levels engine (`build/levels.py`, copy the latest
 `build/reels_levels<N>.py` to `build/shorts_<slug>.py`), rendered with
-`GEORGE`, under 60 seconds, on a finance topic for a general audience. Or a
+the day's trial voice, under 60 seconds, on a finance topic for a general audience. Or a
 single sharp idea from the long-form, said in its own words (not a cut of the
 same file). Title under 70 characters with #Shorts in the description.
 

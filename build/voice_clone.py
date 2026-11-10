@@ -238,8 +238,41 @@ def master_chain(voice_name):
 
 
 # Since 8 Nov (Pietro): Reels rotate G2, BELLA, EMMA, one each time, for a month
-# (to about 8 Dec), then he decides. YouTube (long-form and Shorts) always GEORGE.
-YOUTUBE_VOICE = "GEORGE"
+# (to about 8 Dec), then he decides. YouTube was always GEORGE until 10 Nov.
+# From 11 Nov (Pietro: "experiment with different voices. A different one each day, until
+# we find the perfect one"): a different voice every day, the same one for that day's long
+# video and Short, in the order of "youtube_trial" in voices.json (Reel voices excluded so the
+# channels stay distinct). When the list runs out it starts again; when Pietro picks one, set
+# YOUTUBE_PICK to it and the trial ends.
+YOUTUBE_PICK = None
+TRIAL_START = "2026-11-11"
+
+
+def youtube_trial():
+    return sorted((v["youtube_trial"], k) for k, v in voices().items() if v.get("youtube_trial"))
+
+
+def youtube_voice(date=None):
+    """The voice for a YouTube video made on this date (default today, New York)."""
+    import datetime
+    if YOUTUBE_PICK:
+        return YOUTUBE_PICK
+    if date is None:
+        try:
+            from zoneinfo import ZoneInfo
+            date = datetime.datetime.now(ZoneInfo("America/New_York")).date()
+        except Exception:
+            date = datetime.date.today()
+    elif isinstance(date, str):
+        date = datetime.date.fromisoformat(date)
+    day = (date - datetime.date.fromisoformat(TRIAL_START)).days
+    if day < 0:
+        return "GEORGE"
+    trial = [k for _, k in youtube_trial()]
+    return trial[day % len(trial)]
+
+
+YOUTUBE_VOICE = youtube_voice()
 
 
 def rotation():

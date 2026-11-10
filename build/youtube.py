@@ -1,7 +1,7 @@
 """
 YouTube long-form explainer engine (8 Nov) for The Banker's Notebook / the
 @investmentbankinginterviews channel: 1920x1080, paper ground, brand fonts,
-voiced by GEORGE (Kokoro bm_george, Apache 2.0), sound effects from sfx.py,
+voiced by the day's trial voice (voice_clone.youtube_voice(); Kokoro, Apache 2.0; GEORGE to 10 Nov), sound effects from sfx.py,
 and an original music bed from music.py ducked under the voice.
 
 An episode is a config (see youtube_ep001.py):

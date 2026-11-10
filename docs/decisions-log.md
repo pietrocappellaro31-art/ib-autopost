@@ -339,3 +339,12 @@ What has been settled, and what is still open. Newest first.
   with links, the chapters, the disclosure lines and the episode's `hashtags` (2 or 3). The `tags` list
   is for the Tags field in Studio (Details, Show more), pasted by Pietro; `redescribe(ep)` rewrites
   description.txt without a re-render. Applied to YouTube #3 the same day.
+- **YouTube voice trial: a different voice every day** (10 Nov, Pietro: "From now on for the
+  YouTube videos you will experiment with different voices. A different one each day, until
+  we find the perfect one. All the other rules stay the same. Starting tomorrow."). From 11
+  Nov the day's long video and Short share one voice from `voice_clone.youtube_voice()`, in
+  the `youtube_trial` order in `build/voices/voices.json`: 14 Kokoro voices (Apache 2.0)
+  auditioned on 10 Nov, US and British, male and female, each set to about GEORGE's pace. The
+  Reel voices stay out of it. The list repeats until Pietro picks; then `YOUTUBE_PICK` is set
+  and the trial ends. Each delivery names the voice and asks for his verdict; the log is
+  `docs/daily/youtube-voice-trial.md`. GEORGE is the baseline. Everything else is unchanged.
