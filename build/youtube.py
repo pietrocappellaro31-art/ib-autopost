@@ -521,6 +521,44 @@ def sound_report(work, final):
     return rep
 
 
+def describe(ep, chapters, total, voice_name, work):
+    """description.txt and metadata.json. 10 Nov (Pietro: "since my channel is verified, make sure to add
+    links to the sources and references"): every source is listed with its link, from ep["sources"], a list
+    of (label, url). Hashtags (ep["hashtags"], up to 3, our choice) go at the end of the description; the
+    tags (ep["tags"]) are not hashtags: they go in Studio's Tags field (Details, Show more), max 500 characters."""
+    stamp = lambda s: f"{int(s // 60)}:{int(s % 60):02d}"
+    chap_lines = "\n".join(f"{stamp(0 if i == 0 else c)} {title}" for i, (c, title) in enumerate(chapters))
+    src = ""
+    if ep.get("sources"):
+        src = "\n\nSources and references\n" + "\n".join(f"- {label}: {url}" for label, url in ep["sources"])
+    if ep.get("source_note"):
+        src += "\n" + ep["source_note"]
+    tags = ep.get("hashtags", [])
+    desc = (ep["description"].strip() + src + "\n\nChapters\n" + chap_lines
+            + "\n\nNarration: AI-generated voice; script and analysis are our original work. "
+              "Educational content, not financial advice. Not affiliated with any company mentioned."
+            + ("\n\n" + " ".join("#" + h.lstrip("#") for h in tags) if tags else ""))
+    tag_field = ", ".join(ep.get("tags", []))
+    assert len(desc) <= 5000, f"description is {len(desc)} characters; YouTube allows 5,000"
+    assert len(tag_field) <= 500, f"tags are {len(tag_field)} characters; Studio allows 500"
+    meta = dict(title=ep["title"], description=desc, tags=ep.get("tags", []), tags_for_studio=tag_field, hashtags=tags,
+                duration_s=round(total, 1), voice=voice_name,
+                youtube_altered_or_synthetic="Yes: realistic synthetic narration voice (not a real person). Tick it in YouTube Studio.",
+                made_for_kids=False, music="original, made for this video by build/music.py (no licence needed)")
+    json.dump(meta, open(work / "metadata.json", "w"), indent=1)
+    (work / "description.txt").write_text(desc)
+    return meta
+
+
+def redescribe(ep):
+    """Rewrite description.txt and metadata.json after a render, without rendering again."""
+    work = OUT / ep["slug"]
+    tm = json.load(open(work / "timing.json"))
+    chapters = [(c, ch["title"]) for c, ch in zip(tm["chapters"], ep["chapters"])]
+    old = json.load(open(work / "metadata.json"))
+    return describe(ep, chapters, tm["total"], old.get("voice", YOUTUBE_VOICE), work)
+
+
 def make(ep, voice_name=YOUTUBE_VOICE):
     work = OUT / ep["slug"]
     work.mkdir(parents=True, exist_ok=True)
@@ -549,15 +587,6 @@ def make(ep, voice_name=YOUTUBE_VOICE):
         print("  sound report failed:", e)
     thumbnail(ep, work)
     srt(sc, items, work / f"{ep['slug']}.srt")
-    stamp = lambda s: f"{int(s // 60)}:{int(s % 60):02d}"
-    chap_lines = "\n".join(f"{stamp(0 if i == 0 else c)} {title}" for i, (c, title) in enumerate(chapters))
-    desc = ep["description"].strip() + "\n\nChapters\n" + chap_lines + (
-        "\n\nNarration: AI-generated voice; script and analysis are our original work. "
-        "Educational content, not financial advice. Not affiliated with any bank mentioned.")
-    meta = dict(title=ep["title"], description=desc, tags=ep.get("tags", []), duration_s=round(total, 1), voice=voice_name,
-                youtube_altered_or_synthetic="Yes: realistic synthetic narration voice (not a real person). Tick it in YouTube Studio.",
-                made_for_kids=False, music="original, made for this video by build/music.py (no licence needed)")
-    json.dump(meta, open(work / "metadata.json", "w"), indent=1)
-    (work / "description.txt").write_text(desc)
+    meta = describe(ep, chapters, total, voice_name, work)
     print(f"  -> {final.name}  {total / 60:.1f} min  voice {voice_name}")
     return final, meta

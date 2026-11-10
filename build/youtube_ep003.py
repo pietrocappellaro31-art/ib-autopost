@@ -260,12 +260,21 @@ EP = dict(
         "they were wrong about the price. We follow Amazon, whose shares fell more than 80% while it went from 14 million customers to 20 million. "
         "Then Cisco, which took more than 25 years to get back to its 2000 share price. And Pets.com, which lasted about nine months. "
         "We'll work through Scott McNealy's famous price-to-sales sum (it's the logic behind every multiple you'll meet in a banking interview), "
-        "and we'll finish with three questions you can ask about any boom, AI included. What would you have bought?\n\n"
-        "Sources: SWBC, Market Commentary, week of 9 November 2026; Fortune, \"Nasdaq surpasses Internet bubble peak to set new record\" (23 April 2015); "
-        "Jeff Bezos, 2000 letter to Amazon.com shareholders (Seattle Times archive, 2001); Sherwood News, \"After a quarter century, Cisco surpasses "
-        "dot-com bubble closing high\" (December 2025) and Bloomberg (10 December 2025); Scott McNealy, \"A Talk with Scott McNealy\", Businessweek (31 March 2002); "
-        "CNNMoney, \"10 big dot.com flops\" (2010); Cato Institute, \"Reflections on Greenspan's Irrational Exuberance Speech after 25 Years\" (2021). "
-        "The 10% margin and 100-year payback are our own illustration of the arithmetic, not data."),
+        "and we'll finish with three questions you can ask about any boom, AI included. What would you have bought?"),
+    # 10 Nov (Pietro): every source with its link
+    sources=[
+        ("SWBC, Market Commentary, week of 9 November 2026", "https://blog.swbc.com/investmenthub/market-commentary-week-of-november-9-2026"),
+        ("Fortune, Nasdaq surpasses Internet bubble peak to set new record (23 April 2015)", "https://fortune.com/2015/04/23/nasdaq-supasses-internet-bubble-peak-to-set-new-record"),
+        ("Jeff Bezos, 2000 letter to Amazon.com shareholders (Seattle Times archive)", "https://archive.seattletimes.com/archive/20010414/bezosletter/jeff-bezos-2000-letter-to-shareholders"),
+        ("Sherwood News, After a quarter century, Cisco surpasses dot-com bubble closing high (December 2025)", "https://www.sherwood.news/markets/after-a-quarter-century-cisco-surpasses-dot-com-bubble-closing-high/"),
+        ("Bloomberg, Cisco Shares Finally Top Dot-Com Record After More Than 25 Years (10 December 2025)", "https://www.bloomberg.com/news/articles/2025-12-10/cisco-shares-finally-top-dot-com-record-after-more-than-25-years"),
+        ("Businessweek, A Talk with Scott McNealy (31 March 2002)", "https://www.bloomberg.com/news/articles/2002-03-31/a-talk-with-scott-mcnealy"),
+        ("Kailash Concepts, Sun Microsystems: A Lifetime Lesson in Valuation (the McNealy passage in full)", "https://kailashconcepts.com/sun-microsystems-the-greatest-quote-the-rise-of-the-reckless"),
+        ("CNNMoney, 10 big dot.com flops (2010)", "https://money.cnn.com/galleries/2010/technology/1003/gallery.dot_com_busts/"),
+        ("Cato Institute, Reflections on Greenspan's Irrational Exuberance Speech after 25 Years (2021)", "https://www.cato.org/blog/reflections-greenspans-irrational-exuberance-speech-after-25-years"),
+    ],
+    source_note="The 10% margin and the 100-year payback are our own illustration of the arithmetic, not data.",
+    hashtags=["DotComBubble", "Investing", "FinanceHistory"],
     tags=["dot-com bubble", "dot com crash", "AI bubble", "Nasdaq 2000", "stock market crash", "Cisco", "Amazon 2000",
           "Pets.com", "price to sales", "valuation", "history of finance", "investing lessons", "irrational exuberance", "finance explained"],
 )

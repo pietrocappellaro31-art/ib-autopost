@@ -39,7 +39,11 @@ Short on different topics the same day.
 ## 2. Research and write
 
 - Every fact has a source, listed in the episode docstring and in the
-  description. **Never invent a number, statistic, quote or credential.** If
+  description. **Every source in the description carries its link** (Pietro, 10 Nov: "since my
+  channel is verified, make sure to add links to the sources and references"): put them in the
+  episode as `sources=[(label, url), ...]` (only URLs actually opened or returned by a search in the
+  run), with `source_note=` for anything that is our own illustration; the engine writes the
+  "Sources and references" list. **Never invent a number, statistic, quote or credential.** If
   a number cannot be sourced, say it without the number.
 - Write the script as original analysis with a point of view: what the
   common story gets wrong, why it matters, what to take from it. That is
@@ -180,6 +184,12 @@ The app's labels can differ slightly between versions; the order stays the same.
 For a long video, when Pietro wants to swap our bed for an Audio Library track, give the
 Studio steps: YouTube Studio, Content, the video, Editor, Audio, pick the track, set it
 low under the voice, Save. Only Audio Library tracks there (log any attribution).
+
+**Tags and hashtags are different things.** `tags=` is the list for the **Tags** field in
+YouTube Studio (Content, the video, Details, Show more, Tags; 500 characters at most, the engine
+checks it); give it to Pietro as one comma-separated line (`tags_for_studio` in metadata.json).
+`hashtags=` (two or three, no spaces) are written by the engine at the end of the description, so
+Pietro does nothing extra for them.
 
 Send with SendUserFile: the MP4, both thumbnails, the `.srt` and `description.txt`. In the
 reply paste the title, the description (with chapters), the tags, and the

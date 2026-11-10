@@ -333,3 +333,9 @@ What has been settled, and what is still open. Newest first.
   Shorts editor screen reached with "Next" after the trim screen; YouTube Help says library
   audio on uploaded videos is limited to 15 second clips. The music template in the
   youtube-videos-creator skill now says both.
+- **Source links in every YouTube description; tags go in Studio, hashtags in the description** (10 Nov,
+  Pietro: "since my channel is verified, make sure to add links to the sources and references").
+  Episodes list `sources=[(label, url)]`; `youtube.describe()` writes a "Sources and references" list
+  with links, the chapters, the disclosure lines and the episode's `hashtags` (2 or 3). The `tags` list
+  is for the Tags field in Studio (Details, Show more), pasted by Pietro; `redescribe(ep)` rewrites
+  description.txt without a re-render. Applied to YouTube #3 the same day.
