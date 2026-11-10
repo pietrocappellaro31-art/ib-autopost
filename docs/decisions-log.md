@@ -316,4 +316,6 @@ What has been settled, and what is still open. Newest first.
   trending on Shorts that week, which Pietro adds with "Add sound" in the YouTube app at
   upload (licensed for Shorts). Long-form keeps an original bed, lighter than the 10 Nov
   piano and cello (warm, mid tempo, not dramatic), or an Audio Library track Pietro adds.
-
+  Pietro agreed (10 Nov): he adds the music in the YouTube app himself; every Short
+  delivery gives him clear step-by-step music instructions (template in the
+  youtube-videos-creator skill, section 7).

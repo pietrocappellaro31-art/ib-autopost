@@ -133,6 +133,8 @@ Run the content-compliance gate, then:
     or three in the delivery, with the mood that fits the video. Pietro picks one with
     "Add sound" in the YouTube app at upload (licensed for Shorts) and keeps it low under
     the voice. If a suggested song is not in the app's library, he picks another from it.
+    Pietro confirmed this way (10 Nov) and asked for **clear instructions every time**:
+    every Short delivery ends with the block below, filled in for that video.
   - **Long-form**: popular songs cannot be added to long videos without a claim. Use our
     own bed from `build/music.py`, but lighter than the 10 Nov piano and cello: warm, mid
     tempo, not dramatic, low under the voice; or a YouTube Audio Library track Pietro adds
@@ -144,6 +146,33 @@ Run the content-compliance gate, then:
 - Rights block in `docs/rights/posts/<slug>.md`.
 
 ## 7. Deliver
+
+**Music instructions, in every Short delivery** (Pietro, 10 Nov: "make sure to give me
+clear instructions each time"). Fill in the songs and the times; keep the steps:
+
+```
+Music for this Short (add it in the YouTube app on your phone)
+Suggested sounds, trending on Shorts this week:
+  1. <song - artist>: <why it fits, one line>
+  2. <song - artist>: <...>
+  3. <song - artist>: <...>
+Steps:
+  1. Open the YouTube app, tap +, then "Upload a video", and pick <slug>.mp4.
+  2. In the Shorts editor tap "Add sound" (the music note), search the first song.
+     If it is not there, try the next; if none is, pick any song the app offers that
+     fits <mood>.
+  3. Choose the part of the song to use: start it on <a calm or instrumental stretch>,
+     not on a vocal chorus, so it does not fight the voice.
+  4. Tap "Volume": keep "Original sound" at 100 and set the added track to about 15 to 25,
+     then play the first 10 seconds. The voice must be easy to follow; lower the track if not.
+  5. Tap Next, paste the title and description, set "Altered or synthetic content: Yes"
+     and "No, it's not made for kids", then upload.
+The app's labels can differ slightly between versions; the order stays the same.
+```
+
+For a long video, when Pietro wants to swap our bed for an Audio Library track, give the
+Studio steps: YouTube Studio, Content, the video, Editor, Audio, pick the track, set it
+low under the voice, Save. Only Audio Library tracks there (log any attribution).
 
 Send with SendUserFile: the MP4, both thumbnails, the `.srt` and `description.txt`. In the
 reply paste the title, the description (with chapters), the tags, and the
