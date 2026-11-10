@@ -28,6 +28,8 @@ Scenes (opts in brackets):
   handshake(left, right)  suitcase(n)
   10 Nov (coins, in colour): coin(...) helper, pricetag(value, tag), receipt(total, circle),
   card_tap(amount), lineup(first, others), last_coin(stamp)
+  10 Nov, later (buy now, pay later): bag_later(tag), split4(total, parts), pay_dots(labels), credit_report(line),
+  interest_stack(base, rate)
 """
 
 import html as H
@@ -706,3 +708,116 @@ def picture(name, t0, dur, w=752, h=None, seed=1, **opts):
 
 
 SCENES.update({f.__name__: f for f in (pricetag, receipt, card_tap, lineup, last_coin)})
+
+
+# ---- 10 Nov scenes (BNPL Short): buy now, pay later (in colour). Generic shapes of our own: no shop, app or
+# lender branding, no logos.
+
+def _tile(x, y, w_, h_, fill, label, size, color="#fff", rx=22, stroke=INK):
+    return (f'<rect x="{x}" y="{y}" width="{w_}" height="{h_}" rx="{rx}" fill="{fill}" stroke="{stroke}" stroke-width="5"/>'
+            f'<text x="{x + w_ / 2}" y="{y + h_ / 2 + size * .36:.0f}" text-anchor="middle" font-family="\'Serif\',serif" '
+            f'font-weight="700" font-size="{size}" fill="{color}">{H.escape(label)}</text>')
+
+
+def bag_later(p, tag="LATER", **_):
+    """A shopping bag dropping in, a card peeking out of it, a red tag swinging from the handle."""
+    p.parts.append(f'<g class="a" data-fx="float" data-at="0" data-d="1" data-amp="10" data-w="1.6">')
+    p.fill(f'<path d="M210 250 L590 250 L630 600 L170 600 Z" fill="{TEAL}" stroke="{INK}" stroke-width="7" stroke-linejoin="round"/>'
+           f'<path d="M210 250 L590 250 L600 300 L200 300 Z" fill="#0B4F49"/>', .0)
+    p.line([(300, 255), (300, 160), (340, 110), (460, 110), (500, 160), (500, 255)], .12, .3, w=12)
+    p.fill(f'<rect x="250" y="190" width="230" height="140" rx="16" fill="#F2C35B" stroke="{INK}" stroke-width="5" '
+           f'transform="rotate(-12 365 260)"/><rect x="280" y="225" width="48" height="36" rx="6" fill="#B8862B" '
+           f'transform="rotate(-12 365 260)"/>', .3)
+    p.parts.append("</g>")
+    p.parts.append(f'<g class="a" data-fx="swing" data-at="0" data-d="1" data-amp="12" data-w="2.4" '
+                   f'style="transform-box:view-box;transform-origin:500px 160px">'
+                   f'<g class="a" data-fx="pop" data-at="{p.at(.4)}" data-d=".4" style="transform-box:fill-box;transform-origin:center">'
+                   f'<path d="M500 160 L560 300" stroke="{INK}" stroke-width="4"/>'
+                   f'<path d="M500 300 L700 300 L750 360 L700 420 L500 420 Z" fill="{RED}" stroke="{INK}" stroke-width="5" '
+                   f'transform="rotate(20 560 300)"/>'
+                   f'<circle cx="525" cy="360" r="9" fill="#fff" stroke="{INK}" stroke-width="3" transform="rotate(20 560 300)"/>'
+                   f'<text x="625" y="377" text-anchor="middle" font-family="\'Serif\',serif" font-weight="700" font-size="52" '
+                   f'fill="#fff" transform="rotate(20 560 300)">{H.escape(tag)}</text></g></g>')
+
+
+def split4(p, total="$100", parts=("TODAY", "?", "?", "?"), **_):
+    """A price tag breaks into four tiles that slide out into a row; the first is marked."""
+    p.fill(_tile(250, 40, 300, 150, RED, total, 96), .0)
+    p.line([(400, 200), (400, 260)], .2, .1, w=6)
+    for k, lab in enumerate(parts):
+        x = 40 + 185 * k
+        first = k == 0
+        tile = _tile(x, 300, 165, 165, "#F2C35B" if first else "#fff", "?" if first else lab, 90,
+                     color=INK)
+        p.parts.append(f'<g class="a" data-fx="slide" data-at="{p.at(.25 + .1 * k)}" data-d=".5" data-x0="{360 - x}" data-x1="0" '
+                       f'data-y0="-200" data-y1="0" data-ease="out">'
+                       f'<g class="a" data-fx="float" data-at="0" data-d="1" data-amp="7" data-w="2.2" data-ph="{k}">{tile}</g></g>')
+        if first:
+            p.text(x + 82, 530, parts[0], .7, size=40, weight=700, color=RED)
+
+
+def pay_dots(p, labels=("TODAY", "?", "?", "?"), **_):
+    """A timeline with four payment dots: the first paid and ticked, the rest waiting with question marks."""
+    p.line([(70, 330), (730, 330)], .0, .35, w=8)
+    for k, lab in enumerate(labels):
+        x = 100 + 200 * k
+        paid = k == 0
+        p.fill(f'<circle cx="{x}" cy="330" r="62" fill="{TEAL if paid else "#fff"}" stroke="{INK}" stroke-width="6"/>', .15 + .12 * k)
+        if paid:
+            p.line([(x - 26, 332), (x - 6, 352), (x + 30, 308)], .3, .15, color="#fff", w=11)
+        else:
+            p.parts.append(f'<g class="a" data-fx="float" data-at="0" data-d="1" data-amp="8" data-w="2.6" data-ph="{k}">')
+            p.text(x, 358, "?", .2 + .12 * k, size=80, serif=True, weight=700, color=RED)
+            p.parts.append("</g>")
+        p.text(x, 450, lab, .3 + .12 * k, size=34, weight=700, color=RED if paid else INK)
+        p.box(x - 52, 175, 104, 64, "#F2C35B", .35 + .12 * k, rx=14)
+        p.text(x, 220, "$25", .4 + .12 * k, size=38, serif=True, weight=700)
+
+
+def credit_report(p, line="PAY IN 4", **_):
+    """A credit report sliding up, rows filling in, a magnifier gliding over one row with a red question mark."""
+    p.parts.append(f'<g class="a" data-fx="slide" data-at="{p.at(0)}" data-d="{.3 * p.dur:.2f}" data-x0="0" data-x1="0" '
+                   f'data-y0="260" data-y1="0" data-ease="out">'
+                   f'<rect x="170" y="30" width="460" height="590" rx="18" fill="#fff" stroke="{INK}" stroke-width="6"/>'
+                   f'<rect x="170" y="30" width="460" height="96" rx="18" fill="{TEAL}"/>'
+                   f'<rect x="170" y="100" width="460" height="26" fill="{TEAL}"/>'
+                   f'<text x="400" y="92" text-anchor="middle" font-family="\'Sans\',sans-serif" font-weight="700" font-size="40" '
+                   f'letter-spacing="3" fill="#fff">CREDIT REPORT</text></g>')
+    for i, w_ in enumerate((300, 240, 280, 0, 220)):
+        y = 175 + 80 * i
+        if w_:
+            p.box(215, y, w_, 22, "#DCD7CF", .25 + .07 * i, rx=11, fx="growX")
+            p.box(530, y, 55, 22, "#BFE3DB", .27 + .07 * i, rx=11, fx="growX")
+    p.text(215, 437, line, .5, size=40, anchor="start", weight=700, color=RED)
+    p.parts.append(f'<g class="a" data-fx="slide" data-at="{p.at(.55)}" data-d=".9" data-x0="260" data-x1="0" data-y0="140" data-y1="0" '
+                   f'data-ease="out"><g class="a" data-fx="float" data-at="0" data-d="1" data-amp="10" data-w="1.8">'
+                   f'<circle cx="560" cy="420" r="92" fill="#fff" fill-opacity=".35" stroke="{INK}" stroke-width="14"/>'
+                   f'<path d="M626 486 L730 590" stroke="{INK}" stroke-width="30" stroke-linecap="round"/>'
+                   f'<text x="560" y="452" text-anchor="middle" font-family="\'Serif\',serif" font-weight="700" font-size="96" '
+                   f'fill="{RED}">?</text></g></g>')
+
+
+def interest_stack(p, base="$1,000", rate="36%", **_):
+    """A tall stack of notes for the loan, then a red stack growing on top of it with a question mark, a 36% tag swinging."""
+    for k in range(9):
+        y = 560 - 34 * k
+        p.fill(f'<rect x="110" y="{y}" width="300" height="56" rx="8" fill="#BFE3DB" stroke="#0B4F49" stroke-width="4"/>'
+               f'<circle cx="260" cy="{y + 28}" r="16" fill="none" stroke="#0B4F49" stroke-width="4"/>', .02 + .035 * k)
+    p.text(260, 630, base, .35, size=48, serif=True, weight=700)
+    p.parts.append(f'<g class="a" data-fx="growY" data-at="{p.at(.45)}" data-d="{.35 * p.dur:.2f}">'
+                   + "".join(f'<rect x="480" y="{560 - 34 * k}" width="220" height="56" rx="8" fill="#F6CFC3" stroke="{RED}" stroke-width="4"/>'
+                             for k in range(5)) + '</g>')
+    p.parts.append(f'<g class="a" data-fx="float" data-at="0" data-d="1" data-amp="9" data-w="2.2">')
+    p.text(590, 360, "+ ?", .6, size=96, serif=True, weight=700, color=RED)
+    p.parts.append("</g>")
+    p.parts.append(f'<g class="a" data-fx="swing" data-at="0" data-d="1" data-amp="10" data-w="2.3" '
+                   f'style="transform-box:view-box;transform-origin:600px 40px">'
+                   f'<g class="a" data-fx="pop" data-at="{p.at(.25)}" data-d=".4" style="transform-box:fill-box;transform-origin:center">'
+                   f'<path d="M600 40 L600 110" stroke="{INK}" stroke-width="4"/>'
+                   f'<rect x="500" y="110" width="200" height="110" rx="18" fill="{RED}" stroke="{INK}" stroke-width="5"/>'
+                   f'<text x="600" y="190" text-anchor="middle" font-family="\'Serif\',serif" font-weight="700" font-size="70" '
+                   f'fill="#fff">{H.escape(rate)}</text></g></g>')
+    p.circle(600, 40, 8, .22, .1, w=5)
+
+
+SCENES.update({f.__name__: f for f in (bag_later, split4, pay_dots, credit_report, interest_stack)})

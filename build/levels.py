@@ -211,7 +211,8 @@ def scene(ep, parts, at, hook_end, lv, total):
     q_html = kara(hk["say"][0][1], at["hook"] + hs[0][1], hs[0][2] - hs[0][1], hk.get("cols"), hl=hk.get("hl", ()), lit=True,
                   style=f"font-family:'Serif',serif;font-weight:700;font-size:{hk.get('qsize', 86)}px;line-height:1.06;letter-spacing:-.02em")
     lines = "".join(kara(d, at["hook"] + a, b - a, hk.get("cols"), hide=True,
-                         style="font-family:'Serif',serif;font-style:italic;font-weight:600;font-size:70px;line-height:1.12;margin-top:6px")
+                         style=f"font-family:'Serif',serif;font-style:italic;font-weight:600;font-size:{hk.get('lsize', 70)}px;line-height:1.12;"
+                               f"margin-top:6px;white-space:nowrap")      # 10 Nov: never "That's level / 4."
                     for (s, d), (_, a, b) in zip(hk["say"][1:], hs[1:]))
     hook = (ghost(n_lv) + lockup(n_lv, ep["levels"][-1]["tail"], RED)
             + card(f'<div class="lbl" style="font-size:28px;letter-spacing:.2em;color:{RED};opacity:1;margin-bottom:20px">'
@@ -261,7 +262,7 @@ def scene(ep, parts, at, hook_end, lv, total):
                                                    f"border:5px solid {TEAL};z-index:-1")
         chip = ""
         if L.get("chip"):
-            t0 = aa + asg[L.get("chip_at", 0)][1] + .25
+            t0 = aa + chip_time(asg, L.get("chip_at", 0))
             foot = (f'<div style="font-size:28px;font-weight:500;opacity:.6;margin-top:10px">{L["foot"]}</div>' if L.get("foot") else "")
             chip = A(f'<div style="display:inline-block;border:3px solid {TEAL};background:rgba(15,118,110,.08);border-radius:24px;'
                      f'padding:18px 30px;font-size:44px;font-weight:600;line-height:1.3">{L["chip"]}</div>{foot}',
@@ -334,6 +335,16 @@ SCORE = ('<div class="a roll num nochk" data-fx="roll" data-at="{at:.2f}" data-d
 
 # --------------------------------------------------------------- sound ----
 
+def chip_time(segs, k):
+    """When the worked chip pops in, from the start of its answer part (10 Nov): in the
+    pause just before sentence k, so its pop lands between words, not on them (it used
+    to come .25 s into the sentence, under the voice)."""
+    if k == 0:
+        return segs[0][1] + .25
+    gap0, gap1 = segs[k - 1][2], segs[k][1]
+    return max(gap0, gap1 - .14)
+
+
 def soundtrack(parts, at, lv, total, ep=None):
     """Voice plus effects. No whoosh on the swipes (Pietro, 6 Nov: the one
     sound he found annoying); everything else that moves can make a sound."""
@@ -348,19 +359,36 @@ def soundtrack(parts, at, lv, total, ep=None):
         put(voice, a, at[k])
     tick, ding, pop = sfx_lib.tick(), sfx_lib.ding(), sfx_lib.pop()            # the house sounds (sfx.py)
     n_lv = len(lv)
+    # 10 Nov: effects land between words. Each pop may slide a little (within lo..hi
+    # seconds) to where its first 120 ms hits the least voice: the numeral pop used to land
+    # on the last word of the previous part (the voice was 11.7 dB over the effects while
+    # speaking; 15.8 dB after, mix DNSMOS unchanged). Ticks keep their rhythm and the answer
+    # ding stays on the reveal (moving it into the pause before cost 0.24 mix DNSMOS).
+    env = np.convolve(voice ** 2, np.ones(int(.01 * SR)) / int(.01 * SR), "same")
+    put_raw = put
+
+    def put(buf, sig, t, gain=1.0, lo=-.12, hi=.12):
+        if buf is sfx and n_voice:
+            w = int(.12 * SR)
+            best = min((float(np.sum(env[max(0, int((t + o) * SR)):max(0, int((t + o) * SR)) + w])), abs(o), o)
+                       for o in np.arange(lo, hi + 1e-6, .01))
+            t += best[2]
+        put_raw(buf, sig, t, gain)
+
+    n_voice = bool(np.any(voice))
     for i in range(n_lv):                                     # the meter filling in the first second
-        put(sfx, tick, .1 + i * .09, .1)
+        put(sfx, tick, .1 + i * .09, .1, lo=0, hi=0)
     for i, L in enumerate(lv):
         put(sfx, pop, L["start"] + .28, .26)                      # the level numeral lands
         for j in range(int(round(L["think"] / .5))):
-            put(sfx, tick, L["think0"] + .05 + j * .5, .22 + .04 * j)
-        put(sfx, ding, at[f"a{i}"] + .02, .12)                      # the answer
+            put(sfx, tick, L["think0"] + .05 + j * .5, .22 + .04 * j, lo=0, hi=0)
+        put(sfx, ding, at[f"a{i}"] + .02, .12, lo=0, hi=0)     # the answer
         if ep and ep["levels"][i].get("chip"):                     # the worked chip pops in
             segs = parts[f"a{i}"][1]
-            put(sfx, pop, at[f"a{i}"] + segs[ep["levels"][i].get("chip_at", 0)][1] + .27, .18)
+            put(sfx, pop, at[f"a{i}"] + chip_time(segs, ep["levels"][i].get("chip_at", 0)), .18)
     ca = at["close"]
     for j in range(12):                                         # the score spinning like a slot
-        put(sfx, tick, ca + .4 + j * .17 + .16, .09)
+        put(sfx, tick, ca + .4 + j * .17 + .16, .09, lo=0, hi=0)          # a rhythm: never moved
     put(sfx, pop, ca + .4 + 12 * .17 + .3, .26)                   # ... and landing on "?"
     end_voice = ca + parts["close"][1][-1][2]
     put(sfx, ding, end_voice + .78, .07)                          # the brand
@@ -432,7 +460,8 @@ def mux(ep, voice_name, voice, sfx, total, mp4):
     from voice_clone import master_chain
     chain = master_chain(voice_name) or (CLONE_MASTER if voice_name.startswith(("clone:", "real:")) else MASTER)
     graph = (f"[1:a]{chain}[v];anoisesrc=color=brown:amplitude=0.0012:sample_rate={SR}:duration={total + .6:.2f}[room];"
-             "[v][2:a][room]amix=inputs=3:normalize=0,loudnorm=I=-16:TP=-1.5:LRA=11[a]")
+             f"[v][2:a][room]amix=inputs=3:normalize=0,loudnorm=I={ep.get('lufs', -16)}:TP=-1.5:LRA=11[a]")
+    # ep["lufs"] (10 Nov): YouTube Shorts ship without music now and still master at -14 like YouTube; Reels stay -16.
     extra = []
     if ep.get("music"):
         # YouTube Shorts (8 Nov): an original music bed (music.py), ducked under the voice, -14 LUFS.

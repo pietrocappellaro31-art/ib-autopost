@@ -105,7 +105,8 @@ it. Copy its structure:
   in under the score);
 - drawings from `build/sketch.py`, sized for 9:16 with `picture(name, t0, dur, w=650)`;
   add a new scene for the topic when none fits (coins, receipt, card and terminal, price
-  tag, coin line-up and a stamped last coin exist).
+  tag, coin line-up and a stamped last coin exist; for buy now, pay later: shopping bag,
+  price tag split in four, payment timeline, credit report, interest stack).
 Keep the safe area clear (the render lists any problem) and look at a contact sheet.
 
 ## 5. Checks

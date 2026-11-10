@@ -14,6 +14,7 @@ number with no source is cut.
 | 2026-11-09 | YouTube Short | The penny one year on: cost to make, cash rounding, card payments, the nickel's loss per coin |
 | 2026-11-09 | YouTube long | Berlin Wall anniversary: the 1990 Ostmark to D-Mark conversion rate (1 to 1 vs 2 to 1) and who paid |
 | 2026-11-09 | Reel | Unlevered free cash flow: before interest, the formula, working capital build, depreciation tax shield |
+| 2026-11-10 | YouTube Short | Buy now, pay later before Black Friday: Pay in 4 at checkout, every two weeks, Affirm reporting to Experian, $1,000 at 36% APR = $206 interest |
 
 ## Ideas (YouTube long and Shorts)
 
