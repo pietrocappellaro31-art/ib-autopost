@@ -3,10 +3,14 @@
 from brand import INK, MUTE, RED, TEAL, WHITE
 
 
-def cover(title, chips, kicker):
-    """Red cover slide: headline, chip row, one line of stake."""
+def cover(title, chips, kicker, chip_bg=WHITE, chip_fg=INK):
+    """Cover slide: headline, chip row, one line of stake.
+
+    Chips are white on red and ink grounds; pass chip_bg=INK, chip_fg=WHITE on
+    a paper ground, where white chips would vanish.
+    """
     row = "".join(
-        f'<div style="transform:rotate({-4 + i * 3.5}deg);background:{WHITE};color:{INK};'
+        f'<div style="transform:rotate({-4 + i * 3.5}deg);background:{chip_bg};color:{chip_fg};'
         f'padding:14px 24px;font-size:27px;font-weight:600;border-radius:11px;'
         f'box-shadow:0 9px 0 rgba(0,0,0,.18)">{c}</div>' for i, c in enumerate(chips))
     return ('<div style="display:flex;flex-direction:column;gap:40px">'

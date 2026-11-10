@@ -1,0 +1,15 @@
+Equity value to enterprise value. 4 adjustments, and you'll be asked why for each one.
+
+EV is what the operations are worth to everyone who funds them, not just shareholders, so you add debt, preferred stock and minority interest, then take away cash.
+
+Why subtract cash? Whoever buys the company gets it back.
+
+Why add minority interest? If you own 80% of a subsidiary you still consolidate 100% of its EBITDA, so you add the 20% you don't own or your EV/EBITDA comes out too low.
+
+Easy follow-up.
+
+If the company issues $100 of new shares, EV doesn't move. Equity value and cash both rise by 100 and cancel.
+
+Save it before your valuation questions.
+
+#investmentbanking #ibinterview #valuation #enterprisevalue

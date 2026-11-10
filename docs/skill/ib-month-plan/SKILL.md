@@ -73,9 +73,10 @@ which at the top of the plan, and still stop before scheduling.
 |---|---|---|
 | 08:00 | Carousel | cron |
 | 12:30 | Carousel | cron |
+| 17:30 | Carousel | cron |
 | 21:30 | Reel | Pietro, by hand with trending audio |
 
-Hard caps: 3 posts per Eastern day, of which at most 2 come from the manifest.
+Hard caps: at most 3 carousels per Eastern day from the manifest (since 10 Nov 2026), plus Pietro's Reel.
 Never put a Reel in the manifest. Friday is the weakest evening for this
 audience; say so if a Friday Reel matters, and offer midday.
 
@@ -159,7 +160,7 @@ leaves complete weeks queued.
    Pietro's Mac in `Downloads/IB <Month> Reels/` if the computer is linked,
    otherwise send them. Filenames carry the correct slot date. Include each
    caption and a `SCHEDULE.md`.
-5. Verify before the final push: at most 2 manifest posts per Eastern day, no
+5. Verify before the final push: at most 3 manifest carousels per Eastern day, no
    Reel in the manifest, every image path exists, slide 1 colours follow the
    rotation, `raw.githubusercontent.com` serves one new image.
 6. Write `docs/plans/<yyyy-mm>.md` (the table, the questions and answers, the

@@ -18,6 +18,21 @@ What has been settled, and what is still open. Newest first.
 
 ## Settled
 
+- **3 carousels a day, built and queued weekly** (10 Nov, Pietro: "post three
+  times a day from now on", then "increase from 2 a day to 3 a day" and "build
+  and queue now"). Slots 08:00, 12:30 and 17:30 ET; the hand-posted Reel at
+  21:30 ET is on top, so the feed carries 4 posts a day plus the Story.
+  `publish.py` cap raised to 3 with a 17:30 default slot; a third Claude
+  scheduled task fires the publish workflow at 17:33 ET. Why it was needed:
+  the week-1 queue ended on 8 Nov and the monthly plan that was meant to start
+  on 9 Nov was never built (the planning task only runs on the first Monday),
+  so 9 Nov had no carousel. To stop that recurring, a weekly scheduled task
+  now builds and queues the next 7 days (21 carousels and 7 Stories) every
+  Thursday, following `docs/skill/ib-month-plan` step 5 and the topic rules.
+  First batch: `build/nov1.py`, 10 to 16 Nov. Cover rotation restarted at
+  day 1 on 10 Nov for the three carousel slots. The live bio still says "Two
+  questions a day"; Pietro to change it by hand.
+
 - **Monthly planning session: first Monday of each month, 9:00 ET** (set 2 Nov,
   replacing the weekly session). Claude proposes the month's topics, slots,
   times and cover colours, asks personalisation questions, then builds and

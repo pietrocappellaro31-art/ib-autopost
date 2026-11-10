@@ -1,0 +1,13 @@
+Debt is cheaper than equity. So why doesn't every company borrow as much as it can?
+
+Comment your answer first.
+
+Debt is cheaper for 2 reasons: lenders get paid before shareholders, and interest is tax deductible. At a 25% tax rate, 100 of interest only costs you 75.
+
+But every extra turn of debt puts more fixed claims ahead of equity, so shareholders' returns swing harder and they'll want more for holding the stock. Push further and default gets likelier, so lenders charge you more too.
+
+And the shield? Worth 0 in a year with no profit.
+
+Put it together and WACC falls, bottoms out, then climbs. A U. Your target structure sits near the bottom.
+
+#investmentbanking #ibinterview #wacc #corporatefinance

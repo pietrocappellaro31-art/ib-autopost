@@ -1,0 +1,15 @@
+A company pays a $10 dividend. The trick is the statement where nothing happens.
+
+Income statement: no change. You're distributing profit after it's earned, not paying an expense.
+
+Cash flow statement: 10 out, in financing, next to buybacks and debt repaid.
+
+Balance sheet: cash down 10, retained earnings down 10.
+
+Then the follow-up they love, which is what happens to enterprise value, and the answer is nothing, because equity value falls by about 10 as the cash goes to shareholders and cash falls by the same 10.
+
+The operations didn't change. Neither did EV.
+
+Save it next to your depreciation walk-through.
+
+#investmentbanking #ibinterview #accounting #threestatements

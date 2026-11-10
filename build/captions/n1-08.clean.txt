@@ -1,0 +1,13 @@
+"Where does your beta come from?" It's 4 steps, and you'll be asked for all of them.
+
+Pull the levered betas for your comps.
+
+Each one mixes business risk with that company's own debt, so you unlever them: levered beta over 1 + (1 - tax rate) x D/E. A beta of 1.2 with D/E of 0.5 and a 25% tax rate gives 1.2 / 1.375, about 0.87. Use market values for D/E, not book.
+
+Take the median.
+
+Relever it at the target's own structure. At a D/E of 0.3, 0.87 becomes about 1.07, and that's the number that goes into CAPM.
+
+Save this with your WACC notes.
+
+#investmentbanking #ibinterview #wacc #beta

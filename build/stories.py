@@ -41,6 +41,20 @@ STORIES = {
                    "In theory, nothing. Cash falls, and equity value falls by the same amount."),
     "2026-11-09": ("Why can't you use P/E for a company with negative earnings?",
                    "A negative P/E means nothing. Use EV/Revenue, or EV/EBITDA if EBITDA is positive."),
+    "2026-11-10": ("Interest expense rises by $10 and the tax rate is 25%. What happens to net income?",
+                   "It falls by $7.50. Interest is deductible, so tax falls by $2.50."),
+    "2026-11-11": ("Can enterprise value be lower than equity value?",
+                   "Yes. When a company holds more cash than debt, net cash is subtracted, so EV ends up below equity value."),
+    "2026-11-12": ("A company buys a $100 machine. Is that an expense on the income statement?",
+                   "Not on the day it buys it. It's capitalised as PP&E and expensed over time as depreciation."),
+    "2026-11-13": ("What does debt to EBITDA tell a lender?",
+                   "Roughly how many years of EBITDA it would take to repay the debt, before interest, tax, capex and everything else."),
+    "2026-11-14": ("A company borrows $100 and keeps the cash. What happens to enterprise value?",
+                   "Nothing. Debt rises by $100 and cash rises by $100, so they cancel."),
+    "2026-11-15": ("Why does WACC use the market value of equity, not book value?",
+                   "Book equity reflects history. Market value reflects what investors would need to be paid today."),
+    "2026-11-16": ("Accounts receivable goes up by $20. What happens to cash?",
+                   "Cash from operations falls by $20. The sale was booked, but the customer hasn't paid yet."),
 }
 
 PAGE = """<!doctype html><html><head><meta charset="utf-8"><style>{css}

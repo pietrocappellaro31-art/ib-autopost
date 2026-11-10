@@ -378,6 +378,468 @@
       "caption": "",
       "published_id": "17967865674235387",
       "published_at_utc": "2026-11-09T23:04:39.828973+00:00"
+    },
+    {
+      "id": "n1-01-depreciation",
+      "series": "Technical of the Day",
+      "scheduled_utc": "2026-11-10T13:00:00",
+      "caption": "Depreciation goes up by $10. You'll probably get the income statement right, and then lose it on cash.\n\nPre-tax income drops $10. At a 25% tax rate you pay $2.50 less tax, so net income falls $7.50, not $10.\n\nOn the cash flow statement you start from that -7.5 and add the 10 back, because depreciation is an accounting charge and not a single dollar of it actually left the bank. Cash ends up $2.50 higher.\n\nThat's the tax you saved.\n\nBalance sheet: PP&E down 10, cash up 2.5, assets down 7.5. Retained earnings down 7.5. It balances.\n\nIf yours doesn't, check the tax line first.\n\nSave this for your next technical round.\n\n#investmentbanking #ibinterview #accounting #threestatements",
+      "published_id": null,
+      "published_at_utc": null,
+      "images": [
+        "n1-01-depreciation-01.jpg",
+        "n1-01-depreciation-02.jpg",
+        "n1-01-depreciation-03.jpg",
+        "n1-01-depreciation-04.jpg",
+        "n1-01-depreciation-05.jpg",
+        "n1-01-depreciation-06.jpg",
+        "n1-01-depreciation-07.jpg",
+        "n1-01-depreciation-08.jpg"
+      ]
+    },
+    {
+      "id": "n1-02-ev-bridge",
+      "series": "Technical of the Day",
+      "scheduled_utc": "2026-11-10T17:30:00",
+      "caption": "Equity value to enterprise value. 4 adjustments, and you'll be asked why for each one.\n\nEV is what the operations are worth to everyone who funds them, not just shareholders, so you add debt, preferred stock and minority interest, then take away cash.\n\nWhy subtract cash? Whoever buys the company gets it back.\n\nWhy add minority interest? If you own 80% of a subsidiary you still consolidate 100% of its EBITDA, so you add the 20% you don't own or your EV/EBITDA comes out too low.\n\nEasy follow-up.\n\nIf the company issues $100 of new shares, EV doesn't move. Equity value and cash both rise by 100 and cancel.\n\nSave it before your valuation questions.\n\n#investmentbanking #ibinterview #valuation #enterprisevalue",
+      "published_id": null,
+      "published_at_utc": null,
+      "images": [
+        "n1-02-ev-bridge-01.jpg",
+        "n1-02-ev-bridge-02.jpg",
+        "n1-02-ev-bridge-03.jpg",
+        "n1-02-ev-bridge-04.jpg",
+        "n1-02-ev-bridge-05.jpg",
+        "n1-02-ev-bridge-06.jpg",
+        "n1-02-ev-bridge-07.jpg",
+        "n1-02-ev-bridge-08.jpg"
+      ]
+    },
+    {
+      "id": "n1-03-why-ib",
+      "series": "Recruiting Playbook",
+      "scheduled_utc": "2026-11-10T22:30:00",
+      "caption": "\"Why investment banking?\" Try this test on your answer: would it work just as well for consulting?\n\n\"A steep learning curve\" fits consulting. \"Smart people\" fits law. \"Passion for finance\" fits nothing in particular. None of it's wrong. It just doesn't answer the question.\n\nBuild it in 3 beats instead. 1 moment that pulled you toward deals. 1 thing you actually did about it. Then why the analyst job itself is the next step, the modelling, the live transactions, seeing a deal from pitch to close.\n\nLeave exit options out. They hear \"I want to leave in 2 years.\"\n\nThen say it out loud with a timer running. Under 60 seconds.\n\nWhich line in your current answer would fail the test?\n\n#investmentbanking #ibrecruiting #superday #financecareers",
+      "published_id": null,
+      "published_at_utc": null,
+      "images": [
+        "n1-03-why-ib-01.jpg",
+        "n1-03-why-ib-02.jpg",
+        "n1-03-why-ib-03.jpg",
+        "n1-03-why-ib-04.jpg",
+        "n1-03-why-ib-05.jpg",
+        "n1-03-why-ib-06.jpg",
+        "n1-03-why-ib-07.jpg",
+        "n1-03-why-ib-08.jpg"
+      ]
+    },
+    {
+      "id": "story-2026-11-10",
+      "type": "story",
+      "series": "Question of the day",
+      "scheduled_utc": "2026-11-10T23:00:00",
+      "images": [
+        "story-2026-11-10.jpg"
+      ],
+      "caption": "",
+      "published_id": null,
+      "published_at_utc": null
+    },
+    {
+      "id": "n1-04-accretion",
+      "series": "Technical of the Day",
+      "scheduled_utc": "2026-11-11T13:00:00",
+      "caption": "All-stock deal. Is it accretive? You can answer in 1 line if you compare the right 2 numbers.\n\nBuyer trades at 20 times earnings and pays 15 times for the target, premium included, which means it's swapping expensive paper for cheaper earnings, so EPS goes up.\n\nFlip them. Dilutive.\n\nCash deal? You compare the after-tax cost of that cash or debt with the target's earnings yield at the price paid. Yield is 1 over the P/E, so at 20 times it's 5%.\n\nThen add the line I'd want to hear: accretive doesn't mean good. Overpay and EPS can still rise while value falls.\n\nSave this one for M&A questions.\n\n#investmentbanking #ibinterview #mergersandacquisitions #accretiondilution",
+      "published_id": null,
+      "published_at_utc": null,
+      "images": [
+        "n1-04-accretion-01.jpg",
+        "n1-04-accretion-02.jpg",
+        "n1-04-accretion-03.jpg",
+        "n1-04-accretion-04.jpg",
+        "n1-04-accretion-05.jpg",
+        "n1-04-accretion-06.jpg",
+        "n1-04-accretion-07.jpg",
+        "n1-04-accretion-08.jpg"
+      ]
+    },
+    {
+      "id": "n1-05-dtl",
+      "series": "Technical of the Day",
+      "scheduled_utc": "2026-11-11T17:30:00",
+      "caption": "A deferred tax liability is tax you've postponed. Not tax you've avoided.\n\nCompanies keep 2 sets of books and both are legal: GAAP for shareholders, tax rules for the tax authority, and depreciation is often faster on the tax side.\n\nSay book depreciation is 10 and tax depreciation is 30. Taxable income is 20 lower, so at 25% you pay 5 less tax than your income statement shows.\n\nThat 5 is owed later. So it's a liability.\n\nLater the accelerated depreciation runs out, cash tax climbs above book tax, and the DTL unwinds to 0.\n\nOn the cash flow statement, an increase in the DTL gets added back in operating cash flow. You recorded the expense but didn't pay it.\n\nSave it for the accounting round.\n\n#investmentbanking #ibinterview #accounting #deferredtax",
+      "published_id": null,
+      "published_at_utc": null,
+      "images": [
+        "n1-05-dtl-01.jpg",
+        "n1-05-dtl-02.jpg",
+        "n1-05-dtl-03.jpg",
+        "n1-05-dtl-04.jpg",
+        "n1-05-dtl-05.jpg",
+        "n1-05-dtl-06.jpg",
+        "n1-05-dtl-07.jpg",
+        "n1-05-dtl-08.jpg"
+      ]
+    },
+    {
+      "id": "n1-06-all-debt",
+      "series": "Technical of the Day",
+      "scheduled_utc": "2026-11-11T22:30:00",
+      "caption": "Debt is cheaper than equity. So why doesn't every company borrow as much as it can?\n\nComment your answer first.\n\nDebt is cheaper for 2 reasons: lenders get paid before shareholders, and interest is tax deductible. At a 25% tax rate, 100 of interest only costs you 75.\n\nBut every extra turn of debt puts more fixed claims ahead of equity, so shareholders' returns swing harder and they'll want more for holding the stock. Push further and default gets likelier, so lenders charge you more too.\n\nAnd the shield? Worth 0 in a year with no profit.\n\nPut it together and WACC falls, bottoms out, then climbs. A U. Your target structure sits near the bottom.\n\n#investmentbanking #ibinterview #wacc #corporatefinance",
+      "published_id": null,
+      "published_at_utc": null,
+      "images": [
+        "n1-06-all-debt-01.jpg",
+        "n1-06-all-debt-02.jpg",
+        "n1-06-all-debt-03.jpg",
+        "n1-06-all-debt-04.jpg",
+        "n1-06-all-debt-05.jpg",
+        "n1-06-all-debt-06.jpg",
+        "n1-06-all-debt-07.jpg",
+        "n1-06-all-debt-08.jpg"
+      ]
+    },
+    {
+      "id": "story-2026-11-11",
+      "type": "story",
+      "series": "Question of the day",
+      "scheduled_utc": "2026-11-11T23:00:00",
+      "images": [
+        "story-2026-11-11.jpg"
+      ],
+      "caption": "",
+      "published_id": null,
+      "published_at_utc": null
+    },
+    {
+      "id": "n1-07-terminal",
+      "series": "Technical of the Day",
+      "scheduled_utc": "2026-11-12T13:00:00",
+      "caption": "In a DCF, the terminal value is usually the biggest single number. Interviewers know it, so they'll push on it.\n\nPerpetuity growth: final-year FCF times (1 + g), over WACC minus g. Keep g below long-run economic growth, or you've built a company that eventually becomes bigger than the economy.\n\nExit multiple: year 5 EBITDA times a multiple from today's comps.\n\nThen use each to check the other.\n\nYour growth rate implies a multiple, and your multiple implies a growth rate, so if 1 of them looks absurd you know which assumption to fix.\n\nLast step, and people forget it: TV sits at the end of year 5, so you discount it 5 years.\n\nSave this for DCF questions.\n\n#investmentbanking #ibinterview #dcf #valuation",
+      "published_id": null,
+      "published_at_utc": null,
+      "images": [
+        "n1-07-terminal-01.jpg",
+        "n1-07-terminal-02.jpg",
+        "n1-07-terminal-03.jpg",
+        "n1-07-terminal-04.jpg",
+        "n1-07-terminal-05.jpg",
+        "n1-07-terminal-06.jpg",
+        "n1-07-terminal-07.jpg",
+        "n1-07-terminal-08.jpg"
+      ]
+    },
+    {
+      "id": "n1-08-beta",
+      "series": "Technical of the Day",
+      "scheduled_utc": "2026-11-12T17:30:00",
+      "caption": "\"Where does your beta come from?\" It's 4 steps, and you'll be asked for all of them.\n\nPull the levered betas for your comps.\n\nEach one mixes business risk with that company's own debt, so you unlever them: levered beta over 1 + (1 - tax rate) x D/E. A beta of 1.2 with D/E of 0.5 and a 25% tax rate gives 1.2 / 1.375, about 0.87. Use market values for D/E, not book.\n\nTake the median.\n\nRelever it at the target's own structure. At a D/E of 0.3, 0.87 becomes about 1.07, and that's the number that goes into CAPM.\n\nSave this with your WACC notes.\n\n#investmentbanking #ibinterview #wacc #beta",
+      "published_id": null,
+      "published_at_utc": null,
+      "images": [
+        "n1-08-beta-01.jpg",
+        "n1-08-beta-02.jpg",
+        "n1-08-beta-03.jpg",
+        "n1-08-beta-04.jpg",
+        "n1-08-beta-05.jpg",
+        "n1-08-beta-06.jpg",
+        "n1-08-beta-07.jpg",
+        "n1-08-beta-08.jpg"
+      ]
+    },
+    {
+      "id": "n1-09-your-questions",
+      "series": "Recruiting Playbook",
+      "scheduled_utc": "2026-11-12T22:30:00",
+      "caption": "\"Any questions for me?\" Not the end of the interview. The last part of it.\n\nAsk about their work. \"Which deal taught you the most?\" gets a real answer.\n\n\"What's a typical day like?\" gets you the website.\n\nThen ask what the group rewards, something like \"what separates analysts who do well here?\", because it tells you how they actually judge people and it shows them you're already thinking about being good at the job rather than just getting the offer.\n\nClose the loop. \"Is there anything in my background I can clarify?\" is your 1 last shot at fixing a weak answer.\n\nPrepare 4. Ask 2. Skip pay and hours.\n\nWhat's the best question you've asked?\n\n#investmentbanking #ibrecruiting #interviewtips #superday",
+      "published_id": null,
+      "published_at_utc": null,
+      "images": [
+        "n1-09-your-questions-01.jpg",
+        "n1-09-your-questions-02.jpg",
+        "n1-09-your-questions-03.jpg",
+        "n1-09-your-questions-04.jpg",
+        "n1-09-your-questions-05.jpg",
+        "n1-09-your-questions-06.jpg",
+        "n1-09-your-questions-07.jpg",
+        "n1-09-your-questions-08.jpg"
+      ]
+    },
+    {
+      "id": "story-2026-11-12",
+      "type": "story",
+      "series": "Question of the day",
+      "scheduled_utc": "2026-11-12T23:00:00",
+      "images": [
+        "story-2026-11-12.jpg"
+      ],
+      "caption": "",
+      "published_id": null,
+      "published_at_utc": null
+    },
+    {
+      "id": "n1-10-ebitda",
+      "series": "Technical of the Day",
+      "scheduled_utc": "2026-11-13T13:00:00",
+      "caption": "Why does every banker quote EBITDA? And what can't it see?\n\nIt's before interest, so you can compare 2 companies with very different debt loads, which is why it pairs with enterprise value and never with equity value.\n\nIt's before D&A too.\n\nThe blind spot is capex. Company A and Company B both have EBITDA of 100. A spends 10 on capex, B spends 60, so after that you're looking at 90 against 40.\n\nIt misses working capital and tax as well. A fast-growing business can post rising EBITDA while its cash disappears into receivables.\n\nA comparison tool, not cash flow. Say both halves.\n\n#investmentbanking #ibinterview #ebitda #valuation",
+      "published_id": null,
+      "published_at_utc": null,
+      "images": [
+        "n1-10-ebitda-01.jpg",
+        "n1-10-ebitda-02.jpg",
+        "n1-10-ebitda-03.jpg",
+        "n1-10-ebitda-04.jpg",
+        "n1-10-ebitda-05.jpg",
+        "n1-10-ebitda-06.jpg",
+        "n1-10-ebitda-07.jpg",
+        "n1-10-ebitda-08.jpg"
+      ]
+    },
+    {
+      "id": "n1-11-lifo-fifo",
+      "series": "Technical of the Day",
+      "scheduled_utc": "2026-11-13T17:30:00",
+      "caption": "Prices are rising. LIFO or FIFO? Work it with 3 numbers.\n\nYou bought 1 unit at 10, then another at 14, and sold 1 for 20.\n\nFIFO expenses the oldest cost: COGS 10, gross profit 10, tax at 25% is 2.5.\nLIFO expenses the newest: COGS 14, gross profit 6, tax 1.5.\n\nSo LIFO shows less profit but keeps more cash, because it pays less tax.\n\nFIFO wins on the balance sheet. Inventory sits at 14, closer to what it'd cost to replace. LIFO leaves it at 10.\n\nLast point: IFRS doesn't allow LIFO. US GAAP does. Compare across the two and you adjust first.\n\nSave it for the accounting round.\n\n#investmentbanking #ibinterview #accounting #inventory",
+      "published_id": null,
+      "published_at_utc": null,
+      "images": [
+        "n1-11-lifo-fifo-01.jpg",
+        "n1-11-lifo-fifo-02.jpg",
+        "n1-11-lifo-fifo-03.jpg",
+        "n1-11-lifo-fifo-04.jpg",
+        "n1-11-lifo-fifo-05.jpg",
+        "n1-11-lifo-fifo-06.jpg",
+        "n1-11-lifo-fifo-07.jpg",
+        "n1-11-lifo-fifo-08.jpg"
+      ]
+    },
+    {
+      "id": "n1-12-why-us",
+      "series": "Recruiting Playbook",
+      "scheduled_utc": "2026-11-13T22:30:00",
+      "caption": "\"Why our bank?\" Run the swap test. Put a different bank's name in your answer. If it still works, rewrite it.\n\n\"A leading global franchise\" passes for every bank on your list. That's the problem.\n\nName the group you'd join and what it actually covers.\n\nUse 1 real conversation: who you spoke to, what they told you, why it stuck. It beats a paragraph of research.\n\nMention 1 deal the group worked on and why it interested you. 1, explained, not a list copied off their site.\n\nFinish on fit. How the team works and why that matches what you've already done.\n\nDoes your answer pass?\n\n#investmentbanking #ibrecruiting #networking #superday",
+      "published_id": null,
+      "published_at_utc": null,
+      "images": [
+        "n1-12-why-us-01.jpg",
+        "n1-12-why-us-02.jpg",
+        "n1-12-why-us-03.jpg",
+        "n1-12-why-us-04.jpg",
+        "n1-12-why-us-05.jpg",
+        "n1-12-why-us-06.jpg",
+        "n1-12-why-us-07.jpg",
+        "n1-12-why-us-08.jpg"
+      ]
+    },
+    {
+      "id": "story-2026-11-13",
+      "type": "story",
+      "series": "Question of the day",
+      "scheduled_utc": "2026-11-13T23:00:00",
+      "images": [
+        "story-2026-11-13.jpg"
+      ],
+      "caption": "",
+      "published_id": null,
+      "published_at_utc": null
+    },
+    {
+      "id": "n1-13-irr",
+      "series": "Technical of the Day",
+      "scheduled_utc": "2026-11-14T13:00:00",
+      "caption": "2 times your money in 5 years. What's the IRR? You should know it without a calculator.\n\nMOIC is exit equity over entry equity. Put in 100, get 200, that's 2 times. It says nothing about time.\n\nIRR does. 2 times in 3 years is about 26% a year. The same 2 times over 5 years is about 15%.\n\nThe 3 to memorise:\n2 times, 5 years: about 15%\n3 times, 5 years: about 25%\n2 times, 3 years: about 26%\n\nAnd don't divide. 100% over 5 years isn't 20% a year, because returns compound.\n\nFunds report both numbers, because a quick flip can post a big IRR on a small gain.\n\n#investmentbanking #privateequity #lbo #ibinterview",
+      "published_id": null,
+      "published_at_utc": null,
+      "images": [
+        "n1-13-irr-01.jpg",
+        "n1-13-irr-02.jpg",
+        "n1-13-irr-03.jpg",
+        "n1-13-irr-04.jpg",
+        "n1-13-irr-05.jpg",
+        "n1-13-irr-06.jpg",
+        "n1-13-irr-07.jpg",
+        "n1-13-irr-08.jpg"
+      ]
+    },
+    {
+      "id": "n1-14-dividend",
+      "series": "Technical of the Day",
+      "scheduled_utc": "2026-11-14T17:30:00",
+      "caption": "A company pays a $10 dividend. The trick is the statement where nothing happens.\n\nIncome statement: no change. You're distributing profit after it's earned, not paying an expense.\n\nCash flow statement: 10 out, in financing, next to buybacks and debt repaid.\n\nBalance sheet: cash down 10, retained earnings down 10.\n\nThen the follow-up they love, which is what happens to enterprise value, and the answer is nothing, because equity value falls by about 10 as the cash goes to shareholders and cash falls by the same 10.\n\nThe operations didn't change. Neither did EV.\n\nSave it next to your depreciation walk-through.\n\n#investmentbanking #ibinterview #accounting #threestatements",
+      "published_id": null,
+      "published_at_utc": null,
+      "images": [
+        "n1-14-dividend-01.jpg",
+        "n1-14-dividend-02.jpg",
+        "n1-14-dividend-03.jpg",
+        "n1-14-dividend-04.jpg",
+        "n1-14-dividend-05.jpg",
+        "n1-14-dividend-06.jpg",
+        "n1-14-dividend-07.jpg",
+        "n1-14-dividend-08.jpg"
+      ]
+    },
+    {
+      "id": "n1-15-revenue-worth",
+      "series": "Technical of the Day",
+      "scheduled_utc": "2026-11-14T22:30:00",
+      "caption": "$100 of revenue at a software company, or $100 at a grocer. Which would you pay more for?\n\nDrop your pick in the comments first.\n\nRevenue isn't profit. Grocers run on thin margins and software on high ones, so the same 100 of sales turns into very different cash for you as the buyer.\n\nGrowth moves the multiple. You're paying today for cash that arrives in year 3, 5, 10.\n\nDurability too.\n\nSubscription revenue that renews is far easier to forecast than sales you have to win again every year.\n\nSo I'd usually take software. But a slow, loss-making software company can be worth less than a steady grocer, so say \"it depends\", then say on what.\n\n#investmentbanking #ibinterview #valuation #multiples",
+      "published_id": null,
+      "published_at_utc": null,
+      "images": [
+        "n1-15-revenue-worth-01.jpg",
+        "n1-15-revenue-worth-02.jpg",
+        "n1-15-revenue-worth-03.jpg",
+        "n1-15-revenue-worth-04.jpg",
+        "n1-15-revenue-worth-05.jpg",
+        "n1-15-revenue-worth-06.jpg",
+        "n1-15-revenue-worth-07.jpg",
+        "n1-15-revenue-worth-08.jpg"
+      ]
+    },
+    {
+      "id": "story-2026-11-14",
+      "type": "story",
+      "series": "Question of the day",
+      "scheduled_utc": "2026-11-14T23:00:00",
+      "images": [
+        "story-2026-11-14.jpg"
+      ],
+      "caption": "",
+      "published_id": null,
+      "published_at_utc": null
+    },
+    {
+      "id": "n1-16-leases",
+      "series": "Technical of the Day",
+      "scheduled_utc": "2026-11-15T13:00:00",
+      "caption": "How do leases change EBITDA? It depends on where the company reports, and that's the whole point of the question.\n\nSince 2019 for listed companies, IFRS 16 and US GAAP's ASC 842 both put most leases on the balance sheet: a right-of-use asset and a lease liability.\n\nUnder IFRS 16, rent leaves operating costs and comes back as depreciation and interest. Both sit below EBITDA, so EBITDA goes up.\n\nUnder US GAAP, an operating lease keeps 1 straight-line cost inside operating expenses. EBITDA doesn't move.\n\nSo before you compare a European comp with a US one, check. If lease costs sit below EBITDA, lease liabilities belong in EV.\n\n#investmentbanking #ibinterview #accounting #ifrs16",
+      "published_id": null,
+      "published_at_utc": null,
+      "images": [
+        "n1-16-leases-01.jpg",
+        "n1-16-leases-02.jpg",
+        "n1-16-leases-03.jpg",
+        "n1-16-leases-04.jpg",
+        "n1-16-leases-05.jpg",
+        "n1-16-leases-06.jpg",
+        "n1-16-leases-07.jpg",
+        "n1-16-leases-08.jpg"
+      ]
+    },
+    {
+      "id": "n1-17-synergies",
+      "series": "Technical of the Day",
+      "scheduled_utc": "2026-11-15T17:30:00",
+      "caption": "Cost synergies or revenue synergies? Buyers trust 1 of them a lot more.\n\nCost synergies are what you can cut: a duplicate head office, 2 IT systems running side by side, 2 purchasing teams. Once the deal closes, they're in management's hands.\n\nRevenue synergies are what you hope to sell.\n\nCross-selling, new markets, bigger contracts. They depend on customers doing something they haven't done yet, which is why boards and lenders lean on cost synergies when they justify a premium.\n\nNeither shows up on day 1. You pay integration costs first, then synergies phase in, part in year 1 and more in year 2, before you hit a full run-rate.\n\nCount what you control.\n\n#investmentbanking #ibinterview #mergersandacquisitions #synergies",
+      "published_id": null,
+      "published_at_utc": null,
+      "images": [
+        "n1-17-synergies-01.jpg",
+        "n1-17-synergies-02.jpg",
+        "n1-17-synergies-03.jpg",
+        "n1-17-synergies-04.jpg",
+        "n1-17-synergies-05.jpg",
+        "n1-17-synergies-06.jpg",
+        "n1-17-synergies-07.jpg",
+        "n1-17-synergies-08.jpg"
+      ]
+    },
+    {
+      "id": "n1-18-failure",
+      "series": "Recruiting Playbook",
+      "scheduled_utc": "2026-11-15T22:30:00",
+      "caption": "\"Tell me about a time you failed.\" They're not grading the failure. They're grading what came after it.\n\n\"I work too hard\" is the real failure here. It tells them you won't own a mistake on a live deal.\n\nPick something that mattered, that was at least partly your fault, and that didn't end anything.\n\nOwn your part in 1 plain sentence. I, not we.\n\nSpend most of the answer on the fix: what you did, and the habit you kept.\n\nThen show it stuck. 1 later moment where you did it right is worth more than \"I learned a lot\".\n\nWhat failure would you use?\n\n#investmentbanking #ibrecruiting #behavioralinterview #superday",
+      "published_id": null,
+      "published_at_utc": null,
+      "images": [
+        "n1-18-failure-01.jpg",
+        "n1-18-failure-02.jpg",
+        "n1-18-failure-03.jpg",
+        "n1-18-failure-04.jpg",
+        "n1-18-failure-05.jpg",
+        "n1-18-failure-06.jpg",
+        "n1-18-failure-07.jpg",
+        "n1-18-failure-08.jpg"
+      ]
+    },
+    {
+      "id": "story-2026-11-15",
+      "type": "story",
+      "series": "Question of the day",
+      "scheduled_utc": "2026-11-15T23:00:00",
+      "images": [
+        "story-2026-11-15.jpg"
+      ],
+      "caption": "",
+      "published_id": null,
+      "published_at_utc": null
+    },
+    {
+      "id": "n1-19-circular",
+      "series": "Technical of the Day",
+      "scheduled_utc": "2026-11-16T13:00:00",
+      "caption": "Why does an LBO model have a circular reference? Because the business really works that way.\n\nInterest depends on debt, debt paydown depends on cash, and cash depends on net income, which depends on interest. Calculate interest on the average balance and you're right back where you started.\n\n3 fixes.\n\n1. Turn on iterative calculation in Excel.\n2. Add a circuit breaker, a switch that sets interest to 0, so 1 error can't spread through your model.\n3. Use the opening debt balance. No loop, but you lose a bit of precision when debt's paid down fast.\n\nName the loop. Give a fix. Say what it costs you.\n\n#investmentbanking #lbo #financialmodeling #privateequity",
+      "published_id": null,
+      "published_at_utc": null,
+      "images": [
+        "n1-19-circular-01.jpg",
+        "n1-19-circular-02.jpg",
+        "n1-19-circular-03.jpg",
+        "n1-19-circular-04.jpg",
+        "n1-19-circular-05.jpg",
+        "n1-19-circular-06.jpg",
+        "n1-19-circular-07.jpg",
+        "n1-19-circular-08.jpg"
+      ]
+    },
+    {
+      "id": "n1-20-sbc",
+      "series": "Technical of the Day",
+      "scheduled_utc": "2026-11-16T17:30:00",
+      "caption": "Is stock-based compensation a real expense? \"It's non-cash\" is only half the answer.\n\nIt hits the income statement, but no cash leaves, so you add it back in operating cash flow.\n\nThe cost shows up somewhere else. Say you own 1% of a company with 100 million shares. It issues 2 million to staff, and your 1 million shares are now about 0.98% of it.\n\nThat's the cost. Dilution.\n\nIn valuation, count it once: either treat it as a cash cost and cut free cash flow, or keep it added back and put the future dilution in your diluted share count.\n\nDoing neither is the mistake I'd look for.\n\nSave this before a tech or growth company interview.\n\n#investmentbanking #ibinterview #valuation #accounting",
+      "published_id": null,
+      "published_at_utc": null,
+      "images": [
+        "n1-20-sbc-01.jpg",
+        "n1-20-sbc-02.jpg",
+        "n1-20-sbc-03.jpg",
+        "n1-20-sbc-04.jpg",
+        "n1-20-sbc-05.jpg",
+        "n1-20-sbc-06.jpg",
+        "n1-20-sbc-07.jpg",
+        "n1-20-sbc-08.jpg"
+      ]
+    },
+    {
+      "id": "n1-21-mid-year",
+      "series": "Technical of the Day",
+      "scheduled_utc": "2026-11-16T22:30:00",
+      "caption": "The mid-year convention looks like a minor DCF switch. The follow-up question is where people trip.\n\nCash doesn't all arrive on 31 December. It comes in through the year, so each year's cash flow is discounted from the middle: 0.5, 1.5, 2.5 and so on. Less discounting, so the value goes up.\n\nThe follow-up: what about terminal value?\n\nPerpetuity growth TV extends those same mid-year cash flows, so it's discounted at n - 0.5.\n\nExit multiple TV doesn't move. A multiple prices the business at 1 point in time, the end of the forecast, so it stays at year n.\n\nSave it with your DCF notes.\n\n#investmentbanking #ibinterview #dcf #valuation",
+      "published_id": null,
+      "published_at_utc": null,
+      "images": [
+        "n1-21-mid-year-01.jpg",
+        "n1-21-mid-year-02.jpg",
+        "n1-21-mid-year-03.jpg",
+        "n1-21-mid-year-04.jpg",
+        "n1-21-mid-year-05.jpg",
+        "n1-21-mid-year-06.jpg",
+        "n1-21-mid-year-07.jpg",
+        "n1-21-mid-year-08.jpg"
+      ]
+    },
+    {
+      "id": "story-2026-11-16",
+      "type": "story",
+      "series": "Question of the day",
+      "scheduled_utc": "2026-11-16T23:00:00",
+      "images": [
+        "story-2026-11-16.jpg"
+      ],
+      "caption": "",
+      "published_id": null,
+      "published_at_utc": null
     }
   ]
 }

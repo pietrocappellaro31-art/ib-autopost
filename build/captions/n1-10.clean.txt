@@ -1,0 +1,13 @@
+Why does every banker quote EBITDA? And what can't it see?
+
+It's before interest, so you can compare 2 companies with very different debt loads, which is why it pairs with enterprise value and never with equity value.
+
+It's before D&A too.
+
+The blind spot is capex. Company A and Company B both have EBITDA of 100. A spends 10 on capex, B spends 60, so after that you're looking at 90 against 40.
+
+It misses working capital and tax as well. A fast-growing business can post rising EBITDA while its cash disappears into receivables.
+
+A comparison tool, not cash flow. Say both halves.
+
+#investmentbanking #ibinterview #ebitda #valuation

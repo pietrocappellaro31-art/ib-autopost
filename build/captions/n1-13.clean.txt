@@ -1,0 +1,16 @@
+2 times your money in 5 years. What's the IRR? You should know it without a calculator.
+
+MOIC is exit equity over entry equity. Put in 100, get 200, that's 2 times. It says nothing about time.
+
+IRR does. 2 times in 3 years is about 26% a year. The same 2 times over 5 years is about 15%.
+
+The 3 to memorise:
+2 times, 5 years: about 15%
+3 times, 5 years: about 25%
+2 times, 3 years: about 26%
+
+And don't divide. 100% over 5 years isn't 20% a year, because returns compound.
+
+Funds report both numbers, because a quick flip can post a big IRR on a small gain.
+
+#investmentbanking #privateequity #lbo #ibinterview

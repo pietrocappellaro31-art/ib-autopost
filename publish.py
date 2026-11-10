@@ -26,12 +26,13 @@ from zoneinfo import ZoneInfo
 
 EASTERN = ZoneInfo("America/New_York")
 
-# The manifest holds carousels only. The page's cap is 3 posts per Eastern day,
-# and the third is a Reel Pietro uploads by hand, so the manifest may publish
-# at most 2 per Eastern day. Backlog never goes out in a burst.
-MAX_PER_EASTERN_DAY = 2
+# The manifest holds carousels and Stories. Since 10 Nov 2026 the page runs
+# 3 carousels per Eastern day (Pietro's call), plus the Reel he uploads by hand,
+# so the manifest may publish at most 3 carousels per Eastern day. Backlog never
+# goes out in a burst.
+MAX_PER_EASTERN_DAY = 3
 # Slot times used to release backlog on a day that has no scheduled entry.
-DEFAULT_SLOTS_ET = (clock(8, 0), clock(12, 30))
+DEFAULT_SLOTS_ET = (clock(8, 0), clock(12, 30), clock(17, 30))
 
 GRAPH_VERSION = "v21.0"
 GRAPH_ROOT = f"https://graph.facebook.com/{GRAPH_VERSION}"

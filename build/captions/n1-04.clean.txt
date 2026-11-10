@@ -1,0 +1,13 @@
+All-stock deal. Is it accretive? You can answer in 1 line if you compare the right 2 numbers.
+
+Buyer trades at 20 times earnings and pays 15 times for the target, premium included, which means it's swapping expensive paper for cheaper earnings, so EPS goes up.
+
+Flip them. Dilutive.
+
+Cash deal? You compare the after-tax cost of that cash or debt with the target's earnings yield at the price paid. Yield is 1 over the P/E, so at 20 times it's 5%.
+
+Then add the line I'd want to hear: accretive doesn't mean good. Overpay and EPS can still rise while value falls.
+
+Save this one for M&A questions.
+
+#investmentbanking #ibinterview #mergersandacquisitions #accretiondilution

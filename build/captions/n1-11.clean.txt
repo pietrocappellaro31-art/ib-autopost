@@ -1,0 +1,16 @@
+Prices are rising. LIFO or FIFO? Work it with 3 numbers.
+
+You bought 1 unit at 10, then another at 14, and sold 1 for 20.
+
+FIFO expenses the oldest cost: COGS 10, gross profit 10, tax at 25% is 2.5.
+LIFO expenses the newest: COGS 14, gross profit 6, tax 1.5.
+
+So LIFO shows less profit but keeps more cash, because it pays less tax.
+
+FIFO wins on the balance sheet. Inventory sits at 14, closer to what it'd cost to replace. LIFO leaves it at 10.
+
+Last point: IFRS doesn't allow LIFO. US GAAP does. Compare across the two and you adjust first.
+
+Save it for the accounting round.
+
+#investmentbanking #ibinterview #accounting #inventory

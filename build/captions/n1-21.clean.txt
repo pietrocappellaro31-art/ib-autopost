@@ -1,0 +1,13 @@
+The mid-year convention looks like a minor DCF switch. The follow-up question is where people trip.
+
+Cash doesn't all arrive on 31 December. It comes in through the year, so each year's cash flow is discounted from the middle: 0.5, 1.5, 2.5 and so on. Less discounting, so the value goes up.
+
+The follow-up: what about terminal value?
+
+Perpetuity growth TV extends those same mid-year cash flows, so it's discounted at n - 0.5.
+
+Exit multiple TV doesn't move. A multiple prices the business at 1 point in time, the end of the forecast, so it stays at year n.
+
+Save it with your DCF notes.
+
+#investmentbanking #ibinterview #dcf #valuation

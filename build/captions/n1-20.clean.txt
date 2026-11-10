@@ -1,0 +1,15 @@
+Is stock-based compensation a real expense? "It's non-cash" is only half the answer.
+
+It hits the income statement, but no cash leaves, so you add it back in operating cash flow.
+
+The cost shows up somewhere else. Say you own 1% of a company with 100 million shares. It issues 2 million to staff, and your 1 million shares are now about 0.98% of it.
+
+That's the cost. Dilution.
+
+In valuation, count it once: either treat it as a cash cost and cut free cash flow, or keep it added back and put the future dilution in your diluted share count.
+
+Doing neither is the mistake I'd look for.
+
+Save this before a tech or growth company interview.
+
+#investmentbanking #ibinterview #valuation #accounting

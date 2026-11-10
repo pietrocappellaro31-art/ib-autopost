@@ -1,0 +1,11 @@
+How do leases change EBITDA? It depends on where the company reports, and that's the whole point of the question.
+
+Since 2019 for listed companies, IFRS 16 and US GAAP's ASC 842 both put most leases on the balance sheet: a right-of-use asset and a lease liability.
+
+Under IFRS 16, rent leaves operating costs and comes back as depreciation and interest. Both sit below EBITDA, so EBITDA goes up.
+
+Under US GAAP, an operating lease keeps 1 straight-line cost inside operating expenses. EBITDA doesn't move.
+
+So before you compare a European comp with a US one, check. If lease costs sit below EBITDA, lease liabilities belong in EV.
+
+#investmentbanking #ibinterview #accounting #ifrs16

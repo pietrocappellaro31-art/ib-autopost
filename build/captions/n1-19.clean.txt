@@ -1,0 +1,13 @@
+Why does an LBO model have a circular reference? Because the business really works that way.
+
+Interest depends on debt, debt paydown depends on cash, and cash depends on net income, which depends on interest. Calculate interest on the average balance and you're right back where you started.
+
+3 fixes.
+
+1. Turn on iterative calculation in Excel.
+2. Add a circuit breaker, a switch that sets interest to 0, so 1 error can't spread through your model.
+3. Use the opening debt balance. No loop, but you lose a bit of precision when debt's paid down fast.
+
+Name the loop. Give a fix. Say what it costs you.
+
+#investmentbanking #lbo #financialmodeling #privateequity

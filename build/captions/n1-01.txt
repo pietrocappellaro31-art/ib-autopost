@@ -1,0 +1,15 @@
+Depreciation goes up by $10. You'll probably get the income statement right, and then lose it on cash.
+
+Pre-tax income drops $10. At a 25% tax rate you pay $2.50 less tax, so net income falls $7.50, not $10.
+
+On the cash flow statement you start from that -7.5 and add the 10 back, because depreciation is an accounting charge and not a single dollar of it actually left the bank. Cash ends up $2.50 higher.
+
+That's the tax you saved.
+
+Balance sheet: PP&E down 10, cash up 2.5, assets down 7.5. Retained earnings down 7.5. It balances.
+
+If yours doesn't, check the tax line first.
+
+Save this for your next technical round.
+
+#investmentbanking #ibinterview #accounting #threestatements

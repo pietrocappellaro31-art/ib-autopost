@@ -1,0 +1,15 @@
+In a DCF, the terminal value is usually the biggest single number. Interviewers know it, so they'll push on it.
+
+Perpetuity growth: final-year FCF times (1 + g), over WACC minus g. Keep g below long-run economic growth, or you've built a company that eventually becomes bigger than the economy.
+
+Exit multiple: year 5 EBITDA times a multiple from today's comps.
+
+Then use each to check the other.
+
+Your growth rate implies a multiple, and your multiple implies a growth rate, so if 1 of them looks absurd you know which assumption to fix.
+
+Last step, and people forget it: TV sits at the end of year 5, so you discount it 5 years.
+
+Save this for DCF questions.
+
+#investmentbanking #ibinterview #dcf #valuation
