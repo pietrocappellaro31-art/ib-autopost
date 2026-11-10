@@ -402,8 +402,8 @@
       "series": "Technical of the Day",
       "scheduled_utc": "2026-11-10T17:30:00",
       "caption": "Equity value to enterprise value. 4 adjustments, and you'll be asked why for each one.\n\nEV is what the operations are worth to everyone who funds them, not just shareholders, so you add debt, preferred stock and minority interest, then take away cash.\n\nWhy subtract cash? Whoever buys the company gets it back.\n\nWhy add minority interest? If you own 80% of a subsidiary you still consolidate 100% of its EBITDA, so you add the 20% you don't own or your EV/EBITDA comes out too low.\n\nEasy follow-up.\n\nIf the company issues $100 of new shares, EV doesn't move. Equity value and cash both rise by 100 and cancel.\n\nSave it before your valuation questions.\n\n#investmentbanking #ibinterview #valuation #enterprisevalue",
-      "published_id": null,
-      "published_at_utc": null,
+      "published_id": "17901466221675054",
+      "published_at_utc": "2026-11-10T17:34:51.798028+00:00",
       "images": [
         "n1-02-ev-bridge-01.jpg",
         "n1-02-ev-bridge-02.jpg",
