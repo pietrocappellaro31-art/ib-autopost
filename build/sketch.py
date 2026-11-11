@@ -37,6 +37,8 @@ Scenes (opts in brackets):
   youtube.py now fits every drawing to its box (the drawn part fills its half of the frame).
   11 Nov (Singles' Day Short): sale_bag(date, tag), four_ones(month), shopfront(n, banner),
   tally_board(year, total, unit, hidden), markup_tag(start, up, mid, off, end); _ptag() draws a price tag
+  12 Nov (Levels #10, working capital): wc_minus(assets, liab, strike), shelf_cash(amount), prepaid(amount),
+  cash_first(left, right, band)
 """
 
 import html as H
@@ -1281,3 +1283,114 @@ def shrink(p, years=("1927", "", "", "2015"), label="£100", last="£1.82", **_)
 
 
 SCENES.update({f.__name__: f for f in (newspaper, poster, ledger, perpetual, shrink)})
+
+
+# ---- 12 Nov scenes (IG Reel, Levels #10, working capital): the mechanism of each level drawn as a diagram on
+# the paper ground (teal for cash coming in, red for cash going out or owed). Generic shapes of our own.
+
+def wc_minus(p, assets=("INVENTORY", "RECEIVABLES", "CASH"), liab=("PAYABLES",), strike="CASH", **_):
+    """Current assets stacked on the left, a big minus, current liabilities on the right, and the result in a
+    gold tile underneath; at the end the cash tile is struck out in red (a model leaves cash out)."""
+    p.text(190, 50, "CURRENT ASSETS", .0, size=34, weight=700, color=TEAL)
+    p.text(610, 50, "CURRENT LIABILITIES", .1, size=34, weight=700, color=RED)
+    for k, lab in enumerate(assets):
+        y = 80 + 105 * k
+        p.parts.append(f'<g class="a" data-fx="slide" data-at="{p.at(.05 + .1 * k)}" data-d=".45" data-x0="-160" data-x1="0" '
+                       f'data-y0="0" data-y1="0" data-ease="out">'
+                       + _tile(40, y, 300, 88, "#fff", "", 10, stroke=TEAL)
+                       + f'<text x="190" y="{y + 57}" text-anchor="middle" font-family="\'Sans\',sans-serif" font-weight="700" '
+                         f'font-size="38" fill="{TEAL}">{H.escape(lab)}</text></g>')
+        if lab == strike:
+            p.line([(30, y + 44), (350, y + 44)], .82, .25, color=RED, w=10)
+    p.text(400, 240, "−", .4, size=150, serif=True, weight=700, color=INK, fx="pop")
+    for k, lab in enumerate(liab):
+        y = 185 + 105 * k
+        p.parts.append(f'<g class="a" data-fx="slide" data-at="{p.at(.45 + .1 * k)}" data-d=".45" data-x0="160" data-x1="0" '
+                       f'data-y0="0" data-y1="0" data-ease="out">'
+                       + _tile(460, y, 300, 88, "#fff", "", 10, stroke=RED)
+                       + f'<text x="610" y="{y + 57}" text-anchor="middle" font-family="\'Sans\',sans-serif" font-weight="700" '
+                         f'font-size="38" fill="{RED}">{H.escape(lab)}</text></g>')
+    p.line([(60, 425), (740, 425)], .55, .3, w=7)
+    p.parts.append('<g class="a" data-fx="float" data-at="0" data-d="1" data-amp="7" data-w="2.1">')
+    p.fill(_tile(140, 460, 520, 130, "#F2C35B", "WORKING CAPITAL", 54, color=INK), .65)
+    p.parts.append("</g>")
+
+
+def shelf_cash(p, amount="-$30", **_):
+    """Three boxes of stock drop onto a shelf one by one while the cash pile beside them shrinks, a red tag
+    with the amount swinging under it."""
+    p.line([(40, 330), (440, 330)], .0, .25, w=9)
+    p.line([(80, 330), (80, 420)], .05, .1, w=7)
+    p.line([(400, 330), (400, 420)], .05, .1, w=7)
+    for k in range(3):
+        x = 60 + 125 * k
+        p.parts.append(f'<g class="a" data-fx="slide" data-at="{p.at(.12 + .14 * k)}" data-d=".45" data-x0="0" data-x1="0" '
+                       f'data-y0="-260" data-y1="0" data-ease="out">'
+                       f'<rect x="{x}" y="210" width="115" height="115" rx="8" fill="#E9C08A" stroke="{INK}" stroke-width="6"/>'
+                       f'<path d="M{x} 250 L{x + 115} 250" stroke="#B8862B" stroke-width="6"/>'
+                       f'<rect x="{x + 42}" y="210" width="31" height="40" fill="#B8862B"/></g>')
+    p.text(240, 490, "INVENTORY", .3, size=44, weight=700)
+    # the cash pile: five notes, the top three slide away towards the shelf as the boxes land
+    for k in range(5):
+        y = 400 - 52 * k
+        note = (f'<rect x="510" y="{y}" width="230" height="44" rx="8" fill="{TEAL}" stroke="{INK}" stroke-width="5"/>'
+                f'<circle cx="625" cy="{y + 22}" r="13" fill="none" stroke="#fff" stroke-width="4"/>')
+        if k >= 2:
+            p.parts.append(f'<g class="a" data-fx="slide" data-at="{p.at(.12 + .14 * (4 - k))}" data-d=".45" data-x0="0" '
+                           f'data-x1="-360" data-y0="0" data-y1="-140" data-ease="in">'
+                           f'<g class="a" data-fx="life" data-at="0" data-d="{round(p.at(.12 + .14 * (4 - k)) + .4, 3)}" data-fi=".01" data-fo=".05">'
+                           f'{note}</g></g>')
+        else:
+            p.fill(note, .0)
+    p.text(625, 515, "CASH", .05, size=44, weight=700, color=TEAL)
+    p.parts.append(f'<g class="a" data-fx="float" data-at="0" data-d="1" data-amp="8" data-w="2.3">')
+    p.fill(_ptag(625, 590, 210, amount, RED, "#fff", 52), .6)
+    p.parts.append("</g>")
+
+
+def prepaid(p, amount="+$40", **_):
+    """A gold coin drops into the cash box on the left; on the right an IOU note for next year's service
+    comes up with a red LIABILITY stamp, and REVENUE $0 is written under it."""
+    p.fill(_tile(40, 260, 300, 230, TEAL, "CASH", 76), .0)
+    p.parts.append(f'<g class="a" data-fx="slide" data-at="{p.at(.15)}" data-d=".5" data-x0="0" data-x1="0" data-y0="-300" '
+                   f'data-y1="0" data-ease="out">'
+                   f'<circle cx="190" cy="150" r="78" fill="#F2C35B" stroke="{INK}" stroke-width="6"/>'
+                   f'<text x="190" y="172" text-anchor="middle" font-family="\'Serif\',serif" font-weight="700" font-size="58" '
+                   f'fill="{TEAL}">{H.escape(amount)}</text></g>')
+    p.parts.append(f'<g class="a" data-fx="slide" data-at="{p.at(.35)}" data-d=".5" data-x0="0" data-x1="0" data-y0="160" '
+                   f'data-y1="0" data-ease="out">'
+                   f'<rect x="430" y="70" width="330" height="420" rx="14" fill="#fff" stroke="{INK}" stroke-width="6"/>'
+                   f'<text x="595" y="140" text-anchor="middle" font-family="\'Sans\',sans-serif" font-weight="700" font-size="34" '
+                   f'fill="{INK}">WE OWE YOU</text>'
+                   f'<text x="595" y="185" text-anchor="middle" font-family="\'Sans\',sans-serif" font-weight="600" font-size="30" '
+                   f'fill="{GREY}">NEXT YEAR\'S SERVICE</text></g>')
+    for k in range(3):
+        p.line([(470, 250 + 50 * k), (720, 250 + 50 * k)], .45 + .05 * k, .15, color=GREY, w=5)
+    p.parts.append(f'<g class="a" data-fx="stamp" data-rot="0" data-at="{p.at(.65)}" data-d=".35" style="transform-box:fill-box;transform-origin:center">'
+                   f'<g transform="rotate(-10 595 400)"><rect x="445" y="360" width="300" height="80" rx="10" fill="#fff" '
+                   f'fill-opacity=".9" stroke="{RED}" stroke-width="7"/><text x="595" y="415" text-anchor="middle" '
+                   f'font-family="\'Serif\',serif" font-weight="700" font-size="46" letter-spacing="2" fill="{RED}">LIABILITY</text></g></g>')
+    p.text(400, 600, "REVENUE TODAY: $0", .8, size=48, weight=700, color=RED)
+
+
+def cash_first(p, left="CUSTOMER PAYS", right="YOU PAY SUPPLIER", band="YOUR CASH", **_):
+    """A timeline: the customer's payment lands first (teal), the supplier is paid later (red), and the gold
+    band between them, the time the cash sits with you, fills in with coins bobbing on it."""
+    p.line([(50, 360), (750, 360)], .0, .3, w=8)
+    p.line([(715, 330), (750, 360), (715, 390)], .25, .1, w=8)
+    p.box(150, 300, 500, 120, "#F2C35B", .45, rx=16, fx="growX")
+    p.text(400, 378, band, .55, size=50, weight=700)
+    for x, col, lab, ty, f in ((150, TEAL, left, 240, .1), (650, RED, right, 490, .3)):
+        p.fill(f'<circle cx="{x}" cy="360" r="34" fill="{col}" stroke="{INK}" stroke-width="6"/>', f)
+        p.text(x, ty, lab, f + .05, size=40, weight=700, color=col)
+    p.text(150, 140, "FIRST", .15, size=58, serif=True, weight=700, color=TEAL)
+    p.text(650, 590, "LATER", .35, size=58, serif=True, weight=700, color=RED)
+    for k, x in enumerate((280, 400, 520)):
+        p.parts.append(f'<g class="a" data-fx="float" data-at="0" data-d="1" data-amp="9" data-w="2.2" data-ph="{k}">')
+        p.fill(f'<circle cx="{x}" cy="290" r="30" fill="#F2C35B" stroke="{INK}" stroke-width="5"/>'
+               f'<text x="{x}" y="304" text-anchor="middle" font-family="\'Serif\',serif" font-weight="700" font-size="40" '
+               f'fill="{TEAL}">$</text>', .65 + .08 * k)
+        p.parts.append("</g>")
+
+
+SCENES.update({f.__name__: f for f in (wc_minus, shelf_cash, prepaid, cash_first)})

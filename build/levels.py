@@ -463,11 +463,15 @@ def shorts_mix(ep):
     Short's stems at -14 LUFS (HEART): room .0012 / effects 1.0 / no limiter (the 10 Nov chain) gave mix
     DNSMOS 3.03 at -15.0 LUFS (the -1.5 dBTP ceiling held loudnorm under -14); room .0006, effects 0.8 and
     a limiter at 0.4 before loudnorm gave 3.11 at -14.6. No room at all did worse (2.95 to 3.03): a faint
-    room still helps. Defaults apply to the -14 LUFS masters with no music (YouTube Shorts); Reels (-16)
-    keep the old chain. Override with ep["room"], ep["fx_gain"], ep["limit"] (None: no limiter)."""
-    yt = ep.get("lufs", -16) == -14 and not ep.get("music")
-    return (ep.get("room", .0006 if yt else .0012), ep.get("fx_gain", .8 if yt else 1.0),
-            ep.get("limit", .4 if yt else None))
+    room still helps. 12 Nov, the same test on a Reel's stems at -16 LUFS (Levels #10, BELLA): the old
+    chain gave 3.06 (13.7 dB voice over effects); room .0006 / effects .8 / limiter .4 gave 3.13 at -16.1
+    (15.6 dB); effects left at 1.0 scored 3.16 but broke the true-peak ceiling (-1.3 dBTP) and cut the
+    margin to 13.7 dB; no limiter 3.09; room .0009 3.11. So every master with no music bed (Reels and
+    Shorts) now uses room .0006, effects .8 and the limiter. Override with ep["room"], ep["fx_gain"],
+    ep["limit"] (None: no limiter)."""
+    plain = not ep.get("music")
+    return (ep.get("room", .0006 if plain else .0012), ep.get("fx_gain", .8 if plain else 1.0),
+            ep.get("limit", .4 if plain else None))
 
 
 def mux(ep, voice_name, voice, sfx, total, mp4):
