@@ -18,6 +18,16 @@ What has been settled, and what is still open. Newest first.
 
 ## Settled
 
+- **Reel hooks are the question alone** (11 Nov, Pietro: "From now on eliminate from all reels
+  'That's level 4, keep score'. This part is not needed."). The Levels hook says and shows only the
+  last question (plus the small "4 interview questions. Each one harder." line); the close still asks
+  for the score. Applied to Levels #10 before delivery (53.9 s, was 56.1). YouTube Shorts keep their
+  own hook until Pietro says otherwise.
+- **Six viral reference Reels to study** (11 Nov, Pietro): one proposal per reference over the next
+  days, modelled on their design, music and structure more than their plot. Links and status in
+  `docs/daily/viral-references.md`. Instagram blocks automated fetching, so the study needs the
+  videos (screen recordings or downloads) from Pietro.
+
 - **3 carousels a day, built and queued weekly** (10 Nov, Pietro: "post three
   times a day from now on", then "increase from 2 a day to 3 a day" and "build
   and queue now"). Slots 08:00, 12:30 and 17:30 ET; the hand-posted Reel at

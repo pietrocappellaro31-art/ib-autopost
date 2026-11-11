@@ -2,8 +2,9 @@
 "Levels": the escalating quiz Reel (7 Nov). Five interview questions, each one
 harder, read by the voice; the viewer keeps score and comments it at the end.
 
-    hook    the hardest question is asked first, then "That's level five", so
-            the Reel opens a loop that only the last level closes
+    hook    the hardest question is asked first, so the Reel opens a loop that
+            only the last level closes. Reels: the question alone (11 Nov, Pietro:
+            no "That's level 4. Keep score."); hk["say"] has one entry
     level   lockup (big numeral, LEVEL, italic tail), the question on a card
             lit word by word as it is read, a think bar with ticks, then the
             answer, revealed word by word, and a worked chip

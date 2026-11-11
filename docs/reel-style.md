@@ -125,8 +125,9 @@ Keep episodes at or under about 45 seconds.
 that get harder, read by the voice; the viewer keeps score and comments it.
 
 - **The hook asks the last question first** ("Can enterprise value be
-  negative? That's level four.") and the final level answers it, so the Reel
-  opens a loop only the end closes. The hook question is fully readable at
+  negative?") and the final level answers it, so the Reel opens a loop only
+  the end closes. **The hook is the question alone** (11 Nov, Pietro): no
+  "That's level 4. Keep score." spoken or on screen, on every Reel from now on. The hook question is fully readable at
   frame 0 and is the cover.
 - **Each level is one card**: lockup (big red numeral, LEVEL, italic tail
   from "easy." to "final boss."), the question lit word by word as it is read,

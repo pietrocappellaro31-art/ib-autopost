@@ -49,7 +49,8 @@ G2, BELLA, EMMA or GEORGE. Never print or commit a key if one is around.
 2. **Write the episode file** `build/reels_<slug>.py`. Work every answer in
    its docstring. Never invent a number, statistic or credential. No em
    dashes. Spoken text uses words for numbers; on-screen text uses digits.
-   Each hook is one sentence in one `say` entry.
+   Each hook is one sentence in one `say` entry, and it is the only entry:
+   the question alone. Never "That's level 4. Keep score." (Pietro, 11 Nov).
 3. **New words**: the voice stops on a word it cannot pronounce. Add it to
    `PHONEMES` in `build/voice.py` (plurals, -ed and -ing are worked out from
    the stem automatically).

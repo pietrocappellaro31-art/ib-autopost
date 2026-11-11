@@ -45,12 +45,11 @@ EP = dict(
     slug="w2-levels-10",
     kicker="IB INTERVIEW LEVELS #10",
     hook=dict(
-        say=[("Can negative working capital be a good sign?", "Can negative working capital be a good sign?"),
-             ("That's level four.", "That's level 4."), ("Keep score.", "Keep score.")],
+        say=[("Can negative working capital be a good sign?", "Can negative working capital be a good sign?")],
+        # 11 Nov, Pietro: no "That's level 4. Keep score." on any Reel from now on; the hook is the question alone.
         sub="4 interview questions. Each one harder.",
         qsize=74,
         hl=["good sign?"],
-        cols={"4.": RED, "score.": RED},
     ),
     levels=[
         dict(tail="easy.", think=1.0, ans_min=ART_H,
