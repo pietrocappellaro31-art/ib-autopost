@@ -468,8 +468,8 @@
       "series": "Technical of the Day",
       "scheduled_utc": "2026-11-11T17:30:00",
       "caption": "A deferred tax liability is tax you've postponed. Not tax you've avoided.\n\nCompanies keep 2 sets of books and both are legal: GAAP for shareholders, tax rules for the tax authority, and depreciation is often faster on the tax side.\n\nSay book depreciation is 10 and tax depreciation is 30. Taxable income is 20 lower, so at 25% you pay 5 less tax than your income statement shows.\n\nThat 5 is owed later. So it's a liability.\n\nLater the accelerated depreciation runs out, cash tax climbs above book tax, and the DTL unwinds to 0.\n\nOn the cash flow statement, an increase in the DTL gets added back in operating cash flow. You recorded the expense but didn't pay it.\n\nSave it for the accounting round.\n\n#investmentbanking #ibinterview #accounting #deferredtax",
-      "published_id": null,
-      "published_at_utc": null,
+      "published_id": "18130878595867504",
+      "published_at_utc": "2026-11-11T17:40:52.330889+00:00",
       "images": [
         "n1-05-dtl-01.jpg",
         "n1-05-dtl-02.jpg",
