@@ -26,7 +26,10 @@ What has been settled, and what is still open. Newest first.
 - **Six viral reference Reels to study** (11 Nov, Pietro): one proposal per reference over the next
   days, modelled on their design, music and structure more than their plot. Links and status in
   `docs/daily/viral-references.md`. Instagram blocks automated fetching, so the study needs the
-  videos (screen recordings or downloads) from Pietro.
+  videos (screen recordings or downloads) from Pietro. Videos received and studied the same day;
+  six proposals and a build order written in that file. **Approved by Pietro (11 Nov: "I approve
+  your proposal")**: from 12 Nov each daily Reel run builds the next proposal in order, with the
+  day's rotation voice (none for the R2 loop), until all six are done; then Pietro picks what stays.
 
 - **3 carousels a day, built and queued weekly** (10 Nov, Pietro: "post three
   times a day from now on", then "increase from 2 a day to 3 a day" and "build

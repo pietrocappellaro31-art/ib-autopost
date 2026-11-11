@@ -14,6 +14,8 @@ mapped onto our brand. Every number in a proposal is worked or sourced before it
 
 ## How the daily Reel run uses this file
 
+Approved by Pietro on 11 Nov ("I approve your proposal").
+
 From 12 Nov, each Reel run builds the next proposal in the build order below as that day's Reel
 (instead of a Levels quiz), with the day's rotation voice, sound effects, no music in the file, and
 the usual checks, caption and logs. It records what was built in the table and in quality-log.md.
