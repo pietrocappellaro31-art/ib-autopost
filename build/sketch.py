@@ -32,6 +32,8 @@ Scenes (opts in brackets):
   interest_stack(base, rate)
   10 Nov, long video (the dot-com crash): bubble(label, pop), ticker(price, change, up), server(lights),
   parcel(label, n), ballot(), payback(years, paid, label), petbowl(closed), bell(label), rocket(fall)
+  11 Nov, long video (who paid for WW1): newspaper(headline, sub, date, stamp), poster(top, big, bottom),
+  ledger(names, hi), perpetual(coupon, title), shrink(years, label, last)
   youtube.py now fits every drawing to its box (the drawn part fills its half of the frame).
   11 Nov (Singles' Day Short): sale_bag(date, tag), four_ones(month), shopfront(n, banner),
   tally_board(year, total, unit, hidden), markup_tag(start, up, mid, off, end); _ptag() draws a price tag
@@ -211,7 +213,7 @@ def document(p, title="", lines=5, stamp="", **_):
 
 
 def stamp(p, text="", cx=400, cy=320, frac=.2, **_):
-    w = max(220, 30 * len(text))
+    w = max(220, 38 * len(text) + 70)        # 11 Nov: was 30 per letter, which clipped 'COVERED UP' at 52 px
     p.parts.append(f'<g class="a" data-fx="stamp" data-at="{p.at(frac)}" data-d="0.35" data-rot="-10" '
                    f'style="transform-box:fill-box;transform-origin:center">'
                    f'<rect x="{cx - w / 2}" y="{cy - 50}" width="{w}" height="100" rx="12" fill="none" stroke="{RED}" stroke-width="9"/>'
@@ -1187,3 +1189,95 @@ def markup_tag(p, start="$100", up="+25%", mid="$125", off="-20%", end="?", **_)
 
 
 SCENES.update({f.__name__: f for f in (sale_bag, four_ones, shopfront, tally_board, markup_tag)})
+# ---- 11 Nov (long video, Armistice Day): how the First World War was paid for. Generic shapes of our own:
+# no real posters, mastheads, banknotes or emblems are copied.
+
+def newspaper(p, headline="OVER-SUBSCRIBED", sub="AND STILL THEY POUR IN", date="1914", stamp="", **_):
+    """A folded broadsheet: a made-up masthead bar, a big headline, columns of grey lines; stamp= slams a red
+    verdict across it (e.g. FALSE)."""
+    p.fill(f'<rect x="90" y="70" width="620" height="500" rx="8" fill="#fff" stroke="{INK}" stroke-width="6" transform="rotate(-2 400 320)"/>', 0)
+    p.box(120, 95, 560, 54, INK, .06, rx=4)
+    p.text(400, 134, "THE DAILY LEDGER", .1, size=34, serif=True, weight=700, color="#fff")
+    p.text(670, 180, date, .14, size=26, weight=600, color=GREY, anchor="end")
+    size = 64 if len(headline) <= 12 else 54 if len(headline) <= 16 else 44
+    p.text(400, 255, headline, .2, size=size, serif=True, weight=700, color=INK, fx="pop")
+    p.text(400, 305, sub, .3, size=28, weight=700, color=GREY)
+    for c in range(3):
+        for r in range(6):
+            x = 130 + 185 * c
+            p.line([(x, 350 + 34 * r), (x + 160 - 30 * ((r + c) % 2), 350 + 34 * r)], .35 + .02 * (r + 3 * c), .08, color=GREY, w=5, j=.8)
+    if stamp:
+        p.text(400, 470, stamp, .75, size=120, serif=True, weight=700, color=RED, fx="stamp")
+
+
+def poster(p, top="IF YOU CANNOT FIGHT", big="INVEST", bottom="5% WAR BONDS", **_):
+    """A recruiting-style poster of our own: a frame, a line on top, a huge word, a coin, a ribbon at the foot."""
+    p.fill(f'<rect x="170" y="40" width="460" height="560" rx="6" fill="#F3E6CF" stroke="{INK}" stroke-width="7"/>', 0)
+    p.rect(195, 65, 410, 510, .05, .3, color=RED, w=5)
+    p.text(400, 140, top, .15, size=34 if len(top) < 22 else 28, weight=700, color=INK)
+    p.text(400, 255, big, .25, size=104 if len(big) <= 7 else 76, serif=True, weight=700, color=RED, fx="pop")
+    p.parts.append(f'<g class="a" data-fx="float" data-at="0" data-d="1" data-amp="8" data-w="2.0">')
+    p.fill(f'<circle cx="400" cy="385" r="78" fill="#E0A93B" stroke="{INK}" stroke-width="6"/>'
+           f'<circle cx="400" cy="385" r="58" fill="none" stroke="#B9822A" stroke-width="4"/>'
+           f'<text x="400" y="410" text-anchor="middle" font-family="\'Serif\',serif" font-weight="700" font-size="70" fill="#fff">£</text>', .4)
+    p.parts.append("</g>")
+    p.box(215, 495, 370, 62, INK, .55, rx=4)
+    p.text(400, 537, bottom, .6, size=32, weight=700, color="#fff")
+
+
+def ledger(p, names=("A. Smith  £300", "J. Brown  £1,000", "G. Nairn  ?", "E. Harvey  ?"), hi=(2, 3), **_):
+    """An open ledger: two pages of ruled lines with handwritten-looking entries; the hi rows get circled red."""
+    p.fill(f'<path d="M60 120 Q230 90 400 130 Q570 90 740 120 V560 Q570 530 400 570 Q230 530 60 560 Z" fill="#FBF6EA" stroke="{INK}" stroke-width="6"/>', 0)
+    p.line([(400, 130), (400, 570)], .05, .2, w=5)
+    for k in range(9):
+        y = 175 + 42 * k
+        p.line([(90, y), (375, y)], .08 + .01 * k, .1, color="#C9C2B4", w=3, j=.5)
+        p.line([(425, y), (710, y)], .08 + .01 * k, .1, color="#C9C2B4", w=3, j=.5)
+    for i, n in enumerate(names[:8]):
+        side, row = divmod(i, 4) if len(names) > 4 else (0, i)
+        x = 105 if (i % 2 == 0 or len(names) <= 4) and side == 0 else 440
+        if len(names) <= 4:
+            x, row = (105, i) if i < 2 else (440, i - 2)
+        y = 205 + 84 * row
+        p.text(x, y, n, .2 + .1 * i, size=30, weight=600, color=INK, anchor="start", serif=True)
+        if i in hi:
+            p.line([(x - 15, y - 34), (x + 270, y - 34), (x + 270, y + 14), (x - 15, y + 14)], .65 + .08 * (i in hi and hi.index(i)), .2,
+                   color=RED, w=6, closed=True, j=3)
+
+
+def perpetual(p, coupon="3½%", title="WAR LOAN", due="∞", **_):
+    """A bond certificate of our own design: a coupon, and in the 'repayable' box an infinity sign that keeps
+    drawing itself."""
+    p.fill(f'<rect x="80" y="80" width="640" height="460" rx="14" fill="#EEF5F3" stroke="{TEAL}" stroke-width="8"/>', 0)
+    p.rect(105, 105, 590, 410, .05, .3, color=TEAL, w=3)
+    p.text(400, 185, title, .12, size=64, serif=True, weight=700, color=TEAL)
+    p.text(400, 300, coupon, .25, size=110, serif=True, weight=700, color=INK, fx="pop")
+    p.text(400, 345, "A YEAR, EVERY YEAR", .32, size=28, weight=700, color=GREY)
+    p.box(250, 380, 300, 110, "#fff", .4, rx=10)
+    p.rect(250, 380, 300, 110, .4, .2, color=INK, w=4)
+    p.text(270, 410, "REPAYABLE", .45, size=20, weight=700, color=GREY, anchor="start")
+    pts = [(400 + 80 * math.cos(a) / (1 + math.sin(a) ** 2), 450 + 80 * math.sin(a) * math.cos(a) / (1 + math.sin(a) ** 2))
+           for a in [2 * math.pi * i / 40 for i in range(40)]]
+    p.line(pts, .5, .4, color=RED, w=9, closed=True, j=.6)
+    for k in range(4):
+        p.fill(f'<circle cx="{150 + 500 * (k % 2)}" cy="{130 + 380 * (k // 2)}" r="12" fill="{TEAL}"/>', .1 + .05 * k)
+
+
+def shrink(p, years=("1927", "", "", "2015"), label="£100", last="£1.82", **_):
+    """The same banknote, smaller in each year: what inflation does to money lent at a fixed sum."""
+    n = len(years)
+    xs = [130 + 540 * i / max(n - 1, 1) for i in range(n)]
+    for i, (x, y_) in enumerate(zip(xs, years)):
+        s = 1 - .78 * i / max(n - 1, 1)
+        w_, h_ = 170 * s, 96 * s
+        col = RED if i == n - 1 else TEAL
+        p.fill(f'<rect x="{x - w_ / 2}" y="{330 - h_ / 2}" width="{w_}" height="{h_}" rx="{8 * s}" fill="#DCEFE9" stroke="{col}" stroke-width="5"/>'
+               f'<circle cx="{x}" cy="330" r="{30 * s}" fill="none" stroke="{col}" stroke-width="4"/>', .1 + .17 * i)
+        p.text(x, 330 - h_ / 2 - 22, label if i < n - 1 else last, .15 + .17 * i, size=int(26 + 18 * (i == n - 1)), weight=700, color=col)
+        p.text(x, 470, y_, .12 + .17 * i, size=36, weight=700, color=INK)
+    p.line([(80, 420), (720, 420)], .05, .5, w=6)
+    p.line([(690, 400), (722, 420), (690, 440)], .55, .1, w=6)
+    p.text(400, 560, "WHAT IT BUYS", .8, size=32, weight=700, color=GREY)
+
+
+SCENES.update({f.__name__: f for f in (newspaper, poster, ledger, perpetual, shrink)})

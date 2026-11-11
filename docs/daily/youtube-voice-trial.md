@@ -17,7 +17,7 @@ Each run fills in its row: DNSMOS on voice.wav, exact lines, and Pietro's verdic
 | Date | Voice | What it is | Speed | Long DNSMOS | Short DNSMOS | Exact lines | Pietro's verdict |
 |---|---|---|---|---|---|---|---|
 | 2026-11-10 | GEORGE | Kokoro bm_george, British male, measured (baseline) | 0.97 | 3.35 (9 Nov) | 3.33 | 21/21 | |
-| 2026-11-11 | HEART | Kokoro af_heart, American female, warm | 0.97 | | 3.45 (Short) | 20/20 (Short) | |
+| 2026-11-11 | HEART | Kokoro af_heart, American female, warm | 0.97 | 3.46 (yt-004) | 3.45 (Short) | 20/20 (Short); long: 2 mix chunks word for word | |
 | 2026-11-12 | MICHAEL | Kokoro am_michael, American male, steady | 1.0 | | | | |
 | 2026-11-13 | ISABELLA | Kokoro bf_isabella, British female, clear | 0.89 | | | | |
 | 2026-11-14 | LEWIS | Kokoro bm_lewis, British male, deep | 1.0 | | | | |

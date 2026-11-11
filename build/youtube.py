@@ -250,16 +250,44 @@ def visual(show, t0, dur):
     raise ValueError(k)
 
 
-def synth(ep, voice_name):
-    v = make_voice(voice_name)
-    scale = getattr(v, "pace_scale", 1.0)
+def synth(ep, voice_name, work=None):
+    """11 Nov: every line is cached in work/synth.pkl, keyed on the voice, the speed and the words, so a
+    re-render after a visual fix, a timing check before the render, or a one-line script edit only
+    synthesises what changed. Visual/sentence counts are checked before any synthesis."""
+    import pickle
+    from voice import split_sentences
+    for ch in ep["chapters"]:
+        for beat in ch["beats"]:
+            n = len(beat.get("shows") or [1])
+            assert n == 1 or n == len(split_sentences(beat["say"])), f"{n} visuals for {len(split_sentences(beat['say']))} sentences: {beat['say'][:50]}"
+    cache = work / "synth.pkl" if work else None
+    store = pickle.load(open(cache, "rb")) if cache and cache.exists() else {}
+    if not isinstance(store, dict):
+        store = {}
+    v, hits = None, 0
+    def say(text, speed):
+        nonlocal v, hits
+        k = (voice_name, round(speed, 4), text)
+        if k in store:
+            hits += 1
+            return store[k]
+        if v is None:
+            v = make_voice(voice_name)
+        store[k] = passage(v, text, speed)
+        return store[k]
+    from voice_clone import voices, key as vkey
+    vd = voices().get(vkey(voice_name), {})
+    scale = vd.get("speed", 1.0) if vd.get("engine") == "kokoro" else 1.0      # = make_voice(...).pace_scale
     out = []
     for c, ch in enumerate(ep["chapters"]):
-        a, segs = passage(v, ch["title"] + ".", scale * .98)
+        a, segs = say(ch["title"] + ".", scale * .98)
         out.append(("title", c, None, a, segs))
         for b, beat in enumerate(ch["beats"]):
-            a, segs = passage(v, beat["say"], scale * (1.0 if b % 2 else .98))
+            a, segs = say(beat["say"], scale * (1.0 if b % 2 else .98))
             out.append(("beat", c, b, a, segs))
+    if cache:
+        pickle.dump(store, open(cache, "wb"))
+    print(f"  voice: {hits} of {len(out)} lines reused from synth.pkl", flush=True)
     return out
 
 
@@ -332,12 +360,16 @@ window.fitSketches = function (zmax = 1.5, zmin = .8) {
   seek(0);
   return n;
 };
-window.check16 = function () {
+window.check16 = function (t) {
   // 16:9 layout check: no visible text or drawing off the frame or under the header, and the main
-  // content clear of the caption line.
+  // content clear of the caption line. 11 Nov: an element still inside its entry animation (a stamp
+  // mid-slam, a slide on its way in) is skipped until data-at + data-d has passed, so a clean render reads 0.
   const bad = [];
-  document.querySelectorAll('.scene').forEach(s => {
+  document.querySelectorAll('.scene').forEach((s, si) => {
     if (s.style.visibility !== 'visible') return;
+    const local = (t === undefined) ? 1e9 : t - window.SCENES[si].start;
+    const moving = n => { for (let q = n; q && q !== s; q = q.parentElement)
+      if (q.classList && q.classList.contains('a') && local < +(q.dataset.at || 0) + +(q.dataset.d || .5) + .05) return true; return false; };
     const cap = s.querySelector('.cap');
     const capTop = cap ? cap.getBoundingClientRect().top : 2000;
     s.querySelectorAll('.safe *').forEach(n => {
@@ -345,6 +377,7 @@ window.check16 = function () {
       for (let q = n; q && q !== s; q = q.parentElement) if (getComputedStyle(q).opacity === '0') return;
       const r = n.getBoundingClientRect();
       if (r.width === 0 || r.height === 0) return;
+      if (moving(n)) return;
       const isText = n.tagName === 'text' || [...n.childNodes].some(c => c.nodeType === 3 && c.textContent.trim());
       if (!isText && n.tagName !== 'svg') return;
       if (r.left < 30 || r.right > 1890 || r.top < 105 || r.bottom > 1050 || (r.bottom > capTop - 6 && r.top < capTop))
@@ -403,7 +436,7 @@ def render(slug, html, total, work):
         for f in range(n):
             pg.evaluate(f"seek({f / FPS})")
             if f % 12 == 6:
-                for x in pg.evaluate("check16()"):
+                for x in pg.evaluate(f"check16({f / FPS})"):
                     bad.setdefault(x.split(" ")[0] + " " + x.split('"')[1], f"{f / FPS:.1f}s {x}")
             ff.stdin.write(pg.screenshot(type="jpeg", quality=90))
         b.close()
@@ -562,7 +595,7 @@ def redescribe(ep):
 def make(ep, voice_name=YOUTUBE_VOICE):
     work = OUT / ep["slug"]
     work.mkdir(parents=True, exist_ok=True)
-    items = synth(ep, voice_name)
+    items = synth(ep, voice_name, work)
     sc, chapters, sounds, total = scenes(ep, items)
     html, total = page(sc)
     print(f"  timing: {total / 60:.2f} min, {len(sc)} scenes, {int((total + .5) * FPS)} frames to render", flush=True)
