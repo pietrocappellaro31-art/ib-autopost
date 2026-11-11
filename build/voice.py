@@ -28,6 +28,7 @@ DIR = os.environ.get("KOKORO_DIR", "")
 
 # Words outside misaki's dictionaries, with their phonemes written by hand.
 PHONEMES = {
+    "alibaba": "ˌælɪbˈɑbə",
     "experian": "ɛkspˈɪɹiən",
     "affirm": "əfˈɜɹm",
     "ebitda": "ˈibɪtdˌɑ",

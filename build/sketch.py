@@ -33,6 +33,8 @@ Scenes (opts in brackets):
   10 Nov, long video (the dot-com crash): bubble(label, pop), ticker(price, change, up), server(lights),
   parcel(label, n), ballot(), payback(years, paid, label), petbowl(closed), bell(label), rocket(fall)
   youtube.py now fits every drawing to its box (the drawn part fills its half of the frame).
+  11 Nov (Singles' Day Short): sale_bag(date, tag), four_ones(month), shopfront(n, banner),
+  tally_board(year, total, unit, hidden), markup_tag(start, up, mid, off, end); _ptag() draws a price tag
 """
 
 import html as H
@@ -1058,3 +1060,130 @@ def wacc_curve(p, **_):
 
 
 SCENES.update({f.__name__: f for f in (capital_stack, tax_cut, mix_bar, wacc_curve)})
+
+
+# ---- 11 Nov scenes (Singles' Day Short): 11.11, the shops, the hidden total, the markup trap. Generic shapes of
+# our own: no shop, platform or brand marks, no logos.
+
+def _ptag(x, y, w_, label, fill=RED, color="#fff", size=None, rot=0, stroke=INK):
+    """A price tag (pointed left end, a hole) centred on x, y, w_ wide."""
+    h_ = w_ * .52
+    x0, y0 = x - w_ / 2, y - h_ / 2
+    size = size or round(h_ * .5)
+    return (f'<g transform="rotate({rot} {x} {y})">'
+            f'<path d="M{x0 + h_ * .38:.0f} {y0:.0f} L{x0 + w_:.0f} {y0:.0f} L{x0 + w_:.0f} {y0 + h_:.0f} L{x0 + h_ * .38:.0f} {y0 + h_:.0f} '
+            f'L{x0:.0f} {y:.0f} Z" fill="{fill}" stroke="{stroke}" stroke-width="5" stroke-linejoin="round"/>'
+            f'<circle cx="{x0 + h_ * .36:.0f}" cy="{y:.0f}" r="{h_ * .09:.0f}" fill="#fff" stroke="{stroke}" stroke-width="3"/>'
+            f'<text x="{x + h_ * .18:.0f}" y="{y + size * .36:.0f}" text-anchor="middle" font-family="\'Serif\',serif" font-weight="700" '
+            f'font-size="{size}" fill="{color}">{H.escape(label)}</text></g>')
+
+
+def sale_bag(p, date="11.11", tag="-20%", **_):
+    """A red shopping bag with the date on it, bobbing, and a sale tag swinging from the handle."""
+    p.parts.append('<g class="a" data-fx="float" data-at="0" data-d="1" data-amp="10" data-w="1.6">')
+    p.fill(f'<path d="M190 240 L610 240 L650 610 L150 610 Z" fill="{RED}" stroke="{INK}" stroke-width="7" stroke-linejoin="round"/>'
+           f'<path d="M190 240 L610 240 L616 290 L184 290 Z" fill="#9E2A0D"/>'
+           f'<text x="400" y="480" text-anchor="middle" font-family="\'Serif\',serif" font-weight="700" font-size="150" '
+           f'fill="#fff" letter-spacing="-4">{H.escape(date)}</text>', .0)
+    p.line([(290, 245), (290, 150), (330, 100), (470, 100), (510, 150), (510, 245)], .12, .3, w=12)
+    p.parts.append("</g>")
+    p.parts.append(f'<g class="a" data-fx="swing" data-at="0" data-d="1" data-amp="12" data-w="2.4" '
+                   f'style="transform-box:view-box;transform-origin:510px 150px">'
+                   f'<g class="a" data-fx="pop" data-at="{p.at(.35)}" data-d=".4" style="transform-box:fill-box;transform-origin:center">'
+                   f'<path d="M510 150 L600 215" stroke="{INK}" stroke-width="4"/>'
+                   + _ptag(680, 250, 230, tag, "#F2C35B", INK, 64, rot=28) + '</g></g>')
+
+
+def four_ones(p, month="NOVEMBER", **_):
+    """A calendar page: 11.11 at the top, then four lone stick figures, one per 1, popping in and bobbing apart."""
+    p.fill(f'<rect x="110" y="20" width="580" height="610" rx="26" fill="#fff" stroke="{INK}" stroke-width="6"/>'
+           f'<path d="M110 46 Q110 20 136 20 L664 20 Q690 20 690 46 L690 120 L110 120 Z" fill="{RED}"/>', .0)
+    for x in (230, 570):
+        p.fill(f'<rect x="{x - 12}" y="-6" width="24" height="56" rx="12" fill="{INK}"/>', .05)
+    p.text(400, 92, month, .08, size=48, weight=700, color="#fff")
+    p.text(400, 270, "11.11", .15, size=150, serif=True, weight=700)
+    cols = (TEAL, "#F2C35B", "#7A6BB0", RED)
+    for k, x in enumerate((200, 330, 470, 600)):
+        p.parts.append(f'<g class="a" data-fx="float" data-at="0" data-d="1" data-amp="9" data-w="2.1" data-ph="{k * 1.4}">')
+        p.fill(f'<circle cx="{x}" cy="358" r="30" fill="{cols[k]}" stroke="{INK}" stroke-width="5"/>', .35 + .1 * k)
+        p.line([(x, 390), (x, 510)], .38 + .1 * k, .18, w=9)
+        p.line([(x - 34, 440), (x, 418), (x + 34, 440)], .42 + .1 * k, .14, w=8)
+        p.line([(x - 28, 580), (x, 510), (x + 28, 580)], .45 + .1 * k, .14, w=8)
+        p.parts.append("</g>")
+
+
+def shopfront(p, n=3, banner="11.11 SALE", **_):
+    """A street of little shops, striped awnings popping on, a sale banner swinging over them, a red question mark."""
+    awn = (RED, TEAL, "#E0A93B")
+    for k in range(n):
+        x0 = 50 + 240 * k
+        p.fill(f'<rect x="{x0}" y="300" width="220" height="290" fill="#FBF7F0" stroke="{INK}" stroke-width="5"/>'
+               f'<rect x="{x0 + 22}" y="350" width="100" height="100" rx="6" fill="#D6E2F3" stroke="{INK}" stroke-width="4"/>'
+               f'<rect x="{x0 + 142}" y="380" width="58" height="210" rx="6" fill="{awn[k]}" stroke="{INK}" stroke-width="4"/>'
+               f'<circle cx="{x0 + 188}" cy="490" r="5" fill="{INK}"/>', .05 + .1 * k)
+        stripes = "".join(f'<rect x="{x0 - 10 + 30 * j}" y="235" width="30" height="62" fill="{awn[k] if j % 2 == 0 else "#fff"}"/>'
+                          for j in range(8))
+        scal = "".join(f'<circle cx="{x0 + 5 + 30 * j}" cy="297" r="15" fill="{awn[k] if j % 2 == 0 else "#fff"}" '
+                       f'stroke="{INK}" stroke-width="3"/>' for j in range(8))
+        p.fill(f'<g>{scal}{stripes}<rect x="{x0 - 10}" y="235" width="240" height="62" fill="none" stroke="{INK}" stroke-width="5"/></g>',
+               .15 + .1 * k, fx="growYdown")
+    p.line([(30, 592), (770, 592)], .0, .3, w=7)
+    p.parts.append(f'<g class="a" data-fx="swing" data-at="0" data-d="1" data-amp="3" data-w="1.8" '
+                   f'style="transform-box:view-box;transform-origin:400px 40px">'
+                   f'<g class="a" data-fx="pop" data-at="{p.at(.45)}" data-d=".45" style="transform-box:fill-box;transform-origin:center">'
+                   f'<path d="M140 60 L400 30 L660 60" fill="none" stroke="{INK}" stroke-width="4"/>'
+                   f'<path d="M120 80 L680 80 L660 125 L680 170 L120 170 L140 125 Z" fill="{RED}" stroke="{INK}" stroke-width="5" '
+                   f'stroke-linejoin="round"/>'
+                   f'<text x="400" y="145" text-anchor="middle" font-family="\'Serif\',serif" font-weight="700" font-size="66" '
+                   f'fill="#fff">{H.escape(banner)}</text></g></g>')
+    p.parts.append('<g class="a" data-fx="float" data-at="0" data-d="1" data-amp="10" data-w="2.4">')
+    p.fill(f'<circle cx="720" cy="240" r="56" fill="#fff" stroke="{RED}" stroke-width="7"/>'
+           f'<text x="720" y="272" text-anchor="middle" font-family="\'Serif\',serif" font-weight="700" font-size="90" fill="{RED}">?</text>',
+           .7)
+    p.parts.append("</g>")
+
+
+def tally_board(p, year="2021", total=540.3, unit="bn yuan", hidden=("2022", "2023", "2024", "2025"), **_):
+    """A sales scoreboard: one row counts up to the last published total, the rows after it stay dark with question marks."""
+    p.fill(f'<rect x="70" y="30" width="660" height="590" rx="28" fill="#16302D" stroke="{INK}" stroke-width="6"/>'
+           f'<rect x="70" y="30" width="660" height="92" rx="28" fill="{TEAL}"/><rect x="70" y="96" width="660" height="26" fill="{TEAL}"/>', .0)
+    p.text(400, 96, "11.11 TOTAL SALES", .05, size=44, weight=700, color="#fff")
+    p.text(115, 210, year, .15, size=50, anchor="start", weight=700, color="#7FE0CF")
+    p.parts.append(f'<g class="a" data-fx="fade" data-at="{p.at(.18)}" data-d=".3"><text x="690" y="212" text-anchor="end" '
+                   f'font-family="\'Serif\',serif" font-weight="700" font-size="62" fill="#fff" class="a" data-fx="count" '
+                   f'data-at="{p.at(.2)}" data-d="{max(.35 * p.dur, 1):.2f}" data-from="0" data-to="{total}" data-dec="1" data-show="1" '
+                   f'data-suf=" {unit}">{total} {unit}</text></g>')
+    p.line([(110, 250), (690, 250)], .25, .15, color="#2F5A55", w=4)
+    for k, yr in enumerate(hidden):
+        y = 320 + 78 * k
+        p.text(115, y, yr, .4 + .08 * k, size=46, anchor="start", weight=700, color="#6E8F8B")
+        p.parts.append(f'<g class="a" data-fx="float" data-at="0" data-d="1" data-amp="5" data-w="2.6" data-ph="{k}">')
+        for j in range(3):
+            p.fill(f'<rect x="{430 + 88 * j}" y="{y - 46}" width="70" height="62" rx="10" fill="#0B1E1C" stroke="#2F5A55" stroke-width="3"/>'
+                   f'<text x="{465 + 88 * j}" y="{y + 2}" text-anchor="middle" font-family="\'Serif\',serif" font-weight="700" '
+                   f'font-size="50" fill="{RED}">?</text>', .45 + .08 * k + .03 * j)
+        p.parts.append("</g>")
+
+
+def markup_tag(p, start="$100", up="+25%", mid="$125", off="-20%", end="?", **_):
+    """The markup trap: a $100 tag, a red arrow up to a bigger tag (+25%), then a teal arrow down to a tag with a question mark (-20%)."""
+    p.parts.append('<g class="a" data-fx="float" data-at="0" data-d="1" data-amp="7" data-w="2.2">')
+    p.fill(_ptag(150, 470, 240, start, TEAL, "#fff", 64, rot=-8), .02)
+    p.parts.append("</g>")
+    p.line([(170, 380), (210, 240), (300, 170)], .2, .25, color=RED, w=10)
+    p.line([(262, 150), (306, 168), (284, 212)], .4, .08, color=RED, w=10)
+    p.box(130, 175, 150, 70, "#fff", .35, rx=16)
+    p.text(205, 226, up, .38, size=50, serif=True, weight=700, color=RED)
+    p.parts.append('<g class="a" data-fx="float" data-at="0" data-d="1" data-amp="9" data-w="1.9" data-ph="1.2">')
+    p.fill(_ptag(440, 150, 300, mid, RED, "#fff", 80, rot=6), .45)
+    p.parts.append("</g>")
+    p.line([(560, 230), (640, 320), (660, 400)], .6, .2, color=TEAL, w=10)
+    p.line([(628, 372), (660, 410), (686, 368)], .75, .08, color=TEAL, w=10)
+    p.box(680, 250, 120, 66, "#fff", .66, rx=16)
+    p.text(740, 298, off, .68, size=46, serif=True, weight=700, color=TEAL)
+    p.parts.append('<g class="a" data-fx="float" data-at="0" data-d="1" data-amp="11" data-w="2.6" data-ph="2.3">')
+    p.fill(_ptag(610, 520, 260, end, "#F2C35B", INK, 96, rot=-6), .82)
+    p.parts.append("</g>")
+
+
+SCENES.update({f.__name__: f for f in (sale_bag, four_ones, shopfront, tally_board, markup_tag)})

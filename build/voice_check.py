@@ -44,6 +44,14 @@ def words(text):
     _o = "zero one two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen sixteen seventeen eighteen nineteen".split()
     t = re.sub(r"\b(" + "|".join(_o) + r") point (" + "|".join(_o[:10]) + r")\b",       # 11 Nov: "eight point four" is 8.4
                lambda m: f"{_o.index(m.group(1))}.{_o.index(m.group(2))}", t)
+    # 11 Nov: dates. "November the eleventh" is said, a recogniser writes "November 11th": ordinals become
+    # numbers ("eleventh", "11th" -> 11) and the "the" between a month and its day is dropped.
+    _ord = ("first second third fourth fifth sixth seventh eighth ninth tenth eleventh twelfth thirteenth fourteenth "
+            "fifteenth sixteenth seventeenth eighteenth nineteenth twentieth").split()
+    t = re.sub(r"\b(" + "|".join(_ord) + r")\b", lambda m: str(_ord.index(m.group(1)) + 1), t)
+    t = re.sub(r"\b(\d+)(?:st|nd|rd|th)\b", r"\1", t)
+    t = re.sub(r"\b(january|february|march|april|may|june|july|august|september|october|november|december) the (\d+)\b",
+               r"\1 \2", t)
     t = re.sub(r"\ba firm\b", "affirm", t)                   # 10 Nov: the lender's name and "a firm" sound the same          # "2 and a half" as a recogniser writes it
     # Spoken years and prices (9 Nov): "twenty twenty four" is 2024, and "four
     # ninety seven" is $4.97, which a recogniser writes "4.97" or "497".
@@ -56,6 +64,7 @@ def words(text):
     t = re.sub(r"\b(" + "|".join(o) + r") " + pair,
                lambda m: str(o.index(m.group(1)) + 1) + "%02d" % two(re.match(pair, m.group(0).split(" ", 1)[1])), t)
     t = re.sub(r"\b(\d+)\.(\d\d)\b", lambda m: m.group(0) if m.group(2) == "00" else m.group(1) + m.group(2), t)
+    t = re.sub(r"(?<=[a-z])'(?![a-z])", "", t)             # 11 Nov: a plural possessive ("Singles' Day") is the plain word
     toks = re.findall(r"\d+(?:\.\d+)?|[a-z']+", t)
     num = lambda w: w in ONES or w in TENS or w in ("hundred", "thousand")
     out, i = [], 0

@@ -453,19 +453,34 @@ def remix(ep, voice_name):
     parts = reuse(work)
     at, hook_end, lv, total = timeline(ep, parts)
     voice, sfx = soundtrack(parts, at, lv, total + .6, ep)
+    sfx = sfx * shorts_mix(ep)[1]
     mux(ep, voice_name, voice, sfx, total, OUT / (ep["slug"] + "-silent") / (ep["slug"] + "-silent.mp4"))
     print(f"  -> remixed {ep['slug']}.mp4")
 
 
+def shorts_mix(ep):
+    """Room tone, effect level and a peak limiter for the master (11 Nov). Measured on the Singles' Day
+    Short's stems at -14 LUFS (HEART): room .0012 / effects 1.0 / no limiter (the 10 Nov chain) gave mix
+    DNSMOS 3.03 at -15.0 LUFS (the -1.5 dBTP ceiling held loudnorm under -14); room .0006, effects 0.8 and
+    a limiter at 0.4 before loudnorm gave 3.11 at -14.6. No room at all did worse (2.95 to 3.03): a faint
+    room still helps. Defaults apply to the -14 LUFS masters with no music (YouTube Shorts); Reels (-16)
+    keep the old chain. Override with ep["room"], ep["fx_gain"], ep["limit"] (None: no limiter)."""
+    yt = ep.get("lufs", -16) == -14 and not ep.get("music")
+    return (ep.get("room", .0006 if yt else .0012), ep.get("fx_gain", .8 if yt else 1.0),
+            ep.get("limit", .4 if yt else None))
+
+
 def mux(ep, voice_name, voice, sfx, total, mp4):
     work = OUT / ep["slug"]
+    room, _, limit = shorts_mix(ep)
     write_wav(work / "voice.wav", voice)
     write_wav(work / "sfx.wav", sfx)
     final = work / f"{ep['slug']}.mp4"
     from voice_clone import master_chain
     chain = master_chain(voice_name) or (CLONE_MASTER if voice_name.startswith(("clone:", "real:")) else MASTER)
-    graph = (f"[1:a]{chain}[v];anoisesrc=color=brown:amplitude=0.0012:sample_rate={SR}:duration={total + .6:.2f}[room];"
-             f"[v][2:a][room]amix=inputs=3:normalize=0,loudnorm=I={ep.get('lufs', -16)}:TP=-1.5:LRA=11[a]")
+    lim = f"alimiter=limit={limit}:attack=2:release=50:level=false," if limit else ""
+    graph = (f"[1:a]{chain}[v];anoisesrc=color=brown:amplitude={room}:sample_rate={SR}:duration={total + .6:.2f}[room];"
+             f"[v][2:a][room]amix=inputs=3:normalize=0,{lim}loudnorm=I={ep.get('lufs', -16)}:TP=-1.5:LRA=11[a]")
     # ep["lufs"] (10 Nov): YouTube Shorts ship without music now and still master at -14 like YouTube; Reels stay -16.
     extra = []
     if ep.get("music"):
@@ -506,6 +521,7 @@ def make(ep, voice_name="af_heart", keep_voice=False, redo=()):
     mp4, cover, problems = build(ep["slug"] + "-silent", [sc], theme="paper", cover_at=hook_end - .2, crf=21,
                                  check_at=check_at)
     voice, sfx = soundtrack(parts, at, lv, total + .6, ep)
+    sfx = sfx * shorts_mix(ep)[1]                            # 11 Nov: effects a touch lower on YouTube Shorts
     work = OUT / ep["slug"]
     work.mkdir(parents=True, exist_ok=True)
     final = mux(ep, voice_name, voice, sfx, total, mp4)
