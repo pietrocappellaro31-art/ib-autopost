@@ -39,6 +39,8 @@ Scenes (opts in brackets):
   tally_board(year, total, unit, hidden), markup_tag(start, up, mid, off, end); _ptag() draws a price tag
   12 Nov (Levels #10, working capital): wc_minus(assets, liab, strike), shelf_cash(amount), prepaid(amount),
   cash_first(left, right, band)
+  12 Nov (compound interest Short): cent_or_million(), coin_stacks(values), hourglass72(rate), quote_card(quote),
+  doubling_bars(days, known, line); each drawn edge to edge of the 800 x 640 canvas so it fills its box
 """
 
 import html as H
@@ -1394,3 +1396,115 @@ def cash_first(p, left="CUSTOMER PAYS", right="YOU PAY SUPPLIER", band="YOUR CAS
 
 
 SCENES.update({f.__name__: f for f in (wc_minus, shelf_cash, prepaid, cash_first)})
+
+
+# ---- 12 Nov (compound interest Short). Generic shapes of our own: no portraits, no real coin designs.
+# Each one is drawn out to the edges of the 800 x 640 canvas, so it reads at full size in its box.
+
+def _bag(x, y, w_, label, fill=TEAL):
+    """A money sack centred on x (top at y), w_ wide, its label on the front."""
+    h_ = w_ * 1.05
+    return (f'<path d="M{x - w_ * .18:.0f} {y + h_ * .16:.0f} Q{x - w_ * .5:.0f} {y + h_ * .45:.0f} {x - w_ * .5:.0f} {y + h_ * .72:.0f} '
+            f'Q{x - w_ * .5:.0f} {y + h_:.0f} {x:.0f} {y + h_:.0f} Q{x + w_ * .5:.0f} {y + h_:.0f} {x + w_ * .5:.0f} {y + h_ * .72:.0f} '
+            f'Q{x + w_ * .5:.0f} {y + h_ * .45:.0f} {x + w_ * .18:.0f} {y + h_ * .16:.0f} Z" fill="{fill}" stroke="{INK}" stroke-width="7" stroke-linejoin="round"/>'
+            f'<path d="M{x - w_ * .2:.0f} {y + h_ * .16:.0f} L{x - w_ * .3:.0f} {y:.0f} L{x + w_ * .3:.0f} {y:.0f} L{x + w_ * .2:.0f} {y + h_ * .16:.0f} Z" '
+            f'fill="{fill}" stroke="{INK}" stroke-width="7" stroke-linejoin="round"/>'
+            f'<rect x="{x - w_ * .24:.0f}" y="{y + h_ * .13:.0f}" width="{w_ * .48:.0f}" height="{w_ * .07:.0f}" rx="6" fill="#F2C35B" stroke="{INK}" stroke-width="4"/>'
+            f'<text x="{x:.0f}" y="{y + h_ * .74:.0f}" text-anchor="middle" font-family="\'Serif\',serif" font-weight="700" '
+            f'font-size="{w_ * .3:.0f}" fill="#fff">{H.escape(label)}</text>')
+
+
+def cent_or_million(p, left="1\u00a2", right="$1M", **_):
+    """The riddle: a spinning cent with x2 badges popping round it, OR, and a fat money sack bobbing."""
+    coin(p, 190, 330, 170, left, "copper", .02, flip=3)
+    for k, (bx, by) in enumerate(((60, 120), (320, 110), (330, 540))):
+        p.fill(_tile(bx - 50, by - 34, 100, 68, RED, "\u00d72", 44), .3 + .12 * k)
+    p.text(408, 352, "OR", .45, size=54, serif=True, weight=700, color=INK, fx="pop")
+    p.parts.append('<g class="a" data-fx="float" data-at="0" data-d="1" data-amp="10" data-w="1.8">')
+    p.fill(_bag(615, 120, 330, right), .55)
+    p.parts.append("</g>")
+
+
+def coin_stacks(p, values=("$100", "$110", "?"), labels=("START", "YEAR 1", "YEAR 2"), **_):
+    """Three stacks of coins growing left to right, each labelled; the last one ends in a question mark."""
+    for k, (v, lab) in enumerate(zip(values, labels)):
+        x = 140 + 260 * k
+        n = 4 + 2 * k
+        for j in range(n):
+            y = 560 - 46 * j
+            last = k == len(values) - 1 and j >= n - 2
+            fill, rim = ("#F2C35B", "#8A5F12") if not last else (RED, "#7A1E08")
+            p.fill(f'<ellipse cx="{x}" cy="{y + 8}" rx="105" ry="30" fill="{rim}"/>'
+                   f'<ellipse cx="{x}" cy="{y}" rx="105" ry="30" fill="{fill}" stroke="{INK}" stroke-width="5"/>',
+                   .05 + .22 * k + .025 * j, .25)
+        top = 560 - 46 * n - 40
+        p.fill(_tile(x - 95, top - 60, 190, 84, TEAL if k < len(values) - 1 else RED, v, 56), .2 + .25 * k)
+        p.text(x, 630, lab, .1 + .25 * k, size=30, weight=700, color=GREY)
+
+
+def hourglass72(p, rate="8%", left="\u00d71", right="\u00d72", **_):
+    """An hourglass with sand running, a small coin pile on the left, a pile twice as big on the right, the rate on a tile."""
+    p.parts.append('<g class="a" data-fx="swing" data-at="0" data-d="1" data-amp="4" data-w="1.4" '
+                   'style="transform-box:view-box;transform-origin:400px 330px">')
+    p.fill(f'<rect x="275" y="40" width="250" height="34" rx="10" fill="#B8862B" stroke="{INK}" stroke-width="6"/>'
+           f'<rect x="275" y="566" width="250" height="34" rx="10" fill="#B8862B" stroke="{INK}" stroke-width="6"/>'
+           f'<path d="M300 74 L500 74 Q500 220 410 320 Q500 420 500 566 L300 566 Q300 420 390 320 Q300 220 300 74 Z" '
+           f'fill="#EAF4F8" fill-opacity=".9" stroke="{INK}" stroke-width="6" stroke-linejoin="round"/>'
+           f'<path d="M330 150 L470 150 Q460 240 400 300 Q340 240 330 150 Z" fill="#F2C35B"/>'
+           f'<path d="M318 560 Q330 470 400 440 Q470 470 482 560 Z" fill="#F2C35B"/>', .0)
+    p.line([(400, 300), (400, 445)], .2, .6, color="#B8862B", w=5, dash="10 9")
+    p.parts.append("</g>")
+    for k in range(2):
+        coin(p, 120, 520 - 70 * k, 58, "$", "gold", .25 + .08 * k)
+    p.fill(_tile(55, 270, 130, 76, INK, left, 44), .4)
+    for k in range(4):
+        coin(p, 680, 540 - 66 * k, 58, "$", "gold", .5 + .08 * k)
+    p.fill(_tile(615, 160, 130, 76, RED, right, 44), .82)
+    p.text(400, 634, f"AT {rate} A YEAR", .3, size=34, weight=700, color=TEAL)
+
+
+def quote_card(p, quote=("COMPOUND INTEREST", "IS THE 8TH WONDER", "OF THE WORLD"), by="SAID BY ?", **_):
+    """A framed quotation card, tilted, with big quote marks, three lines and an unknown speaker, a magnifier hovering over it."""
+    p.fill(f'<rect x="30" y="60" width="740" height="470" rx="26" fill="#fff" stroke="{INK}" stroke-width="7" transform="rotate(-3 400 300)"/>', 0)
+    p.text(95, 220, "\u201c", .05, size=230, serif=True, weight=700, color=RED, fx="pop")
+    for k, line in enumerate(quote):
+        p.text(420, 210 + 78 * k, line, .15 + .12 * k, size=50, serif=True, weight=700, color=INK)
+    p.box(240, 445, 330, 64, TEAL, .55, rx=14)
+    p.text(405, 489, by, .58, size=36, weight=700, color="#fff")
+    p.parts.append('<g class="a" data-fx="float" data-at="0" data-d="1" data-amp="14" data-w="1.7" data-ph=".8">')
+    p.circle(660, 470, 78, .7, .3, color=INK, w=12)
+    p.line([(715, 528), (780, 600)], .8, .12, color=INK, w=20)
+    p.parts.append("</g>")
+
+
+def doubling_bars(p, days=30, known=25, line="$1 MILLION", **_):
+    """A cent doubling every day: 30 bars, flat for weeks, then shooting up; the last days are dashed boxes with a ?,
+    and a dashed line marks a million dollars. Heights are 2^(day-1) cents against $1M = 400 px (our arithmetic)."""
+    x0, base, top, bw = 30, 580, 400, 24.6
+    p.line([(x0 - 10, base), (790, base)], 0, .2, w=6)
+    for d in range(1, days + 1):
+        x = x0 + (d - 1) * 25.4
+        cents = 2 ** (d - 1)
+        h_ = max(4, top * cents / 1e8)
+        if d <= known:
+            p.box(round(x, 1), round(base - h_, 1), bw - 4, round(h_, 1), RED if d == known else TEAL, .05 + .02 * d, rx=3, fx="growY")
+        else:
+            p.line([(x, base), (x, base - 520), (x + bw - 4, base - 520), (x + bw - 4, base)], .65 + .03 * (d - known), .12,
+                   color=GREY, w=3, dash="7 6")
+    p.line([(x0 - 10, base - top), (790, base - top)], .55, .3, color=RED, w=5, dash="16 10")
+    p.box(30, base - top - 70, 300, 56, "#fff", .6, rx=12)
+    p.text(180, base - top - 30, line, .62, size=36, serif=True, weight=700, color=RED)
+    p.text(690, 120, "?", .85, size=120, serif=True, weight=700, color=RED, fx="pop")
+    coin(p, 95, 470, 62, "1\u00a2", "copper", .02, flip=2)                     # day 1: one cent
+    p.box(170, 438, 250, 62, "#fff", .1, rx=12)
+    p.text(295, 482, "DAY 1: 1\u00a2", .12, size=36, serif=True, weight=700, color=TEAL)
+    kx = x0 + (known - 1) * 25.4 + 10                                              # day `known`, still under $1M
+    p.line([(kx, base - top * 2 ** (known - 1) / 1e8 - 10), (kx - 60, 300)], .5, .15, color=RED, w=4)
+    p.box(kx - 330, 250, 290, 62, "#fff", .52, rx=12)
+    p.text(kx - 185, 294, f"DAY {known}: ${2 ** (known - 1) / 100:,.0f}", .54, size=34, serif=True, weight=700, color=RED)
+    for d in (1, 10, 20, 30):
+        p.text(x0 + (d - 1) * 25.4 + 10, 624, f"DAY {d}" if d in (1, 30) else str(d), .1, size=24, weight=700, color=GREY,
+               anchor="middle")
+
+
+SCENES.update({f.__name__: f for f in (cent_or_million, coin_stacks, hourglass72, quote_card, doubling_bars)})

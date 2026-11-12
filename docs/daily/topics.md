@@ -20,6 +20,7 @@ number with no source is cut.
 | 2026-11-11 | YouTube Short | Singles' Day on 11.11: why the date (four lone 1s, Nanjing University 1993), Alibaba's first sale in 2009 with 27 merchants, the total not published since 2022 (540.3 bn yuan for 2021), the markup trap (up 25% then 20% off saves nothing) |
 | 2026-11-11 | YouTube long | Armistice Day: who paid for WW1. 1914 War Loan failure hidden by the Bank of England (GBP 91.1m of 350m), 1917 "no risk" loan, 1932 cut to 3.5% perpetual, Consols and the South Sea link, perpetuity pricing (C / y), German reparations 132bn gold marks to the last payment in 2010, UK default on US war debt 1934, 2015 "repayment" as refinancing, GBP 100 of 1927 worth GBP 1.82 |
 | 2026-11-11 | Reel | Working capital: current assets minus current liabilities (cash and debt out in a model), inventory +$30 is a $30 use of cash, $40 up front is deferred revenue not revenue, negative working capital as a good sign (customers pay first) |
+| 2026-11-12 | YouTube Short | Compound interest: $100 at 10% for 2 years = $121 (interest on interest), Rule of 72 (8% doubles in about 9 years), Einstein's "eighth wonder" quote unproven (earliest link 1988, Quote Investigator), $1 million vs 1 cent doubled for 30 days ($5,368,709 on day 30, $5,243 on day 20) |
 
 ## Ideas (YouTube long and Shorts)
 

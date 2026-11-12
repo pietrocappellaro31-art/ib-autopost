@@ -125,6 +125,9 @@ it. Copy its structure:
   add a new scene for the topic when none fits (coins, receipt, card and terminal, price
   tag, coin line-up and a stamped last coin exist; for buy now, pay later: shopping bag,
   price tag split in four, payment timeline, credit report, interest stack).
+- the master is two-stage at -14 LUFS (12 Nov, `levels.two_stage`): it lands within 0.2 LU of the
+  target, where the single loudnorm stopped at -14.6 to -15.2; a label like "Last one." is said on
+  its own, and the last level can show the hook's question without reading it again (`("", text)`).
 Keep the safe area clear (the render lists any problem) and look at a contact sheet.
 
 ## 5. Checks

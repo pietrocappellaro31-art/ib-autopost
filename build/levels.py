@@ -108,6 +108,10 @@ def synth(ep, voice_name, only=None):
             # The verdict is said on its own, then a beat, then the reasoning,
             # the way a person answers: "Nothing." ... "Debt is up a hundred..."
             parts[k] = joined(v, [ss[:1], ss[1:]], pace, gap=.2)
+        elif k.startswith("q") and ep["levels"][int(k[1:])].get("label") and len(ss) > 1:
+            # 12 Nov: "Last one." said on its own, then the question. Said as one passage, a short
+            # label ran into the next sentence and the word check cut it in the wrong place.
+            parts[k] = joined(v, [ss[:1], ss[1:]], pace, gap=.25)
         else:
             try:
                 parts[k] = passage(v, " ".join(ss), pace)
@@ -498,9 +502,52 @@ def mux(ep, voice_name, voice, sfx, total, mp4):
         graph = (f"[1:a]{chain},aresample=48000,asplit=2[v][key];[2:a]aresample=48000[fx];"
                  f"[3:a]volume={ep.get('music_level', .2)}[m];[m][key]sidechaincompress=threshold=0.02:ratio=5:attack=30:release=350[md];"
                  "[v][fx][md]amix=inputs=3:normalize=0,loudnorm=I=-14:TP=-1.5:LRA=11[a]")
+    if not ep.get("music") and ep.get("master", "two_stage" if ep.get("lufs", -16) == -14 else "loudnorm") == "two_stage":
+        return two_stage(ep, mp4, work, graph, final)
     subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", str(mp4), "-i", str(work / "voice.wav"), "-i", str(work / "sfx.wav"), *extra,
                     "-filter_complex", graph, "-map", "0:v", "-map", "[a]", "-c:v", "copy", "-c:a", "aac", "-b:a", "192k",
                     "-ar", "48000", "-shortest", "-movflags", "+faststart", str(final)], check=True)
+    return final
+
+
+def loudness(path):
+    """Integrated LUFS and true peak (dBTP) of a file, from ffmpeg's ebur128."""
+    out = subprocess.run(["ffmpeg", "-i", str(path), "-af", "ebur128=peak=true", "-f", "null", "-"],
+                         capture_output=True, text=True).stderr
+    summ = out[out.rfind("Summary:"):]
+    i, p = re.search(r"I:\s+(-?[\d.]+) LUFS", summ), re.search(r"Peak:\s+(-?[\d.]+) dBFS", summ)
+    return float(i.group(1)), float(p.group(1))
+
+
+def two_stage(ep, mp4, work, graph, final, tp=-1.5):
+    """12 Nov: the -14 LUFS master in two stages, because one dynamic loudnorm behind the 0.4 limiter
+    landed at -14.6 to -14.8 (it holds gain back to keep the -1.5 dBTP ceiling). Stage 1 mixes voice,
+    effects and room through the same chain and limiter, with no loudnorm, to a 48 kHz stem. Stage 2
+    measures it, applies one plain gain to the target and a true-peak limiter at the ceiling; a second
+    measure corrects any residual (the limiter takes a little loudness off the loudest words).
+    Measured on the compound interest Short's stems (MICHAEL): single stage -15.2 LUFS, mix DNSMOS 3.12;
+    two stage -14.1 LUFS, -1.7 dBTP, mix 3.10. Default for -14 LUFS masters with no music bed;
+    ep["master"] = "loudnorm" restores the single stage."""
+    target = ep.get("lufs", -14)
+    pre = work / "premaster.wav"
+    g1 = graph.split("loudnorm=")[0].rstrip(",") + "[a]"
+    subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", str(work / "voice.wav"), "-i", str(work / "sfx.wav"),
+                    "-filter_complex", g1.replace("[1:a]", "[0:a]").replace("[2:a]", "[1:a]"), "-map", "[a]",
+                    "-ar", "48000", "-c:a", "pcm_f32le", str(pre)], check=True)
+    i0, _ = loudness(pre)
+    ceil = 10 ** ((tp - .3) / 20)                           # 0.3 dB under the ceiling for the AAC encode
+    gain = target - i0
+    for _ in range(3):
+        af = (f"volume={gain:.2f}dB,aresample=192000,alimiter=limit={ceil:.4f}:attack=1:release=60:level=false,"
+              "aresample=48000")                             # limiting at 4x sample rate catches inter-sample peaks
+        subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", str(mp4), "-i", str(pre), "-map", "0:v", "-map", "1:a",
+                        "-af", af, "-c:v", "copy", "-c:a", "aac", "-b:a", "192k", "-ar", "48000", "-shortest",
+                        "-movflags", "+faststart", str(final)], check=True)
+        i1, p1 = loudness(final)
+        if abs(i1 - target) <= .2 and p1 <= tp + .05:
+            break
+        gain += target - i1
+    pre.unlink(missing_ok=True)
     return final
 
 
