@@ -279,16 +279,46 @@ def synth(ep, voice_name, work=None):
     vd = voices().get(vkey(voice_name), {})
     scale = vd.get("speed", 1.0) if vd.get("engine") == "kokoro" else 1.0      # = make_voice(...).pace_scale
     out = []
-    for c, ch in enumerate(ep["chapters"]):
-        a, segs = say(ch["title"] + ".", scale * .98)
-        out.append(("title", c, None, a, segs))
-        for b, beat in enumerate(ch["beats"]):
-            a, segs = say(beat["say"], scale * (1.0 if b % 2 else .98))
-            out.append(("beat", c, b, a, segs))
-    if cache:
-        pickle.dump(store, open(cache, "wb"))
+    try:
+        for c, ch in enumerate(ep["chapters"]):
+            a, segs = say(ch["title"] + ".", scale * .98)
+            out.append(("title", c, None, a, segs))
+            for b, beat in enumerate(ch["beats"]):
+                a, segs = say(beat["say"], scale * (1.0 if b % 2 else .98))
+                out.append(("beat", c, b, a, segs))
+    finally:                                    # 12 Nov: keep the lines already said even if one fails (a missing word)
+        if cache:
+            pickle.dump(store, open(cache, "wb"))
     print(f"  voice: {hits} of {len(out)} lines reused from synth.pkl", flush=True)
     return out
+
+
+def takes(ep, items, voice_name, work):
+    """12 Nov: the long video gets a takes.json like the Shorts. Every line (chapter titles and beats) is
+    transcribed once on its own and checked word for word; the result is cached per voice and text in
+    work/takes_cache.json, so a re-render only transcribes the lines that changed."""
+    from voice_check import transcribe, wer
+    cache_p = work / "takes_cache.json"
+    cache = json.load(open(cache_p)) if cache_p.exists() else {}
+    log, clip = [], work / "_line.wav"
+    for kind, c, b, a, segs in items:
+        text = ep["chapters"][c]["title"] + "." if kind == "title" else ep["chapters"][c]["beats"][b]["say"]
+        k = f"{voice_name}|{text}"
+        if k not in cache:
+            write_wav(clip, a / max(np.abs(a).max(), 1e-6) * .7)
+            heard = transcribe(clip)
+            cache[k] = dict(heard=heard)
+        heard = cache[k]["heard"]                                   # the score is recomputed, so a better word check applies
+        log.append(dict(kind=kind, chapter=c, beat=b, text=text, heard=heard, wer=round(wer(text, heard), 3)))
+    clip.unlink(missing_ok=True)
+    json.dump(cache, open(cache_p, "w"), indent=0)
+    json.dump(log, open(work / "takes.json", "w"), indent=1)
+    exact = sum(1 for x in log if x["wer"] == 0)
+    print(f"  takes: {exact} of {len(log)} lines heard word for word", flush=True)
+    for x in log:
+        if x["wer"] > 0:
+            print(f"    miss ({x['wer']:.0%}): {x['text'][:70]}\n      heard: {x['heard'][:70]}", flush=True)
+    return log
 
 
 def scenes(ep, items):
@@ -306,7 +336,9 @@ def scenes(ep, items):
                 html = (f'<div style="display:flex;align-items:center;gap:40px"><div style="flex:1">{html}</div>'
                         f'<div style="flex:none;transform:scale(.82);background:#F7F5F2;border-radius:48px;padding:30px 20px;box-shadow:0 40px 90px rgba(0,0,0,.25)">'
                         f'{sketch.scene(name, .3, max(dur, 1.4), **opts)}</div></div>')
-            sc.append(dict(dur=dur + 1.1, push=.03, enter="", ghost=str(c + 1), html=html, voice=(a, .35), ci=c, nc=n_ch, bg=RED))
+            # 12 Nov: every chapter card holds at least 2.8 s (a short title like "Germany's bill" flashed by in 2 s on #4)
+            sc.append(dict(dur=max(dur + 1.1, ep.get("card_min", 2.8)), push=.03, enter="", ghost=str(c + 1), html=html, voice=(a, .35),
+                           ci=c, nc=n_ch, bg=RED))
             sounds.append(("ding", t + .3, .1))
         else:
             beat = ch["beats"][b]
@@ -522,12 +554,45 @@ def mix(ep, work):
                     "-i", str(work / "sfx.wav"), "-i", str(work / "music.wav"),
                     "-filter_complex", graph, "-map", "0:v", "-map", "[a]", "-c:v", "copy", "-c:a", "aac", "-b:a", "192k", "-ar", "48000",
                     "-shortest", "-movflags", "+faststart", str(final)], check=True)
+    trim_loudness(final)
     # the ducked music on its own, to measure how far the voice sits above it
     subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", str(work / "voice.wav"), "-i", str(work / "music.wav"), "-filter_complex",
                     f"[0:a]{MASTER},aresample=48000[key];[1:a]aresample=48000,volume={mv}[m];"
                     f"[m][key]sidechaincompress=threshold=0.02:ratio=5:attack=30:release=350:makeup=1[md]",
                     "-map", "[md]", "-ac", "1", str(work / "music_ducked.wav")], check=True)
     return final
+
+
+def lufs_of(path):
+    lo = subprocess.run(["ffmpeg", "-hide_banner", "-i", str(path), "-af", "ebur128=peak=true", "-f", "null", "-"],
+                        capture_output=True, text=True).stderr
+    tail = lo[lo.rfind("Summary:"):]
+    return float(re.search(r"I:\s+(-?[\d.]+) LUFS", tail).group(1)), float(re.search(r"Peak:\s+(-?[\d.]+) dBFS", tail).group(1))
+
+
+def trim_loudness(final, target=-14.0, ceiling=-1.5):
+    """12 Nov: one-pass loudnorm left #4 at -14.6 and #5 at -15.0 LUFS (the true-peak ceiling holds it back).
+    Second stage: measure, apply the missing gain, catch the peaks with a look-ahead limiter, keep the video
+    stream as it is, and keep the result only if it lands closer to the target without breaking the ceiling."""
+    i0, tp0 = lufs_of(final)
+    if abs(i0 - target) < .4:
+        return i0
+    tmp = final.with_name(final.stem + "-trim.mp4")
+    lim = 10 ** ((ceiling - .4) / 20)
+    for extra in (0.0, .3, .6):
+        subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", str(final), "-af",
+                        f"volume={target - i0 + extra:.2f}dB,alimiter=limit={lim:.3f}:attack=2:release=60:level=false,aresample=48000",
+                        "-c:v", "copy", "-c:a", "aac", "-b:a", "192k", "-ar", "48000", "-movflags", "+faststart", str(tmp)], check=True)
+        i1, tp1 = lufs_of(tmp)
+        if i1 >= target - .3 or extra == .6:
+            break
+    if abs(i1 - target) < abs(i0 - target) and tp1 <= -1.0:                  # -1 dBTP is the usual streaming ceiling
+        tmp.replace(final)
+        print(f"  loudness: {i0} -> {i1} LUFS, {tp0} -> {tp1} dBTP (second stage)", flush=True)
+        return i1
+    tmp.unlink(missing_ok=True)
+    print(f"  loudness: second stage not kept ({i1} LUFS, {tp1} dBTP)", flush=True)
+    return i0
 
 
 def sound_report(work, final):
@@ -596,6 +661,10 @@ def make(ep, voice_name=YOUTUBE_VOICE):
     work = OUT / ep["slug"]
     work.mkdir(parents=True, exist_ok=True)
     items = synth(ep, voice_name, work)
+    try:
+        takes(ep, items, voice_name, work)
+    except Exception as e:                                          # a word check must never cost the render
+        print("  takes failed:", e)
     sc, chapters, sounds, total = scenes(ep, items)
     html, total = page(sc)
     print(f"  timing: {total / 60:.2f} min, {len(sc)} scenes, {int((total + .5) * FPS)} frames to render", flush=True)

@@ -109,7 +109,10 @@ const E = {
 const clamp = v => Math.max(0, Math.min(1, v));
 function fmt(v, el) {
   const dec = +(el.dataset.dec || 0);
-  return (el.dataset.pre || '') + v.toFixed(dec) + (el.dataset.suf || '');
+  // 12 Nov: thousands separators from 10,000 up (years and small counts stay as they are)
+  let t = v.toFixed(dec);
+  if (!el.dataset.nosep && Math.abs(v) >= 10000) { const [i, f] = t.split('.'); t = i.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + (f ? '.' + f : ''); }
+  return (el.dataset.pre || '') + t + (el.dataset.suf || '');
 }
 function place(el, local) {
   const at = +(el.dataset.at || 0), d = +(el.dataset.d || .5);

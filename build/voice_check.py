@@ -52,6 +52,26 @@ def words(text):
     t = re.sub(r"\b(\d+)(?:st|nd|rd|th)\b", r"\1", t)
     t = re.sub(r"\b(january|february|march|april|may|june|july|august|september|october|november|december) the (\d+)\b",
                r"\1 \2", t)
+    # 12 Nov (YouTube #5): currency is said as a word after the number ("forty billion dollars") and written as a
+    # symbol before it ("$40 billion"), so both are dropped; compounds a recogniser splits are joined; "'s" and
+    # "s'" both become plain "s"; "twenty sixth" is 26; and teen centuries are years ("sixteen ninety four" is
+    # 1694, "twenty fourteen" is 2014).
+    t = re.sub(r"[$£€]", " ", t)
+    t = re.sub(r"\b(dollars?|pounds?|euros?)\b", " ", t)
+    t = re.sub(r"\bsafe keeping\b", "safekeeping", t)
+    t = re.sub(r"\bstable coin", "stablecoin", t)
+    t = re.sub(r"(?<=[a-z])'s\b", "s", t)
+    _o2 = "ten eleven twelve thirteen fourteen fifteen sixteen seventeen eighteen nineteen".split()
+    _tn2 = "twenty thirty forty fifty sixty seventy eighty ninety".split()
+    _o1 = "one two three four five six seven eight nine".split()
+    t = re.sub(r"\b(twenty|thirty) (\d)\b", lambda m: str(10 * (_tn2.index(m.group(1)) + 2) + int(m.group(2))), t)   # after ordinals
+    def _yr(m):
+        c = (_o2.index(m.group(1)) + 10) if m.group(1) in _o2 else 20
+        rest = m.group(2).split()
+        y = (_o2.index(rest[0]) + 10) if rest[0] in _o2 else (_tn2.index(rest[0]) + 2) * 10 + (_o1.index(rest[1]) + 1 if len(rest) > 1 else 0)
+        return str(c * 100 + y)
+    t = re.sub(r"\b(" + "|".join(_o2[1:] + ["twenty"]) + r") (" + "|".join(_o2) + r"|(?:" + "|".join(_tn2) + r")(?: (?:" + "|".join(_o1) + r"))?)\b",
+               lambda m: _yr(m) if (m.group(1) != "twenty" or m.group(2).split()[0] in _o2) else m.group(0), t)
     t = re.sub(r"\ba firm\b", "affirm", t)                   # 10 Nov: the lender's name and "a firm" sound the same          # "2 and a half" as a recogniser writes it
     # Spoken years and prices (9 Nov): "twenty twenty four" is 2024, and "four
     # ninety seven" is $4.97, which a recogniser writes "4.97" or "497".

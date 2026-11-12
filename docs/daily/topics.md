@@ -21,6 +21,7 @@ number with no source is cut.
 | 2026-11-11 | YouTube long | Armistice Day: who paid for WW1. 1914 War Loan failure hidden by the Bank of England (GBP 91.1m of 350m), 1917 "no risk" loan, 1932 cut to 3.5% perpetual, Consols and the South Sea link, perpetuity pricing (C / y), German reparations 132bn gold marks to the last payment in 2010, UK default on US war debt 1934, 2015 "repayment" as refinancing, GBP 100 of 1927 worth GBP 1.82 |
 | 2026-11-11 | Reel | Working capital: current assets minus current liabilities (cash and debt out in a model), inventory +$30 is a $30 use of cash, $40 up front is deferred revenue not revenue, negative working capital as a good sign (customers pay first) |
 | 2026-11-12 | YouTube Short | Compound interest: $100 at 10% for 2 years = $121 (interest on interest), Rule of 72 (8% doubles in about 9 years), Einstein's "eighth wonder" quote unproven (earliest link 1988, Quote Investigator), $1 million vs 1 cent doubled for 30 days ($5,368,709 on day 30, $5,243 on day 20) |
+| 2026-11-12 | YouTube long | Where money comes from: loans create deposits (Bank of England 2014, Bundesbank 2017), the textbook multiplier as a misconception, repayment destroys money, London goldsmiths' notes before 1694, the limits (profit, reserves, capital, monetary policy; US reserve requirements 0% since 26 Mar 2020), QE adds deposits, SVB lost $40bn+ on 9 Mar 2023, FDIC $250,000, GENIUS Act stablecoins 1:1 and not lent on |
 
 ## Ideas (YouTube long and Shorts)
 
@@ -33,7 +34,7 @@ History of finance
 - Why the dollar replaced gold (Bretton Woods to 1971)
 
 Politics and finance
-- What a central bank actually does when it "prints money"
+- What a central bank actually does when it "prints money" (partly covered in YouTube #5, 12 Nov: QE)
 - Why governments almost never pay back their debt, and why that's fine
 - How sanctions are enforced through the banking system
 

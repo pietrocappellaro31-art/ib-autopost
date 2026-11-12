@@ -89,7 +89,8 @@ moment. Rules:
   options, `thumbnail_a.jpg` (red, with the drawing) and `thumbnail_b.jpg`
   (paper, big type), for YouTube's Test & compare.
 
-Check the length before the long render: `python3 build/yt_timing.py build/youtube_ep<NNN>.py` (11 Nov;
+Check the length and every word before the long render: `python3 build/yt_timing.py build/youtube_ep<NNN>.py --takes` (12 Nov: `--takes`
+transcribes each line once, cached, and writes takes.json; the render does the same and a final second loudness stage brings the master to about -14 LUFS) (11 Nov;
 the voice is cached per line in `synth.pkl`, so the render reuses it and a one-line edit re-says only that line).
 Aim for 8 to 12 minutes; vary the scenes and structure so no two videos look
 alike. Render: `python3 build/youtube_ep<NNN>.py`. Outputs in

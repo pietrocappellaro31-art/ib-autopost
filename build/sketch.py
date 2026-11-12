@@ -41,6 +41,8 @@ Scenes (opts in brackets):
   cash_first(left, right, band)
   12 Nov (compound interest Short): cent_or_million(), coin_stacks(values), hourglass72(rate), quote_card(quote),
   doubling_bars(days, known, line); each drawn edge to edge of the 800 x 640 canvas so it fills its box
+  12 Nov, long video (where money comes from): t_account(left, right, amount, destroy), keystroke(amount, pre, label),
+  goldsmith(bars, notes), multiplier(start, ratio, steps), outflow(label, n), token(coin, reserve, rule, lock)
 """
 
 import html as H
@@ -1508,3 +1510,146 @@ def doubling_bars(p, days=30, known=25, line="$1 MILLION", **_):
 
 
 SCENES.update({f.__name__: f for f in (cent_or_million, coin_stacks, hourglass72, quote_card, doubling_bars)})
+# ---- 12 Nov scenes (YouTube #5, where money comes from): a bank's books, a keystroke, a goldsmith's notes, the
+# textbook multiplier, a run, and a fully backed token. Generic shapes of our own: no bank, app or coin branding.
+
+def _count(x, y, frm, to, at, d, size=60, color=INK, pre="", suf="", dec=0, anchor="middle"):
+    """A number that counts up inside the drawing (motion.py 'count' on an SVG text)."""
+    return (f'<text class="a" data-fx="count" data-at="{at}" data-d="{d}" data-from="{frm}" data-to="{to}" data-dec="{dec}" '
+            f'data-pre="{H.escape(pre)}" data-suf="{H.escape(suf)}" x="{x}" y="{y}" text-anchor="{anchor}" '
+            f'font-family="\'Serif\',serif" font-weight="700" font-size="{size}" fill="{color}">{H.escape(pre)}{frm}{H.escape(suf)}</text>')
+
+
+def t_account(p, left="LOAN", right="DEPOSIT", amount="+£100", destroy=False, title="THE BANK'S BOOKS", **_):
+    """A bank's balance sheet as a T: ASSETS on the left, LIABILITIES on the right. The loan and the deposit
+    pop in at the same instant, joined by a gold bracket ('created together'). destroy=True: both are then
+    struck out in red as the loan is repaid, and the money is gone."""
+    p.text(400, 50, title, .0, size=36, weight=700, color=GREY)
+    p.line([(60, 120), (740, 120)], .02, .3, w=9)
+    p.line([(400, 120), (400, 560)], .1, .3, w=9)
+    p.text(230, 100, "ASSETS", .15, size=40, weight=700, color=TEAL)
+    p.text(570, 100, "LIABILITIES", .15, size=40, weight=700, color=RED)
+    for x, lab, col in ((85, left, TEAL), (425, right, RED)):
+        p.fill(f'<rect x="{x}" y="200" width="290" height="190" rx="18" fill="#fff" stroke="{col}" stroke-width="7"/>'
+               f'<text x="{x + 145}" y="270" text-anchor="middle" font-family="\'Sans\',sans-serif" font-weight="700" font-size="40" fill="{col}">{H.escape(lab)}</text>'
+               f'<text x="{x + 145}" y="350" text-anchor="middle" font-family="\'Serif\',serif" font-weight="700" font-size="64" fill="{INK}">{H.escape(amount)}</text>',
+               .38, d=.4)
+    p.parts.append(f'<g class="a" data-fx="float" data-at="0" data-d="1" data-amp="6" data-w="2">')
+    p.line([(230, 420), (230, 460), (570, 460), (570, 420)], .55, .3, color="#B8862B", w=8)
+    p.fill(_tile(240, 480, 320, 70, "#F2C35B", "SAME MOMENT", 36, color=INK, rx=16), .62)
+    p.parts.append("</g>")
+    if destroy:
+        for x in (85, 425):
+            p.line([(x - 10, 300), (x + 300, 290)], .78, .2, color=RED, w=12)
+        p.text(400, 620, "REPAID: THE MONEY IS GONE", .85, size=40, weight=700, color=RED)
+
+
+def keystroke(p, amount=10000, pre="£", label="YOUR ACCOUNT", key="ENTER", **_):
+    """A screen with an account balance counting up from 0 after a key is pressed: a loan typed into being."""
+    p.rect(110, 40, 580, 360, .0, .35, w=8)
+    p.box(130, 60, 540, 320, "#fff", .05, rx=8, fx="fade")
+    p.line([(360, 400), (320, 470), (480, 470), (440, 400)], .1, .2, w=7)
+    p.text(400, 140, label, .15, size=38, weight=700, color=GREY)
+    p.text(400, 205, "BALANCE", .18, size=32, weight=600, color=GREY)
+    n = len(pre + f"{amount:,}")                                    # shrink long amounts so they fit the screen
+    p.parts.append(_count(400, 320, 0, amount, p.at(.5), round(.3 * p.dur, 2), size=min(96, int(900 / max(n, 1))), color=TEAL, pre=pre))
+    # the key, pressed once just before the count starts
+    p.parts.append(f'<g class="a" data-fx="press" data-at="{p.at(.4)}" data-d=".25" style="transform-box:fill-box;transform-origin:center">'
+                   f'<rect x="250" y="500" width="300" height="110" rx="20" fill="{PAPER}" stroke="{INK}" stroke-width="7"/>'
+                   f'<rect x="262" y="510" width="276" height="80" rx="14" fill="#fff" stroke="{GREY}" stroke-width="3"/>'
+                   f'<text x="400" y="566" text-anchor="middle" font-family="\'Sans\',sans-serif" font-weight="700" font-size="44" fill="{INK}">{H.escape(key)}</text></g>')
+    p.fill(f'<circle cx="590" cy="520" r="18" fill="{RED}"/>', .42)
+    p.parts.append(f'<g class="a" data-fx="ripple" data-at="{p.at(.42)}" data-d=".6" style="transform-box:fill-box;transform-origin:center">'
+                   f'<circle cx="400" cy="555" r="90" fill="none" stroke="{RED}" stroke-width="6"/></g>')
+
+
+def goldsmith(p, bars=3, notes=6, **_):
+    """A goldsmith's strongbox with a few gold bars in it, and paper notes ('promise to pay') flying out of it
+    one after another, more notes than bars; the extra ones are outlined in red."""
+    p.rect(60, 300, 300, 260, .0, .35, w=8)
+    p.line([(60, 300), (100, 240), (400, 240), (360, 300)], .08, .25, w=8)
+    p.line([(360, 560), (400, 500), (400, 240)], .12, .2, w=8)
+    for k in range(bars):
+        x, y = 95 + 85 * (k % 3), 470 - 60 * (k // 3)
+        p.fill(f'<path d="M{x} {y + 50} L{x + 15} {y} L{x + 65} {y} L{x + 80} {y + 50} Z" fill="#F2C35B" stroke="{INK}" stroke-width="5"/>', .15 + .05 * k)
+    p.text(210, 610, f"{bars} BARS OF GOLD", .3, size=36, weight=700)
+    for k in range(notes):
+        col = INK if k < bars else RED
+        # 12 Nov fix: the notes sit in a two-column grid beside the box (they had piled up on top of each other)
+        x0, y0 = 425 + 190 * (k % 2), 60 + 135 * (k // 2)
+        rot = (-6, 4, -3, 5, -5, 3)[k % 6]
+        p.parts.append(f'<g class="a" data-fx="slide" data-at="{p.at(.35 + .08 * k)}" data-d=".45" data-x0="{220 - x0}" data-x1="0" '
+                       f'data-y0="{420 - y0}" data-y1="0" data-ease="out">'
+                       f'<g transform="rotate({rot} {x0 + 85} {y0 + 45})"><rect x="{x0}" y="{y0}" width="170" height="90" rx="8" fill="#fff" '
+                       f'stroke="{col}" stroke-width="6"/><text x="{x0 + 85}" y="{y0 + 40}" text-anchor="middle" font-family="\'Serif\',serif" '
+                       f'font-style="italic" font-weight="600" font-size="22" fill="{col}">I promise to pay</text>'
+                       f'<path d="M{x0 + 25} {y0 + 64} H{x0 + 145}" stroke="{GREY}" stroke-width="4"/></g></g>')
+    p.text(610, 610, f"{notes} NOTES", .35 + .08 * notes, size=36, weight=700, color=RED if notes > bars else INK)
+
+
+def multiplier(p, start=100, ratio=.9, steps=5, stamp_text="TEXTBOOK", **_):
+    """The textbook money multiplier: a deposit is lent on, re-deposited and lent again, each bar a little
+    shorter, in a cascade down to the right; then a red stamp over it."""
+    v = float(start)
+    for k in range(steps):
+        x, y = 50 + 140 * k, 80 + 90 * k
+        w_ = 120
+        h_ = 360 * v / start
+        p.box(x, 560 - h_, w_, h_, TEAL if k == 0 else "#BFD9D5", .05 + .12 * k, rx=8, fx="growY")
+        p.text(x + w_ / 2, 545 - h_, f"{v:.0f}", .1 + .12 * k, size=40, serif=True, weight=700)
+        if k < steps - 1:
+            p.line([(x + w_ - 10, 590), (x + 150, 590)], .1 + .12 * k, .15, color=RED, w=5)
+        v *= ratio
+    p.line([(30, 560), (770, 560)], .0, .3, w=8)
+    p.text(400, 625, "deposit, lend 90%, re-deposit, lend again", .2, size=32, weight=600, color=GREY)
+    if not stamp_text:
+        return
+    p.parts.append(f'<g class="a" data-fx="stamp" data-rot="0" data-at="{p.at(.75)}" data-d=".35" style="transform-box:fill-box;transform-origin:center">'
+                   f'<g transform="rotate(-12 470 170)"><rect x="270" y="115" width="400" height="110" rx="12" fill="#fff" fill-opacity=".9" '
+                   f'stroke="{RED}" stroke-width="9"/><text x="470" y="192" text-anchor="middle" font-family="\'Serif\',serif" '
+                   f'font-weight="700" font-size="64" letter-spacing="3" fill="{RED}">{H.escape(stamp_text)}</text></g></g>')
+
+
+def outflow(p, label="$40bn+ OUT", n=7, **_):
+    """A bank with phones around it, and coins streaming out of its door towards each phone: a run, by app."""
+    p.line([(260, 200), (400, 110), (540, 200)], .0, .3, w=8)
+    p.rect(270, 200, 260, 220, .05, .3, w=8)
+    for k in range(4):
+        p.line([(300 + 60 * k, 220), (300 + 60 * k, 400)], .1 + .03 * k, .15, w=6)
+    p.box(370, 340, 60, 80, INK, .2, rx=4)
+    p.line([(220, 420), (580, 420)], .1, .2, w=8)
+    spots = [(90, 140), (80, 330), (130, 520), (400, 560), (670, 520), (720, 330), (710, 140)][:n]
+    for k, (x, y) in enumerate(spots):
+        p.fill(f'<rect x="{x - 32}" y="{y - 52}" width="64" height="104" rx="12" fill="#fff" stroke="{INK}" stroke-width="5"/>'
+               f'<rect x="{x - 22}" y="{y - 38}" width="44" height="66" rx="4" fill="#E8E4DE"/>', .2 + .05 * k)
+        for j in range(2):
+            p.parts.append(f'<g class="a" data-fx="slide" data-at="{p.at(.45 + .05 * k + .12 * j)}" data-d=".55" data-x0="0" '
+                           f'data-x1="{x - 400}" data-y0="0" data-y1="{y - 380}" data-ease="out">'
+                           f'<g class="a" data-fx="life" data-at="{p.at(.45 + .05 * k + .12 * j)}" data-d=".6" data-fi=".05" data-fo=".2">'
+                           f'<circle cx="400" cy="380" r="20" fill="#F2C35B" stroke="{INK}" stroke-width="4"/></g></g>')
+    p.parts.append(f'<g class="a" data-fx="float" data-at="0" data-d="1" data-amp="6" data-w="2.4">')
+    p.fill(_ptag(400, 40, 300, label, RED, "#fff", 40), .7)
+    p.parts.append("</g>")
+
+
+def token(p, coin="$1", reserve="$1", rule="1 : 1", lock="NO LENDING", **_):
+    """A fully backed token: a coin on the left, a reserve box with one note for it on the right, an equals
+    sign between, and a padlock under the reserve that says it is not lent on."""
+    p.fill(f'<circle cx="190" cy="250" r="130" fill="#BFD9D5" stroke="{INK}" stroke-width="7"/>'
+           f'<circle cx="190" cy="250" r="100" fill="none" stroke="{TEAL}" stroke-width="5" stroke-dasharray="14 10"/>'
+           f'<text x="190" y="278" text-anchor="middle" font-family="\'Serif\',serif" font-weight="700" font-size="84" fill="{TEAL}">{H.escape(coin)}</text>', .0)
+    p.text(190, 440, "TOKEN", .1, size=40, weight=700, color=TEAL)
+    p.text(400, 280, "=", .25, size=120, serif=True, weight=700, fx="pop")
+    p.rect(480, 120, 260, 260, .3, .3, w=8)
+    p.parts.append(f'<g class="a" data-fx="slide" data-at="{p.at(.4)}" data-d=".45" data-x0="0" data-x1="0" data-y0="-200" data-y1="0" data-ease="out">'
+                   f'<rect x="510" y="220" width="200" height="90" rx="8" fill="{TEAL}" stroke="{INK}" stroke-width="5"/>'
+                   f'<text x="610" y="282" text-anchor="middle" font-family="\'Serif\',serif" font-weight="700" font-size="54" fill="#fff">{H.escape(reserve)}</text></g>')
+    p.text(610, 440, "RESERVE", .45, size=40, weight=700)
+    p.fill(_tile(270, 500, 260, 80, "#F2C35B", rule, 52, color=INK, rx=16), .55)
+    # padlock
+    p.line([(585, 520), (585, 495), (635, 495), (635, 520)], .65, .2, color=RED, w=7)
+    p.box(570, 520, 80, 60, RED, .7, rx=8)
+    p.text(610, 625, lock, .75, size=34, weight=700, color=RED)
+
+
+SCENES.update({f.__name__: f for f in (t_account, keystroke, goldsmith, multiplier, outflow, token)})
