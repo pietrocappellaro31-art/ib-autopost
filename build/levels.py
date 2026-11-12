@@ -571,7 +571,7 @@ def make(ep, voice_name="af_heart", keep_voice=False, redo=()):
     at, hook_end, lv, total = timeline(ep, parts)
     sc, check_at = scene(ep, parts, at, hook_end, lv, total)
     mp4, cover, problems = build(ep["slug"] + "-silent", [sc], theme="paper", cover_at=hook_end - .2, crf=21,
-                                 check_at=check_at)
+                                 check_at=check_at, fit=ep.get("fit", True))
     voice, sfx = soundtrack(parts, at, lv, total + .6, ep)
     sfx = sfx * shorts_mix(ep)[1]                            # 11 Nov: effects a touch lower on YouTube Shorts
     work = OUT / ep["slug"]

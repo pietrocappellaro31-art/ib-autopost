@@ -259,6 +259,42 @@ window.seek = function (t) {
     el.querySelectorAll('.a').forEach(a => place(a, local));
   });
 };
+window.fitSvg = function (svg, zmax, zmin) {
+  // 12 Nov (ported from youtube.py): zoom the viewBox onto what is actually drawn, so a drawing fills its
+  // box. Keeps the element's own shape (a 700 x 532 box gets a 700 x 532 view, not a letterboxed 800 x 640).
+  if (svg.dataset.fit === 'no' || svg.dataset.fitted) return null;
+  let b; try { b = svg.getBBox(); } catch (e) { return null; }
+  if (!b.width || !b.height) return null;
+  const vb = svg.viewBox.baseVal, ar = (+svg.getAttribute('width') || vb.width) / (+svg.getAttribute('height') || vb.height);
+  const W = +svg.getAttribute('width') || vb.width, Hh = +svg.getAttribute('height') || vb.height;
+  const fill0 = Math.min(b.width * Math.min(W / vb.width, Hh / vb.height) / W, 1.5);   // share of the box width drawn on, before
+  const pad = 26;
+  let x = b.x - pad, y = b.y - pad, w = b.width + 2 * pad, h = b.height + 2 * pad;
+  if (w / h > ar) { const nh = w / ar; y -= (nh - h) / 2; h = nh; } else { const nw = h * ar; x -= (nw - w) / 2; w = nw; }
+  const lim = (k) => { x -= (w * k - w) / 2; y -= (h * k - h) / 2; w *= k; h *= k; };
+  if (w < vb.width / zmax) lim(vb.width / zmax / w);
+  if (w > vb.width / zmin) lim(vb.width / zmin / w);
+  svg.setAttribute('viewBox', `${x.toFixed(1)} ${y.toFixed(1)} ${w.toFixed(1)} ${h.toFixed(1)}`);
+  svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+  svg.dataset.fitted = (800 / w).toFixed(2);
+  return {zoom: +(800 / w).toFixed(2), before: +fill0.toFixed(2), after: +Math.min(b.width / w, 1).toFixed(2)};
+};
+window.fitSketches = function (zmax = 1.5, zmin = .8) {
+  // Each drawing is measured at the end of its own life (the nearest 'life' parent), when all of it is drawn.
+  const out = [];
+  window.SCENES.forEach((s, i) => {
+    document.getElementById('s' + i).querySelectorAll('svg.sk').forEach(svg => {
+      let end = s.dur - .05;
+      for (let q = svg.parentElement; q; q = q.parentElement)
+        if (q.classList && q.classList.contains('a') && q.dataset.fx === 'life') { end = Math.min(end, +q.dataset.at + +q.dataset.d - .12); break; }
+      seek(s.start + end);
+      const r = fitSvg(svg, zmax, zmin);
+      if (r) out.push(r);
+    });
+  });
+  seek(0);
+  return out;
+};
 window.check = function () {
   // Every visible text-bearing element must sit inside the safe area.
   const bad = [];
@@ -311,7 +347,7 @@ def page(scenes, theme="ink"):
     return html, t, starts
 
 
-def build(slug, scenes, theme="ink", cover_at=0.0, crf=18, check_at=()):
+def build(slug, scenes, theme="ink", cover_at=0.0, crf=18, check_at=(), fit=False):
     """Render to MP4. cover_at picks the cover frame, so a Reel can open on motion
     and still have a fully composed cover."""
     work = OUT / slug
@@ -342,6 +378,14 @@ def build(slug, scenes, theme="ink", cover_at=0.0, crf=18, check_at=()):
         loaded = pg.evaluate("[...document.fonts].filter(f => f.status === 'loaded').length")
         if loaded < 6:
             raise RuntimeError(f"only {loaded} of 6 brand fonts loaded")
+        if fit:                                  # 12 Nov: every drawing zoomed onto what is drawn
+            fits = pg.evaluate("fitSketches()")
+            if fits:
+                (work / "fit.json").write_text(json.dumps(fits, indent=1))
+                small = [k for k, r in enumerate(fits) if r["after"] < .85]
+                print(f"  fitted {len(fits)} drawings: drawn width {min(r['before'] for r in fits):.2f}-{max(r['before'] for r in fits):.2f}"
+                      f" of the box before, {min(r['after'] for r in fits):.2f}-{max(r['after'] for r in fits):.2f} after"
+                      + (f"  CHECK under 85%: drawings {small}" if small else ""), flush=True)
         # Layout check at the settled point of every scene.
         for i, s in enumerate(starts):
             pg.evaluate(f"window.NOPUSH = true; seek({s['start'] + s['dur'] - .4})")

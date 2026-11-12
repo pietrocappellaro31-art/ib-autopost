@@ -1653,3 +1653,112 @@ def token(p, coin="$1", reserve="$1", rule="1 : 1", lock="NO LENDING", **_):
 
 
 SCENES.update({f.__name__: f for f in (t_account, keystroke, goldsmith, multiplier, outflow, token)})
+
+
+# ---- 12 Nov scenes (Levels #11, shareholders' equity). Generic boxes, notes and certificates of our own:
+# no company, logo or real balance sheet.
+
+GOLD = "#F2C35B"
+
+
+def _note(x, y, w_=150, h_=64):
+    return (f'<rect x="{x}" y="{y}" width="{w_}" height="{h_}" rx="9" fill="{TEAL}" stroke="{INK}" stroke-width="5"/>'
+            f'<circle cx="{x + w_ / 2}" cy="{y + h_ / 2}" r="{h_ * .26:.0f}" fill="none" stroke="#fff" stroke-width="4"/>')
+
+
+def _cert(x, y, w_=150, h_=104, label="SHARE"):
+    return (f'<rect x="{x}" y="{y}" width="{w_}" height="{h_}" rx="6" fill="#FFF8E6" stroke="{INK}" stroke-width="5"/>'
+            f'<rect x="{x + 10}" y="{y + 10}" width="{w_ - 20}" height="{h_ - 20}" rx="3" fill="none" stroke="#B8862B" stroke-width="3"/>'
+            f'<text x="{x + w_ / 2}" y="{y + h_ / 2 + 11}" text-anchor="middle" font-family="\'Serif\',serif" font-weight="700" '
+            f'font-size="30" fill="{INK}">{label}</text>')
+
+
+def _slide(p, frac, inner, x0=0, y0=0, x1=0, y1=0, d=.45, ease="out"):
+    p.parts.append(f'<g class="a" data-fx="slide" data-at="{p.at(frac)}" data-d="{d}" data-x0="{x0}" data-x1="{x1}" '
+                   f'data-y0="{y0}" data-y1="{y1}" data-ease="{ease}">{inner}</g>')
+
+
+def bs_bars(p, assets=100, liab=80, scale=3.2, base=470, **_):
+    """The balance sheet as two columns on one baseline: assets on the left, liabilities and equity stacked on
+    the right, an equals sign between. Equity is whatever is left. When liabilities are bigger than assets the
+    equity block hangs below the baseline in red, dashed: negative equity."""
+    eq = assets - liab
+    ha, hl, he = assets * scale, liab * scale, abs(eq) * scale
+
+    def col(x, y, h_, fill, label, amount, frac, color="#fff", dash=False):
+        st = f'stroke-dasharray="14 10"' if dash else ""
+        lab = (f'<text x="{x + 130}" y="{y + h_ / 2 - 6:.0f}" text-anchor="middle" font-family="\'Sans\',sans-serif" font-weight="700" '
+               f'font-size="34" fill="{color}">{label}</text>'
+               f'<text x="{x + 130}" y="{y + h_ / 2 + 44:.0f}" text-anchor="middle" font-family="\'Serif\',serif" font-weight="700" '
+               f'font-size="50" fill="{color}">{amount}</text>') if h_ >= 110 else (
+               f'<text x="{x + 130}" y="{y + h_ / 2 + 13:.0f}" text-anchor="middle" font-family="\'Sans\',sans-serif" font-weight="700" '
+               f'font-size="34" fill="{color}">{label} {amount}</text>')
+        _slide(p, frac, f'<rect x="{x}" y="{y:.0f}" width="260" height="{h_:.0f}" rx="12" fill="{fill}" stroke="{INK}" '
+                        f'stroke-width="6" {st}/>' + lab, y0=60 if y < base else -60)
+
+    p.line([(30, base), (770, base)], .0, .3, w=7)
+    col(60, base - ha, ha, TEAL, "ASSETS", f"${assets}", .08)
+    col(480, base - hl, hl, RED, "LIABILITIES", f"${liab}", .3)
+    if eq > 0:
+        col(480, base - hl - he, he, GOLD, "EQUITY", f"${eq}", .52, color=INK)
+    else:
+        col(480, base, he, "#FDE7DF", "EQUITY", f"−${-eq}", .52, color=RED, dash=True)
+    p.text(400, base - ha / 2 + 30, "=", .45, size=110, serif=True, weight=700, fx="pop")
+    if eq < 0:
+        p.parts.append('<g class="a" data-fx="float" data-at="0" data-d="1" data-amp="6" data-w="2.2">')
+        p.fill(_ptag(250, base + 80, 250, "BELOW 0", RED, "#fff", 40, rot=-6), .75)
+        p.parts.append("</g>")
+
+
+def dividend(p, amount="\u2212$10", **_):
+    """A cash pile on the left; the top notes fly across to three shareholders, who cheer; underneath, the
+    retained earnings tile takes a red tag for the same amount."""
+    for k in range(4):
+        y = 300 - 70 * k
+        note = _note(60, y)
+        if k == 3:
+            _slide(p, .2, f'<g class="a" data-fx="life" data-at="0" data-d="{round(p.at(.2) + .55, 3)}" data-fi=".01" data-fo=".05">{note}</g>',
+                   x1=470, y1=-40, d=.6, ease="inout")
+        else:
+            p.fill(note, .02 + .04 * k)
+    p.text(135, 420, "CASH", .05, size=40, weight=700, color=TEAL)
+    p.line([(250, 170), (520, 170)], .1, .3, w=7, dash="16 12")
+    p.line([(495, 150), (520, 170), (495, 190)], .2, .1, w=7)
+    for k in range(3):
+        figure(p, 580 + 75 * k, 330, .8, .3 + .06 * k, TEAL if k == 1 else None)
+    p.fill(_note(560, 100, 120, 52), .45)
+    p.text(655, 420, "SHAREHOLDERS", .3, size=34, weight=700)
+    p.fill(_tile(70, 480, 470, 110, GOLD, "", 10, color=INK), .55)
+    p.text(305, 548, "RETAINED EARNINGS", .55, size=34, weight=700)
+    p.parts.append('<g class="a" data-fx="float" data-at="0" data-d="1" data-amp="7" data-w="2.4">')
+    p.fill(_ptag(660, 535, 220, amount, RED, "#fff", 50, rot=-5), .7)
+    p.parts.append("</g>")
+
+
+def buyback(p, amount="\u2212$50", **_):
+    """The company (a block with columns) on the left, shareholders on the right. Cash notes travel right on the
+    top track, share certificates travel back left on the bottom track and are stamped CANCELLED; equity takes a
+    red tag."""
+    p.fill(f'<path d="M40 210 L210 120 L380 210 Z" fill="{INK}"/>'
+           f'<rect x="60" y="210" width="300" height="230" fill="#fff" stroke="{INK}" stroke-width="6"/>'
+           + "".join(f'<rect x="{85 + 70 * k}" y="235" width="40" height="180" fill="#E8E4DE" stroke="{INK}" stroke-width="4"/>' for k in range(4))
+           + f'<rect x="40" y="440" width="340" height="24" fill="{INK}"/>', .0)
+    p.text(210, 95, "COMPANY", .05, size=36, weight=700)
+    for k in range(3):
+        figure(p, 560 + 80 * k, 440, .8, .1 + .05 * k)
+    p.text(640, 500, "SHAREHOLDERS", .15, size=34, weight=700)
+    for k in range(2):                                  # cash out, to the right, high
+        _slide(p, .2 + .12 * k, f'<g class="a" data-fx="life" data-at="0" data-d="{round(p.at(.2 + .12 * k) + .55, 3)}" '
+                                f'data-fi=".01" data-fo=".05">{_note(260, 60)}</g>', x1=300, y1=0, d=.55, ease="inout")
+    p.text(470, 150, "CASH OUT", .2, size=30, weight=700, color=TEAL)
+    _slide(p, .45, _cert(330, 470, 200, 130, label="SHARES"), x0=300, x1=-230, d=.6)
+    p.fill(f'<g transform="rotate(-12 200 560)"><rect x="60" y="527" width="280" height="66" rx="8" fill="#fff" fill-opacity=".85" stroke="{RED}" '
+           f'stroke-width="6"/><text x="200" y="574" text-anchor="middle" font-family="\'Sans\',sans-serif" font-weight="700" '
+           f'font-size="40" fill="{RED}">CANCELLED</text></g>', .66, fx="stamp")
+    p.parts.append('<g class="a" data-fx="float" data-at="0" data-d="1" data-amp="7" data-w="2.2">')
+    p.text(520, 600, "EQUITY", .72, size=40, weight=700, color=RED)
+    p.fill(_ptag(705, 588, 170, amount, RED, "#fff", 46, rot=-4), .75)
+    p.parts.append("</g>")
+
+
+SCENES.update({f.__name__: f for f in (bs_bars, dividend, buyback)})

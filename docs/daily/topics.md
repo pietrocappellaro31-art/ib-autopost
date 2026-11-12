@@ -22,6 +22,8 @@ number with no source is cut.
 | 2026-11-11 | Reel | Working capital: current assets minus current liabilities (cash and debt out in a model), inventory +$30 is a $30 use of cash, $40 up front is deferred revenue not revenue, negative working capital as a good sign (customers pay first) |
 | 2026-11-12 | YouTube Short | Compound interest: $100 at 10% for 2 years = $121 (interest on interest), Rule of 72 (8% doubles in about 9 years), Einstein's "eighth wonder" quote unproven (earliest link 1988, Quote Investigator), $1 million vs 1 cent doubled for 30 days ($5,368,709 on day 30, $5,243 on day 20) |
 | 2026-11-12 | YouTube long | Where money comes from: loans create deposits (Bank of England 2014, Bundesbank 2017), the textbook multiplier as a misconception, repayment destroys money, London goldsmiths' notes before 1694, the limits (profit, reserves, capital, monetary policy; US reserve requirements 0% since 26 Mar 2020), QE adds deposits, SVB lost $40bn+ on 9 Mar 2023, FDIC $250,000, GENIUS Act stablecoins 1:1 and not lent on |
+| 2026-11-12 | Reel | Shareholders' equity: assets minus liabilities, a $10 cash dividend cuts cash and retained earnings, a $50 buyback cuts assets and equity, negative equity by borrowing to buy back (100 / 130 / -30) |
+| 2026-11-12 | Reel (loop, no voice) | Leverage and MOIC: same $100 company sold for $150, all equity 1.5x vs $40 equity + $60 debt 2.25x; sold for $80, 0.8x vs 0.5x |
 
 ## Ideas (YouTube long and Shorts)
 

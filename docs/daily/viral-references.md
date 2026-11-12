@@ -24,7 +24,7 @@ run, build the engine that day, deliver a Levels Reel as usual, and finish the p
 
 | Order | Ref | Proposal | Status |
 |---|---|---|---|
-| 1 | R2 | "Same $100. Two ways to pay." (no voice, 12 s loop) | |
+| 1 | R2 | "Same $100. Two ways to pay." (no voice, 12 s loop) | Built 12 Nov: `build/reels_two-ways-to-pay.py`, 12.6 s, delivered alongside Levels #11 (EMMA) so the voice rotation stays intact |
 | 2 | R5 | "Same superday. Same answer. One line more." | |
 | 3 | R6 | "3 valuation methods" fast colour-block explainer | |
 | 4 | R4 | "Britain's loan with no end date" (sourced story) | |
