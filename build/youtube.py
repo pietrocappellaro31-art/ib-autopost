@@ -2,7 +2,8 @@
 YouTube long-form explainer engine (8 Nov) for The Banker's Notebook / the
 @investmentbankinginterviews channel: 1920x1080, paper ground, brand fonts,
 voiced by the day's trial voice (voice_clone.youtube_voice(); Kokoro, Apache 2.0; GEORGE to 10 Nov), sound effects from sfx.py,
-and an original music bed from music.py ducked under the voice.
+and no music in the file since 12 Nov (Pietro adds his own track at upload; the description
+carries a credit line for him to fill in). music=True brings back the music.py bed.
 
 An episode is a config (see youtube_ep001.py):
 
@@ -479,34 +480,71 @@ def render(slug, html, total, work):
     return mp4
 
 
-def thumbnail(ep, work):
-    """Two options, like the earlier videos (upload both to YouTube's Test & compare):
-    A on brand red with the drawing, B on paper with the big type."""
+# 12 Nov (Pietro: "make sure to provide thumbnails of different colors and styles each day"). Seven looks,
+# each a ground, a text colour, a highlight colour (replaces the inline span colours in big/big_a) and a layout.
+# Brand red, ink, teal and paper, plus the drawings' mustard. Every day takes two looks: A = look 2d, B = look 2d+1
+# (mod 7), d = days since 8 Nov 2026, so neither option repeats either of the day before.
+THUMB_LOOKS = [
+    dict(name="red-art-right", bg=RED, fg="#fff", hl=INK, layout="right", card=True, strap=(INK, "#fff")),
+    dict(name="paper-bar", bg="#F7F5F2", fg=INK, hl=RED, layout="right", card=False, bar=RED, strap=(None, RED)),
+    dict(name="ink-gold-left", bg=INK, fg="#fff", hl="#F2C35B", layout="left", card=True, strap=("#F2C35B", INK)),
+    dict(name="teal-tilt", bg=TEAL, fg="#fff", hl="#F2C35B", layout="right", card=True, tilt=4, strap=("#fff", TEAL)),
+    dict(name="mustard-left", bg="#F2C35B", fg=INK, hl=RED, layout="left", card=False, strap=(INK, "#F2C35B")),
+    dict(name="split-red-paper", bg="#F7F5F2", fg="#fff", hl=INK, layout="split", card=False, strap=(INK, "#fff")),
+    dict(name="paper-frame-ghost", bg="#F7F5F2", fg=INK, hl=TEAL, layout="frame", card=False, strap=(TEAL, "#fff")),
+]
+
+
+def thumb_looks(date=None):
+    import datetime
+    d = ((date or datetime.date.today()) - datetime.date(2026, 11, 8)).days
+    return THUMB_LOOKS[(2 * d) % 7], THUMB_LOOKS[(2 * d + 1) % 7]
+
+
+def thumb_html(look, text, size, small, art, ghost=""):
+    """One 1280x720 thumbnail in the given look: the big line, a strap, the drawing, the IB mark."""
+    text = re.sub(r"color:\s*#(?:0A0A0A|D93A12|0F766E|fff|FFFFFF)", f"color:{look['hl']}", text)
+    lay = look["layout"]
+    art_html = ""
+    if art:
+        name, opts = art
+        frame = (f"background:#F7F5F2;border-radius:44px;padding:24px 10px;box-shadow:0 30px 80px rgba(0,0,0,.3);" if look.get("card") else "")
+        side = "left:30px;transform-origin:left center" if lay == "left" else "right:30px;transform-origin:right center"
+        rot = f" rotate({look.get('tilt', 0)}deg)" if look.get("tilt") else ""
+        sc = .62 if lay == "frame" else .68
+        art_html = (f"<div style='position:absolute;{side};top:50%;transform:translateY(-50%) scale({sc}){rot};{frame}'>"
+                    f"{sketch.scene(name, 0, 1, seed=3, **opts)}</div>")
+    tx = "left:650px" if lay == "left" else "left:70px"
+    width = 570 if (art and lay in ("right", "left", "split")) else (620 if art else 1120)
+    ground = f"background:{look['bg']}"
+    extra = ""
+    if lay == "split":                       # red panel for the type, paper for the drawing
+        extra = f"<div style='position:absolute;left:0;top:0;bottom:0;width:640px;background:{RED}'></div>"
+    if lay == "frame":
+        extra = (f"<div style='position:absolute;inset:26px;border:10px solid {INK};border-radius:8px'></div>"
+                 f"<div style='position:absolute;right:-30px;bottom:-130px;font-family:\"Serif\";font-weight:700;font-size:500px;line-height:1;color:{INK};opacity:.06'>{H.escape(ghost)}</div>")
+    if look.get("bar"):
+        extra += f"<div style='position:absolute;left:0;top:0;bottom:0;width:26px;background:{look['bar']}'></div>"
+    mark_bg, mark_fg = ("#fff", RED) if look["bg"] in (RED, TEAL, INK) or lay == "split" else (INK, "#fff")
+    mark = (f"<div style='position:absolute;{tx};top:56px;width:60px;height:60px;background:{mark_bg};display:flex;align-items:center;justify-content:center;"
+            f"font-family:\"Serif\";font-weight:700;font-size:32px;color:{mark_fg}'>IB<span style='color:{INK if mark_bg == '#fff' else RED}'>.</span></div>")
+    big = (f"<div class='big' style='position:absolute;{tx};width:{width}px;top:150px;font-family:\"Serif\";font-weight:700;font-size:{size}px;"
+           f"line-height:1.0;letter-spacing:-.02em;color:{look['fg']}'>{text}</div>")
+    sb, sf = look["strap"]
+    strap = (f"<div class='strap' style='position:absolute;{tx};bottom:60px;white-space:nowrap;{'background:' + sb + ';padding:12px 22px;' if sb else ''}color:{sf};font-size:{34 if lay == 'left' else 38}px;font-weight:600'>"
+             f"{H.escape(small)}</div>") if small else ""
+    return f"<div class='t' style='{ground}'>{extra}{art_html}{mark}{big}{strap}</div>"
+
+
+def thumbnail(ep, work, date=None):
+    """Two options for YouTube's Test & compare, in two of the seven looks, different every day (12 Nov).
+    The look names are saved in metadata (thumb_looks.json) so a run can say which ones it used."""
     t = ep["thumb"]
     css = CSS.replace("FONTS/", f"{FONTS.resolve()}/") + "body{margin:0}.t{width:1280px;height:720px;position:relative;overflow:hidden;font-family:'Sans'}"
-    art = ""
-    if t.get("art"):
-        name, opts = t["art"]
-        art = (f"<div style='position:absolute;right:30px;top:50%;transform:translateY(-50%) scale(.68);transform-origin:right center;background:#F7F5F2;border-radius:44px;"
-               f"padding:24px 10px;box-shadow:0 30px 80px rgba(0,0,0,.3)'>{sketch.scene(name, 0, 1, **opts)}</div>")
-    a = (f"<div class='t' style='background:{RED}'>{art}"
-         f"<div style='position:absolute;left:70px;top:56px;display:flex;align-items:center;gap:14px'><div style='width:60px;height:60px;background:#fff;"
-         f"display:flex;align-items:center;justify-content:center;font-family:\"Serif\";font-weight:700;font-size:32px;color:{RED}'>IB<span style='color:{INK}'>.</span></div></div>"
-         f"<div style='position:absolute;left:70px;width:{560 if art else 1100}px;top:170px;font-family:\"Serif\";font-weight:700;font-size:{t.get('size_a', 104)}px;"
-         f"line-height:1.0;letter-spacing:-.02em;color:#fff'>{t.get('big_a', t['big'])}</div>"
-         f"<div style='position:absolute;left:70px;bottom:60px;background:{INK};color:#fff;font-size:38px;font-weight:600;padding:12px 22px'>{H.escape(t.get('small', ''))}</div></div>")
-    artb = ""
-    if t.get("art_b", t.get("art")):                               # 10 Nov: B carries a drawing too, so both test options have art
-        name, opts = t.get("art_b", t.get("art"))
-        artb = (f"<div style='position:absolute;right:20px;top:50%;transform:translateY(-46%) scale(.66);transform-origin:right center'>"
-                f"{sketch.scene(name, 0, 1, seed=3, **opts)}</div>")
-    b = ("<div class='t' style='background:#F7F5F2'>"
-         f"<div style='position:absolute;left:0;top:0;bottom:0;width:26px;background:{RED}'></div>"
-         f"<div style='position:absolute;right:-40px;bottom:-120px;font-family:\"Serif\";font-weight:700;font-size:520px;line-height:1;color:#0A0A0A;opacity:.06'>{H.escape(t.get('ghost', ''))}</div>"
-         + artb +
-         f"<div style='position:absolute;left:80px;top:70px;font-family:\"Serif\";font-weight:700;font-size:40px'>IB<span style='color:{RED}'>.</span></div>"
-         f"<div style='position:absolute;left:80px;{'width:660px' if artb else 'right:70px'};top:150px;font-family:\"Serif\";font-weight:700;font-size:{t.get('size', 132)}px;line-height:1.0;letter-spacing:-.03em'>{t['big']}</div>"
-         f"<div style='position:absolute;left:80px;bottom:70px;font-size:46px;font-weight:600;color:{RED};letter-spacing:.02em'>{H.escape(t.get('small', ''))}</div></div>")
+    la, lb = (THUMB_LOOKS[[l["name"] for l in THUMB_LOOKS].index(n)] for n in t["looks"]) if t.get("looks") else thumb_looks(date)
+    a = thumb_html(la, t.get("big_a", t["big"]), t.get("size_a", 100), t.get("small", ""), t.get("art"), t.get("ghost", ""))
+    b = thumb_html(lb, t["big"], t.get("size", 104), t.get("small", ""), t.get("art_b", t.get("art")), t.get("ghost", ""))
+    json.dump(dict(a=la["name"], b=lb["name"]), open(work / "thumb_looks.json", "w"))
     with sync_playwright() as p:
         br = p.chromium.launch()
         pg = br.new_page(viewport={"width": 1280, "height": 720})
@@ -517,9 +555,17 @@ def thumbnail(ep, work):
             pg.add_script_tag(content=FIT_JS)
             pg.evaluate("document.querySelectorAll('svg.sk').forEach(s => fitSvg(s, 1.5, .8))")
             pg.wait_for_timeout(300)
+            # shrink the big line until it clears the strap (or the frame), never below 56 px
+            fit = pg.evaluate("(() => { const b = document.querySelector('.big'), s = document.querySelector('.strap');"
+                              " const lim = s ? s.getBoundingClientRect().top - 26 : 680; let f = parseFloat(b.style.fontSize);"
+                              " while (b.getBoundingClientRect().bottom > lim && f > 56) { f -= 4; b.style.fontSize = f + 'px'; }"
+                              " return [f, b.getBoundingClientRect().bottom <= lim, s ? s.getBoundingClientRect().right <= 1260 : true]; })()")
+            if not (fit[1] and fit[2]):
+                print(f"  thumbnail {name}: text still too long ({fit}), shorten big/big_a or small", flush=True)
             pg.screenshot(path=str(work / name), type="jpeg", quality=92)
         br.close()
     (work / "thumbnail.jpg").write_bytes((work / "thumbnail_a.jpg").read_bytes())
+    print(f"  thumbnails: A {la['name']}, B {lb['name']}", flush=True)
 
 
 def srt(sc, items, path):
@@ -535,10 +581,29 @@ def srt(sc, items, path):
     path.write_text("\n".join(out))
 
 
+MUSIC_CREDIT = "Music: [song title] by [artist], from the YouTube Audio Library"
+
+
 def mix(ep, work):
     """Voice, sound effects and the video's own music bed, ducked under the
     voice, mastered to -14 LUFS (what YouTube plays at). Rerunnable on its own
-    (remix) since the silent video and the stems stay in out/<slug>/."""
+    (remix) since the silent video and the stems stay in out/<slug>/.
+
+    12 Nov (Pietro: "the music is terrible. From now on, I will add the music myself"): long videos ship
+    with voice and sound effects only (ep["music"] defaults to False). Pietro adds a track at upload and
+    fills in the credit line (MUSIC_CREDIT) that describe() puts in the description. music=True keeps
+    the old music.py bed for re-renders."""
+    final = work / f"{ep['slug']}.mp4"
+    if not ep.get("music", False):
+        for f in ("music.wav", "music_ducked.wav", "music.json"):
+            (work / f).unlink(missing_ok=True)
+        graph = (f"[1:a]{MASTER},aresample=48000[v];[2:a]aresample=48000[fx];"
+                 f"[v][fx]amix=inputs=2:normalize=0,loudnorm=I=-14:TP=-1.5:LRA=11[a]")
+        subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", str(work / f"{ep['slug']}-silent.mp4"), "-i", str(work / "voice.wav"),
+                        "-i", str(work / "sfx.wav"), "-filter_complex", graph, "-map", "0:v", "-map", "[a]", "-c:v", "copy",
+                        "-c:a", "aac", "-b:a", "192k", "-ar", "48000", "-shortest", "-movflags", "+faststart", str(final)], check=True)
+        trim_loudness(final)
+        return final
     import music
     tm = json.load(open(work / "timing.json"))
     seed = ep.get("music_seed", sum(map(ord, ep["slug"])))
@@ -609,6 +674,14 @@ def sound_report(work, final):
     """10 Nov: the long video's sound measured on every render, like the Shorts: voice over the ducked
     music while speaking, DNSMOS of the voice and of the final mix, loudness and true peak."""
     import quality
+    if not (work / "music_ducked.wav").exists():               # 12 Nov: no music in the file
+        lufs, tp = lufs_of(final)
+        rep = dict(music="none in the file (Pietro adds it at upload)", dnsmos_voice=quality.score(work / "voice.wav"),
+                   dnsmos_mix=quality.score(final), lufs=lufs, true_peak_dbtp=tp)
+        json.dump(rep, open(work / "sound.json", "w"), indent=1)
+        print(f"  sound: no music in the file, DNSMOS voice {rep['dnsmos_voice']['ovrl']} / mix {rep['dnsmos_mix']['ovrl']}, "
+              f"{lufs} LUFS, {tp} dBTP", flush=True)
+        return rep
     v, m = quality.load16(work / "voice.wav"), quality.load16(work / "music_ducked.wav")
     k = min(len(v), len(m))
     v, m = v[:k], m[:k]
@@ -642,7 +715,8 @@ def describe(ep, chapters, total, voice_name, work):
     if ep.get("source_note"):
         src += "\n" + ep["source_note"]
     tags = ep.get("hashtags", [])
-    desc = (ep["description"].strip() + src + "\n\nChapters\n" + chap_lines
+    credit = "" if ep.get("music", False) else "\n\n" + MUSIC_CREDIT     # 12 Nov: Pietro fills it in at upload
+    desc = (ep["description"].strip() + src + "\n\nChapters\n" + chap_lines + credit
             + "\n\nNarration: AI-generated voice; script and analysis are our original work. "
               "Educational content, not financial advice. Not affiliated with any company mentioned."
             + ("\n\n" + " ".join("#" + h.lstrip("#") for h in tags) if tags else ""))
@@ -652,10 +726,10 @@ def describe(ep, chapters, total, voice_name, work):
     meta = dict(title=ep["title"], description=desc, tags=ep.get("tags", []), tags_for_studio=tag_field, hashtags=tags,
                 duration_s=round(total, 1), voice=voice_name,
                 youtube_altered_or_synthetic="Yes: realistic synthetic narration voice (not a real person). Tick it in YouTube Studio.",
-                made_for_kids=False, music="original, made for this video by build/music.py (no licence needed)"
-                + (f"; written in the tempo, key and feel of the library pick ({mj['reference_title']}), no audio, melody or chords from it"
-                   if (mj := (json.load(open(work / "music.json")) if (work / "music.json").exists() else {})).get("reference") else ""),
-                music_library_pick=mj.get("upload_note"))
+                made_for_kids=False,
+                music=("original, made for this video by build/music.py (no licence needed)" if ep.get("music", False)
+                       else "none in the file: Pietro adds a track at upload and fills in the credit line"),
+                music_credit_line=None if ep.get("music", False) else MUSIC_CREDIT)
     json.dump(meta, open(work / "metadata.json", "w"), indent=1)
     (work / "description.txt").write_text(desc)
     return meta

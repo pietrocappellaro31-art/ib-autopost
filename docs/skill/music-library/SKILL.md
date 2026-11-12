@@ -1,6 +1,6 @@
 ---
 name: "music-library"
-description: "Pietro's music library for the YouTube channel: add the songs he sends, analyse each one (tempo, key, mood, calmest stretch), and have every YouTube Short and long video pick the best-fitting song from it. The songs never go into our files. A Short gets the pick to add with \"Add sound\" in the YouTube app; a long video gets an original bed written in the pick's tempo, key and feel. Use when Pietro sends music, says \"add these songs\", \"music library\", or asks which song a video should use."
+description: "Pietro's music library for the YouTube channel: add the songs he sends, analyse each one (tempo, key, mood, calmest stretch), and have every YouTube Short pick the best-fitting song from it. The songs never go into our files. A Short gets the pick to add with \"Add sound\" in the YouTube app. Long videos no longer use it (12 Nov: Pietro adds long-video music himself). Use when Pietro sends music, says \"add these songs\", \"music library\", or asks which song a video should use."
 ---
 
 # Music library
@@ -25,11 +25,12 @@ re-recording a song to get past detection.
    "Add sound" in the YouTube app, which YouTube licenses for Shorts. The block names the words to
    search (`search`), the start time (`calm_start`, the calmest 15 s that does not run into the
    ending) and the volume.
-2. **Long videos**: `music_library.bed()` writes our own bed with `music.py` in the pick's tempo (folded
-   into 70 to 110 BPM), key, mode, drums or none, bright or soft. It takes only those broad settings,
-   never the song's melody, chords or audio, so the bed sounds like it belongs with the song and is
-   still wholly ours. If Pietro wants the real song on a long video, he can use it only through
-   YouTube's own tools, and only if YouTube offers that song for the video.
+2. **Long videos: not used any more** (12 Nov, later the same day, Pietro: "the music is terrible.
+   From now on, I will add the music myself. You will provide me with a line to fill in the description
+   to give credits for it"). Long videos ship with no music in the file; Pietro adds his own track and
+   fills in the credit line the engine writes (see youtube-videos-creator, section 6). The library-matched
+   bed (`music_library.bed()`) stays in the code only for re-rendering an old video with `music=True`.
+   A library song is commercial, so it cannot go on a long video without a Content ID claim.
 
 A song Pietro truly holds a licence for (a written licence from the artist, or an Epidemic Sound or
 Artlist subscription that covers it) can be set to `rights=licence`, with the proof added to

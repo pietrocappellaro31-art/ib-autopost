@@ -380,3 +380,11 @@ What has been settled, and what is still open. Newest first.
   Reel voices stay out of it. The list repeats until Pietro picks; then `YOUTUBE_PICK` is set
   and the trial ends. Each delivery names the voice and asks for his verdict; the log is
   `docs/daily/youtube-voice-trial.md`. GEORGE is the baseline. Everything else is unchanged.
+- **Long videos: no music in the file, Pietro adds it; thumbnails change look every day** (12 Nov, Pietro:
+  "the music is terrible. From now on, I will add the music myself. You will provide me with a line to fill
+  in the description to give credits for it", and "make sure to provide thumbnails of different colors and
+  styles each day"). `youtube.mix` now ships voice and effects only (`music=False` default; `music=True` keeps
+  the `music.py` bed for old re-renders), and the description carries `Music: [song title] by [artist], from
+  the YouTube Audio Library` for him to fill in or delete. `youtube.THUMB_LOOKS` holds seven thumbnail looks;
+  each day uses two, never one from the day before. YouTube #4 remixed without music (mix DNSMOS 2.48 to 3.20)
+  and #5 re-rendered without music in the new looks the same day.

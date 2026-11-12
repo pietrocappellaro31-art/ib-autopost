@@ -85,18 +85,21 @@ moment. Rules:
   verdict (claim plus MYTH/TRUE stamp), quote, number, compare, list.
 - No more than one text-only beat per chapter. Every chapter card gets an
   `art=` drawing.
-- Thumbnail: `thumb=dict(art=..., big=..., big_a=..., small=...)` gives two
-  options, `thumbnail_a.jpg` (red, with the drawing) and `thumbnail_b.jpg`
-  (paper, big type), for YouTube's Test & compare.
+- Thumbnail: `thumb=dict(art=..., art_b=..., big=..., big_a=..., small=..., ghost=...)` gives two
+  options, `thumbnail_a.jpg` and `thumbnail_b.jpg`, for YouTube's Test & compare. **Different
+  colours and styles every day** (Pietro, 12 Nov): `youtube.THUMB_LOOKS` has seven looks (red with
+  the drawing on a card, paper with a red bar, ink with gold, teal with a tilted card, mustard,
+  red and paper split, paper in an ink frame with a ghost number); `thumb_looks()` gives each day
+  two of them, never one used the day before. Inline span colours in `big`/`big_a` are swapped for
+  the look's highlight, and the big line shrinks itself to clear the strap. Name the two looks in
+  the delivery. `looks=[a, b]` in `thumb` overrides, only for a reason.
 
 Check the length and every word before the long render: `python3 build/yt_timing.py build/youtube_ep<NNN>.py --takes` (12 Nov: `--takes`
 transcribes each line once, cached, and writes takes.json; the render does the same and a final second loudness stage brings the master to about -14 LUFS) (11 Nov;
 the voice is cached per line in `synth.pkl`, so the render reuses it and a one-line edit re-says only that line).
 Aim for 8 to 12 minutes; vary the scenes and structure so no two videos look
-alike. Set `mood=` in the EP (calm, reflective, melancholy, curious, warm, hopeful, playful, upbeat,
-tense, dark, dramatic, story), chosen from the script: the music bed follows the library song that fits
-it (section 6). Render: `python3 build/youtube_ep<NNN>.py`. Outputs in
-`build/out/<slug>/`: the MP4 (-14 LUFS, sound effects, a light original music bed), two
+alike. Render: `python3 build/youtube_ep<NNN>.py`. Outputs in
+`build/out/<slug>/`: the MP4 (-14 LUFS, voice and sound effects, no music: see section 6), two
 thumbnails, `<slug>.srt` captions, `metadata.json`, `description.txt` with
 chapter times. Look at a contact sheet of frames before delivering: if it
 looks plainer than the last video, it is not done.
@@ -172,11 +175,20 @@ Run the content-compliance gate, then:
     calmest stretch) and every video picks the one closest to its `mood`. The songs are commercial
     recordings, so they never go into our file and are never committed. They are used two lawful
     ways, and no edit is ever made to slip a song past Content ID.
-  - **Long-form**: popular songs cannot be added to long videos without a claim. `youtube.py` writes
-    our own bed with `music.py` **in the tempo, key, mode and feel of the library pick**
-    (`music_library.bed`; no melody, chords or audio from it), warm and low under the voice. The pick
-    goes in the delivery and `metadata.json` (`music_library_pick`). An Audio Library track Pietro adds
-    in Studio stays an option (log any attribution). Never a commercial song in the master.
+  - **Long-form: no music in the file; Pietro adds it himself** (12 Nov, Pietro: "the music
+    is terrible. From now on, I will add the music myself. You will provide me with a line to
+    fill in the description to give credits for it."). `music` defaults to False in
+    `youtube.mix`, so the MP4 has voice and sound effects only, and `describe()` puts the credit
+    line `Music: [song title] by [artist], from the YouTube Audio Library` above the narration
+    line. Every long-video delivery gives that line and says: fill in the brackets; if the
+    track's Audio Library page shows its own attribution text, paste that instead; Audio
+    Library tracks with no attribution need no line, so delete it. Popular songs cannot go
+    on long videos without a Content ID claim, so the track comes from the Audio Library (or
+    another source licensed for monetised YouTube). Studio steps: Content, the video, Editor,
+    Audio, pick the track, keep it low under the voice, Save. `music=True` brings back
+    the `build/music.py` bed (and the library-matched bed) only for a re-render of an old video. This
+    replaces the library-matched long-video bed set up earlier the same day: the library now serves
+    the Shorts only, because its songs are commercial and cannot go on a long video without a claim.
   - Instagram Reels stay without music (Pietro adds it in the app).
 - No third-party footage, logos or photos of real
   people. Fonts, sounds and visuals are ours (see `docs/rights/ledger.md`).
