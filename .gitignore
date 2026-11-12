@@ -2,3 +2,6 @@
 build/out/
 __pycache__/
 *.pyc
+
+# Music library audio: commercial recordings, used as references only, never committed (12 Nov)
+build/music_library/audio/

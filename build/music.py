@@ -316,6 +316,7 @@ def track_drama(total_s, seed=1, breaks=(), level=.9):
 # other phrase. Synthesised here; nothing sampled.
 
 WARM_PROGS = ([0, 7, 9, 5], [0, 9, 5, 7], [5, 0, 7, 9], [0, 4, 5, 7])     # I V vi IV, I vi IV V, IV I V vi, I iii IV V
+MINOR_PROGS = ([0, 8, 3, 10], [0, 5, 8, 10], [8, 3, 10, 0], [0, 10, 8, 10])  # i VI III VII, i iv VI VII, VI III VII i, i VII VI VII
 
 
 def epiano(f, dur, vel=.5, rng=None):
@@ -362,12 +363,16 @@ def bellnote(f, dur):
     return (np.sin(2 * np.pi * f * t) + .3 * np.sin(2 * np.pi * 3 * f * t) * np.exp(-t * 6)) * np.exp(-t * 2.6) * np.minimum(t / .004, 1)
 
 
-def track(total_s, seed=1, breaks=(), level=.9):
-    """The default bed from 10 Nov (afternoon): warm, mid tempo, major key."""
+def track(total_s, seed=1, breaks=(), level=.9, bpm=None, key=None, mode="major", drums=True, bell=True):
+    """The default bed from 10 Nov (afternoon): warm, mid tempo, major key.
+    12 Nov (music library): bpm, key ("A", "C#", ...), mode ("major" or "minor"), drums and bell can be set,
+    so music_library.bed() can write an original bed in the tempo, key, mode and feel of the reference track
+    picked for the video. Only those broad settings are taken from the reference, never its melody or chords."""
     rng = np.random.default_rng(seed)
-    bpm = float(rng.choice([88, 90, 92, 96, 100]))
-    key = int(rng.choice([NOTE[k] for k in ("C", "D", "E", "F", "G", "A")]))
-    prog = WARM_PROGS[int(rng.integers(len(WARM_PROGS)))]
+    bpm = float(bpm or rng.choice([88, 90, 92, 96, 100]))
+    key = NOTE[key] if isinstance(key, str) else int(rng.choice([NOTE[k] for k in ("C", "D", "E", "F", "G", "A")]))
+    minor_mode = mode == "minor"
+    prog = (MINOR_PROGS if minor_mode else WARM_PROGS)[int(rng.integers(4))]
     beat = 60 / bpm
     bar = 4 * beat
     swing = beat * .06
@@ -383,13 +388,13 @@ def track(total_s, seed=1, breaks=(), level=.9):
 
     nbars = int(np.ceil(total_s / bar)) + 1
     brk = sorted(breaks)
-    penta = [0, 2, 4, 7, 9, 12, 14, 16]
+    penta = [0, 3, 5, 7, 10, 12, 15, 17] if minor_mode else [0, 2, 4, 7, 9, 12, 14, 16]
     rhythm = [(0, 1.4), (1.5, .9), (3, .9)]                          # chord hits: 1, the and of 2, 4
     for b in range(nbars):
         t0 = b * bar
         quiet = any(br - bar * .5 <= t0 < br + bar for br in brk)
         deg = prog[b % 4]
-        minor = deg in (2, 4, 9)
+        minor = deg in ((0, 5, 7) if minor_mode else (2, 4, 9))
         root = tonic + deg
         chord = [root, root + (3 if minor else 4), root + 7, root + (10 if minor else 11) if b % 2 else root + 12]
         for k, (pos, ln) in enumerate(rhythm):
@@ -404,7 +409,7 @@ def track(total_s, seed=1, breaks=(), level=.9):
                 tt = np.arange(nn) / SR
                 x = (np.sin(2 * np.pi * f * tt) + .25 * np.sin(4 * np.pi * f * tt)) * np.minimum(tt / .01, 1) * np.clip((beat * ln - tt) / .06, 0, 1)
                 put(out["bass"], lp(x, 380) * .55, t0 + pos * beat + (swing if pos % 1 else 0))
-            if b >= 1:
+            if b >= 1 and drums:
                 for k in range(4):
                     if k in (0, 2):
                         put(out["drums"], K * .8, t0 + k * beat)
@@ -412,7 +417,7 @@ def track(total_s, seed=1, breaks=(), level=.9):
                         put(out["drums"], R * .55, t0 + k * beat)
                 for k in range(8):
                     put(out["drums"], shaker(rng) * (.5 if k % 2 else .3), t0 + k * beat / 2 + (swing if k % 2 else 0))
-            if b >= 4 and (b // 4) % 2 == 1:                                # a sparse bell line every other phrase
+            if bell and b >= 4 and (b // 4) % 2 == 1:                       # a sparse bell line every other phrase
                 for k in range(3):
                     if rng.random() < .7:
                         m = tonic + 24 + penta[int(rng.integers(len(penta)))]
@@ -424,4 +429,5 @@ def track(total_s, seed=1, breaks=(), level=.9):
     mix = mix * fade / (np.percentile(np.abs(mix), 99.9) + 1e-9)
     mix = np.tanh(mix * .9)
     mix = mix / (np.abs(mix).max() + 1e-9) * level
-    return mix[: int((total_s + .5) * SR)].astype(np.float32), dict(bpm=bpm, key=list(NOTE)[key], prog=prog, seed=seed, style="warm")
+    return mix[: int((total_s + .5) * SR)].astype(np.float32), dict(bpm=bpm, key=list(NOTE)[key], prog=prog, seed=seed, style="warm", mode=mode,
+                                                                   drums=drums)

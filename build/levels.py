@@ -560,6 +560,12 @@ def make(ep, voice_name="af_heart", keep_voice=False, redo=()):
     """keep_voice: reuse the last render's voice takes (a layout fix).
     redo: with keep_voice, say these passages again ("hook", "q0", "a0", ...,
     "close"), with up to 10 takes each, and keep the rest."""
+    say = ep["hook"]["say"]
+    if len(say) > 1 and any(re.search(r"keep score|that's level", s_, re.I) for s_, _ in say[1:]):
+        # 12 Nov, Pietro: "'That's level 4, keep score' is useless and should be removed from all videos."
+        # Enforced here so an episode copied from an older file cannot bring it back.
+        ep["hook"] = dict(ep["hook"], say=[x for x in say if not re.search(r"keep score|that's level", x[0], re.I)])
+        print("  hook: dropped \"That's level 4. Keep score.\" (Pietro, 12 Nov: removed from all videos)")
     if keep_voice:
         parts = reuse(OUT / ep["slug"])
         v = None
@@ -596,6 +602,16 @@ def make(ep, voice_name="af_heart", keep_voice=False, redo=()):
         json.dump(log, open(work / "takes.json", "w"), indent=1)
         bad = [x for x in log if x["wer"] > 0]
         print(f"  lines heard word for word: {len(log) - len(bad)}/{len(log)}" + "".join(f"\n    CHECK {x['part']}: {x['text']!r} heard {x['heard']!r}" for x in bad))
+    if not ep.get("music") and ep["slug"].startswith("shorts-"):
+        # 12 Nov (Pietro's music library): the library track that fits the Short's mood, to add with
+        # "Add sound" in the YouTube app at upload. Never mixed into the file (music_library.py).
+        import music_library
+        ref = music_library.pick(ep.get("mood", "playful"), "short", slug=ep["slug"])
+        if ref:
+            pick = dict(id=ref["id"], search=ref.get("search"), start=ref["calm_start"], tags=ref["tags"], others=ref["others"],
+                        line=music_library.instructions(ref, "short"))
+            json.dump(pick, open(work / "music_pick.json", "w"), indent=1)
+            print(f"  music: {pick['line']}")
     report = sound_report(work, final, voice, sfx)
     json.dump(report, open(work / "sound.json", "w"), indent=1)
     print(f"  sound: DNSMOS voice {report['voice']['ovrl']} / mix {report['mix']['ovrl']} (bak {report['mix']['bak']}), "

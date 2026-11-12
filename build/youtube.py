@@ -542,7 +542,17 @@ def mix(ep, work):
     import music
     tm = json.load(open(work / "timing.json"))
     seed = ep.get("music_seed", sum(map(ord, ep["slug"])))
-    bed, info = music.track(tm["total"], seed=seed, breaks=tm["chapters"][1:])
+    # 12 Nov (Pietro's music library): pick the library track that fits ep["mood"] and write our own bed
+    # in its tempo, key, mode and feel. The reference's audio never enters the mix (music_library.py).
+    import music_library
+    ref = music_library.pick(ep.get("mood", "curious"), "long", slug=ep["slug"]) if ep.get("music_library", True) else None
+    if ref:
+        bed, info = music_library.bed(ref, tm["total"], seed=seed, breaks=tm["chapters"][1:])
+        info["upload_note"] = music_library.instructions(ref, "long")
+        print(f"  music: library pick {ref['id']} for mood {ep.get('mood', 'curious')!r} -> original bed at "
+              f"{info['bpm']:.0f} BPM, {info['key']} {info['mode']}, drums {info['drums']}", flush=True)
+    else:
+        bed, info = music.track(tm["total"], seed=seed, breaks=tm["chapters"][1:])
     music.write(work / "music.wav", bed)
     json.dump(info, open(work / "music.json", "w"))
     final = work / f"{ep['slug']}.mp4"
@@ -642,7 +652,10 @@ def describe(ep, chapters, total, voice_name, work):
     meta = dict(title=ep["title"], description=desc, tags=ep.get("tags", []), tags_for_studio=tag_field, hashtags=tags,
                 duration_s=round(total, 1), voice=voice_name,
                 youtube_altered_or_synthetic="Yes: realistic synthetic narration voice (not a real person). Tick it in YouTube Studio.",
-                made_for_kids=False, music="original, made for this video by build/music.py (no licence needed)")
+                made_for_kids=False, music="original, made for this video by build/music.py (no licence needed)"
+                + (f"; written in the tempo, key and feel of the library pick ({mj['reference_title']}), no audio, melody or chords from it"
+                   if (mj := (json.load(open(work / "music.json")) if (work / "music.json").exists() else {})).get("reference") else ""),
+                music_library_pick=mj.get("upload_note"))
     json.dump(meta, open(work / "metadata.json", "w"), indent=1)
     (work / "description.txt").write_text(desc)
     return meta

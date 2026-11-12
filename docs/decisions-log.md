@@ -18,6 +18,19 @@ What has been settled, and what is still open. Newest first.
 
 ## Settled
 
+- **Pietro's music library for YouTube** (12 Nov, Pietro: "Create a skill that will attach all these
+  audios to a library ... used for the creation of both YouTube shorts and YouTube video. The video
+  should pick from the library the most appropriate music."; on the rights question: "Find a way
+  around - we just want to use the music, not their videos."). The 8 songs he sent (Einaudi's
+  Experience, Flawed Mangoes' Swimming and Missing Pieces, GOTH, Luminary, the Bloody Mary slowed
+  instrumental, Ethereal slowed, the September instrumental loop) are commercial recordings, so the
+  lawful way around is: never in our file, never in git, never edited to dodge Content ID. Each one
+  is analysed (`build/music_library.py`; `library.json` committed, audio gitignored) and every video
+  picks the song closest to its `mood`. A Short gets the song first in the music block, added with
+  "Add sound" in the YouTube app (licensed for Shorts) from its calmest stretch. A long video gets our
+  own `music.py` bed written in the song's tempo, key, mode and feel (no melody, chords or audio
+  taken). A song with a real licence on record can be set to `rights=licence` and mixed in. Skill:
+  `docs/skill/music-library/SKILL.md`; the YouTube skill points to it.
 - **No "That's level 4. Keep score." on any video** (12 Nov, Pietro: "'That's level 4, keep score' is
   useless and should be removed from all videos." Then: "Keep it in mind for tomorrow."). From the
   13 Nov runs, every Levels hook (Reels and YouTube Shorts) says and shows the last question alone;

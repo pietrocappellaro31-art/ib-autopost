@@ -1,6 +1,6 @@
 ---
 name: "youtube-videos-creator"
-description: "Daily YouTube run for the finance channel: research a topic that could travel, write and render one long-form 16:9 video and one Short in the day's trial voice, with thumbnail, title, description, chapters and tags, checked against YouTube's AI and monetisation rules. Posting stays manual."
+description: "Daily YouTube run for the finance channel: research a topic that could travel, write and render one long-form 16:9 video and one Short in the day's trial voice, with music picked from Pietro's music library, thumbnail, title, description, chapters and tags, checked against YouTube's AI and monetisation rules. Posting stays manual."
 ---
 
 # YouTube Videos Creator
@@ -93,7 +93,9 @@ Check the length and every word before the long render: `python3 build/yt_timing
 transcribes each line once, cached, and writes takes.json; the render does the same and a final second loudness stage brings the master to about -14 LUFS) (11 Nov;
 the voice is cached per line in `synth.pkl`, so the render reuses it and a one-line edit re-says only that line).
 Aim for 8 to 12 minutes; vary the scenes and structure so no two videos look
-alike. Render: `python3 build/youtube_ep<NNN>.py`. Outputs in
+alike. Set `mood=` in the EP (calm, reflective, melancholy, curious, warm, hopeful, playful, upbeat,
+tense, dark, dramatic, story), chosen from the script: the music bed follows the library song that fits
+it (section 6). Render: `python3 build/youtube_ep<NNN>.py`. Outputs in
 `build/out/<slug>/`: the MP4 (-14 LUFS, sound effects, a light original music bed), two
 thumbnails, `<slug>.srt` captions, `metadata.json`, `description.txt` with
 chapter times. Look at a contact sheet of frames before delivering: if it
@@ -103,6 +105,8 @@ looks plainer than the last video, it is not done.
 
 **Shorts ship without music in the file** (`music=False`, the default): Pietro adds a
 trending sound in the YouTube app when he uploads (see section 6, Music).
+
+Set `mood=` in the EP (see the music library below): the render picks the library song for the Short.
 
 A four-level quiz with the Levels engine (`build/levels.py`, copy the latest
 `build/reels_levels<N>.py` to `build/shorts_<slug>.py`), rendered with
@@ -156,16 +160,23 @@ Run the content-compliance gate, then:
   our file (Content ID would claim the video, and the compliance gate treats it as STOP).
   The way to use them is YouTube's own licensed library:
   - **Shorts**: the MP4 has voice and sound effects only (`music=False`). Each run
-    searches the web for the sounds trending on YouTube Shorts that week and suggests two
-    or three in the delivery, with the mood that fits the video. Pietro picks one with
+    puts **the library pick first** (`music_pick.json`, printed by the render: the words to
+    search, the start time of its calmest stretch), then one or two sounds trending on YouTube
+    Shorts that week (web search), with the mood that fits the video. Pietro picks one with
     "Add sound" in the YouTube app at upload (licensed for Shorts) and keeps it low under
     the voice. If a suggested song is not in the app's library, he picks another from it.
     Pietro confirmed this way (10 Nov) and asked for **clear instructions every time**:
     every Short delivery ends with the block below, filled in for that video.
-  - **Long-form**: popular songs cannot be added to long videos without a claim. Use our
-    own bed from `build/music.py` (`track()`, the warm bed since 10 Nov, YouTube #3), lighter than the 10 Nov piano and cello: warm, mid
-    tempo, not dramatic, low under the voice; or a YouTube Audio Library track Pietro adds
-    in Studio (log any attribution). Never a commercial song in the master.
+  - **Pietro's music library (12 Nov; skill `docs/skill/music-library/SKILL.md`, code
+    `build/music_library.py`).** Pietro sends songs he likes; each is analysed (tempo, key, mood,
+    calmest stretch) and every video picks the one closest to its `mood`. The songs are commercial
+    recordings, so they never go into our file and are never committed. They are used two lawful
+    ways, and no edit is ever made to slip a song past Content ID.
+  - **Long-form**: popular songs cannot be added to long videos without a claim. `youtube.py` writes
+    our own bed with `music.py` **in the tempo, key, mode and feel of the library pick**
+    (`music_library.bed`; no melody, chords or audio from it), warm and low under the voice. The pick
+    goes in the delivery and `metadata.json` (`music_library_pick`). An Audio Library track Pietro adds
+    in Studio stays an option (log any attribution). Never a commercial song in the master.
   - Instagram Reels stay without music (Pietro adds it in the app).
 - No third-party footage, logos or photos of real
   people. Fonts, sounds and visuals are ours (see `docs/rights/ledger.md`).
@@ -179,16 +190,16 @@ clear instructions each time"). Fill in the songs and the times; keep the steps:
 
 ```
 Music for this Short (add it in the YouTube app on your phone)
-Suggested sounds, trending on Shorts this week:
-  1. <song - artist>: <why it fits, one line>
-  2. <song - artist>: <...>
-  3. <song - artist>: <...>
+Suggested sounds:
+  1. <library pick: song - artist> (from your music library): <why it fits, one line>; start at <calm_start>
+  2. <song - artist> (trending on Shorts this week): <...>
+  3. <song - artist> (trending, or the library runner-up): <...>
 Steps:
   1. Open the YouTube app, tap +, then "Upload a video", and pick <slug>.mp4.
   2. In the Shorts editor tap "Add sound" (the music note), search the first song.
      If it is not there, try the next; if none is, pick any song the app offers that
      fits <mood>.
-  3. Choose the part of the song to use: start it on <a calm or instrumental stretch>,
+  3. Choose the part of the song to use: start it on <calm_start for the library pick; a calm or instrumental stretch for the others>,
      not on a vocal chorus, so it does not fight the voice.
   4. Tap "Volume": keep "Original sound" at 100 and set the added track to about 15 to 25,
      then play the first 10 seconds. The voice must be easy to follow; lower the track if not.
