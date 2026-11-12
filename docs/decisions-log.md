@@ -18,11 +18,17 @@ What has been settled, and what is still open. Newest first.
 
 ## Settled
 
+- **No "That's level 4. Keep score." on any video** (12 Nov, Pietro: "'That's level 4, keep score' is
+  useless and should be removed from all videos." Then: "Keep it in mind for tomorrow."). From the
+  13 Nov runs, every Levels hook (Reels and YouTube Shorts) says and shows the last question alone;
+  the close still asks for the score. On a Short the hook drawing sits centred under the question
+  and larger (about 600 px wide; `levels.py` centres it when the hook has no lines). Today's Short
+  (shorts-cent-doubled-30-days) was delivered with the old hook and is not re-rendered.
 - **Reel hooks are the question alone** (11 Nov, Pietro: "From now on eliminate from all reels
   'That's level 4, keep score'. This part is not needed."). The Levels hook says and shows only the
   last question (plus the small "4 interview questions. Each one harder." line); the close still asks
-  for the score. Applied to Levels #10 before delivery (53.9 s, was 56.1). YouTube Shorts keep their
-  own hook until Pietro says otherwise.
+  for the score. Applied to Levels #10 before delivery (53.9 s, was 56.1). Extended to YouTube Shorts
+  on 12 Nov (above).
 - **Six viral reference Reels to study** (11 Nov, Pietro): one proposal per reference over the next
   days, modelled on their design, music and structure more than their plot. Links and status in
   `docs/daily/viral-references.md`. Instagram blocks automated fetching, so the study needs the

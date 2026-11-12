@@ -3,8 +3,10 @@
 harder, read by the voice; the viewer keeps score and comments it at the end.
 
     hook    the hardest question is asked first, so the Reel opens a loop that
-            only the last level closes. Reels: the question alone (11 Nov, Pietro:
-            no "That's level 4. Keep score."); hk["say"] has one entry
+            only the last level closes. The question alone on every Reel and Short
+            (Pietro: Reels 11 Nov, every video 12 Nov: no "That's level 4. Keep
+            score."); hk["say"] has one entry. A Short's hook art sits centred
+            under the question, bigger now that no lines sit beside it
     level   lockup (big numeral, LEVEL, italic tail), the question on a card
             lit word by word as it is read, a think bar with ticks, then the
             answer, revealed word by word, and a worked chip
@@ -223,7 +225,10 @@ def scene(ep, parts, at, hook_end, lv, total):
             + card(f'<div class="lbl" style="font-size:28px;letter-spacing:.2em;color:{RED};opacity:1;margin-bottom:20px">'
                    f'THE LAST QUESTION</div>{q_html}', accent=RED)
             + f'<div style="margin-top:44px"><div style="font-size:44px;font-weight:500;opacity:.7;margin-bottom:20px;text-wrap:balance">{hk["sub"]}</div>'
-            + (f'<div style="display:flex;align-items:center;justify-content:space-between;gap:20px"><div>{lines}</div>'    # 10 Nov: a picture
+            + (f'<div class="nochk" style="position:relative;margin:0 auto;width:{hk.get("art_w", 280)}px;height:{hk.get("art_h", 224)}px">'
+               f'{hk["art"](at["hook"], hook_end - at["hook"])}</div>'
+               if hk.get("art") and not lines else            # 12 Nov, Pietro: no "That's level 4. Keep score." on any video;
+               f'<div style="display:flex;align-items:center;justify-content:space-between;gap:20px"><div>{lines}</div>'    # 10 Nov: a picture
                f'<div class="nochk" style="position:relative;flex:none;width:{hk.get("art_w", 280)}px;height:{hk.get("art_h", 224)}px">'   # beside the
                f'{hk["art"](at["hook"], hook_end - at["hook"])}</div></div>' if hk.get("art") else lines)                     # hook lines
             + '</div>')

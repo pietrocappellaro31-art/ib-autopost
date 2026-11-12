@@ -15,4 +15,4 @@ Topics used and ideas for later are in `topics.md`, so nothing repeats.
 
 From 11 Nov the Reel run also works through `viral-references.md`: one proposal a day modelled on
 one of Pietro's six reference Reels, once he has sent the videos (Instagram cannot be fetched from here).
-Every Reel hook is the question alone: no "That's level 4. Keep score." (Pietro, 11 Nov).
+Every Levels hook, Reels and YouTube Shorts, is the question alone: no "That's level 4. Keep score." (Pietro, 11 Nov for Reels, 12 Nov for every video; Shorts from 13 Nov).

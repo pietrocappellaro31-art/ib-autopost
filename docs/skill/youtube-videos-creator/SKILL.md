@@ -114,12 +114,16 @@ same file). Title under 70 characters with #Shorts in the description.
 engaging with pictures and colors and more animated"; after seeing it: "much better,
 that is what we are gonna use as standard from now on").** The penny Short,
 `build/shorts_penny-one-year.py`, is the minimum standard: every Short matches or beats
-it. Copy its structure:
+it. Copy its structure, except the hook:
+- **the hook is the last question alone** (12 Nov, Pietro: "'That's level 4, keep score' is useless and
+  should be removed from all videos"): `say` has one entry, no "That's level 4." / "Keep score." lines
+  and no `lsize`/`cols` for them; the hook `art=` sits centred under the question, about 600 x 480
+  (`art_w`, `art_h`), since nothing sits beside it. The close still asks for the score;
 - a colour ground per part (`bg=` on the hook, each level and the close), cross-faded
   at the swipes;
 - a drawing in each level's empty answer zone while the question is read and the clock
   runs (`art=`, with `ans_min` about 520), fading as the answer lands; `art_after=` for a
-  small picture beside the answer; `art=` on the hook sits beside "That's level 4";
+  small picture beside the answer; `art=` on the hook sits centred under the question;
 - `floaters=` (faint shapes drifting at the edges) and `art=` on the close (coins falling
   in under the score);
 - drawings from `build/sketch.py`, sized for 9:16 with `picture(name, t0, dur, w=650)`;
