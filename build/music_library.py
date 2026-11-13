@@ -215,7 +215,10 @@ def pick(mood, kind="long", slug=None, avoid_days=3, record=True):
         return None
     e, v = MOODS[mood] if isinstance(mood, str) else mood
     today = datetime.date.today()
-    recent = {u["id"] for u in lib["used"] if u["kind"] == kind and (today - datetime.date.fromisoformat(u["date"])).days < avoid_days}
+    # 13 Nov: a re-render of the same video does not count its own earlier pick (the pick flipped between two songs
+    # on every re-render of the Friday the 13th Short)
+    recent = {u["id"] for u in lib["used"] if u["kind"] == kind and u.get("slug") != slug
+              and (today - datetime.date.fromisoformat(u["date"])).days < avoid_days}
 
     def score(t):
         s = (t["energy"] - e) ** 2 + (t["valence"] - v) ** 2

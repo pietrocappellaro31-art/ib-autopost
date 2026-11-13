@@ -111,7 +111,8 @@ function fmt(v, el) {
   const dec = +(el.dataset.dec || 0);
   // 12 Nov: thousands separators from 10,000 up (years and small counts stay as they are)
   let t = v.toFixed(dec);
-  if (!el.dataset.nosep && Math.abs(v) >= 10000) { const [i, f] = t.split('.'); t = i.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + (f ? '.' + f : ''); }
+  if (!el.dataset.nosep && Math.abs(v) >= (el.dataset.sep ? 1000 : 10000))   // data-sep=1: from 1,000 (13 Nov)
+  { const [i, f] = t.split('.'); t = i.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + (f ? '.' + f : ''); }
   return (el.dataset.pre || '') + t + (el.dataset.suf || '');
 }
 function place(el, local) {
@@ -295,6 +296,74 @@ window.fitSketches = function (zmax = 1.5, zmin = .8) {
   seek(0);
   return out;
 };
+window.textRects = function (el) {
+  // The rectangles of the words themselves (a block is full width; its words may not be).
+  const out = [];
+  el.querySelectorAll('.w').forEach(w => { const r = w.getBoundingClientRect(); if (r.width) out.push(r); });
+  if (!out.length) { const rg = document.createRange(); rg.selectNodeContents(el); out.push(...rg.getClientRects()); }
+  return out;
+};
+window.clearAfter = function () {
+  // 13 Nov: a picture beside an answer (.aftr, levels.py art_after) must not sit on the answer's words.
+  // At the level's settled moment (data-settle), each overlapping text block in the same answer is first
+  // narrowed to end left of the picture (text-wrap:balance re-wraps it), then shrunk in 6% steps (to 70%);
+  // if it still overlaps, the picture drops below the answer. Every move is reported, and anything
+  // left overlapping is flagged by the render.
+  const hit = (a, b, m = 14) => a.left < b.right + m && a.right + m > b.left && a.top < b.bottom + m && a.bottom + m > b.top;
+  const out = [];
+  document.querySelectorAll('.aftr').forEach((af, k) => {
+    seek(+af.dataset.settle);
+    const zone = af.parentElement;
+    const blocks = [...zone.querySelectorAll('.ansbig, .ansline, .anschip')];
+    const pic = () => { const r = (af.firstElementChild || af).getBoundingClientRect(); return r; };
+    const over = () => blocks.filter(b => textRects(b).some(r => hit(r, pic())));
+    const rep = {aftr: k, moves: []};
+    for (let step = 0; step < 10 && over().length; step++) {
+      const zr = zone.getBoundingClientRect(), room = pic().left - zr.left - 24;
+      over().forEach(b => {
+        const fs = parseFloat(getComputedStyle(b).fontSize);
+        b.dataset.fs0 = b.dataset.fs0 || fs;
+        const kind = b.className.match(/ans(big|line|chip)/)[0];
+        // A big answer shrinks first (to 80%), since narrowing it can leave one word alone on a line;
+        // lines and chips narrow first. Then either shrinks on, to 70%.
+        if (kind === 'ansbig' && fs > .8 * b.dataset.fs0) { b.style.fontSize = (fs * .94).toFixed(1) + 'px'; }
+        else if (!b.style.maxWidth) { b.style.maxWidth = room + 'px'; rep.moves.push(`${kind} narrowed to ${Math.round(room)} px`); }
+        else if (fs > .7 * b.dataset.fs0) { b.style.fontSize = (fs * .94).toFixed(1) + 'px'; }
+      });
+    }
+    let left = over();
+    if (left.length) {                                         // still on top: the picture goes under the answer
+      blocks.forEach(b => { b.style.maxWidth = ''; if (b.dataset.fs0) b.style.fontSize = b.dataset.fs0 + 'px'; });
+      const bottom = Math.max(...blocks.map(b => b.getBoundingClientRect().bottom)) - zone.getBoundingClientRect().top;
+      af.style.top = (bottom + 18) + 'px';
+      rep.moves = [`picture dropped below the answer (top ${Math.round(bottom + 18)} px)`];
+      left = over();
+      if (pic().bottom > 1441) rep.moves.push('CHECK picture runs under the 1440 line');
+    }
+    blocks.forEach(b => { if (b.dataset.fs0 && parseFloat(b.style.fontSize) < b.dataset.fs0) rep.moves.push(`${b.className.match(/ans(big|line|chip)/)[0]} at ${b.style.fontSize} (was ${b.dataset.fs0}px)`); });
+    rep.overlap = left.length;
+    if (rep.moves.length || rep.overlap) out.push(rep);
+  });
+  seek(0);
+  return out;
+};
+window.orphans = function () {
+  // 13 Nov: any text block (.olchk) that wraps with a single word alone on its last line.
+  const bad = [];
+  document.querySelectorAll('.scene').forEach(s => {
+    if (s.style.visibility !== 'visible') return;
+    s.querySelectorAll('.olchk').forEach(b => {
+      if (getComputedStyle(b).opacity === '0') return;
+      const tops = [];
+      b.querySelectorAll('.w').forEach(w => { const r = w.getBoundingClientRect(); if (r.width) tops.push(Math.round(r.top / 8)); });
+      if (tops.length < 3) return;
+      const lines = [...new Set(tops)];
+      if (lines.length > 1 && tops.filter(t => t === lines[lines.length - 1]).length === 1)
+        bad.push(`one word alone on the last line: "${b.textContent.trim().slice(0, 60)}"`);
+    });
+  });
+  return bad;
+};
 window.check = function () {
   // Every visible text-bearing element must sit inside the safe area.
   const bad = [];
@@ -386,13 +455,26 @@ def build(slug, scenes, theme="ink", cover_at=0.0, crf=18, check_at=(), fit=Fals
                 print(f"  fitted {len(fits)} drawings: drawn width {min(r['before'] for r in fits):.2f}-{max(r['before'] for r in fits):.2f}"
                       f" of the box before, {min(r['after'] for r in fits):.2f}-{max(r['after'] for r in fits):.2f} after"
                       + (f"  CHECK under 85%: drawings {small}" if small else ""), flush=True)
+        # 13 Nov: pictures beside answers are moved clear of the words before anything is checked or filmed.
+        cleared = pg.evaluate("window.NOPUSH = true; clearAfter()")
+        if cleared:
+            (work / "clear.json").write_text(json.dumps(cleared, indent=1))
+            for r in cleared:
+                print(f"  answer picture {r['aftr']}: " + "; ".join(r["moves"]) + (f"  CHECK still overlaps {r['overlap']} block(s)" if r["overlap"] else ""))
+                if r["overlap"]:
+                    problems.append(f"answer picture {r['aftr']} overlaps the answer text")
         # Layout check at the settled point of every scene.
+        wraps = []
         for i, s in enumerate(starts):
             pg.evaluate(f"window.NOPUSH = true; seek({s['start'] + s['dur'] - .4})")
             problems += pg.evaluate("check()")
+            wraps += pg.evaluate("orphans()")
         for t in check_at:                       # extra settled moments inside long scenes
             pg.evaluate(f"window.NOPUSH = true; seek({t})")
             problems += [f"t={t:.1f} " + x for x in pg.evaluate("check()")]
+            wraps += [f"t={t:.1f} " + x for x in pg.evaluate("orphans()")]
+        for x in dict.fromkeys(wraps):           # 13 Nov: a word alone on a line is flagged, not left to the eye
+            print("  WRAP " + x)
         pg.evaluate("window.NOPUSH = false")
         for f in range(n):
             pg.evaluate(f"seek({f / FPS})")

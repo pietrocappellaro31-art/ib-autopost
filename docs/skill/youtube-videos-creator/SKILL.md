@@ -140,6 +140,9 @@ it. Copy its structure, except the hook:
 - the master is two-stage at -14 LUFS (12 Nov, `levels.two_stage`): it lands within 0.2 LU of the
   target, where the single loudnorm stopped at -14.6 to -15.2; a label like "Last one." is said on
   its own, and the last level can show the hook's question without reading it again (`("", text)`).
+- an `art_after` picture never covers the answer (13 Nov, `motion.clearAfter`): the render shrinks or narrows the answer, or
+  drops the picture below it, prints what it moved and saves `clear.json`; a `WRAP` line means a hook, answer or close line
+  ends with one word alone: shorten it or set the break with `|`. A level's `foot=` source line shows with or without a chip.
 Keep the safe area clear (the render lists any problem) and look at a contact sheet.
 
 ## 5. Checks

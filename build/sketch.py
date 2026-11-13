@@ -43,6 +43,8 @@ Scenes (opts in brackets):
   doubling_bars(days, known, line); each drawn edge to edge of the 800 x 640 canvas so it fills its box
   12 Nov, long video (where money comes from): t_account(left, right, amount, destroy), keystroke(amount, pre, label),
   goldsmith(bars, notes), multiplier(start, ratio, steps), outflow(label, n), token(coin, reserve, rule, lock)
+  13 Nov (Friday the 13th Short): fri13_page(), year_grid(year), road_cat(), ladder_wallet(tag), friday_bars(n, hi);
+  cat_svg(x, y, s) draws a sitting black cat for floaters and the close
 """
 
 import html as H
@@ -1762,3 +1764,134 @@ def buyback(p, amount="\u2212$50", **_):
 
 
 SCENES.update({f.__name__: f for f in (bs_bars, dividend, buyback)})
+
+
+# ---- 13 Nov scenes (Friday the 13th Short): a calendar page with a black cat, a year of 13ths under a
+# magnifier, a road with a cat crossing, a ladder and an open wallet, Fridays on a trading screen. Our own
+# generic shapes: no film, brand or character.
+
+def cat_svg(x, y, s=1.0, eyes="#F2C35B"):
+    """A black cat sitting, seen from the side-front, its tail curled up; (x, y) is where it sits, s scales it."""
+    t = f'translate({x} {y}) scale({s})'
+    return (f'<g transform="{t}">'
+            f'<path d="M58 -14 Q130 -10 118 -70 Q112 -102 136 -112" fill="none" stroke="{INK}" stroke-width="16" stroke-linecap="round"/>'
+            f'<path d="M-62 0 Q-74 -96 -30 -138 L30 -138 Q74 -96 62 0 Z" fill="{INK}"/>'
+            f'<circle cx="0" cy="-168" r="52" fill="{INK}"/>'
+            f'<path d="M-48 -190 L-40 -248 L-8 -212 Z M48 -190 L40 -248 L8 -212 Z" fill="{INK}"/>'
+            f'<ellipse cx="-20" cy="-172" rx="10" ry="13" fill="{eyes}"/><ellipse cx="20" cy="-172" rx="10" ry="13" fill="{eyes}"/>'
+            f'<rect x="-22" y="-182" width="4" height="20" rx="2" fill="{INK}"/><rect x="18" y="-182" width="4" height="20" rx="2" fill="{INK}"/>'
+            f'</g>')
+
+
+def _page(x, y, w_, h_, month, day, head=RED, rot=0, size=None):
+    size = size or h_ * .5
+    return (f'<g transform="rotate({rot} {x + w_ / 2} {y + h_ / 2})">'
+            f'<rect x="{x}" y="{y}" width="{w_}" height="{h_}" rx="{w_ * .07:.0f}" fill="#fff" stroke="{INK}" stroke-width="6"/>'
+            f'<rect x="{x}" y="{y}" width="{w_}" height="{h_ * .27:.0f}" rx="{w_ * .07:.0f}" fill="{head}" stroke="{INK}" stroke-width="6"/>'
+            f'<text x="{x + w_ / 2}" y="{y + h_ * .2:.0f}" text-anchor="middle" font-family="\'Sans\',sans-serif" font-weight="700" '
+            f'font-size="{h_ * .15:.0f}" fill="#fff" letter-spacing="2">{H.escape(month)}</text>'
+            f'<text x="{x + w_ / 2}" y="{y + h_ * .86:.0f}" text-anchor="middle" font-family="\'Serif\',serif" font-weight="700" '
+            f'font-size="{size:.0f}" fill="{INK}">{H.escape(day)}</text></g>')
+
+
+def fri13_page(p, **_):
+    """The hook: a tilted calendar page FRIDAY / 13 dropping in, a black cat beside it with a swinging tail,
+    and a little falling arrow over a ? (does the market fall?)."""
+    p.fill(_page(40, 70, 420, 500, "FRIDAY", "13", RED, rot=-5, size=300), 0, .4)
+    p.line([(140, 40), (140, 110)], .08, .12, w=12)
+    p.line([(360, 22), (360, 92)], .1, .12, w=12)
+    p.parts.append('<g class="a" data-fx="swing" data-at="0" data-d="1" data-amp="3" data-w="1.6" '
+                   'style="transform-box:view-box;transform-origin:640px 620px">')
+    p.fill(cat_svg(640, 620, 1.55), .3, .4)
+    p.parts.append("</g>")
+    p.line([(520, 60), (590, 130), (630, 100), (740, 220)], .55, .35, color=RED, w=12)
+    p.line([(700, 222), (744, 224), (740, 180)], .8, .12, color=RED, w=12)
+    p.text(770, 110, "?", .85, size=110, serif=True, weight=700, color=RED, fx="pop")
+
+
+def year_grid(p, year="2026", **_):
+    """Twelve small calendar pages for the year, every one on the 13th, with a magnifier gliding over them."""
+    months = "JAN FEB MAR APR MAY JUN JUL AUG SEP OCT NOV DEC".split()
+    p.text(400, 52, year, 0, size=54, serif=True, weight=700, color=INK)
+    for k, m in enumerate(months):
+        cx, cy = 20 + (k % 4) * 195, 84 + (k // 4) * 182
+        p.fill(_page(cx, cy, 175, 165, m, "13", TEAL if k % 2 else RED, rot=(-3, 2, -1, 3)[k % 4], size=86), .05 + .045 * k, .3)
+    p.parts.append('<g class="a" data-fx="float" data-at="0" data-d="1" data-amp="70" data-w=".55" data-ph=".4">')
+    p.circle(470, 360, 92, .7, .3, color=INK, w=14)
+    p.fill(f'<circle cx="470" cy="360" r="84" fill="#fff" fill-opacity=".35"/>', .72)
+    p.line([(536, 426), (612, 506)], .8, .14, color=INK, w=24)
+    p.parts.append("</g>")
+
+
+def road_cat(p, **_):
+    """A road with a dashed centre line, a little car coming, a black cat crossing in front, a warning sign with 13 and a ?."""
+    p.fill(f'<path d="M0 420 H800 V600 H0 Z" fill="#5E5A55"/>', 0)
+    for x in range(10, 800, 120):
+        p.box(x, 502, 70, 14, "#F7F5F2", .05 + x / 4000, rx=4)
+    p.parts.append('<g class="a" data-fx="move" data-at="{}" data-d="1.4" data-x="-260">'.format(p.at(.1)))
+    p.fill(f'<path d="M430 520 L452 462 Q462 440 492 436 L530 398 H640 L690 436 Q730 442 740 466 L748 520 Z" fill="{TEAL}" stroke="{INK}" stroke-width="6"/>'
+           f'<path d="M542 408 H582 V436 H516 Z M600 408 H636 L668 436 H600 Z" fill="#EAF4F8" stroke="{INK}" stroke-width="4"/>'
+           f'<circle cx="490" cy="526" r="32" fill="{INK}"/><circle cx="490" cy="526" r="12" fill="#E4E0D9"/>'
+           f'<circle cx="690" cy="526" r="32" fill="{INK}"/><circle cx="690" cy="526" r="12" fill="#E4E0D9"/>'
+           f'<path d="M742 470 h18" stroke="#F2C35B" stroke-width="10" stroke-linecap="round"/>', .1)
+    p.parts.append("</g>")
+    p.parts.append('<g class="a" data-fx="move" data-at="{}" data-d="1.2" data-x="-200">'.format(p.at(.3)))
+    p.fill(cat_svg(250, 560, .95), .3)
+    p.parts.append("</g>")
+    p.line([(130, 400), (130, 230)], .2, .2, w=10)
+    p.parts.append('<g class="a" data-fx="swing" data-at="0" data-d="1" data-amp="5" data-w="2" '
+                   'style="transform-box:view-box;transform-origin:130px 250px">')
+    p.fill(f'<path d="M130 40 L240 240 L20 240 Z" fill="#F2C35B" stroke="{INK}" stroke-width="8" stroke-linejoin="round"/>'
+           f'<text x="130" y="214" text-anchor="middle" font-family="\'Serif\',serif" font-weight="700" font-size="96" fill="{INK}">13</text>', .25)
+    p.parts.append("</g>")
+    p.text(720, 300, "?", .75, size=150, serif=True, weight=700, color=RED, fx="pop")
+
+
+def ladder_wallet(p, tag="$?", **_):
+    """An open wallet under a leaning ladder, banknotes fluttering out of it, a red price tag swinging: money lost."""
+    p.line([(70, 600), (330, 40)], 0, .3, w=12, color="#8A5F12")
+    p.line([(190, 610), (440, 70)], .05, .3, w=12, color="#8A5F12")
+    for k in range(7):
+        f = .14 + .12 * k
+        x0, y0 = 70 + 260 * f, 600 - 560 * f
+        p.line([(x0, y0), (x0 + 118, y0 + 8)], .1 + .03 * k, .1, w=9, color="#8A5F12")
+    p.fill(f'<path d="M260 470 L660 470 L640 610 L280 610 Z" fill="#7E3B1B" stroke="{INK}" stroke-width="7"/>'
+           f'<path d="M260 470 L300 400 L620 400 L660 470 Z" fill="#A0522D" stroke="{INK}" stroke-width="7"/>'
+           f'<circle cx="600" cy="540" r="16" fill="#F2C35B" stroke="{INK}" stroke-width="5"/>', .3)
+    for k, (x, y, r) in enumerate(((330, 300, -18), (450, 230, 12), (560, 150, -8), (680, 260, 20))):
+        p.parts.append(f'<g class="a" data-fx="float" data-at="0" data-d="1" data-amp="16" data-w="{1.1 + .3 * k}" data-ph="{k}">')
+        p.fill(f'<g transform="rotate({r} {x} {y})"><rect x="{x - 80}" y="{y - 40}" width="160" height="80" rx="8" fill="#9DC7C1" '
+               f'stroke="{INK}" stroke-width="5"/><circle cx="{x}" cy="{y}" r="22" fill="none" stroke="{INK}" stroke-width="4"/>'
+               f'<text x="{x}" y="{y + 11}" text-anchor="middle" font-family="\'Serif\',serif" font-weight="700" font-size="30" fill="{INK}">$</text></g>',
+               .4 + .1 * k)
+        p.parts.append("</g>")
+    p.parts.append('<g class="a" data-fx="swing" data-at="0" data-d="1" data-amp="8" data-w="2.4" '
+                   'style="transform-box:view-box;transform-origin:700px 380px">')
+    p.line([(700, 380), (700, 430)], .75, .1, w=4)
+    p.fill(_tile(610, 430, 180, 100, RED, tag, 62), .78)
+    p.parts.append("</g>")
+
+
+def friday_bars(p, n=9, hi=5, **_):
+    """A trading screen: a row of Fridays as equal grey bars (no data, an illustration), one marked 13 drawn only
+    as a dashed outline with a red ? over it: higher or lower?"""
+    p.fill(f'<rect x="10" y="20" width="780" height="600" rx="30" fill="{INK}"/>'
+           f'<rect x="34" y="44" width="732" height="552" rx="16" fill="#1E2A2A"/>', 0)
+    for k in range(5):
+        p.line([(60, 120 + 100 * k), (740, 120 + 100 * k)], .05, .2, color="#35504D", w=2)
+    p.text(80, 98, "FRIDAYS", .1, size=34, weight=700, color="#9DC7C1", anchor="start")
+    bw = 60
+    for k in range(n):
+        x = 70 + k * 76
+        if k == hi:
+            p.line([(x, 520), (x, 250), (x + bw, 250), (x + bw, 520)], .5, .25, color=RED, w=5, dash="12 9")
+            p.text(x + bw / 2, 225, "?", .8, size=110, serif=True, weight=700, color=RED, fx="pop")
+            p.box(x - 8, 532, bw + 16, 50, RED, .55, rx=10)
+            p.text(x + bw / 2, 568, "13", .58, size=34, serif=True, weight=700, color="#fff")
+        else:
+            p.box(x, 340, bw, 180, "#6F8F8B", .1 + .04 * k, rx=6, fx="growY")
+            p.text(x + bw / 2, 568, "FRI", .15 + .04 * k, size=24, weight=700, color="#9DC7C1")
+    p.line([(60, 520), (740, 520)], .05, .2, color="#9DC7C1", w=4)
+
+
+SCENES.update({f.__name__: f for f in (fri13_page, year_grid, road_cat, ladder_wallet, friday_bars)})

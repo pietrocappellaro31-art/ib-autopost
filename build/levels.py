@@ -215,7 +215,7 @@ def scene(ep, parts, at, hook_end, lv, total):
     # frame 0; the highlighter swipes on as it is said.
     hk = ep["hook"]
     hs = seg("hook")
-    q_html = kara(hk["say"][0][1], at["hook"] + hs[0][1], hs[0][2] - hs[0][1], hk.get("cols"), hl=hk.get("hl", ()), lit=True,
+    q_html = kara(hk["say"][0][1], at["hook"] + hs[0][1], hs[0][2] - hs[0][1], hk.get("cols"), hl=hk.get("hl", ()), lit=True, cls="olchk",
                   style=f"font-family:'Serif',serif;font-weight:700;font-size:{hk.get('qsize', 86)}px;line-height:1.06;letter-spacing:-.02em")
     lines = "".join(kara(d, at["hook"] + a, b - a, hk.get("cols"), hide=True,
                          style=f"font-family:'Serif',serif;font-style:italic;font-weight:600;font-size:{hk.get('lsize', 70)}px;line-height:1.12;"
@@ -262,21 +262,25 @@ def scene(ep, parts, at, hook_end, lv, total):
         for j, ((s, d, *style), (_, a, b)) in enumerate(zip(L["a"], asg)):
             kind = style[0] if style else ("big" if j == 0 else "line")
             if kind == "big":
-                ans += kara(d, aa + a, b - a, L.get("acols"), hide=True,
+                ans += kara(d, aa + a, b - a, L.get("acols"), hide=True, cls="ansbig olchk",
                             style=f"font-family:'Serif',serif;font-weight:700;font-size:{L.get('bigsize', 122)}px;line-height:1.02;"
                                   f"letter-spacing:-.03em;color:{TEAL};text-wrap:balance")
             else:
-                ans += kara(d, aa + a, b - a, L.get("acols"), hide=True,
+                ans += kara(d, aa + a, b - a, L.get("acols"), hide=True, cls="ansline olchk",
                             style="font-size:47px;font-weight:500;line-height:1.26;margin-top:14px;text-wrap:balance")
         rip = A("", "ripple", aa + .02, .9, style=f"position:absolute;left:-70px;top:-90px;width:320px;height:320px;border-radius:50%;"
                                                    f"border:5px solid {TEAL};z-index:-1")
         chip = ""
+        if L.get("foot") and not L.get("chip"):
+            # 13 Nov: a source line shows even when the level has no chip (it was silently dropped)
+            chip = A(f'<div style="font-size:28px;font-weight:500;opacity:.6">{L["foot"]}</div>', "fade",
+                     aa + chip_time(asg, min(1, len(asg) - 1)), .45, cls="anschip", style="margin-top:22px")
         if L.get("chip"):
             t0 = aa + chip_time(asg, L.get("chip_at", 0))
             foot = (f'<div style="font-size:28px;font-weight:500;opacity:.6;margin-top:10px">{L["foot"]}</div>' if L.get("foot") else "")
             chip = A(f'<div style="display:inline-block;border:3px solid {TEAL};background:rgba(15,118,110,.08);border-radius:24px;'
                      f'padding:18px 30px;font-size:44px;font-weight:600;line-height:1.3">{L["chip"]}</div>{foot}',
-                     "pop", t0, .45, style="margin-top:30px;transform-origin:left center")
+                     "pop", t0, .45, cls="anschip", style="margin-top:30px;transform-origin:left center")
         art = ""
         if L.get("art"):
             # 10 Nov (Pietro: "pictures and colors and more animated"): a drawing fills the
@@ -285,7 +289,9 @@ def scene(ep, parts, at, hook_end, lv, total):
             art = A(L["art"](T["start"] + .3, aa - T["start"] - .3), "life", T["start"] + .25, aa - T["start"] - .05, fi=.35, fo=.3,
                     cls="nochk", style=f"position:absolute;left:0;top:0;width:{W}px;height:{L.get('ans_min', 420)}px;z-index:-1")
             if L.get("art_after"):
-                art += A(L["art_after"](aa), "life", aa + .1, T["end"] - aa + .3, fi=.35, fo=.2, cls="nochk",
+                # 13 Nov: data-settle lets motion.clearAfter() move the answer's words (or the picture) apart
+                art += A(L["art_after"](aa), "life", aa + .1, T["end"] - aa + .3, fi=.35, fo=.2, cls="nochk aftr",
+                         settle=round(T["end"] - .35, 3),
                          style=f"position:absolute;right:0;top:0;z-index:-1")
         answer = (f'<div style="position:relative;margin-top:22px;min-height:{L.get("ans_min", 420 if L.get("art") else 0)}px">'
                   f'{art}{rip}{ans}{chip}</div>')
@@ -299,7 +305,7 @@ def scene(ep, parts, at, hook_end, lv, total):
     big = kara(ep["close"]["say"][0][1], ca + cs[0][1], cs[0][2] - cs[0][1],
                style="font-family:'Serif',serif;font-weight:700;font-size:108px;line-height:1.03;letter-spacing:-.03em")
     digits = "".join(f"<span>{x}</span>" for x in [str(k) for k in range(n_lv + 1)] * 2 + ["?"])
-    rest = "".join(kara(d, ca + a, b - a, ep["close"].get("cols"), hide=True,
+    rest = "".join(kara(d, ca + a, b - a, ep["close"].get("cols"), hide=True, cls="olchk",
                         style="font-size:50px;font-weight:600;line-height:1.24;margin-top:14px;text-wrap:balance")
                    for (s, d), (_, a, b) in zip(ep["close"]["say"][1:], cs[1:]))
     end_voice = ca + cs[-1][2]

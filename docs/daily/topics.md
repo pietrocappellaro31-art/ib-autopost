@@ -24,6 +24,7 @@ number with no source is cut.
 | 2026-11-12 | YouTube long | Where money comes from: loans create deposits (Bank of England 2014, Bundesbank 2017), the textbook multiplier as a misconception, repayment destroys money, London goldsmiths' notes before 1694, the limits (profit, reserves, capital, monetary policy; US reserve requirements 0% since 26 Mar 2020), QE adds deposits, SVB lost $40bn+ on 9 Mar 2023, FDIC $250,000, GENIUS Act stablecoins 1:1 and not lent on |
 | 2026-11-12 | Reel | Shareholders' equity: assets minus liabilities, a $10 cash dividend cuts cash and retained earnings, a $50 buyback cuts assets and equity, negative equity by borrowing to buy back (100 / 130 / -30) |
 | 2026-11-12 | Reel (loop, no voice) | Leverage and MOIC: same $100 company sold for $150, all equity 1.5x vs $40 equity + $60 debt 2.25x; sold for $80, 0.8x vs 0.5x |
+| 2026-11-13 | YouTube Short | Friday the 13th and money: three in 2026 (Feb, Mar, Nov), Dutch insurers 7,500 road accidents vs 7,800 on ordinary Fridays (2008), the $800-900 million "lost in business" estimate (Dossey, via National Geographic 2014), stock returns: Kolb and Rodriguez 1987 lower vs Coutts 1999 UK FT 30 1935-94 higher |
 
 ## Ideas (YouTube long and Shorts)
 
