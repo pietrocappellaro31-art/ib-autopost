@@ -454,3 +454,101 @@ def parchment(w=2400, h=1400, x0=-240, y0=-160):
     for _ in range(40):
         s += f'<circle cx="{rng.uniform(x0, x0 + w):.0f}" cy="{rng.uniform(y0, y0 + h):.0f}" r="{rng.uniform(20, 90):.0f}" fill="#C9A87A" opacity=".06"/>'
     return s
+
+
+# ------------------------------------------------------------------------------------------------ 13 Nov: today
+# The first present-day set (cinematic-standard.md section 8, step 3: "a bank office"). Generic: no bank, logo,
+# real skyline or real firm. Built for the IB Reels' filmed hooks (scene-library K: a figure faces the question).
+
+def office_today(seed=6, dusk=True):
+    """An analyst's desk in a city office at dusk: a tall window with an invented skyline whose windows flicker on,
+    a shelf of binders, a plant, a desk lamp with a warm pool of light, a chair. Returns (layers, anchors) like
+    study_1720: the desk top is at y 860 on the z .85 layer, the chair seat at y 900, the monitor centre at
+    (780, 640) on the z .85 layer (monitor_dcf(cx=780, cy=640, w=440, h=270))."""
+    rng = random.Random(seed)
+    sky_top, sky_bot = ("#2E3550", "#D98A5A") if dusk else ("#BFD3DE", "#EEF2F2")
+    wall = C.defs() + (f'<defs><linearGradient id="dusk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="{sky_top}"/>'
+                       f'<stop offset=".75" stop-color="{sky_bot}"/></linearGradient></defs>')
+    wall += f'<rect x="-1400" y="-800" width="4800" height="2400" fill="#D8CFC2"/>'
+    # the window: two tall panes, an invented skyline, lit windows that come on one by one (flicker)
+    wx, wy, ww, wh = -160, 60, 1060, 760
+    sky = f'<rect x="{wx}" y="{wy}" width="{ww}" height="{wh}" fill="url(#dusk)"/>'
+    x = wx - 20
+    while x < wx + ww:
+        bw, bh = rng.uniform(70, 150), rng.uniform(180, 520)
+        col = rng.choice(["#283048", "#323A55", "#3B4360", "#2B2F44"])
+        sky += f'<rect x="{x:.0f}" y="{wy + wh - bh:.0f}" width="{bw:.0f}" height="{bh:.0f}" fill="{col}"/>'
+        for r in range(int(bh // 34)):
+            for c in range(int(bw // 26)):
+                if rng.random() < .33:
+                    op = rng.uniform(.5, .95)
+                    sky += (f'<rect x="{x + 8 + c * 26:.0f}" y="{wy + wh - bh + 12 + r * 34:.0f}" width="12" height="16" fill="{MUSTARD}" '
+                            f'opacity="{op:.2f}" data-flick=\'[{op:.2f},0.06,{rng.randint(0, 9)}]\'/>')
+        x += bw + rng.uniform(4, 18)
+    wall += (sky + f'<rect x="{wx}" y="{wy}" width="{ww}" height="{wh}" fill="none" stroke="#4A4F5C" stroke-width="22"/>'
+             + f'<path d="M{wx + ww / 2},{wy} L{wx + ww / 2},{wy + wh}" stroke="#4A4F5C" stroke-width="14"/>'
+             + f'<rect x="{wx - 30}" y="{wy + wh}" width="{ww + 60}" height="26" fill="#BDB3A5" stroke="{INK}" stroke-width="3"/>')
+    # shelves with binders, right
+    sh = _r(1180, 160, 560, 640, "#B9AC9A", rx=4, sw=3.2)
+    for row in range(3):
+        y = 200 + row * 200
+        sh += _r(1196, y + 160, 528, 16, "#8F8270", sw=2.4)
+        bx = 1212
+        while bx < 1690:
+            bw_ = rng.uniform(30, 52)
+            col = rng.choice([TEAL, "#2E4A5A", "#E8E1D4", RED, "#3B3B3B", "#E8E1D4"])
+            sh += (f'<rect x="{bx:.0f}" y="{y + 20:.0f}" width="{bw_:.0f}" height="140" rx="3" fill="{col}" stroke="{INK}" stroke-width="2.2"/>'
+                   f'<rect x="{bx + bw_ / 2 - 7:.0f}" y="{y + 40:.0f}" width="14" height="40" rx="2" fill="#F7F5F2" opacity=".8"/>')
+            bx += bw_ + rng.uniform(2, 6)
+    wall += sh
+    # a plant in the corner, its leaves sway
+    plant = (f'<g transform="translate(1040,860)">' + _r(-56, -120, 112, 120, "#C4704A", rx=10)
+             + "".join(f'<g data-swing=\'[{1.4 + k * .3:.1f},{2.0 + k * .2:.1f},{k},0,-110]\'><path d="M0,-110 C{-80 + k * 40},{-220 - k * 20} {-40 + k * 30},{-300} {-10 + k * 25},{-330 + k * 10} '
+                       f'C{20 + k * 10},{-260} {10},{-180} 0,-110 Z" fill="{TEAL if k % 2 else "#3F7A5A"}" stroke="{INK}" stroke-width="3"/></g>' for k in range(4))
+             + "</g>")
+    floor = f'<rect x="-1400" y="900" width="4800" height="700" fill="#8E8579"/><rect x="-1400" y="900" width="4800" height="700" fill="#000" opacity=".1"/>'
+    chair = (_r(150, 900, 160, 22, "#2B2F3A", rx=8, sw=3) + _r(156, 700, 30, 210, "#2B2F3A", rx=12, sw=3)
+             + _r(222, 922, 16, 120, "#5A5F6A", sw=2.4) + f'<path d="M170,1050 L290,1050" stroke="{INK}" stroke-width="10" stroke-linecap="round"/>')
+    lamp_glow = f'<ellipse cx="1260" cy="860" rx="360" ry="120" fill="url(#glowWarm)" opacity=".55"/>'
+    desk = (lamp_glow + _r(380, 860, 1000, 36, "#E8E1D4", rx=6, sw=3.6) + _r(420, 896, 24, 180, "#5A5F6A", sw=2.6)
+            + _r(1316, 896, 24, 180, "#5A5F6A", sw=2.6)
+            # the lamp
+            + f'<path d="M1250,860 L1250,840 M1250,840 L1210,700 L1300,620" fill="none" stroke="{INK}" stroke-width="10" stroke-linecap="round"/>'
+            + f'<path d="M1262,598 L1350,640 L1320,690 L1240,650 Z" fill="{RED}" stroke="{INK}" stroke-width="3.2"/>'
+            + _r(1215, 846, 70, 16, INK, rx=6, sw=0)
+            # keyboard and a notepad
+            + _r(470, 838, 250, 22, "#3B3F48", rx=6, sw=2.6) + f'<g transform="translate(1040,848) rotate(-4)">{_r(-70, -10, 140, 14, "#F7F5F2", rx=2, sw=2)}</g>'
+            + f'<g transform="translate(1150,860)">{cup()}</g>')
+    layers = dict(wall=(0.35, wall), floor=(0.6, floor), plant=(0.62, plant), chair=(0.72, chair), desk=(0.85, desk))
+    return layers, dict(desk_y=860, seat_y=900, seat_x=230, ground=1060, monitor=(780, 640))
+
+
+def monitor_dcf(t_on=.2, t_tv=1.6, bars=5, cx=900, cy=600, w=560, h=340, tv_label="TERMINAL VALUE"):
+    """A monitor on the desk showing a DCF timeline: five small cash flows rise one by one, then one tall block
+    for every year after the forecast rises past them (the idea the Reel asks about). Shot seconds. The screen
+    glows onto the desk."""
+    x0, y0 = cx - w / 2, cy - h / 2
+    s = (f'<ellipse cx="{cx}" cy="{cy + 40}" rx="{w * .75:.0f}" ry="{h * .7:.0f}" fill="#BFE3D6" opacity=".14"/>'
+         + _r(cx - 18, y0 + h, 36, 860 - (y0 + h), "#3B3F48", sw=2.6) + _r(cx - 90, 846, 180, 16, "#3B3F48", rx=6, sw=2.6)
+         + _r(x0 - 16, y0 - 16, w + 32, h + 32, "#1E2128", rx=14, sw=3.6)
+         + f'<rect x="{x0}" y="{y0}" width="{w}" height="{h}" fill="#F4EFE6"/>')
+    base = y0 + h - 46
+    s += f'<path d="M{x0 + 24},{base} L{x0 + w - 24},{base}" stroke="{INK}" stroke-width="4"/>'
+    s += _t(x0 + 26, y0 + 34, "DCF", 22, INK, anchor="start", weight=600, family="Sans", extra='letter-spacing="3"')
+    step = (w - 60) * .58 / bars                      # the forecast takes about 58% of the width, the block the rest
+    bw = step * .72
+    for k in range(bars):
+        bx, bh = x0 + 30 + k * step, (h - 110) * (.24 + .03 * k)
+        t = t_on + .14 * k
+        s += (f'<g {kv(clip=[[0, 100, 0, 0, 0], [t, 100, 0, 0, 0], [t + .3, 0, 0, 0, 0, "out"]])}>'
+              f'<rect x="{bx:.1f}" y="{base - bh:.1f}" width="{bw:.1f}" height="{bh:.1f}" rx="5" fill="{TEAL}" stroke="{INK}" stroke-width="2.6"/></g>'
+              + f'<g {kv(opacity=[[0, 0], [t, 0], [t + .3, 1]])}>' + _t(round(bx + bw / 2, 1), base + 26, f"Y{k + 1}", 17, INK, weight=600, family="Sans") + "</g>")
+    tx = x0 + 30 + bars * step + 14
+    tw, th = x0 + w - 24 - tx, h - 100
+    s += (f'<g {kv(clip=[[0, 100, 0, 0, 0], [t_tv, 100, 0, 0, 0], [t_tv + .7, 0, 0, 0, 0, "out"]])}>'
+          f'<rect x="{tx:.1f}" y="{base - th}" width="{tw:.1f}" height="{th}" rx="8" fill="{MUSTARD}" stroke="{INK}" stroke-width="3"/>'
+          + _t(round(tx + tw / 2, 1), base - th / 2 - 8, "\u221e", 56, INK)
+          + "".join(_t(round(tx + tw / 2, 1), base - th / 2 + 30 + 20 * i, part, 15, INK, weight=700, family="Sans")
+                    for i, part in enumerate(tv_label.split())) + "</g>"
+          + f'<g {kv(opacity=[[0, 0], [t_tv + .5, 0], [t_tv + .8, 1]])}>' + _t(round(tx + tw / 2, 1), base + 26, "YEAR 5 ON", 15, RED, weight=700, family="Sans") + "</g>")
+    return s

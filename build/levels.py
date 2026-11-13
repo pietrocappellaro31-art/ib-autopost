@@ -225,13 +225,17 @@ def scene(ep, parts, at, hook_end, lv, total):
     hook = (ghost(n_lv) + lockup(n_lv, ep["levels"][-1]["tail"], RED)
             + card(f'<div class="lbl" style="font-size:28px;letter-spacing:.2em;color:{RED};opacity:1;margin-bottom:20px">'
                    f'THE LAST QUESTION</div>{q_html}', accent=RED)
-            + f'<div style="margin-top:44px"><div style="font-size:44px;font-weight:500;opacity:.7;margin-bottom:20px;text-wrap:balance">{hk["sub"]}</div>'
+            + f'<div style="margin-top:{hk.get("sub_gap", 44)}px"><div style="font-size:44px;font-weight:500;opacity:.7;margin-bottom:20px;text-wrap:balance">{hk["sub"]}</div>'
+            # 13 Nov (cinematic standard, build step 7): a filmed hook. The page keeps an ink-framed window; the
+            # cine.py film is laid into it after the page is filmed (film_hook), so the cover still reads.
+            + (f'<div id="filmbox" class="nochk" style="position:relative;margin:0 auto;width:{hk["film_w"]}px;height:{hk["film_h"]}px;'
+               f'outline:5px solid {INK};border-radius:4px;background:#2B2F3A"></div>' if hk.get("film") else "")
             + (f'<div class="nochk" style="position:relative;margin:0 auto;width:{hk.get("art_w", 280)}px;height:{hk.get("art_h", 224)}px">'
                f'{hk["art"](at["hook"], hook_end - at["hook"])}</div>'
-               if hk.get("art") and not lines else            # 12 Nov, Pietro: no "That's level 4. Keep score." on any video;
+               if hk.get("art") and not lines and not hk.get("film") else            # 12 Nov, Pietro: no "That's level 4. Keep score." on any video;
                f'<div style="display:flex;align-items:center;justify-content:space-between;gap:20px"><div>{lines}</div>'    # 10 Nov: a picture
                f'<div class="nochk" style="position:relative;flex:none;width:{hk.get("art_w", 280)}px;height:{hk.get("art_h", 224)}px">'   # beside the
-               f'{hk["art"](at["hook"], hook_end - at["hook"])}</div></div>' if hk.get("art") else lines)                     # hook lines
+               f'{hk["art"](at["hook"], hook_end - at["hook"])}</div></div>' if hk.get("art") and not hk.get("film") else lines)                     # hook lines
             + '</div>')
     els.append(group(column(hook), -1, hook_end + 1 + T_SW, fi=0, fo=T_SW))
 
@@ -469,7 +473,16 @@ def remix(ep, voice_name):
     work = OUT / ep["slug"]
     parts = reuse(work)
     at, hook_end, lv, total = timeline(ep, parts)
+    film_fx = []
+    if ep["hook"].get("film"):
+        mp4, cover, film_fx = film_hook(ep, mp4, cover, at, hook_end)
     voice, sfx = soundtrack(parts, at, lv, total + .6, ep)
+    if film_fx:                                              # the filmed hook's foley, timed by the same numbers as its picture
+        from scipy.signal import resample_poly
+        import sfx as sfx_lib
+        fol = resample_poly(sfx_lib.foley_track(film_fx, total + .6).mean(1), 1, 2).astype(np.float32)
+        k = min(len(sfx), len(fol))
+        sfx[:k] += fol[:k] * ep["hook"].get("foley_gain", .5)
     sfx = sfx * shorts_mix(ep)[1]
     mux(ep, voice_name, voice, sfx, total, OUT / (ep["slug"] + "-silent") / (ep["slug"] + "-silent.mp4"))
     print(f"  -> remixed {ep['slug']}.mp4")
@@ -499,9 +512,11 @@ def mux(ep, voice_name, voice, sfx, total, mp4):
     final = work / f"{ep['slug']}.mp4"
     from voice_clone import master_chain
     chain = master_chain(voice_name) or (CLONE_MASTER if voice_name.startswith(("clone:", "real:")) else MASTER)
+    if ep.get("denoise") and "anlmdn" not in chain:          # 13 Nov: per episode (G2 carries it in voices.json)
+        chain += "," + ep["denoise"]
     lim = f"alimiter=limit={limit}:attack=2:release=50:level=false," if limit else ""
     graph = (f"[1:a]{chain}[v];anoisesrc=color=brown:amplitude={room}:sample_rate={SR}:duration={total + .6:.2f}[room];"
-             f"[v][2:a][room]amix=inputs=3:normalize=0,{lim}loudnorm=I={ep.get('lufs', -16)}:TP=-1.5:LRA=11[a]")
+             f"[v][2:a][room]amix=inputs=3:normalize=0,{lim}loudnorm=I={ep.get('lufs', -16)}:TP={ep.get('tp', -1.5)}:LRA=11[a]")
     # ep["lufs"] (10 Nov): YouTube Shorts ship without music now and still master at -14 like YouTube; Reels stay -16.
     extra = []
     if ep.get("music"):
@@ -563,6 +578,60 @@ def two_stage(ep, mp4, work, graph, final, tp=-1.5):
     return final
 
 
+def film_hook(ep, mp4, cover, at, hook_end, T_SW=.34):
+    """13 Nov (cinematic-standard.md section 8, step 7: a filmed segment inside the Levels engine). The hook's
+    ink-framed window (#filmbox) is measured on the filmed page at the start and the end of the hook (the page's
+    slow push moves it a pixel or two, so the film follows it linearly), ep["hook"]["film"](dur, w, h, t_end)
+    returns (shots, foley events) for cine.py, the shots are filmed at the window's size, and the film is laid
+    into the window and fades out with the hook card. The cover is taken again from the result.
+    Returns (mp4, cover, foley events)."""
+    import cine
+    from playwright.sync_api import sync_playwright
+    hk = ep["hook"]
+    src = OUT / (ep["slug"] + "-silent") / "motion.html"
+    with sync_playwright() as p:
+        b = p.chromium.launch()
+        pg = b.new_page(viewport={"width": 1080, "height": 1920})
+        pg.goto(src.resolve().as_uri())
+        pg.evaluate("document.fonts.ready")
+        # 13 Nov: the hook card whips off to the left at the swipe, so the window is followed through the exit
+        # too (sampled every 30 ms), not only across the hook
+        times = [0.0, hook_end] + [round(hook_end + .03 * k, 3) for k in range(1, int(T_SW / .03) + 1)]
+        rects = []
+        for t in times:
+            pg.evaluate(f"seek({t})")
+            rects.append(pg.evaluate("(() => { const r = document.getElementById('filmbox').getBoundingClientRect();"
+                                     " return [r.left, r.top, r.width, r.height]; })()"))
+        b.close()
+    (x0, y0, fw, fh), (x1, y1, _, _) = rects[0], rects[1]
+    fw, fh = int(round(fw / 2) * 2), int(round(fh / 2) * 2)
+    dur = round(hook_end + T_SW + .1, 2)
+    shots, fx = hk["film"](dur, fw, fh, hook_end - at["hook"])
+    html, total = cine.film_html(shots, fw, fh, caps="", mark=False)
+    work = OUT / ep["slug"]
+    work.mkdir(parents=True, exist_ok=True)
+    film, secs = cine.render(html, total, work, "hook-film", fw, fh, fps=30)
+    out = pathlib.Path(str(mp4).replace("-silent.mp4", "-silent-film.mp4"))
+    def pw(i):                                    # piecewise-linear position through the sampled moments
+        e = f"{rects[-1][i]:.2f}"
+        for (ta, ra), (tb, rb) in reversed(list(zip(zip(times, rects), zip(times[1:], rects[1:])))):
+            e = f"if(lt(t,{tb:.3f}),{ra[i]:.2f}+({rb[i] - ra[i]:.3f})*(t-{ta:.3f})/{max(tb - ta, 1e-3):.3f},{e})"
+        return e
+    xe, ye = pw(0), pw(1)
+    graph = (f"[1:v]format=yuva420p,fade=t=out:st={hook_end + T_SW - .12:.3f}:d=0.12:alpha=1[f];"
+             f"[0:v][f]overlay=x='{xe}':y='{ye}':eof_action=pass:enable='lte(t,{dur})'[v]")
+    subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", str(mp4), "-i", str(film), "-filter_complex", graph, "-map", "[v]",
+                    "-c:v", "libx264", "-crf", "20", "-preset", "medium", "-pix_fmt", "yuv420p", str(out)], check=True)
+    cov = pathlib.Path(str(cover).replace(".jpg", "-film.jpg"))
+    subprocess.run(["ffmpeg", "-y", "-v", "error", "-ss", f"{max(hook_end - .2, 0):.3f}", "-i", str(out), "-frames:v", "1",
+                    "-q:v", "2", str(cov)], check=True)
+    json.dump(dict(box_start=rects[0], box_end=rects[1], film=[fw, fh], dur=dur, render_seconds=round(secs, 1), foley=len(fx)),
+              open(work / "film.json", "w"), indent=1)
+    print(f"  filmed hook: {fw} x {fh} px, {dur:.2f} s, window moved {x1 - x0:+.1f}, {y1 - y0:+.1f} px over the hook, "
+          f"{len(fx)} foley events", flush=True)
+    return out, cov, fx
+
+
 def make(ep, voice_name="af_heart", keep_voice=False, redo=()):
     """keep_voice: reuse the last render's voice takes (a layout fix).
     redo: with keep_voice, say these passages again ("hook", "q0", "a0", ...,
@@ -590,7 +659,16 @@ def make(ep, voice_name="af_heart", keep_voice=False, redo=()):
     sc, check_at = scene(ep, parts, at, hook_end, lv, total)
     mp4, cover, problems = build(ep["slug"] + "-silent", [sc], theme="paper", cover_at=hook_end - .2, crf=21,
                                  check_at=check_at, fit=ep.get("fit", True))
+    film_fx = []
+    if ep["hook"].get("film"):
+        mp4, cover, film_fx = film_hook(ep, mp4, cover, at, hook_end)
     voice, sfx = soundtrack(parts, at, lv, total + .6, ep)
+    if film_fx:                                              # the filmed hook's foley, timed by the same numbers as its picture
+        from scipy.signal import resample_poly
+        import sfx as sfx_lib
+        fol = resample_poly(sfx_lib.foley_track(film_fx, total + .6).mean(1), 1, 2).astype(np.float32)
+        k = min(len(sfx), len(fol))
+        sfx[:k] += fol[:k] * ep["hook"].get("foley_gain", .5)
     sfx = sfx * shorts_mix(ep)[1]                            # 11 Nov: effects a touch lower on YouTube Shorts
     work = OUT / ep["slug"]
     work.mkdir(parents=True, exist_ok=True)

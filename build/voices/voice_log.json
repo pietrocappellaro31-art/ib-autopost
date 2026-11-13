@@ -43,5 +43,10 @@
   "reel": "w2-levels-12",
   "voice": "G2",
   "date": "2026-11-13"
+ },
+ {
+  "reel": "w2-levels-12-heart",
+  "voice": "HEART",
+  "date": "2026-11-13"
  }
 ]

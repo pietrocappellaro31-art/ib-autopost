@@ -107,7 +107,7 @@ identical cards" fails, and so does swapping one repeated template for another.
    (a page turn, a door), light transitions.
 6. **Speed**: the render is CPU-bound in a headless browser (0.6 to 1.3 s a frame per core). Next: bake blurred
    static layers to images; cache static SVG.
-7. **Shorts**: a filmed segment inside the Levels engine (Formats B to F of `short-form-standard.md`).
+7. **Shorts**: a filmed segment inside the Levels engine (Formats B to F of `short-form-standard.md`). Started 13 Nov (Levels #12, HEART): `levels.film_hook()` films a cine.py shot into a window under the hook question and follows the card through the swipe; first present-day set `cine_lib.office_today` with `monitor_dcf`.
 
 ## 9. What the engine cannot do yet (13 Nov, after the prototype)
 

@@ -9,4 +9,5 @@
 | 2026-11-11 | w2-levels-10 | IB Interview Levels #10: can negative working capital be a good sign? | BELLA | 53.9 s | |
 | 2026-11-12 | w2-levels-11 | IB Interview Levels #11: can shareholders' equity be negative? | EMMA | 51.6 s | |
 | 2026-11-12 | w2-two-ways-to-pay | Same $100 company. Two ways to pay. (viral reference proposal 1, R2; 12 s loop) | none (no voice by design) | 12.6 s | |
-| 2026-11-13 | w2-levels-12 | IB Interview Levels #12: can terminal value be most of a DCF? | G2 | 56.4 s | |
+| 2026-11-13 | w2-levels-12 | IB Interview Levels #12: can terminal value be most of a DCF? | G2 | 56.4 s | superseded by w2-levels-12-heart, not to post |
+| 2026-11-13 | w2-levels-12-heart | IB Interview Levels #12: can terminal value be most of a DCF? (cinematic standard: filmed hook; clean + scored alternative) | HEART | 55.4 s | |

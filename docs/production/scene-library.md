@@ -16,10 +16,10 @@ plus `build/cine_lib.py`; "sketch" = `build/sketch.py` drawings in the existing 
 | H | Character action | a person doing the thing the narration says | cine rig: walk, sit, read, write, point, reach, hold up, cheer, shrug, concern, talk | stand up and sit down helpers; hand poses; phone in hand; a 3/4 view |
 | I | Document explanation | a letter, filing, contract or statement whose key line matters | cine: `letter` with ink reveal and a hand that follows the nib; `newspaper` price list | a 10-K page with a highlighter sweep; a term sheet with clauses lifting off |
 | J | Chapter transition | a restrained change of chapter with topic art | existing red chapter cards with a drawing; cine: push into an object and match, dissolve, cut on action | a page turn; a door; light change from day to night |
-| K | Quiz interaction | timers, choices, reveals, level meter | levels (the four-level format) | a filmed hook for a quiz (a figure faces the question) |
+| K | Quiz interaction | timers, choices, reveals, level meter | levels (the four-level format); a filmed hook (`levels.film_hook`, hook `film=`; first used on Levels #12: an analyst at his desk, his screen builds the DCF) | the film blurred with the card at the swipe; a filmed answer beat |
 | L | Cinematic conclusion | the takeaway made visible | cine: the price path with the decision marked and the future dashed | a slow pull-back from the key object to the whole scene |
 
-Modern objects ready in cine_lib: `phone`, `card`, `terminal`, `ledger_book`, `cup`. Modern looks: `modern_navy`,
+Modern objects ready in cine_lib: `phone`, `card`, `terminal`, `ledger_book`, `cup`; set `office_today` (an analyst's desk at dusk) and `monitor_dcf` (a DCF on screen, bars then the terminal-value block). Modern looks: `modern_navy`,
 `modern_grey`.
 
 Rules: each scene has a teaching purpose stated in the visual plan; reconstructions are badged; data comes from the
