@@ -18,6 +18,15 @@ What has been settled, and what is still open. Newest first.
 
 ## Settled
 
+- **Reels follow the same cinematic standards** (13 Nov, evening, Pietro: "Do the new standards apply to reels as
+  well? They should."). Every Instagram Reel follows `docs/production/` exactly as Shorts and long videos do: the
+  cinematic standard (real motion that explains, filmed segments from `cine.py` where a story or a person helps,
+  reconstructions badged), the audio standard (HEART at 0.9, action-timed effects, clean master at -16 LUFS plus an
+  original-scored alternative when feasible), the quality gates (motion checked in motion, not only stills; facts,
+  rights, disclosure judged on the finished Reel) and the formats A to F (the Levels quiz is one of them). The proof
+  of concept is the bar. `docs/reel-style.md` stays the Reel's visual base (paper, kinetic type); the cinematic
+  standard adds to it. Reel-specific gates: `quality-gates.md` section 9.
+
 - **The cinematic proof of concept is the quality reference** (13 Nov, evening, Pietro, after watching the Newton
   1720 proof (16:9 scored and clean, the 9:16 cut) and the long-video integration test: "This is amazing - this is
   exactly the quality we are looking for."). `build/cine_poc_newton.py` is now the bar every long video, Short and

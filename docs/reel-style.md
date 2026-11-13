@@ -1,5 +1,11 @@
 # Reel style
 
+> **13 Nov 2026 (Pietro): the cinematic standards apply to Reels.** This file stays the Reel's visual base (paper,
+> kinetic typography, the IB palette). `docs/production/cinematic-standard.md`, `audio-standard.md`,
+> `quality-gates.md` (section 9 for Reels) and the formats in `short-form-standard.md` add to it and win where they
+> disagree: real motion that explains, filmed segments from `build/cine.py` when a person or a story helps, HEART at
+> 0.9, a clean master plus a scored alternative when feasible, motion checked in motion.
+
 The standard for every Reel from 3 November 2026. It comes from a reference
 Reel Pietro chose ("Familiarity doesn't create excitement", a kinetic
 typography piece by another creator), studied frame by frame, then mapped onto

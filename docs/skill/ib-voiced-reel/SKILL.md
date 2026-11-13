@@ -1,6 +1,6 @@
 ---
 name: "ib-voiced-reel"
-description: "Make every Instagram Reel for @investmentbankinginterviews voiced in the channel narrator HEART (Kokoro af_heart, 0.9, from 13 Nov), with real animation, synchronised sound effects, a clean master plus an original-scored alternative when feasible, checks, caption, comment question and the daily quality log. The Levels quiz is one format, not the only one."
+description: "Make every Instagram Reel for @investmentbankinginterviews to the same cinematic standards as the YouTube films: the HEART narrator (Kokoro af_heart, 0.9), real animation and filmed segments, synchronised sound effects, a clean master plus an original-scored alternative when feasible, motion and quality gates, caption, comment question and the daily quality log. The Levels quiz is one format, not the only one."
 ---
 
 # Voiced Reels for @investmentbankinginterviews
@@ -8,10 +8,13 @@ description: "Make every Instagram Reel for @investmentbankinginterviews voiced 
 Version 2026-11-13 (cinematic upgrade). Authoritative copy: `docs/skill/ib-voiced-reel/SKILL.md` in the ib-autopost
 repo; the installed plugin is built from it (`docs/production/skill-sync.md`).
 
-**Standards (13 Nov 2026, cinematic upgrade):** `docs/production/cinematic-standard.md`, `audio-standard.md`,
-`quality-gates.md` and `voice-decision.md` in the ib-autopost repo win over this file where they disagree, unless
-`docs/decisions-log.md` records a newer decision by Pietro. An older copy of this skill that names the G2, BELLA,
-EMMA rotation as current is out of date.
+**Standards (13 Nov 2026, Pietro: "Do the new standards apply to reels as well? They should."):** every Reel
+follows `docs/production/cinematic-standard.md`, `audio-standard.md`, `quality-gates.md` (section 9 is the Reel
+gate), the formats A to F of `short-form-standard.md` and `voice-decision.md`, exactly as Shorts and long videos do.
+`docs/reel-style.md` stays the visual base (paper, kinetic type). The bar is the cinematic proof of concept
+(`build/cine_poc_newton.py`; Pietro, 13 Nov: "exactly the quality we are looking for"). These win over this file
+where they disagree, unless `docs/decisions-log.md` records a newer decision by Pietro. An older copy of this skill
+that names the G2, BELLA, EMMA rotation, "no music in any file" or the Levels quiz as the only format is out of date.
 
 ## The voice rule (from 13 Nov)
 
@@ -60,8 +63,13 @@ HEART or any stock Kokoro voice. Never print or commit a key if one is around.
    `make(EP, "<VOICE>", keep_voice=True)` so the voice stays the same. A
    wrong line: `make(EP, "<VOICE>", keep_voice=True, redo=["a2"])`.
 
-## Checks before delivering
+## Checks before delivering (`quality-gates.md` section 9)
 
+- Motion in motion: `python3 build/yt_preview.py --clip build/out/<slug>/<slug>.mp4` (static share, longest static
+  run, logged) and a contact sheet of the hook, each level or beat, the transitions and the close. Cards with only a
+  push-in fail.
+- Facts and rights as for any film: every number worked in the docstring, reconstructions badged, props show only
+  sourced figures.
 - `build/out/<slug>/takes.json`: every line `"wer": 0` (heard word for word).
 - Quality: `python3 -c "import quality; print(quality.score('build/out/<slug>/<slug>.mp4'))"`
   (DNSMOS overall; about 3.1 to 3.5 is studio-clean).

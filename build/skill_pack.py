@@ -17,7 +17,7 @@ import zipfile
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 SKILLS = ["youtube-videos-creator", "ib-voiced-reel", "music-library", "content-compliance"]
-VERSION = "2.0.0"                     # 13 Nov 2026: the cinematic-upgrade versions
+VERSION = "2.1.0"                     # 13 Nov 2026 evening: Reels bound to the cinematic standards
 SECRET = re.compile(r"(gh[pousr]_[A-Za-z0-9]{20,}|EAA[A-Za-z0-9]{20,}|sk-[A-Za-z0-9]{20,}|BEGIN [A-Z ]*PRIVATE KEY|VOICE_KEY=\S{6,})")
 
 

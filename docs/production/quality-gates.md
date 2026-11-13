@@ -1,7 +1,7 @@
 # Quality gates
 
 Pietro, 13 Nov 2026: his long-form documentary instructions (morning) and the cinematic-upgrade directive (the same
-day), merged. Long-form gates first; the Short and Reel gates are in `short-form-standard.md` and add to these.
+day), merged. Long-form gates first; the Shorts gates in `short-form-standard.md` and the Reel gates in section 9 add to them.
 
 A film is delivered only when every gate passes, or when the delivery message names the gate that did not pass and
 why. Every run reports each gate as PASS, FAIL (with what was done) or NOT CHECKED (with why). A number is
@@ -102,3 +102,20 @@ at children (it should not be).
 - Nothing is uploaded, scheduled or published by a run: Pietro approves the finished file and uploads it himself.
 - Existing episodes still render; generated MP4s, stems and recordings never committed; no secrets in git; logs
   updated; `git pull --rebase`, never force-push; render time and file sizes logged.
+
+## 9. Instagram Reels (Pietro, 13 Nov: the new standards apply to Reels too)
+
+A Reel passes sections 1, 2, 3, 5, 6 and 8 as a film does, adapted to 9:16, plus:
+
+- **Motion in motion**: `python3 build/yt_preview.py --clip build/out/<slug>/<slug>.mp4` (static share, longest static
+  run) and a contact sheet of the hook, every level or beat, the transitions and the close. A Reel that reads as
+  cards with a push-in fails, as a long video does.
+- **Format and story**: the best of formats A to F for the topic (`short-form-standard.md` section 3); the hook in
+  the first second; one teaching idea, shown moving.
+- **Layout**: safe-area, `clear.json` and `WRAP` at zero; captions never over the action.
+- **Voice**: HEART at 0.9, every line word for word in `takes.json`.
+- **Sound and masters**: action-timed effects, no whoosh; the clean master at about -16 LUFS, true peak at or under
+  -1.5 dBTP; the scored alternative (`python3 build/master.py scored build/out/<slug>/<slug>.mp4 -16 <mood> <mood>`)
+  when feasible, measured, never with platform-library or commercial music.
+- **Caption**: PASS on ig-human, the substance checks in content-compliance, the AI-narration line; Instagram's AI
+  label recommended for the synthetic narrator.

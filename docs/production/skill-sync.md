@@ -24,7 +24,7 @@ run to follow the repo where a loaded copy disagrees.
    (never a retired rule such as "the day's trial voice" or "YouTube uses GEORGE").
 2. `python3 build/skill_pack.py` (or name the skills). It validates each one (name, description, no credentials, no
    retired rule in the description), writes `build/out/plugins/<name>.plugin` (a zip of
-   `.claude-plugin/plugin.json`, `skills/<name>/SKILL.md` and a README; version 2.0.0 for the 13 Nov set), and checks
+   `.claude-plugin/plugin.json`, `skills/<name>/SKILL.md` and a README; version 2.0.0 for the 13 Nov set; ib-voiced-reel 2.1.0 the same evening, when Pietro extended the standards to Reels), and checks
    the archive. `claude plugin validate <dir>/.claude-plugin/plugin.json` on the unzipped folder passes; its only
    warnings (no icon, no marketplace install line) are for the public plugin directory, not for a private install.
 3. Send the `.plugin` files to Pietro. **Installing is his step**: he opens each file in Claude and accepts it,

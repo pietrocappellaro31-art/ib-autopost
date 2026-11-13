@@ -10,6 +10,8 @@ This is the IB finance brand only. Another channel was named as a reference for 
 animation, polished narration, original score, ambience, fluid transitions). Nothing of it is used here: no brand,
 characters, story, palette, logos, music, files or schedules.
 
+Applies to Reels too (Pietro, 13 Nov evening: "They should."); the Reel gates are `quality-gates.md` section 9.
+
 ## 1. The goal
 
 A viewer should feel they are watching an animated financial documentary or short film, not a narrated
