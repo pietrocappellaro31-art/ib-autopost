@@ -330,6 +330,17 @@ LOOKS = {
     "lady_blue":  dict(coat="#3F6E8C", coat2="#2E5670", vest="#F7F5F2", legs="#3F6E8C", stock="#3F6E8C", shoe="#2A1E18", skin="#F1CBAA", hair="#5A3A28", hat="bonnet", style="dress", cuff="#F7F5F2"),
     "lady_red":   dict(coat="#A8402A", coat2="#86301E", vest="#F7F5F2", legs="#A8402A", stock="#A8402A", shoe="#2A1E18", skin="#B97A55", hair="#1E1410", hat="bonnet", style="dress", cuff="#F7F5F2"),
     "modern_navy": dict(coat="#1F2A44", coat2="#151D31", vest="#F7F5F2", legs="#1F2A44", stock="#1F2A44", shoe=INK, skin="#E5B391", hair="#2A1E18", hat="", style="suit", cuff="#F7F5F2", tie=RED),
+    # 13 Nov, YouTube #7 (New York, 1907): frock coats and top hats, lounge suits and bowlers, long skirts. Generic
+    # period clothing; nobody's likeness. era="1907" drops the 1700s periwig and shoe buckles.
+    "banker_1907": dict(coat="#23252B", coat2="#16181C", vest="#3A3D44", legs="#3A3A3A", stock="#3A3A3A", shoe=INK, skin="#E8BB98", hair="#9A948C", hat="top", style="long", cuff="#F7F5F2", era="1907"),
+    "banker_1907b": dict(coat="#3A2E28", coat2="#2A211C", vest="#7A3B22", legs="#2E2E30", stock="#2E2E30", shoe=INK, skin="#D9A684", hair="#3A2A20", hat="top", style="long", cuff="#F7F5F2", era="1907"),
+    "banker_1907c": dict(coat="#2F3B46", coat2="#222C35", vest="#C99A3B", legs="#2B2B2B", stock="#2B2B2B", shoe=INK, skin="#B8805C", hair="#1E1410", hat="top", style="long", cuff="#F7F5F2", era="1907"),
+    "clerk_1907": dict(coat="#4A4D52", coat2="#36383C", vest="#F7F5F2", legs="#4A4D52", stock="#4A4D52", shoe=INK, skin="#E5B391", hair="#5A3A28", hat="bowler", style="suit", cuff="#F7F5F2", tie=INK, era="1907"),
+    "clerk_1907b": dict(coat="#5B4636", coat2="#46362A", vest="#F7F5F2", legs="#5B4636", stock="#5B4636", shoe=INK, skin="#8D5A3B", hair="#14100D", hat="bowler", style="suit", cuff="#F7F5F2", tie=RED, era="1907"),
+    "clerk_1907c": dict(coat="#2E4A5A", coat2="#223845", vest="#F7F5F2", legs="#2E4A5A", stock="#2E4A5A", shoe=INK, skin="#F0C7A4", hair="#BDB4A6", hat="bowler", style="suit", cuff="#F7F5F2", tie=MUSTARD, era="1907"),
+    "worker_1907": dict(coat="#5B6B5A", coat2="#47554A", vest="#C9A27A", legs="#4A3B30", stock="#4A3B30", shoe="#2A1E18", skin="#D59E7B", hair="#3A2A20", hat="cap", style="suit", cuff="#D8CFC0", tie="#7A3B22", era="1907"),
+    "lady_1907": dict(coat="#5A3F5E", coat2="#452F49", vest="#F7F5F2", legs="#5A3F5E", stock="#5A3F5E", shoe="#2A1E18", skin="#F1CBAA", hair="#5A3A28", hat="wide", style="dress", cuff="#F7F5F2", era="1907"),
+    "lady_1907b": dict(coat="#2E5670", coat2="#22435A", vest="#F7F5F2", legs="#2E5670", stock="#2E5670", shoe="#2A1E18", skin="#B97A55", hair="#1E1410", hat="wide", style="dress", cuff="#F7F5F2", era="1907"),
     "modern_grey": dict(coat="#4A4D52", coat2="#36383C", vest="#F7F5F2", legs="#4A4D52", stock="#4A4D52", shoe=INK, skin="#8A5638", hair="#14100D", hat="", style="suit", cuff="#F7F5F2", tie=TEAL),
 }
 
@@ -351,7 +362,7 @@ def _leg(L, back):
         thigh = _p("M-15,-4 C-17,30 -14,60 -11,84 L11,84 C14,60 17,30 15,-4 Z", legs)
         shin = _p("M-11,-2 C-11,30 -9,56 -8,76 L8,76 C9,56 11,30 11,-2 Z", stock)
     shoe_d = "M-10,-5 L14,-4 C26,-3 31,3 29,9 L-10,9 Q-13,2 -10,-5 Z"
-    buckle = '' if L["style"] in ("suit",) else f'<rect x="4" y="-4" width="7" height="5" rx="1" fill="{MUSTARD}" stroke="{INK}" stroke-width="1.5"/>'
+    buckle = '' if L["style"] in ("suit",) or L.get("era") == "1907" else f'<rect x="4" y="-4" width="7" height="5" rx="1" fill="{MUSTARD}" stroke="{INK}" stroke-width="1.5"/>'
     return (f'<g class="hip{side}">{thigh}<g class="kn{side}">{shin}'
             f'<g class="ft{side}">{_p(shoe_d, shoe)}{buckle}</g></g></g>')
 
@@ -374,10 +385,13 @@ def _head(L):
     skin, hair = L["skin"], L["hair"]
     back_hair = ""
     top_hair = ""
-    if L["hat"] in ("", "tricorn") and L["style"] == "long":             # periwig: curls fall behind to the shoulders
+    if L["hat"] in ("", "tricorn") and L["style"] == "long" and L.get("era") != "1907":   # periwig: curls fall behind to the shoulders
         back_hair = _p("M-18,-58 C-40,-50 -42,-16 -36,8 C-30,22 -18,24 -10,18 C-6,6 -6,-20 -2,-40 Z", hair)
         back_hair += "".join(f'<circle cx="{-30 + 7*i}" cy="{4 + (i % 2)*5}" r="7" fill="{hair}" stroke="{INK}" stroke-width="2.2"/>' for i in range(3))
         top_hair = _p("M-22,-48 C-20,-66 6,-72 22,-60 C30,-54 30,-46 26,-44 C14,-52 -2,-50 -14,-40 Z", hair)
+    elif L["hat"] == "wide":                                          # 1907: hair up, under a wide hat
+        back_hair = _p("M-20,-50 C-34,-44 -34,-20 -22,-14 C-14,-20 -12,-34 -6,-46 Z", hair)
+        top_hair = _p("M-22,-44 C-22,-62 10,-68 24,-54 C14,-52 0,-50 -16,-36 Z", hair)
     elif L["hat"] == "bonnet":
         back_hair = _p("M-20,-50 C-34,-40 -32,-12 -20,-6 C-14,-14 -12,-30 -6,-44 Z", hair)
         top_hair = (_p("M-30,-46 C-28,-72 16,-78 30,-54 C24,-50 -6,-52 -24,-38 Z", "#F7F5F2")
@@ -391,6 +405,18 @@ def _head(L):
         hat = (_p("M-40,-58 C-26,-64 18,-68 40,-58 C30,-50 22,-52 14,-50 C2,-48 -12,-50 -40,-58 Z", INK)
                + _p("M-24,-62 C-20,-86 20,-86 26,-62 Z", "#1E1A18")
                + f'<path d="M-30,-58 C-6,-66 18,-64 34,-58" fill="none" stroke="{MUSTARD}" stroke-width="2.2"/>')
+    elif L["hat"] == "top":                                           # 1907: a silk top hat
+        hat = (_p("M-34,-60 C-20,-66 18,-68 36,-60 C28,-54 -24,-54 -34,-60 Z", INK)
+               + _p("M-22,-62 L-20,-118 C-6,-122 10,-122 22,-118 L22,-62 Z", "#141416")
+               + f'<path d="M-21,-72 L22,-72" stroke="#55555C" stroke-width="5"/>')
+    elif L["hat"] == "bowler":                                        # 1907: a bowler (derby)
+        hat = (_p("M-34,-58 C-22,-64 20,-66 38,-58 C30,-52 -24,-52 -34,-58 Z", "#1E1A18")
+               + _p("M-22,-60 C-24,-96 22,-98 24,-60 Z", "#2A2522")
+               + f'<path d="M-22,-64 C-4,-68 12,-68 24,-64" fill="none" stroke="#55505A" stroke-width="3"/>')
+    elif L["hat"] == "wide":
+        hat = (_p("M-46,-56 C-24,-66 24,-68 48,-56 C34,-48 -32,-48 -46,-56 Z", L["coat"])
+               + _p("M-24,-58 C-22,-82 22,-84 26,-58 Z", L["coat2"])
+               + f'<circle cx="18" cy="-70" r="7" fill="{RED}" stroke="{INK}" stroke-width="2"/>')
     elif L["hat"] == "cap":
         hat = _p("M-24,-50 C-22,-74 18,-76 26,-54 L38,-50 C30,-46 20,-48 -24,-46 Z", "#4A3B30")
     neck = _p("M-7,4 L-6,-12 L8,-12 L8,4 Z", skin)

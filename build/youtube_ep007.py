@@ -3,6 +3,8 @@ YouTube #7 (13 Nov 2026): the Panic of 1907. America had no central bank, so whe
 companies froze the money market, a 70-year-old private banker, J. P. Morgan, organised the rescue himself,
 ending with the trust company presidents locked inside his library until they signed. Banking crisis, first film
 made to docs/production/long-form-standard.md (visual plan: build/plans/ep007.md). Score: suspense.
+Remade the same day as -v2 to the cinematic standard Pietro approved: six filmed beats from build/cine_1907.py
+(the library, the run, the closed door, the call-money post, the pool arriving, the pledges), badged RECONSTRUCTION.
 
 Point of view: the common story makes Morgan the lone hero. The record shows a rescue by many hands (the Treasury,
 the New York Clearing House, Rockefeller, other banks), run by one man who decided who would be saved, and whose
@@ -52,6 +54,7 @@ dollar of deposits.
     python build/youtube_ep007.py
 """
 
+import cine_1907
 from youtube import make
 
 S = lambda art, txt="", lab="", hl=(), size=96, flip=False, **opts: dict(kind="sketch", art=art, opts=opts, label=lab, text=txt,
@@ -61,7 +64,7 @@ SC = lambda art, lab="", **opts: dict(kind="scene", art=art, opts=opts, label=la
 COPPER = dict(points=(("OCT 14", 62), ("OCT 16", 15)), unit="$", note="UNITED COPPER, A SHARE")
 
 EP = dict(
-    slug="yt-007-panic-of-1907",
+    slug="yt-007-panic-of-1907-v2",
     title="In 1907, America Had No Central Bank. So a Banker Locked the Doors.",
     score="suspense",
     thumb=dict(art=("library_lock", dict(still=True)),
@@ -72,12 +75,8 @@ EP = dict(
                looks=["split-red-paper", "paper-frame-ghost"]),
     chapters=[
         dict(title="A library at four in the morning", art=("library_lock", dict()), beats=[
-            dict(say="It is just after four in the morning, on a Sunday in November nineteen oh seven. In a private library in New York, the front doors have been quietly locked.",
-                 shows=[SC("library_lock", "New York, November 1907"),
-                        S("clock", "The front doors are locked.", "Just after 4 a.m.", ["locked."], 110, flip=True, time="4:00")]),
-            dict(say="Inside are the presidents of the city's trust companies. The man who locked them in is a seventy year old banker, John Pierpont Morgan.",
-                 shows=[S("bankers_table", "The trust company presidents.", "Inside", ["presidents."], 96, pledge=False),
-                        S("figures", "A banker, about seventy.", "J. P. Morgan", ["seventy."], 110, flip=True, n=1, hi=0)]),
+            dict(say="It is just after four in the morning, on a Sunday in November nineteen oh seven. In a private library in New York, the front doors have been quietly locked. Inside are the presidents of the city's trust companies. The man who locked them in is a seventy year old banker, John Pierpont Morgan.",
+                 show=dict(kind="cine", shot=cine_1907.SHOTS["library_lock"])),
             dict(say="He held no public office. But for three weeks, he had been doing the job a central bank would do.",
                  shows=[S("stamp", "No public office.", "", ["No"], 120, text="PRIVATE"),
                         dict(kind="split", left=("bank", "A central bank", "Lends in a panic"), right=("person", "One banker", "Did it instead"), mid="vs")]),
@@ -143,7 +142,7 @@ EP = dict(
                  shows=[S("arrows", "The fear jumped.", "October 18", ["jumped."], 120, up="FEAR", down=""),
                         S("bank", "The Knickerbocker Trust.", "Linked to Morse", ["Knickerbocker"], 100, flip=True, label="KNICKERBOCKER")]),
             dict(say="On October the eighteenth, depositors started to pull their money out.",
-                 shows=[S("queue", "Depositors pull their money.", "October 18", ["pull"], 110, n=8, label="KNICKERBOCKER")]),
+                 show=dict(kind="cine", shot=cine_1907.SHOTS["run"])),
             dict(say="The Knickerbocker asked the Clearing House for help. On the twenty first it was refused. The Clearing House kept its resources for its members, and the trust was not a member.",
                  shows=[S("speech", "It asked for help.", "", ["help."], 120, text="Help?"),
                         S("stamp", "Refused, October 21.", "", ["Refused,"], 110, flip=True, text="REFUSED"),
@@ -152,9 +151,7 @@ EP = dict(
                  shows=[S("ledger", "They looked at its books.", "", ["books."], 100, names=("Loans  ?", "Deposits  ?", "Capital  ?", "Cash  ?"), hi=(2, 3)),
                         S("magnifier", "No firm answer in time.", "Benjamin Strong", ["time"], 100, flip=True, label="SOLVENT?")]),
             dict(say="On October the twenty second, in a few hours, depositors took out nearly eight million dollars. Shortly after noon, the Knickerbocker shut its doors. It was finished.",
-                 shows=[S("outflow", "Nearly $8 million in a few hours.", "October 22", ["$8"], 100, label="$8M OUT"),
-                        S("clock", "Shortly after noon.", "", ["noon,"], 110, flip=True, time="12:10"),
-                        S("stamp", "The doors shut.", "", ["shut"], 120, text="CLOSED")]),
+                 show=dict(kind="cine", shot=cine_1907.SHOTS["closed"])),
         ]),
         dict(title="Money at a hundred percent", art=("rate_gauge", dict()), beats=[
             dict(say="Now every trust looked suspect, and everyone wanted cash at once. The worst runs hit the Trust Company of America.",
@@ -163,8 +160,7 @@ EP = dict(
             dict(say="Look at what happened to the price of money. Brokers borrowed overnight, on what was called call money.",
                  shows=[dict(kind="term", term="Call money", text="Loans to brokers that the lender can call back at any time, priced as a yearly rate.")]),
             dict(say="On October the twenty second its rate jumped from nine and a half percent to seventy. Two days later it hit one hundred percent, and at times nobody would lend at all.",
-                 shows=[S("rate_gauge", "9.5%, then 70%, then 100%.", "Call money, a yearly rate", ["100%."], 92, flip=True),
-                        S("stamp", "At times, nobody would lend.", "", ["nobody"], 110, text="NO LENDERS")]),
+                 show=dict(kind="cine", shot=cine_1907.SHOTS["call_money"])),
             dict(say="Without loans, brokers would have had to dump shares, and the stock exchange itself might have had to close.",
                  shows=[S("dominoes", "Brokers dump shares.", "", ["dump"], 110, labels=("LOANS", "BROKERS", "SHARES", "EXCHANGE"), fall=1)]),
         ]),
@@ -173,8 +169,7 @@ EP = dict(
                  shows=[S("clock", "One in the morning.", "October 24", ["morning."], 110, time="1:00"),
                         dict(kind="flow", items=[("bank", "US Treasury"), ("coin", "$25 million"), ("bank", "New York banks")])]),
             dict(say="The same day, Morgan's firm organised a pool of twenty five million dollars and sent it to the stock exchange as call money. By one account it took him about fifteen minutes to raise it.",
-                 shows=[S("coins", "A $25 million pool.", "For the stock exchange", ["$25"], 100, stacks=[4, 8, 12]),
-                        S("clock", "About fifteen minutes.", "By one account", ["fifteen"], 110, flip=True, time="0:15")]),
+                 show=dict(kind="cine", shot=cine_1907.SHOTS["pool"])),
             dict(say="John Rockefeller pledged ten million dollars of his own.",
                  shows=[dict(kind="number", value=10, pre="$", suf=" million", label="pledged by John D. Rockefeller (Boston Fed account)")]),
             dict(say="On October the twenty sixth, the Clearing House began issuing loan certificates, paper that banks could use to settle with each other instead of cash. Banks also limited how much cash depositors could take out.",
@@ -192,11 +187,8 @@ EP = dict(
                         S("library_lock", "Summoned to his library.", "", ["library."], 96, flip=True)]),
             dict(say="By the library's own account, he quietly locked the front doors.",
                  shows=[S("library_lock", "He quietly locked the doors.", "The Morgan Library & Museum", ["locked"], 96)]),
-            dict(say="The deal on the table was simple: the stronger trusts would put up money to save the weaker ones. The Boston Fed's account puts that pool at twenty five million dollars.",
-                 shows=[S("seesaw", "The strong save the weak.", "", ["weak"], 100, left="Strong", right="Weak", tip=0),
-                        dict(kind="number", value=25, pre="$", suf=" million", label="the pool for the weaker trusts (Boston Fed account)")]),
-            dict(say="Just after four in the morning, each of them signed a pledge for their share.",
-                 shows=[S("bankers_table", "Each signed a pledge.", "Just after 4 a.m.", ["signed"], 96)]),
+            dict(say="The deal on the table was simple: the stronger trusts would put up money to save the weaker ones. The Boston Fed's account puts that pool at twenty five million dollars. Just after four in the morning, each of them signed a pledge for their share.",
+                 show=dict(kind="cine", shot=cine_1907.SHOTS["pledges"])),
             dict(say="There was a second deal inside the rescue. Rescuing a troubled broker also let Morgan's bank arrange for United States Steel to buy a competitor.",
                  shows=[S("handshake", "A second deal.", "", ["second"], 110, left="US Steel", right="Rival"),
                         S("scale", "A rescue, and a deal.", "", ["deal."], 100, flip=True, left="Rescue", right="Deal", tip=1)]),

@@ -12,3 +12,4 @@
 - Disclosure: description ends with the music line, the AI-narration line and the not-financial-advice line. Studio: Altered or synthetic content / AI use = Yes recommended (reason in `docs/production/quality-gates.md` section 6); Made for kids = No.
 - Claims: education, not investment advice; said on screen and in the narration. The closing question asks for an opinion and recommends nothing.
 - Approval: Pietro reviews the file before uploading.
+- Superseded the same evening by `yt-007-panic-of-1907-v2` (filmed beats). Upload the -v2 file, not this one.
