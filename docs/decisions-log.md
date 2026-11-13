@@ -18,6 +18,14 @@ What has been settled, and what is still open. Newest first.
 
 ## Settled
 
+- **The cinematic proof of concept is the quality reference** (13 Nov, evening, Pietro, after watching the Newton
+  1720 proof (16:9 scored and clean, the 9:16 cut) and the long-video integration test: "This is amazing - this is
+  exactly the quality we are looking for."). `build/cine_poc_newton.py` is now the bar every long video, Short and
+  Reel aims at: filmed scenes, HEART at 0.9, the `score.py` score under the voice, action-timed foley. This counts
+  as his approval of a `score.py` cue, the condition the standards set before calling a scored master more than an
+  unheard candidate: from 14 Nov a scored master that passes its gate is offered as approved music, and the clean
+  file stays alongside it.
+
 - **Cinematic upgrade: one coherent rule set; older rules superseded, history kept** (13 Nov, afternoon, Pietro's
   "Cinematic finance video production system" directive, arriving after the long-form and Shorts standards of the
   same morning). The finance brand stays independent: another channel was named only as a reference for production
