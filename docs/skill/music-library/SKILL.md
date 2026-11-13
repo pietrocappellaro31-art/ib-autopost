@@ -31,6 +31,9 @@ re-recording a song to get past detection.
    fills in the credit line the engine writes (see youtube-videos-creator, section 6). The library-matched
    bed (`music_library.bed()`) stays in the code only for re-rendering an old video with `music=True`.
    A library song is commercial, so it cannot go on a long video without a Content ID claim.
+   **13 Nov:** long videos now ship a clean MP4 and a scored MP4 with an original score from `music.py`
+   (`docs/production/audio-standard.md`, `score=` reflective, suspense or light). The library is still not
+   used for long videos: the score is written from the film's mood, not from a library song.
 
 A song Pietro truly holds a licence for (a written licence from the artist, or an Epidemic Sound or
 Artlist subscription that covers it) can be set to `rights=licence`, with the proof added to
@@ -64,9 +67,8 @@ the content-compliance gate passes.
 - `music_library.pick(mood, kind, slug)` returns the nearest song on energy and valence. A song used
   for the same kind in the last 3 days loses a little, so the channel does not play one song all
   week. The use log is `used` in `library.json`.
-- **Long video** (`youtube.py mix`): automatic. The render prints the pick and the bed settings;
-  `music.json` and `metadata.json` record the reference (`music_library_pick`). Set
-  `music_library=False` to fall back to a seed-only bed.
+- **Long video**: not used (12 Nov; from 13 Nov the scored MP4 uses an original score from the film's
+  `score=` mood, see `docs/production/audio-standard.md`).
 - **Short** (`levels.make`): automatic for slugs starting with `shorts-`. The render prints the pick
   and writes `music_pick.json`. Put that song first in the music block, then add one or two sounds
   trending on Shorts that week (web search). The pick's `others` are the runner-ups.

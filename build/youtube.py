@@ -596,59 +596,90 @@ def srt(sc, items, path):
 
 
 MUSIC_CREDIT = "Music: [song title] by [artist], from the YouTube Audio Library"
+SCORE_CREDIT = "Music: original score made for this video."
+# 13 Nov: YouTube Help (support.google.com/youtube/answer/14328491) asks for disclosure of realistic altered or
+# synthetic content (a real person made to say or do something, real events or places altered, realistic scenes
+# that did not happen, AI music as the main focus); fully animated and unrealistic content needs none, and
+# disclosing "won't limit a video's audience or impact its eligibility to earn money". Our films are drawn
+# animation with a synthetic narrator who imitates nobody. The page does not address a synthetic narrator, so
+# the recommendation stays Yes on cost-benefit grounds (no downside, removes doubt), stated with its reason.
+AI_DISCLOSURE = ("Recommended: Yes. Not clearly required (drawn animation, a synthetic narrator imitating nobody, no real "
+                 "person shown saying anything), but YouTube's help page does not cover synthetic narration and says "
+                 "disclosure does not limit reach or monetisation, so Yes removes the doubt at no cost.")
+
+
+# 13 Nov (Pietro's long-form documentary standard, docs/production/audio-standard.md): every long video gets two
+# mixes. CLEAN: voice and sound effects, no music. SCORED: the same plus an original instrumental score written
+# by build/music.py for this video (synthesised from scratch, nothing sampled, no third-party melody), ducked
+# under the voice. The score's character follows the film: ep["score"] is "reflective" (history), "suspense"
+# (a crisis, kept controlled) or "light" (a technical explainer); "none" makes the clean mix only.
+SCORES = {
+    "reflective": dict(bpm=72, mode="minor", drums=False, bell=False, level=.11),
+    "suspense": dict(bpm=84, mode="minor", drums=False, bell=True, level=.12),
+    "light": dict(bpm=96, mode="major", drums=True, bell=True, level=.10),
+}
+# The scored mix is recommended only if it passes all three. DNSMOS OVRL/BAK cannot judge it: the model scores any
+# music under a voice as background noise (13 Nov, #6 remixed: BAK 4.07 clean, 2.46 scored with the music 24.6 dB
+# under the voice). So the gate uses SIG (the speech itself), the voice-over-music margin, and a word check of
+# 20 s of the scored mix.
+SCORE_GATE = dict(voice_over_music_db=18.0, sig_drop=.3, chunk_wer=.05)
+
+
+def _mux(work, slug, out, music_wav=None, mv=.2):
+    """One master from the stems: voice through the master chain, sound effects, and (optionally) the music
+    ducked by the voice; -14 LUFS, then the second loudness stage."""
+    ins = ["-i", str(work / f"{slug}-silent.mp4"), "-i", str(work / "voice.wav"), "-i", str(work / "sfx.wav")]
+    if music_wav is None:
+        graph = (f"[1:a]{MASTER},aresample=48000[v];[2:a]aresample=48000[fx];"
+                 f"[v][fx]amix=inputs=2:normalize=0,loudnorm=I=-14:TP=-1.5:LRA=11[a]")
+    else:
+        ins += ["-i", str(music_wav)]
+        graph = (f"[1:a]{MASTER},aresample=48000,asplit=2[v][key];[2:a]aresample=48000[fx];"
+                 f"[3:a]volume={mv}[m];[m][key]sidechaincompress=threshold=0.02:ratio=5:attack=30:release=350:makeup=1[md];"
+                 f"[v][fx][md]amix=inputs=3:normalize=0,loudnorm=I=-14:TP=-1.5:LRA=11[a]")
+    subprocess.run(["ffmpeg", "-y", "-v", "error", *ins, "-filter_complex", graph, "-map", "0:v", "-map", "[a]", "-c:v", "copy",
+                    "-c:a", "aac", "-b:a", "192k", "-ar", "48000", "-shortest", "-movflags", "+faststart", str(out)], check=True)
+    trim_loudness(out)
+    return out
 
 
 def mix(ep, work):
-    """Voice, sound effects and the video's own music bed, ducked under the
-    voice, mastered to -14 LUFS (what YouTube plays at). Rerunnable on its own
-    (remix) since the silent video and the stems stay in out/<slug>/.
+    """Writes <slug>-clean.mp4 always and <slug>-scored.mp4 unless ep["score"] is "none"; <slug>.mp4 is the
+    recommended one (scored, unless sound_report's gate sends it back to clean). Rerunnable on its own (remix):
+    the silent video and the stems stay in out/<slug>/.
 
-    12 Nov (Pietro: "the music is terrible. From now on, I will add the music myself"): long videos ship
-    with voice and sound effects only (ep["music"] defaults to False). Pietro adds a track at upload and
-    fills in the credit line (MUSIC_CREDIT) that describe() puts in the description. music=True keeps
-    the old music.py bed for re-renders."""
-    final = work / f"{ep['slug']}.mp4"
-    if not ep.get("music", False):
-        for f in ("music.wav", "music_ducked.wav", "music.json"):
-            (work / f).unlink(missing_ok=True)
-        graph = (f"[1:a]{MASTER},aresample=48000[v];[2:a]aresample=48000[fx];"
-                 f"[v][fx]amix=inputs=2:normalize=0,loudnorm=I=-14:TP=-1.5:LRA=11[a]")
-        subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", str(work / f"{ep['slug']}-silent.mp4"), "-i", str(work / "voice.wav"),
-                        "-i", str(work / "sfx.wav"), "-filter_complex", graph, "-map", "0:v", "-map", "[a]", "-c:v", "copy",
-                        "-c:a", "aac", "-b:a", "192k", "-ar", "48000", "-shortest", "-movflags", "+faststart", str(final)], check=True)
-        trim_loudness(final)
-        return final
+    History: 12 Nov (Pietro: "the music is terrible. From now on, I will add the music myself") long videos
+    shipped clean only. 13 Nov (Pietro's long-form standard) brings back a scored version next to the clean one,
+    restrained and fitted to the film, with the clean file kept for Pietro's own track. ep["music"]=True (old
+    episodes) maps to the scored mix with the earlier warm bed."""
+    import shutil
     import music
+    slug = ep["slug"]
+    clean = _mux(work, slug, work / f"{slug}-clean.mp4")
+    final = work / f"{slug}.mp4"
+    for f in ("music.wav", "music_ducked.wav", "music.json"):
+        (work / f).unlink(missing_ok=True)
+    mood = ep.get("score", "reflective" if not ep.get("music") else "warm")
+    if mood == "none":
+        shutil.copyfile(clean, final)
+        (work / f"{slug}-scored.mp4").unlink(missing_ok=True)
+        return final
     tm = json.load(open(work / "timing.json"))
-    seed = ep.get("music_seed", sum(map(ord, ep["slug"])))
-    # 12 Nov (Pietro's music library): pick the library track that fits ep["mood"] and write our own bed
-    # in its tempo, key, mode and feel. The reference's audio never enters the mix (music_library.py).
-    import music_library
-    ref = music_library.pick(ep.get("mood", "curious"), "long", slug=ep["slug"]) if ep.get("music_library", True) else None
-    if ref:
-        bed, info = music_library.bed(ref, tm["total"], seed=seed, breaks=tm["chapters"][1:])
-        info["upload_note"] = music_library.instructions(ref, "long")
-        print(f"  music: library pick {ref['id']} for mood {ep.get('mood', 'curious')!r} -> original bed at "
-              f"{info['bpm']:.0f} BPM, {info['key']} {info['mode']}, drums {info['drums']}", flush=True)
-    else:
-        bed, info = music.track(tm["total"], seed=seed, breaks=tm["chapters"][1:])
+    seed = ep.get("music_seed", sum(map(ord, slug)))
+    cfg = dict(SCORES.get(mood, dict(level=.2)))
+    mv = ep.get("music_level", cfg.pop("level", .2))
+    bed, info = music.track(tm["total"], seed=seed, breaks=tm["chapters"][1:], **cfg)
+    info.update(score=mood, music_level=mv)
     music.write(work / "music.wav", bed)
     json.dump(info, open(work / "music.json", "w"))
-    final = work / f"{ep['slug']}.mp4"
-    mv = ep.get("music_level", .2)
-    graph = (f"[1:a]{MASTER},aresample=48000,asplit=2[v][key];[2:a]aresample=48000[fx];"
-             f"[3:a]volume={mv}[m];[m][key]sidechaincompress=threshold=0.02:ratio=5:attack=30:release=350:makeup=1[md];"
-             f"[v][fx][md]amix=inputs=3:normalize=0,loudnorm=I=-14:TP=-1.5:LRA=11[a]")
-    subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", str(work / f"{ep['slug']}-silent.mp4"), "-i", str(work / "voice.wav"),
-                    "-i", str(work / "sfx.wav"), "-i", str(work / "music.wav"),
-                    "-filter_complex", graph, "-map", "0:v", "-map", "[a]", "-c:v", "copy", "-c:a", "aac", "-b:a", "192k", "-ar", "48000",
-                    "-shortest", "-movflags", "+faststart", str(final)], check=True)
-    trim_loudness(final)
+    print(f"  score: original {mood} score, {info['bpm']:.0f} BPM, {info['key']} {info['mode']}, level {mv}", flush=True)
+    scored = _mux(work, slug, work / f"{slug}-scored.mp4", work / "music.wav", mv)
     # the ducked music on its own, to measure how far the voice sits above it
     subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", str(work / "voice.wav"), "-i", str(work / "music.wav"), "-filter_complex",
                     f"[0:a]{MASTER},aresample=48000[key];[1:a]aresample=48000,volume={mv}[m];"
                     f"[m][key]sidechaincompress=threshold=0.02:ratio=5:attack=30:release=350:makeup=1[md]",
                     "-map", "[md]", "-ac", "1", str(work / "music_ducked.wav")], check=True)
+    shutil.copyfile(scored, final)
     return final
 
 
@@ -685,34 +716,61 @@ def trim_loudness(final, target=-14.0, ceiling=-1.5):
 
 
 def sound_report(work, final):
-    """10 Nov: the long video's sound measured on every render, like the Shorts: voice over the ducked
-    music while speaking, DNSMOS of the voice and of the final mix, loudness and true peak."""
-    import quality
-    if not (work / "music_ducked.wav").exists():               # 12 Nov: no music in the file
-        lufs, tp = lufs_of(final)
-        rep = dict(music="none in the file (Pietro adds it at upload)", dnsmos_voice=quality.score(work / "voice.wav"),
-                   dnsmos_mix=quality.score(final), lufs=lufs, true_peak_dbtp=tp)
-        json.dump(rep, open(work / "sound.json", "w"), indent=1)
-        print(f"  sound: no music in the file, DNSMOS voice {rep['dnsmos_voice']['ovrl']} / mix {rep['dnsmos_mix']['ovrl']}, "
-              f"{lufs} LUFS, {tp} dBTP", flush=True)
-        return rep
-    v, m = quality.load16(work / "voice.wav"), quality.load16(work / "music_ducked.wav")
-    k = min(len(v), len(m))
-    v, m = v[:k], m[:k]
-    win = 1600
-    rv = np.sqrt(np.convolve(v ** 2, np.ones(win) / win, "same"))
-    on = rv > .25 * np.percentile(rv[rv > 1e-4], 90)
-    vom = 20 * np.log10(np.sqrt(np.mean(v[on] ** 2)) / max(np.sqrt(np.mean(m[on] ** 2)), 1e-9))
-    lo = subprocess.run(["ffmpeg", "-hide_banner", "-i", str(final), "-af", "ebur128=peak=true", "-f", "null", "-"],
-                        capture_output=True, text=True).stderr
-    tail = lo[lo.rfind("Summary:"):]
-    lufs = float(re.search(r"I:\s+(-?[\d.]+) LUFS", tail).group(1))
-    tp = float(re.search(r"Peak:\s+(-?[\d.]+) dBFS", tail).group(1))
-    rep = dict(voice_over_music_db=round(float(vom), 1), dnsmos_voice=quality.score(work / "voice.wav"),
-               dnsmos_mix=quality.score(final), lufs=lufs, true_peak_dbtp=tp)
+    """Measured on every render: DNSMOS of the voice, of the clean mix and (when there is one) of the scored mix,
+    voice over the ducked music while speaking, loudness and true peak of each. 13 Nov: the scored mix is the
+    recommendation only if the voice sits SCORE_GATE dB over the music and its DNSMOS is within SCORE_GATE of the
+    clean mix; otherwise <slug>.mp4 becomes the clean mix and the report says why."""
+    import quality, shutil
+    slug = final.stem
+    clean, scored = work / f"{slug}-clean.mp4", work / f"{slug}-scored.mp4"
+    rep = dict(dnsmos_voice=quality.score(work / "voice.wav"))
+    if clean.exists():
+        l, t = lufs_of(clean)
+        rep["clean"] = dict(dnsmos=quality.score(clean), lufs=l, true_peak_dbtp=t)
+    if scored.exists() and (work / "music_ducked.wav").exists():
+        v, m = quality.load16(work / "voice.wav"), quality.load16(work / "music_ducked.wav")
+        k = min(len(v), len(m))
+        v, m = v[:k], m[:k]
+        win = 1600
+        rv = np.sqrt(np.convolve(v ** 2, np.ones(win) / win, "same"))
+        on = rv > .25 * np.percentile(rv[rv > 1e-4], 90)
+        vom = 20 * np.log10(np.sqrt(np.mean(v[on] ** 2)) / max(np.sqrt(np.mean(m[on] ** 2)), 1e-9))
+        l, t = lufs_of(scored)
+        rep["scored"] = dict(dnsmos=quality.score(scored), lufs=l, true_peak_dbtp=t, voice_over_music_db=round(float(vom), 1))
+        why = []
+        if vom < SCORE_GATE["voice_over_music_db"]:
+            why.append(f"voice only {vom:.1f} dB over the music")
+        if "clean" in rep and rep["scored"]["dnsmos"]["sig"] < rep["clean"]["dnsmos"]["sig"] - SCORE_GATE["sig_drop"]:
+            why.append("speech quality (DNSMOS SIG) more than %.1f under clean" % SCORE_GATE["sig_drop"])
+        try:                                                    # 20 s of the scored mix, heard against the clean mix
+            import voice_check as VC
+            tot = float(json.load(open(work / "timing.json"))["total"])
+            at = round(.4 * tot, 1)
+            heard = {}
+            for name, src in (("clean", clean), ("scored", scored)):
+                wav = work / f"_chunk_{name}.wav"
+                subprocess.run(["ffmpeg", "-y", "-v", "error", "-ss", str(at), "-t", "20", "-i", str(src), "-ac", "1", "-ar", "16000",
+                                str(wav)], check=True)
+                heard[name] = VC.transcribe(str(wav))
+                wav.unlink(missing_ok=True)
+            w = VC.wer(heard["clean"], heard["scored"])
+            rep["scored"]["chunk"] = dict(at_s=at, heard=heard["scored"], wer_vs_clean=round(w, 3))
+            if w > SCORE_GATE["chunk_wer"]:
+                why.append(f"20 s of the scored mix heard {w:.0%} differently from the clean mix")
+        except Exception as e:
+            rep["scored"]["chunk"] = f"word check failed: {e}"
+        rep["recommended"] = "clean" if why else "scored"
+        rep["gate"] = "; ".join(why) or "passed"
+        if why:
+            shutil.copyfile(clean, final)
+    else:
+        rep["recommended"] = "clean"
+        rep["gate"] = "no score made"
     json.dump(rep, open(work / "sound.json", "w"), indent=1)
-    print(f"  sound: voice {rep['voice_over_music_db']} dB over the music while speaking, DNSMOS voice {rep['dnsmos_voice']['ovrl']} / mix "
-          f"{rep['dnsmos_mix']['ovrl']}, {lufs} LUFS, {tp} dBTP" + ("  (voice under 15 dB over the music: lower music_level)" if vom < 15 else ""), flush=True)
+    c, sc = rep.get("clean", {}), rep.get("scored")
+    print(f"  sound: DNSMOS voice {rep['dnsmos_voice']['ovrl']}; clean {c.get('dnsmos', {}).get('ovrl')} at {c.get('lufs')} LUFS, "
+          f"{c.get('true_peak_dbtp')} dBTP" + (f"; scored {sc['dnsmos']['ovrl']} at {sc['lufs']} LUFS, {sc['true_peak_dbtp']} dBTP, "
+          f"voice {sc['voice_over_music_db']} dB over the music" if sc else "") + f"; recommended {rep['recommended']} ({rep['gate']})", flush=True)
     return rep
 
 
@@ -729,7 +787,9 @@ def describe(ep, chapters, total, voice_name, work):
     if ep.get("source_note"):
         src += "\n" + ep["source_note"]
     tags = ep.get("hashtags", [])
-    credit = "" if ep.get("music", False) else "\n\n" + MUSIC_CREDIT     # 12 Nov: Pietro fills it in at upload
+    snd = json.load(open(work / "sound.json")) if (work / "sound.json").exists() else {}
+    rec = snd.get("recommended", "clean")
+    credit = "\n\n" + (SCORE_CREDIT if rec == "scored" else MUSIC_CREDIT)   # 13 Nov: scored file credits our score
     desc = (ep["description"].strip() + src + "\n\nChapters\n" + chap_lines + credit
             + "\n\nNarration: AI-generated voice; script and analysis are our original work. "
               "Educational content, not financial advice. Not affiliated with any company mentioned."
@@ -739,14 +799,26 @@ def describe(ep, chapters, total, voice_name, work):
     assert len(tag_field) <= 500, f"tags are {len(tag_field)} characters; Studio allows 500"
     meta = dict(title=ep["title"], description=desc, tags=ep.get("tags", []), tags_for_studio=tag_field, hashtags=tags,
                 duration_s=round(total, 1), voice=voice_name,
-                youtube_altered_or_synthetic="Yes: realistic synthetic narration voice (not a real person). Tick it in YouTube Studio.",
+                youtube_altered_or_synthetic=ep.get("ai_disclosure", AI_DISCLOSURE),
                 made_for_kids=False,
-                music=("original, made for this video by build/music.py (no licence needed)" if ep.get("music", False)
+                recommended_file=f"{ep['slug']}-{rec}.mp4",
+                music=(f"original {snd.get('scored', {}) and ep.get('score', 'reflective')} score made for this video by build/music.py "
+                       "(synthesised, nothing sampled, no licence needed)" if rec == "scored"
                        else "none in the file: Pietro adds a track at upload and fills in the credit line"),
-                music_credit_line=None if ep.get("music", False) else MUSIC_CREDIT)
+                music_credit_line=SCORE_CREDIT if rec == "scored" else MUSIC_CREDIT,
+                music_credit_if_clean_with_own_track=MUSIC_CREDIT)
     json.dump(meta, open(work / "metadata.json", "w"), indent=1)
     (work / "description.txt").write_text(desc)
     return meta
+
+
+def transcript(ep, chapters, work):
+    """13 Nov: transcript.txt, the narration as written, under each chapter's real start time."""
+    stamp = lambda s: f"{int(s // 60)}:{int(s % 60):02d}"
+    out = [ep["title"], ""]
+    for (t, title), ch in zip(chapters, ep["chapters"]):
+        out += [f"[{stamp(t)}] {title}", ""] + [b["say"] for b in ch["beats"]] + [""]
+    (work / "transcript.txt").write_text("\n".join(out))
 
 
 def redescribe(ep):
@@ -796,5 +868,6 @@ def make(ep, voice_name=YOUTUBE_VOICE):
     thumbnail(ep, work)
     srt(sc, items, work / f"{ep['slug']}.srt")
     meta = describe(ep, chapters, total, voice_name, work)
+    transcript(ep, chapters, work)
     print(f"  -> {final.name}  {total / 60:.1f} min  voice {voice_name}")
     return final, meta

@@ -5,7 +5,7 @@ Three scheduled tasks make the content every day; posting stays manual.
 | Task | Time (New York) | Makes | Log |
 |---|---|---|---|
 | IG Reels | 8:30am | one voiced Reel (voice rotates G2, BELLA, EMMA) | `ig-reels.md` |
-| YouTube long videos | 7:00am | one long-form 16:9 video, voice HEART (from 13 Nov) | `youtube-long.md` |
+| YouTube long videos | 7:00am | one cinematic long-form documentary (16:9) to `docs/production/long-form-standard.md`, voice HEART, clean and scored MP4 | `youtube-long.md` |
 | YouTube Shorts | 7:00am | one Short, voice HEART, to `docs/production/short-form-standard.md` | `youtube-shorts.md` |
 
 Each run sends its files (video, cover or thumbnail, description, comment

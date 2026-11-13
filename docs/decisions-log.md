@@ -18,6 +18,22 @@ What has been settled, and what is still open. Newest first.
 
 ## Settled
 
+- **Long-form YouTube is a cinematic documentary, to a written standard** (13 Nov, Pietro's permanent instructions
+  for long videos, adopted as the standard the same day; no new film made that day). Written into
+  `docs/production/` (long-form, cinematic, audio, quality gates); they override the YouTube skill for long videos.
+  Changes from the earlier rules: (1) **narrator**: HEART, Kokoro af_heart, speed 0.9, en-us (set the same day by the Shorts standard,
+  `YOUTUBE_PICK = "HEART"`, for long videos and Shorts; the trial log stays as history);
+  (2) **music back, as a second file**: every film ships a clean MP4 (voice and effects) and a scored MP4 with an
+  original score from `music.py` in a mood that fits (`score=` reflective, suspense or light), recommended only if it
+  passes a gate (voice 18 dB over the music, DNSMOS SIG within 0.3 of clean, 20 s word check); this reverses the
+  12 Nov "no music in the file" rule for the scored file only, and the clean file keeps Pietro's own-track route;
+  (3) a visual plan per beat before rendering, a variety test, a motion preview, five title candidates,
+  transcript.txt; (4) AI disclosure is a reasoned recommendation, not an automatic Yes: YouTube Help (checked 13 Nov)
+  asks for it on realistic content and exempts animation; synthetic narration is not addressed, disclosure costs
+  nothing, so the recommendation is Yes with that reason. The engine cannot yet do articulated characters,
+  environments with parallax, a camera, lighting or sound tied to actions: `cinematic-standard.md` lists the build
+  order, one step per daily run.
+
 - **Pietro's music library for YouTube** (12 Nov, Pietro: "Create a skill that will attach all these
   audios to a library ... used for the creation of both YouTube shorts and YouTube video. The video
   should pick from the library the most appropriate music."; on the rights question: "Find a way

@@ -5,6 +5,14 @@ description: "Daily YouTube run for the finance channel: research a topic that c
 
 # YouTube Videos Creator
 
+> **Long-form videos follow `docs/production/` from 13 Nov 2026** (Pietro's cinematic documentary standard:
+> `long-form-standard.md`, `cinematic-standard.md`, `audio-standard.md`, `quality-gates.md`). Where this file
+> disagrees, those files win for long videos: the narrator HEART (Kokoro af_heart, speed 0.9, en-us, see Voice
+> below), a clean and a scored MP4 (original score, gate in
+> `audio-standard.md`), a visual plan before the render, five title candidates, a motion preview, transcript.txt,
+> and an AI-disclosure recommendation with its reason. Sections 3, 5, 6 and 7 below still describe the Shorts and
+> the engine's commands.
+
 Runs every day at 7am New York as two scheduled tasks (long-form and Shorts),
 or when Pietro asks for a YouTube video. Everything is automated except
 posting: Pietro uploads.
