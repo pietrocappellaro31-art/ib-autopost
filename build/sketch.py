@@ -49,6 +49,8 @@ Scenes (opts in brackets):
   cat_svg(x, y, s) draws a sitting black cat for floaters and the close
   13 Nov (Levels #12, terminal value): tv_timeline(n), two_ways(left, right), exit_stack(ebitda, mult, total),
   discount_shrink(later, tv, fc, share)
+  13 Nov (Friday the 13th myth Short, story engine): trader(p, x, y, s, pose) the recurring character (stand, worry,
+  point, cheer, shrug, read); myth_hook(), study_1987(), not_confirmed(), uk_years(start, end), higher_bar(), myth_stamp()
 """
 
 import html as H
@@ -2290,3 +2292,156 @@ def bankers_table(p, n=4, pledge=True, **_):
 
 
 SCENES.update({f.__name__: f for f in (trust_vs_bank, rate_gauge, library_lock, scrip, bankers_table)})
+# ---- 13 Nov (Friday the 13th myth Short, Format E): one recurring character, "the trader", drawn the same way
+# in every scene (navy suit, red tie, round head), in five poses, plus the scenes he acts in. Our own design.
+
+SUIT, TIE, SKIN = "#22324A", RED, "#F2D2B6"
+
+
+def trader(p, x, y, s=1.0, pose="stand", frac=0.0, look=1):
+    """The trader standing with his feet at (x, y). pose: stand, worry (hands on head), point (right arm out to
+    look's side), cheer (both arms up), shrug (palms up), read (holding a sheet). His arms swing a little."""
+    S = lambda v: v * s
+    legs = (f'<path d="M{x - S(26)} {y} L{x - S(14)} {y - S(120)} L{x + S(14)} {y - S(120)} L{x + S(26)} {y}" fill="none" '
+            f'stroke="{INK}" stroke-width="{S(16):.1f}" stroke-linecap="round" stroke-linejoin="round"/>'
+            f'<ellipse cx="{x - S(30)}" cy="{y + S(4)}" rx="{S(22)}" ry="{S(9)}" fill="{INK}"/>'
+            f'<ellipse cx="{x + S(30)}" cy="{y + S(4)}" rx="{S(22)}" ry="{S(9)}" fill="{INK}"/>')
+    body = (f'<path d="M{x - S(46)} {y - S(118)} Q{x - S(50)} {y - S(250)} {x} {y - S(258)} Q{x + S(50)} {y - S(250)} '
+            f'{x + S(46)} {y - S(118)} Z" fill="{SUIT}" stroke="{INK}" stroke-width="{S(5):.1f}"/>'
+            f'<path d="M{x - S(16)} {y - S(254)} L{x} {y - S(226)} L{x + S(16)} {y - S(254)} Z" fill="#fff"/>'
+            f'<path d="M{x} {y - S(236)} L{x - S(10)} {y - S(200)} L{x} {y - S(150)} L{x + S(10)} {y - S(200)} Z" fill="{TIE}"/>')
+    head = (f'<circle cx="{x}" cy="{y - S(310)}" r="{S(50)}" fill="{SKIN}" stroke="{INK}" stroke-width="{S(5):.1f}"/>'
+            f'<path d="M{x - S(50)} {y - S(318)} Q{x - S(40)} {y - S(372)} {x + S(6)} {y - S(364)} Q{x + S(46)} {y - S(360)} '
+            f'{x + S(50)} {y - S(320)} Q{x + S(20)} {y - S(342)} {x - S(50)} {y - S(318)} Z" fill="{INK}"/>'
+            f'<circle cx="{x - S(17)}" cy="{y - S(306)}" r="{S(6)}" fill="{INK}"/><circle cx="{x + S(17)}" cy="{y - S(306)}" r="{S(6)}" fill="{INK}"/>')
+    mouth = {"worry": f'<path d="M{x - S(14)} {y - S(278)} Q{x} {y - S(290)} {x + S(14)} {y - S(278)}" fill="none" stroke="{INK}" stroke-width="{S(4):.1f}" stroke-linecap="round"/>',
+             "shrug": f'<path d="M{x - S(14)} {y - S(282)} H{x + S(14)}" stroke="{INK}" stroke-width="{S(4):.1f}" stroke-linecap="round"/>'}.get(
+        pose, f'<path d="M{x - S(16)} {y - S(286)} Q{x} {y - S(270)} {x + S(16)} {y - S(286)}" fill="none" stroke="{INK}" stroke-width="{S(4):.1f}" stroke-linecap="round"/>')
+    sh_l, sh_r = (x - S(42), y - S(236)), (x + S(42), y - S(236))
+    hands = {"stand": ((x - S(62), y - S(130)), (x + S(62), y - S(130))),
+             "worry": ((x - S(40), y - S(352)), (x + S(40), y - S(352))),
+             "point": ((x - S(62), y - S(130)), (x + look * S(150), y - S(270))),
+             "cheer": ((x - S(96), y - S(380)), (x + S(96), y - S(380))),
+             "shrug": ((x - S(120), y - S(250)), (x + S(120), y - S(250))),
+             "read": ((x - S(40), y - S(190)), (x + S(40), y - S(190)))}[pose]
+    def arm(sh, hd, k):
+        ex, ey = (sh[0] + hd[0]) / 2 + (-1 if k == 0 else 1) * S(22), (sh[1] + hd[1]) / 2 + S(18)
+        return (f'<path d="M{sh[0]:.1f} {sh[1]:.1f} Q{ex:.1f} {ey:.1f} {hd[0]:.1f} {hd[1]:.1f}" fill="none" stroke="{SUIT}" '
+                f'stroke-width="{S(20):.1f}" stroke-linecap="round"/><circle cx="{hd[0]:.1f}" cy="{hd[1]:.1f}" r="{S(13):.1f}" fill="{SKIN}" '
+                f'stroke="{INK}" stroke-width="{S(4):.1f}"/>')
+    sheet = (f'<rect x="{x - S(56)}" y="{y - S(250)}" width="{S(112)}" height="{S(80)}" rx="{S(6)}" fill="#fff" stroke="{INK}" '
+             f'stroke-width="{S(4):.1f}" transform="rotate(-6 {x} {y - S(210)})"/>') if pose == "read" else ""
+    # the right arm swings gently on its shoulder; the whole figure bobs
+    p.parts.append(f'<g class="a" data-fx="float" data-at="0" data-d="1" data-amp="{S(5):.1f}" data-w="1.3">')
+    p.fill(legs + body + arm(sh_l, hands[0], 0) + head + mouth + sheet, frac, .35)
+    p.parts.append(f'<g class="a" data-fx="swing" data-at="0" data-d="1" data-amp="{4 if pose in ("point", "cheer") else 2}" '
+                   f'data-w="2.2" style="transform-box:view-box;transform-origin:{sh_r[0]:.0f}px {sh_r[1]:.0f}px">')
+    p.fill(arm(sh_r, hands[1], 1), frac + .03, .3)
+    p.parts.append("</g></g>")
+
+
+def myth_hook(p, **_):
+    """The myth: the FRIDAY 13 page, the trader clutching his head, a red arrow diving past his phone screen."""
+    p.fill(_page(20, 60, 330, 400, "FRIDAY", "13", RED, rot=-6, size=240), 0, .4)
+    p.parts.append('<g class="a" data-fx="swing" data-at="0" data-d="1" data-amp="3" data-w="1.1" '
+                   'style="transform-box:view-box;transform-origin:470px 200px">')
+    p.fill(f'<rect x="370" y="60" width="200" height="290" rx="26" fill="{INK}"/><rect x="384" y="82" width="172" height="240" rx="12" fill="#1E2A2A"/>', .2)
+    p.line([(400, 130), (440, 170), (470, 150), (540, 300)], .35, .4, color=RED, w=10)
+    p.line([(510, 298), (542, 304), (544, 270)], .7, .1, color=RED, w=10)
+    p.parts.append("</g>")
+    trader(p, 690, 630, 1.0, "worry", .25)
+    p.text(770, 230, "!", .8, size=110, serif=True, weight=700, color=RED, fx="pop")
+
+
+def study_1987(p, **_):
+    """1987: a paper whose two bars say Friday the 13th was lower (the study's direction, not its numbers), the trader reading it."""
+    p.fill(f'<rect x="40" y="30" width="430" height="560" rx="14" fill="#fff" stroke="{INK}" stroke-width="7" transform="rotate(-3 255 310)"/>', 0)
+    p.text(255, 105, "STUDY, 1987", .1, size=44, serif=True, weight=700, color=INK)
+    p.text(255, 145, "US SHARES", .14, size=26, weight=700, color=GREY)
+    p.line([(90, 470), (420, 470)], .2, .2, w=5)
+    p.box(120, 230, 110, 240, TEAL, .3, rx=6, fx="growY")
+    p.box(280, 330, 110, 140, RED, .45, rx=6, fx="growY")
+    p.text(175, 515, "OTHER FRI", .35, size=24, weight=700, color=GREY)
+    p.text(335, 515, "FRI 13", .5, size=26, weight=700, color=RED)
+    p.text(335, 310, "LOWER", .6, size=34, serif=True, weight=700, color=RED, fx="pop")
+    p.text(255, 565, "direction only, not to scale", .7, size=20, weight=500, color=GREY)
+    trader(p, 640, 630, 1.0, "point", .2, look=-1)
+
+
+def not_confirmed(p, **_):
+    """Other researchers check: three papers lined up, each with a big grey ?, magnifiers hovering, the 1987 paper in front."""
+    for k, (x, r) in enumerate(((60, -6), (300, 2), (540, 7))):
+        p.fill(f'<g transform="rotate({r} {x + 100} 300)"><rect x="{x}" y="150" width="200" height="270" rx="10" fill="#fff" '
+               f'stroke="{INK}" stroke-width="6"/><rect x="{x + 30}" y="190" width="140" height="12" rx="6" fill="{GREY}"/>'
+               f'<rect x="{x + 30}" y="220" width="110" height="12" rx="6" fill="{GREY}"/>'
+               f'<text x="{x + 100}" y="370" text-anchor="middle" font-family="\'Serif\',serif" font-weight="700" font-size="120" '
+               f'fill="{GREY}">?</text></g>', .1 + .15 * k)
+        p.parts.append(f'<g class="a" data-fx="float" data-at="0" data-d="1" data-amp="22" data-w="{.7 + .2 * k}" data-ph="{k * 1.3}">')
+        p.circle(x + 160, 120, 46, .5 + .1 * k, .25, color=INK, w=9)
+        p.line([(x + 192, 152), (x + 230, 192)], .6 + .1 * k, .1, color=INK, w=14)
+        p.parts.append("</g>")
+    p.fill(f'<rect x="150" y="470" width="500" height="110" rx="20" fill="{INK}"/>'
+           f'<text x="400" y="545" text-anchor="middle" font-family="\'Serif\',serif" font-weight="700" font-size="54" fill="#fff">CONFIRMED?</text>', .75)
+
+
+def uk_years(p, start=1935, end=1994, **_):
+    """Almost sixty years of UK shares: a long timeline with Friday the 13th marks, a year counter running from
+    1935 to 1994, and the trader walking along it."""
+    p.line([(30, 470), (770, 470)], 0, .4, w=8)
+    for k in range(14):
+        x = 50 + k * 54
+        p.box(x - 4, 440, 8, 60, RED if k % 4 == 1 else GREY, .05 + .04 * k, rx=4, fx="growY")
+    p.text(60, 545, str(start), .1, size=40, serif=True, weight=700, color=INK, anchor="start")
+    p.text(740, 545, str(end), .7, size=40, serif=True, weight=700, color=INK, anchor="end")
+    p.fill(f'<rect x="220" y="40" width="360" height="130" rx="22" fill="#fff" stroke="{INK}" stroke-width="6"/>', .05)
+    p.parts.append(_count(400, 132, start, end, p.at(.1), p.dur * .75, size=88, color=RED))
+    p.text(400, 220, "UK SHARES", .15, size=34, weight=700, color=GREY)
+    p.parts.append(f'<g class="a" data-fx="move" data-at="{p.at(.05)}" data-d="{p.dur * .8:.2f}" data-x="-560">')
+    trader(p, 690, 460, .62, "read", .05)
+    p.parts.append("</g>")
+
+
+def higher_bar(p, **_):
+    """The result: on the trading screen, the Friday the 13th bar grows past the other Fridays, a HIGHER tag
+    pops (the direction Coutts found; the heights are an illustration, not data), the trader shrugs."""
+    p.fill(f'<rect x="10" y="20" width="560" height="560" rx="28" fill="{INK}"/><rect x="32" y="42" width="516" height="516" rx="14" fill="#1E2A2A"/>', 0)
+    for k in range(5):
+        x = 60 + k * 96
+        if k == 3:
+            p.box(x, 230, 64, 260, TEAL, .35, rx=6, fx="growY")
+            p.box(x - 10, 500, 84, 44, RED, .3, rx=10)
+            p.text(x + 32, 532, "13", .32, size=30, serif=True, weight=700, color="#fff")
+        else:
+            p.box(x, 320, 64, 170, "#6F8F8B", .05 + .04 * k, rx=6, fx="growY")
+            p.text(x + 32, 532, "FRI", .1, size=24, weight=700, color="#9DC7C1")
+    p.fill(_tile(250, 120, 290, 90, TEAL, "HIGHER", 50), .6)
+    p.text(290, 610, "illustration, not to scale", .7, size=22, weight=500, color=GREY)
+    trader(p, 690, 630, .95, "shrug", .4)
+
+
+def myth_stamp(p, at_s=None, **_):
+    """The verdict: the FRIDAY 13 page again, a red MYTH stamp slamming across it (at_s seconds in, so a thump can
+    be timed to it), the trader cheering."""
+    p.fill(_page(30, 70, 330, 400, "FRIDAY", "13", RED, rot=-6, size=240), 0, .3)
+    p.parts.append(f'<g class="a" data-fx="stamp" data-at="{p.t0 + at_s if at_s else p.at(.25)}" data-d="0.35" data-rot="-12" '
+                   f'style="transform-box:fill-box;transform-origin:center">'
+                   f'<rect x="40" y="250" width="330" height="130" rx="16" fill="#fff" fill-opacity=".9" stroke="{RED}" stroke-width="12"/>'
+                   f'<text x="205" y="345" text-anchor="middle" font-family="\'Serif\',serif" font-weight="700" font-size="92" '
+                   f'fill="{RED}">MYTH</text></g>')
+    trader(p, 600, 630, 1.0, "cheer", .1)
+
+
+SCENES.update({f.__name__: f for f in (myth_hook, study_1987, not_confirmed, uk_years, higher_bar, myth_stamp)})
+
+
+def trader_asks(p, **_):
+    """The close: the trader turns to the viewer, pointing, with a speech bubble holding a red ? and a 13 tile."""
+    p.fill(f'<path d="M120 60 H520 Q560 60 560 100 V300 Q560 340 520 340 H330 L280 410 L290 340 H120 Q80 340 80 300 V100 '
+           f'Q80 60 120 60 Z" fill="#fff" stroke="{INK}" stroke-width="7"/>', .1)
+    p.fill(_tile(130, 130, 170, 120, RED, "13", 80), .3)
+    p.text(430, 280, "?", .45, size=200, serif=True, weight=700, color=RED, fx="pop")
+    trader(p, 640, 630, .95, "point", .05, look=-1)
+
+
+SCENES.update({f.__name__: f for f in (trader_asks,)})
+
