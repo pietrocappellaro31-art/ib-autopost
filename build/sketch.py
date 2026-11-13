@@ -2149,3 +2149,144 @@ def discount_shrink(p, later="$400", tv="$248", fc="$76", share="77%", **_):
 
 
 SCENES.update({f.__name__: f for f in (tv_timeline, two_ways, exit_stack, discount_shrink)})
+
+
+# ---- 13 Nov, long video #7 (the Panic of 1907): two institutions and their reserves, a call-money gauge, a
+# library with its door locked at night, a clearing-house certificate, bankers in top hats round a table.
+# Generic, stylised shapes of our own: no portrait, no crest, no real building copied.
+
+def _hat(p, x, y, s, frac, color=None):
+    """A stylised top hat sitting on a figure's head at (x, y)."""
+    c = color or INK
+    p.fill(f'<g><rect x="{x - 22 * s:.1f}" y="{y - 52 * s:.1f}" width="{44 * s:.1f}" height="{40 * s:.1f}" rx="3" fill="{c}"/>'
+           f'<rect x="{x - 34 * s:.1f}" y="{y - 16 * s:.1f}" width="{68 * s:.1f}" height="{9 * s:.1f}" rx="4" fill="{c}"/></g>', frac, d=.25)
+
+
+def trust_vs_bank(p, left="NATIONAL BANK", right="TRUST COMPANY", lres=25, rres=5, **_):
+    """Two buildings side by side; under each a vault gauge fills to its cash reserve (25% against 5% of
+    deposits), with the percentage counting up. The trust's thin red line is the point."""
+    for k, (x, lab, res, col) in enumerate(((60, left, lres, TEAL), (430, right, rres, RED))):
+        f0 = .05 + .3 * k
+        p.line([(x, 150), (x + 155, 70), (x + 310, 150)], f0, .2, w=7)
+        p.rect(x + 10, 150, 290, 130, f0 + .03, .2, w=7)
+        for c in range(4):
+            p.line([(x + 50 + c * 70, 165), (x + 50 + c * 70, 265)], f0 + .06 + .02 * c, .1, w=8)
+        p.text(x + 155, 310, lab, f0 + .1, size=24, weight=700)
+        # the vault gauge: deposits as a tall outline, reserves as the filled part
+        p.rect(x + 95, 350, 120, 230, f0 + .12, .2, w=6)
+        h = 230 * res / 100
+        p.parts.append(f'<g class="a" data-fx="growY" data-at="{p.at(f0 + .2)}" data-d=".6">'
+                       f'<rect x="{x + 101}" y="{580 - h:.1f}" width="108" height="{h - 6:.1f}" fill="{col}"/></g>')
+        p.parts.append(_count(x + 155, 480, 0, res, p.at(f0 + .2), .6, size=50, color=INK, suf="%"))
+        p.text(x + 155, 620, "CASH RESERVE", f0 + .25, size=22, weight=700, color=GREY)
+
+
+def rate_gauge(p, steps=((9.5, "OCT 21"), (70, "OCT 22"), (100, "OCT 24")), label="CALL MONEY, A YEAR", still=False, **_):
+    """A big dial whose needle swings up step by step to each interest rate, the rate counting on the face and
+    a date tile for each step; the last step in red."""
+    cx, cy, r = 400, 420, 300
+    pts = [(cx + r * math.cos(math.pi * (1 + i / 30)), cy + r * math.sin(math.pi * (1 + i / 30))) for i in range(31)]
+    p.line(pts, 0, .3, w=10)
+    for i in range(0, 11):
+        a = math.pi * (1 + i / 10)
+        p.line([(cx + (r - 30) * math.cos(a), cy + (r - 30) * math.sin(a)), (cx + r * math.cos(a), cy + r * math.sin(a))], .1, .05, w=5)
+        if i % 5 == 0:
+            p.text(cx + (r - 70) * math.cos(a), cy + (r - 70) * math.sin(a) + 12, f"{i * 10}%", .15, size=30, weight=700, color=GREY)
+    p.fill(f'<path d="M{cx + (r - 40) * math.cos(math.pi * 1.7):.0f} {cy + (r - 40) * math.sin(math.pi * 1.7):.0f} A {r - 40} {r - 40} 0 0 1 {cx + r - 40} {cy}" '
+           f'fill="none" stroke="{RED}" stroke-width="22" opacity=".35"/>', .2)
+    n = len(steps)
+    kf, prev = [], 0
+    for k, (v, _) in enumerate(steps):
+        t = p.at(.25 + .6 * k / n)
+        kf += [[t, 0, 0, 1, 1, -90 + 180 * prev / 100], [round(t + .5, 3), 0, 0, 1, 1, -90 + 180 * v / 100]]
+        prev = v
+    needle = (f'<g><line x1="{cx}" y1="{cy}" x2="{cx}" y2="{cy - r + 60}" stroke="{INK}" stroke-width="12" stroke-linecap="round"/>'
+              f'<circle cx="{cx}" cy="{cy}" r="22" fill="{INK}"/></g>')
+    if still:                                             # a thumbnail runs no motion: the needle at the last step
+        p.parts.append(f'<g transform="rotate({-90 + 180 * steps[-1][0] / 100} {cx} {cy})">{needle}</g>')
+    else:
+        p.parts.append(f"<g class=\"a\" data-fx=\"kf\" data-at=\"{kf[0][0]}\" data-d=\"{p.dur:.2f}\" data-kf='{_json(kf)}' "
+                       f'style="transform-box:view-box;transform-origin:{cx}px {cy}px">{needle}</g>')
+    for k, (v, date) in enumerate(steps):
+        f = .25 + .6 * k / n
+        col = RED if k == n - 1 else INK
+        if still:
+            if k == n - 1:
+                p.text(cx, cy + 110, f"{v:g}%", 0, size=72, color=col, serif=True, weight=700)
+            p.fill(_tile(70 + k * 230, 560, 200, 60, col if k == n - 1 else "#fff", date, 30, color="#fff" if k == n - 1 else INK, rx=12), 0)
+            continue
+        end = p.at(.25 + .6 * (k + 1) / n) if k < n - 1 else p.t0 + p.dur + 5
+        p.parts.append(f'<g class="a" data-fx="life" data-at="{p.at(f)}" data-d="{end - p.at(f):.2f}" data-fi=".05" data-fo=".05">'
+                       + _count(cx, cy + 110, steps[k - 1][0] if k else 0, v, p.at(f), .5, size=72, color=col, suf="%", dec=1 if v % 1 else 0)
+                       + "</g>")
+        p.fill(_tile(70 + k * 230, 560, 200, 60, col if k == n - 1 else "#fff", date, 30, color="#fff" if k == n - 1 else INK, rx=12), f + .05)
+    p.text(cx, 40, label, 0, size=30, weight=700, color=GREY)
+
+
+def library_lock(p, clock="4:00", n=5, still=False, **_):
+    """A panelled library at night: tall bookshelves, a lamp, a table with stylised bankers in top hats, a door
+    on the right whose key turns in the lock, and a clock reading the hour."""
+    p.box(0, 0, 800, 640, "#22303A", 0, rx=0, fx="fade")
+    for k in range(3):                                    # bookshelves on the back wall
+        x = 30 + k * 170
+        p.rect(x, 60, 150, 380, .05 + .03 * k, .2, color="#C9A66B", w=6)
+        for r in range(5):
+            y = 90 + r * 70
+            p.line([(x + 6, y + 50), (x + 144, y + 50)], .1 + .02 * r, .1, color="#C9A66B", w=4)
+            for b in range(6):
+                col = ("#D93A12", "#0F766E", "#F2C35B", "#E9E4DA")[(b + r + k) % 4]
+                p.box(x + 12 + b * 22, y + 8 + (b % 3) * 4, 16, 40 - (b % 3) * 4, col, .12 + .01 * (r * 6 + b), rx=2)
+    p.fill(f'<g><circle cx="300" cy="300" r="190" fill="#F2C35B" opacity=".18"/><path d="M285 200 L315 200 L330 235 L270 235 Z" fill="#F2C35B"/>'
+           f'<line x1="300" y1="235" x2="300" y2="400" stroke="#C9A66B" stroke-width="6"/></g>', .2)   # the lamp's pool of light
+    for i in range(n):                                    # the bankers round the table, behind it
+        x = 150 + i * 85
+        figure(p, x, 600, .7, .3 + .05 * i, "#E9E4DA")
+        _hat(p, x, 600 - 150 * .7 - 18, .7, .32 + .05 * i, "#E9E4DA")
+    p.box(100, 540, 440, 34, "#7A5230", .45, rx=6)
+    p.rect(600, 160, 150, 400, .2, .25, color="#E9E4DA", w=7)       # the door
+    p.fill(f'<circle cx="625" cy="370" r="10" fill="#F2C35B"/>', .3)
+    key = (f'<g><circle cx="0" cy="0" r="18" fill="none" stroke="#F2C35B" stroke-width="8"/>'
+           f'<path d="M18 0 H64 M50 0 V14 M62 0 V12" stroke="#F2C35B" stroke-width="8" stroke-linecap="round"/></g>')
+    kf = [[p.at(.55), 700, 330, 1, 1, 0], [p.at(.62), 650, 370, 1, 1, 0], [p.at(.72), 650, 370, 1, 1, 90]]
+    if still:                                             # a thumbnail runs no motion: the key turned in the lock
+        p.parts.append(f'<g transform="translate(650 370) rotate(90)">{key}</g>')
+    else:
+        p.parts.append(f"<g class=\"a\" data-fx=\"kf\" data-at=\"{p.at(.55)}\" data-d=\"{.3 * p.dur:.2f}\" data-kf='{_json(kf)}'>{key}</g>")
+    p.fill(_tile(610, 80, 130, 60, RED, "LOCKED", 26, rx=10, stroke=RED), .75, fx="stamp")
+    p.fill(f'<g><circle cx="460" cy="120" r="48" fill="#E9E4DA"/><text x="460" y="132" text-anchor="middle" font-family="\'Serif\',serif" '
+           f'font-weight="700" font-size="30" fill="{INK}">{H.escape(clock)}</text></g>', .8)
+
+
+def scrip(p, amount="$5,000", label="CLEARING HOUSE", sub="LOAN CERTIFICATE", **_):
+    """A certificate sliding in, its border drawing on, the amount counting, and a band 'IN PLACE OF CASH'."""
+    body = (f'<g><rect x="90" y="120" width="620" height="360" rx="14" fill="#F3E6C4" stroke="{INK}" stroke-width="7"/>'
+            f'<rect x="115" y="145" width="570" height="310" rx="8" fill="none" stroke="#B8862B" stroke-width="4" stroke-dasharray="14 8"/>'
+            f'<text x="400" y="215" text-anchor="middle" font-family="\'Serif\',serif" font-weight="700" font-size="44" fill="{INK}">{H.escape(label)}</text>'
+            f'<text x="400" y="260" text-anchor="middle" font-family="\'Sans\',sans-serif" font-weight="700" font-size="28" fill="{GREY}">{H.escape(sub)}</text>'
+            f'<text x="400" y="370" text-anchor="middle" font-family="\'Serif\',serif" font-weight="700" font-size="92" fill="{TEAL}">{H.escape(amount)}</text>'
+            f'<circle cx="610" cy="410" r="40" fill="{RED}" opacity=".9"/></g>')
+    _slide(p, .05, body, x0=-700, d=.5)
+    p.fill(_tile(160, 520, 480, 70, INK, "IN PLACE OF CASH", 38, color="#F2C35B", rx=14), .6, fx="stamp")
+
+
+def bankers_table(p, n=4, pledge=True, **_):
+    """Stylised bankers in top hats standing behind a table, each signing in turn: a sheet on the table gets a
+    teal signature and a tick; the one at the head of the table in red."""
+    for i in range(n):
+        x = 160 + i * (480 / max(n - 1, 1))
+        col = RED if i == 0 else None
+        figure(p, x, 520, .8, .05 + .06 * i, col)
+        _hat(p, x, 520 - 150 * .8 - 20, .8, .08 + .06 * i, col)
+    p.box(90, 470, 620, 40, "#7A5230", .3, rx=8)
+    p.line([(130, 510), (130, 610)], .32, .1, color="#7A5230", w=10)
+    p.line([(670, 510), (670, 610)], .32, .1, color="#7A5230", w=10)
+    if pledge:
+        for i in range(n):
+            x = 160 + i * (480 / max(n - 1, 1))
+            f = .4 + .12 * i
+            p.box(x - 48, 474, 96, 32, "#fff", f, rx=4)
+            p.line([(x - 34, 496), (x - 12, 482), (x + 10, 500), (x + 32, 484)], f + .04, .12, color=TEAL, w=5)
+            p.text(x, 640, "SIGNED", f + .08, size=26, weight=700, color=TEAL)
+
+
+SCENES.update({f.__name__: f for f in (trust_vs_bank, rate_gauge, library_lock, scrip, bankers_table)})

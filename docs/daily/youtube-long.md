@@ -7,3 +7,4 @@
 | 2026-11-11 | yt-004-who-paid-for-ww1 | Britain Paid Off World War One in 2015. So Who Really Paid? | HEART | 8:53 | |
 | 2026-11-12 | yt-005-where-money-comes-from | Your Bank Doesn't Lend Out Your Savings. It Creates New Money. | MICHAEL | 8:37 | |
 | 2026-11-13 | yt-006-newton-bought-back-in | Isaac Newton Beat the Bubble. Then He Bought Back In. | ISABELLA | 8:10 | |
+| 2026-11-13 | yt-007-panic-of-1907 | In 1907, America Had No Central Bank. So a Banker Locked the Doors. | HEART | 8:49 | |

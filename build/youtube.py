@@ -30,6 +30,7 @@ and sound.json (voice over music, DNSMOS, loudness).
 """
 
 import html as H
+import collections
 import json
 import pathlib
 import re
@@ -136,6 +137,48 @@ def words_kara(text, start, dur, hl=(), size=72, serif=True, hide=False, color=I
     fam = "font-family:'Serif',serif;font-weight:700;letter-spacing:-.02em" if serif else "font-weight:600"
     return A(" ".join(spans), "kara", round(start, 3), dur, style=f"{fam};font-size:{size}px;line-height:1.12;color:{color}",
              **({"hide": 1} if hide else {}))
+
+
+# 13 Nov (docs/production/cinematic-standard.md, build step 1): a camera. Each visual can move as a whole (push,
+# pull, pan, rise, drift) over its own life, and a sketch beat's drawing and text move by different amounts in
+# opposite directions (two-layer parallax), so a held drawing is never a still frame. Moves are small (at most
+# 6% scale, 30 px) so nothing leaves the safe area; the layout check runs with the camera on.
+CAMS = {
+    "push": ((0, 0, 1.0), (0, 0, 1.04)),
+    "pull": ((0, 0, 1.04), (0, 0, 1.0)),
+    "pan_r": ((-16, 0, 1.02), (16, 0, 1.02)),
+    "pan_l": ((16, 0, 1.02), (-16, 0, 1.02)),
+    "rise": ((0, 16, 1.01), (0, -10, 1.03)),
+    "drift": ((-10, 8, 1.0), (10, -8, 1.03)),
+}
+# 13 Nov, #7 first render: moves of 28 px at 3% put 11 elements up to 58 px past the safe edge; halved.
+CAM_CYCLE = ("push", "pan_r", "drift", "pull", "pan_l", "rise")
+CAM_USE = collections.Counter()
+
+
+def kf_attr(frames):
+    return H.escape(json.dumps(frames))
+
+
+def camera(inner, mode, t0, dur, full=True):
+    """Wrap a visual in a keyframed move; mode is a CAMS name, a list of (t_frac, x, y, scale) or None."""
+    if not mode:
+        return inner
+    CAM_USE[mode if isinstance(mode, str) else "custom"] += 1
+    if isinstance(mode, str):
+        (x0, y0, s0), (x1, y1, s1) = CAMS[mode]
+        frames = [[round(t0, 3), x0, y0, s0, 1, 0], [round(t0 + dur, 3), x1, y1, s1, 1, 0]]
+    else:
+        frames = [[round(t0 + f * dur, 3), x, y, sc, 1, 0] for f, x, y, sc in mode]
+    # full=False on a chapter card: width:100% there let the card stretch past the frame (#7, first render)
+    return A(inner, "kf", round(t0, 3), round(dur, 3), kf=kf_attr(frames), cam=1,
+             style="width:100%;transform-origin:center" if full else "transform-origin:center")
+
+
+def parallax(inner, t0, dur, dx):
+    """One layer of a two-layer parallax: slides dx px across the visual's life (the other layer goes the other way)."""
+    frames = [[round(t0, 3), -dx, 0, 1, 1, 0], [round(t0 + dur, 3), dx, 0, 1, 1, 0]]
+    return A(inner, "kf", round(t0, 3), round(dur, 3), kf=kf_attr(frames), cam=1)
 
 
 PACING = []          # (kind, steps, last step at, sentence length): written to pacing.json by make()
@@ -254,9 +297,13 @@ def visual(show, t0, dur):
         art = sketch.scene(show["art"], t0 + .1, max(dur * .8, 1.2), seed=hash(show.get("text", "")) % 97, **show.get("opts", {}))
         txt = (A(H.escape(show["label"]), "fade", t0, .4, cls="lbl", style="margin-bottom:22px") if show.get("label") else "")
         txt += words_kara(show.get("text", ""), t0 + .25, dur * .8, show.get("hl", ()), size=show.get("size", 92)) if show.get("text") else ""
+        if show.get("parallax", True):                  # 13 Nov: the drawing drifts 12 px, the words 4 px the other way
+            sgn = -1 if show.get("flip") else 1
+            art = parallax(art, t0, max(dur, 1.2) + 1.0, 12 * sgn)
+            txt = parallax(txt, t0, max(dur, 1.2) + 1.0, -4 * sgn)
         left, right = (art, txt) if show.get("flip") else (txt, art)
         lw = "820px" if not show.get("flip") else "800px"
-        return (f'<div style="display:flex;align-items:center;gap:60px;margin:0 -60px">'
+        return (f'<div style="display:flex;align-items:center;gap:60px;margin:0 -36px">'
                 f'<div style="width:{lw};flex:none">{left}</div><div style="flex:1;display:flex;justify-content:center"><div>{right}</div></div></div>')
     if k == "scene":           # the drawing alone, big, with a heading above
         art = sketch.scene(show["art"], t0 + .1, max(dur * .8, 1.2), **show.get("opts", {}))
@@ -337,6 +384,11 @@ def takes(ep, items, voice_name, work):
 
 
 CINE, BEATS = [], []          # 13 Nov (cinematic upgrade): filmed beats to splice in; every beat's time
+def title_size(title, size=140, column=940):
+    """13 Nov (#7): a chapter title with one long word ("Knickerbocker") is wider than its column at 140 px and
+    pushed the card's drawing off the frame. Shrink until the longest word fits (about 0.6 em a character)."""
+    longest = max(len(w) for w in title.split())
+    return min(size, int(column / (.6 * longest)))
 
 
 def scenes(ep, items):
@@ -348,12 +400,12 @@ def scenes(ep, items):
         if kind == "title":
             chapters.append((t, ch["title"]))
             html = (f'<div class="lbl" style="margin-bottom:26px;color:#fff;opacity:.85">Part {c + 1} of {n_ch}</div>'
-                    + words_kara(H.escape(ch["title"]), .25, dur, size=140, hide=True, color="#fff"))
+                    + words_kara(H.escape(ch["title"]), .25, dur, size=title_size(ch["title"]), hide=True, color="#fff"))
             if ch.get("art"):
                 name, opts = ch["art"]
                 html = (f'<div style="display:flex;align-items:center;gap:40px"><div style="flex:1">{html}</div>'
                         f'<div style="flex:none;transform:scale(.82);background:#F7F5F2;border-radius:48px;padding:30px 20px;box-shadow:0 40px 90px rgba(0,0,0,.25)">'
-                        f'{sketch.scene(name, .3, max(dur, 1.4), **opts)}</div></div>')
+                        f'{camera(sketch.scene(name, .3, max(dur, 1.4), **opts), "push", 0, dur + 1.1, full=False)}</div></div>')
             # 12 Nov: every chapter card holds at least 2.8 s (a short title like "Germany's bill" flashed by in 2 s on #4)
             sc.append(dict(dur=max(dur + 1.1, ep.get("card_min", 2.8)), push=.03, enter="", ghost=str(c + 1), html=html, voice=(a, .35),
                            ci=c, nc=n_ch, bg=RED))
@@ -371,15 +423,26 @@ def scenes(ep, items):
                 sc.append(dict(dur=dur + .75, push=0, enter="", html="", chap=ch["title"], voice=(a, .25), ci=c, nc=n_ch, bg="#2A2018"))
                 t += sc[-1]["dur"]
                 continue
+            def cam_for(shw):
+                if "cam" in shw:
+                    return shw["cam"]
+                if ep.get("camera", "auto") != "auto":
+                    return None
+                k = shw.get("kind", "statement")
+                if k in ("statement", "quote", "verdict", "number", "term"):
+                    return "push"
+                CAM_USE["_n"] += 1
+                return CAM_CYCLE[CAM_USE["_n"] % len(CAM_CYCLE)]
             if len(shows) == 1:
-                vis = visual(shows[0], .25, dur)
+                vis = camera(visual(shows[0], .25, dur), cam_for(shows[0]), 0, dur + .75)
             else:                                   # one visual per sentence, each replacing the last
                 assert len(shows) == len(segs), f"{len(shows)} visuals for {len(segs)} sentences: {beat['say'][:40]}"
                 vis = ""
                 for j, (shw, (_, s0, s1)) in enumerate(zip(shows, segs)):
                     a0 = (s0 + .25) if j else 0.0
                     end = (segs[j + 1][1] + .25) if j + 1 < len(segs) else dur + 2
-                    vis += A(f'<div style="width:100%">{visual(shw, .25 + s0 if j else .25, max(s1 - s0, .8))}</div>', "life", round(a0, 3),
+                    inner = camera(visual(shw, .25 + s0 if j else .25, max(s1 - s0, .8)), cam_for(shw), round(a0, 3), round(end - a0, 3))
+                    vis += A(f'<div style="width:100%">{inner}</div>', "life", round(a0, 3),
                              round(end - a0, 3), fi=.3 if j else .01, fo=.3,
                              style="position:absolute;inset:0;display:flex;align-items:center")
                     if j:
@@ -429,7 +492,7 @@ window.check16 = function (t) {
     if (s.style.visibility !== 'visible') return;
     const local = (t === undefined) ? 1e9 : t - window.SCENES[si].start;
     const moving = n => { for (let q = n; q && q !== s; q = q.parentElement)
-      if (q.classList && q.classList.contains('a') && local < +(q.dataset.at || 0) + +(q.dataset.d || .5) + .05) return true; return false; };
+      if (q.classList && q.classList.contains('a') && !q.dataset.cam && local < +(q.dataset.at || 0) + +(q.dataset.d || .5) + .05) return true; return false; };
     const cap = s.querySelector('.cap');
     const capTop = cap ? cap.getBoundingClientRect().top : 2000;
     s.querySelectorAll('.safe *').forEach(n => {
@@ -945,7 +1008,10 @@ def make(ep, voice_name=YOUTUBE_VOICE):
     PACING.clear()
     CINE.clear()
     BEATS.clear()
+    CAM_USE.clear()
     sc, chapters, sounds, total = scenes(ep, items)
+    moved = sum(v for k, v in CAM_USE.items() if k != "_n")
+    print(f"  camera: {moved} visuals and cards on a move ({', '.join(f'{k} {v}' for k, v in CAM_USE.most_common() if k != '_n')})", flush=True)
     late = [p for p in PACING if p[2] > .65 * p[3]]
     json.dump(dict(steps=PACING, late=late), open(work / "pacing.json", "w"))
     print(f"  pacing: {len(PACING)} step visuals, last step at {max((p[2] / p[3] for p in PACING), default=0):.0%} of its sentence at worst, {len(late)} late"

@@ -38,6 +38,7 @@ def words(text):
     thousand two hundred and fifty" and "1,250" both become "1250")."""
     t = re.sub(r"(\d),(\d)", r"\1\2", text.lower())
     t = t.replace("%", " percent ").replace("-", " ").replace(",", " ")
+    t = re.sub(r"(?<=[a-z0-9])[.!?;:](?=\s|$)", " qqstop ", t)   # 13 Nov: a sentence end stops a spoken number ("seventy. Two days" is not 72)
     t = re.sub(r"\bper cent\b", "percent", t)              # British spelling (EMMA, GEORGE), same words
     t = re.sub(r"\b(\d+) and a half\b", r"\1.5", t)
     t = re.sub(r"\bwhack\b", "wacc", t)                      # 11 Nov: WACC is said "whack"; a recogniser spells it that way
@@ -51,6 +52,7 @@ def words(text):
     # numbers ("eleventh", "11th" -> 11) and the "the" between a month and its day is dropped.
     _ord = ("first second third fourth fifth sixth seventh eighth ninth tenth eleventh twelfth thirteenth fourteenth "
             "fifteenth sixteenth seventeenth eighteenth nineteenth twentieth").split()
+    t = re.sub(r"\bthirtieth\b", "30", t)
     t = re.sub(r"\b(" + "|".join(_ord) + r")\b", lambda m: str(_ord.index(m.group(1)) + 1), t)
     t = re.sub(r"\b(\d+)(?:st|nd|rd|th)\b", r"\1", t)
     t = re.sub(r"\b(january|february|march|april|may|june|july|august|september|october|november|december) the (\d+)\b",
@@ -64,6 +66,12 @@ def words(text):
     t = re.sub(r"\bsafe keeping\b", "safekeeping", t)
     t = re.sub(r"\bstable coin", "stablecoin", t)
     t = re.sub(r"\bsouthsea\b", "south sea", t)
+    t = re.sub(r"\bclearinghouse", "clearing house", t)             # 13 Nov (YouTube #7)
+    t = re.sub(r"\b(organi|recogni|reali|apologi)s(e|ed|es|ing)\b", r"\1z\2", t)   # British -ise, American -ize
+    _teen = "eleven twelve thirteen fourteen fifteen sixteen seventeen eighteen nineteen".split()
+    _dig = "one two three four five six seven eight nine".split()
+    t = re.sub(r"\b(" + "|".join(_teen) + r") oh (" + "|".join(_dig) + r")\b",       # "nineteen oh seven" is 1907
+               lambda m: str((_teen.index(m.group(1)) + 11) * 100 + _dig.index(m.group(2)) + 1), t)
     t = re.sub(r"\bd c f\b", "dcf", t)                               # 13 Nov (Levels #12): letters a recogniser spaces out
     t = re.sub(r"\be b i t d a\b", "ebitda", t)                     # 13 Nov (YouTube #6): the place and the company
     t = re.sub(r"(?<=[a-z])'s\b", "s", t)
@@ -71,6 +79,8 @@ def words(text):
     _tn2 = "twenty thirty forty fifty sixty seventy eighty ninety".split()
     _o1 = "one two three four five six seven eight nine".split()
     t = re.sub(r"\b(twenty|thirty) (\d)\b", lambda m: str(10 * (_tn2.index(m.group(1)) + 2) + int(m.group(2))), t)   # after ordinals
+    t = re.sub(r"\b(january|february|march|april|may|june|july|august|september|october|november|december) the (\d+)\b",
+               r"\1 \2", t)                                    # again, now that "twenty second" is 22
     def _yr(m):
         c = (_o2.index(m.group(1)) + 10) if m.group(1) in _o2 else 20
         rest = m.group(2).split()
@@ -131,7 +141,7 @@ def words(text):
             j += 3
         out.append(str(float(n)).rstrip("0").rstrip("."))
         i = j
-    return out
+    return [w for w in out if w != "qqstop"]
 
 
 def transcribe(wav_path, with_words=False):

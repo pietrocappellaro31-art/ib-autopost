@@ -45,6 +45,11 @@ PHONEMES = {
     "aislabie": "ˈAzləbi",                # 13 Nov, YouTube #6 (John Aislabie, 1720)
     "odlyzko": "Odlˈɪʒkˌo",
     "southwark": "sˈʌðəɹk",
+    "heinze": "hˈInts",                   # 13 Nov, YouTube #7 (the Panic of 1907)
+    "cortelyou": "kˈɔɹtəljˌu",
+    "aldrich": "ˈɔldɹɪʧ",
+    "pierpont": "pˈɪɹpɑnt",
+    "rockefeller": "ɹˈɑkəfˌɛləɹ",
     "shareholders'": "ʃˈɛɹhˌOldəɹz",       # 12 Nov, Levels #11
     "uk": "jˌukˈA",                        # 13 Nov, Friday the 13th Short
     "shareholders": "ʃˈɛɹhˌOldəɹz",
