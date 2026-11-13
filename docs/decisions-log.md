@@ -18,6 +18,31 @@ What has been settled, and what is still open. Newest first.
 
 ## Settled
 
+- **Cinematic upgrade: one coherent rule set; older rules superseded, history kept** (13 Nov, afternoon, Pietro's
+  "Cinematic finance video production system" directive, arriving after the long-form and Shorts standards of the
+  same morning). The finance brand stays independent: another channel was named only as a reference for production
+  quality; nothing of it (brand, characters, palette, music, files, schedules, repo) is used or touched.
+  What wins now, and what it replaces:
+
+  | Topic | Superseded rule (date) | Rule now | Where |
+  |---|---|---|---|
+  | YouTube narrator | GEORGE always (8 Nov); a different trial voice each day (10 Nov) | HEART: Kokoro v1.0 af_heart, speed 0.9, en-us; trial closed, its log kept | `docs/production/voice-decision.md` |
+  | Reel narrator | G2, BELLA, EMMA rotation for a month (8 Nov) | HEART too (the directive: same narrator for Reels unless Pietro approves an exception); `voice_clone.REEL_PICK`; the rotation's record stays in `build/voices/voice_log.json` | `voice-decision.md` |
+  | Voice allowlist (content-compliance) | P1 and F3 only (8 Nov copy) | HEART current; older voices for re-renders; no real person ever | content-compliance skill |
+  | Long-video music | none in the file (12 Nov) | a clean MP4 and a scored MP4 with an original score; the gate picks the recommendation; the clean file keeps Pietro's own-track route | `audio-standard.md` |
+  | Score engine | `music.py` oscillator beds | `build/score.py`: written notes per chapter mood on sampled instruments (GeneralUser GS SoundFont, free for commercial music); `music.py` is the fallback | `audio-standard.md` |
+  | Shorts music | clean only, a scored file only after Pietro likes a bed (13 Nov morning) | clean is still the delivered master; a scored alternative is prepared when practical and offered as unheard | `short-form-standard.md` |
+  | Reel music | never in the file | still clean by default (Instagram music in the app); a scored alternative only with an ORIGINAL_GENERATED or LICENSED_FOR_INSTAGRAM score | `ib-voiced-reel` |
+  | Music rights | `rights=licence` or not | five classes: REFERENCE_ONLY, ORIGINAL_GENERATED, LICENSED_FOR_YOUTUBE, LICENSED_FOR_INSTAGRAM, LICENSED_FOR_ALL_REQUIRED_PLATFORMS; unknown means REFERENCE_ONLY; `mixable()` fails closed | music-library skill |
+  | AI disclosure | tick "altered or synthetic" on every video (8 Nov) | a recommendation per finished video with its reason (currently Yes for our synthetic narrator); Instagram AI label on realistic AI voiceovers stays | `quality-gates.md` 6 |
+  | Short and Reel formats | the four-level quiz as the only format | the quiz stays a series; formats B to F (story, concept, calculation, myth, choice) too | `short-form-standard.md` |
+  | Long-video visuals | a drawing for every sentence (8 Nov) | visual progression: one evolving filmed scene may carry several sentences; variety test and motion preview | `cinematic-standard.md` |
+  | Animation engine | `motion.py`, `levels.py`, `sketch.py` only | plus `build/cine.py` (camera, depth layers, articulated people, light, action-timed foley) on the same browser renderer; Remotion considered and not adopted | `animation-engine.md` |
+
+  Proof of concept rendered and measured the same day (`build/cine_poc_newton.py`, 20.6 s, both masters at -14.0
+  LUFS and -1.8 dBTP, every word heard by the recogniser in both). Nobody has listened to it: the workspace cannot
+  play audio. Pietro's verdict on the narrator, the score and the motion is the open item.
+
 - **Long-form YouTube is a cinematic documentary, to a written standard** (13 Nov, Pietro's permanent instructions
   for long videos, adopted as the standard the same day; no new film made that day). Written into
   `docs/production/` (long-form, cinematic, audio, quality gates); they override the YouTube skill for long videos.

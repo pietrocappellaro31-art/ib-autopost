@@ -3,14 +3,18 @@
 #
 #   bash build/setup_voice.sh            then: source ~/voice-tools/env.sh
 #
-# Voices since 8 Nov: Reels rotate G2, BELLA, EMMA; YouTube is GEORGE. All four
-# are synthetic (Kokoro, Apache 2.0), so no key is needed. VOICE_KEY (Project doc
+# Voices: since 13 Nov the narrator is HEART (Kokoro af_heart, speed 0.9, en-us)
+# for long videos, Shorts and, after Pietro's go-ahead, Reels (docs/production/
+# voice-decision.md). Older voices (G2, BELLA, EMMA, GEORGE) stay available.
+# All are synthetic (Kokoro, Apache 2.0), so no key is needed. VOICE_KEY (Project doc
 # claude/voice-samples-key.md) is only for re-rendering Pietro's older clones
 # (P1, L2, L3, L4); never print, paste or commit it.
 # Downloads about 1 GB from GitHub (reachable from this workspace):
 #   Kokoro-82M (voices BELLA, EMMA, GEORGE and G2's sample), misaki dictionaries,
 #   sherpa-onnx, Pocket TTS (G2's engine, CC BY 4.0, Kyutai), Parakeet (word
-#   check), WeSpeaker (G2's take selection), DNSMOS (daily quality score).
+#   check), WeSpeaker (G2's take selection), DNSMOS (daily quality score),
+#   the GeneralUser GS SoundFont (score.py's instruments, free for commercial
+#   music) and the TinySoundFont Python package.
 set -euo pipefail
 REPO="$(cd "$(dirname "$0")/.." && pwd)"
 T="${VOICE_TOOLS:-$HOME/voice-tools}"
@@ -36,6 +40,14 @@ if [ ! -f dnsmos/sig_bak_ovr.onnx ]; then
   (cd dns && git sparse-checkout set DNSMOS/DNSMOS)
   mkdir -p dnsmos && cp dns/DNSMOS/DNSMOS/sig_bak_ovr.onnx dnsmos/ && rm -rf dns
 fi
+mkdir -p soundfonts
+SF=https://raw.githubusercontent.com/mrbumpy409/GeneralUser-GS/main
+if [ ! -f soundfonts/GeneralUser-GS.sf2 ]; then
+  curl -sSL -o soundfonts/GeneralUser-GS.sf2 "$SF/GeneralUser-GS.sf2"
+  echo "9575028c7a1f589f5770fccc8cff2734566af40cd26ed836944e9a5152688cfe  soundfonts/GeneralUser-GS.sf2" | sha256sum -c -
+fi
+[ -f soundfonts/GeneralUser-GS-LICENSE.txt ] || curl -sSL -o soundfonts/GeneralUser-GS-LICENSE.txt "$SF/documentation/LICENSE.txt" || true
+python3 -c "import tinysoundfont" 2>/dev/null || pip install -q --break-system-packages tinysoundfont
 if [ -n "${VOICE_KEY:-}" ]; then
   for enc in "$REPO"/build/voices/*.flac.enc; do            # Pietro's older clones, only for re-renders
     n=$(basename "$enc" .flac.enc)
@@ -51,5 +63,6 @@ export PARAKEET_DIR=$T/sherpa-onnx-nemo-parakeet-tdt-0.6b-v2-int8
 export SPEAKER_MODEL=$T/wespeaker_en_voxceleb_resnet34.onnx
 export DNSMOS_MODEL=$T/dnsmos/sig_bak_ovr.onnx
 export VOICE_DIR=$T/voices
+export SOUNDFONT=$T/soundfonts/GeneralUser-GS.sf2
 ENV
 echo "ready: source $T/env.sh"

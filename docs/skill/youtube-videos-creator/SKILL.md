@@ -1,265 +1,163 @@
 ---
 name: "youtube-videos-creator"
-description: "Daily YouTube run for the finance channel: research a topic that could travel, write and render one long-form 16:9 video and one Short in the day's trial voice, with music picked from Pietro's music library, thumbnail, title, description, chapters and tags, checked against YouTube's AI and monetisation rules. Posting stays manual."
+description: "Daily YouTube run for the finance channel: research a topic that could travel, write and render one cinematic long-form 16:9 documentary (filmed scenes, original score, clean and scored masters) and one Short in the HEART narrator, with thumbnails, titles, description, chapters and tags, checked against YouTube's AI, originality and monetisation rules. Posting stays manual."
 ---
 
 # YouTube Videos Creator
 
-> **Long-form videos follow `docs/production/` from 13 Nov 2026** (Pietro's cinematic documentary standard:
-> `long-form-standard.md`, `cinematic-standard.md`, `audio-standard.md`, `quality-gates.md`). Where this file
-> disagrees, those files win for long videos: the narrator HEART (Kokoro af_heart, speed 0.9, en-us, see Voice
-> below), a clean and a scored MP4 (original score, gate in
-> `audio-standard.md`), a visual plan before the render, five title candidates, a motion preview, transcript.txt,
-> and an AI-disclosure recommendation with its reason. Sections 3, 5, 6 and 7 below still describe the Shorts and
-> the engine's commands.
+Version 2026-11-13 (cinematic upgrade). The authoritative copy is `docs/skill/youtube-videos-creator/SKILL.md` in the
+ib-autopost repo; the installed plugin is built from it (`docs/production/skill-sync.md`).
 
-Runs every day at 7am New York as two scheduled tasks (long-form and Shorts),
-or when Pietro asks for a YouTube video. Everything is automated except
+**The standards live in the repo and win over this file where they disagree:** `docs/production/long-form-standard.md`,
+`short-form-standard.md`, `cinematic-standard.md`, `audio-standard.md`, `quality-gates.md`, `scene-library.md`,
+`animation-engine.md`, `voice-decision.md`. A newer decision by Pietro in `docs/decisions-log.md` wins over all of
+them. Rules that are **no longer current** and must not come back from an older copy: GEORGE as the only YouTube
+voice; a different trial voice every day; "no music in any long video"; one drawing card for every sentence; an
+automatic AI-disclosure tick.
+
+The channel is independent: the IB editorial identity only, nothing from any other channel, brand or project.
+Runs every day as two scheduled tasks (long video and Short), or when Pietro asks. Everything is automated except
 posting: Pietro uploads.
 
 ## Before making anything
 
-In the ib-autopost repo read `docs/brand-system.md`, `docs/decisions-log.md`,
-`docs/daily/quality-log.md` (yesterday's "next improvement" is today's first
-job), `docs/daily/topics.md` and the last rows of `docs/daily/youtube-long.md`
-or `docs/daily/youtube-shorts.md`.
-
-Setup: `bash build/setup_voice.sh && source ~/voice-tools/env.sh` from the
-repo root.
+1. In the ib-autopost repo read the production files above, `docs/brand-system.md`, `docs/decisions-log.md`,
+   `docs/daily/README.md`, `docs/daily/quality-log.md` (the last row's "Next improvement" for your run is the first
+   job), `docs/daily/topics.md`, and the last rows of `docs/daily/youtube-long.md` and `youtube-shorts.md`. Load the
+   skills content-compliance, music-library and ig-human.
+2. `bash build/setup_voice.sh && source ~/voice-tools/env.sh` (Kokoro, recogniser, DNSMOS, the SoundFont).
+3. Inspect `git status` and keep any changes already there; `git pull --rebase` before committing (the long-video,
+   Short and Reel runs write the same logs). Never force-push.
 
 ## Voice
 
-**HEART, from 13 Nov: Kokoro af_heart, en-us, speed 0.9, for long videos and Shorts** (Pietro, 13 Nov,
-`docs/production/short-form-standard.md`). `voice_clone.YOUTUBE_PICK = "HEART"`, so `youtube_voice()`
-returns HEART and `youtube.make` uses it by default; render a Short with
-`python3 build/shorts_<slug>.py HEART`. The daily voice trial (11 to 13 Nov: HEART, MICHAEL,
-ISABELLA) is over; `docs/daily/youtube-voice-trial.md` stays as history, and the voice and DNSMOS
-now go in the quality-log row. Do not restart the rotation unless Pietro asks. HEART is
-synthetic, not a person. The narrator has no name, face or invented life story: never "when I
-worked at a bank".
+**HEART: Kokoro v1.0 `af_heart`, speed 0.9, en-us** for long videos and Shorts (`voice_clone.YOUTUBE_PICK`).
+`youtube.make` uses it by default; render a Short with `python3 build/shorts_<slug>.py HEART`. Synthetic, imitates
+nobody. The narrator has no name, face, credentials or past: never "when I worked at a bank". Names and terms go
+in `build/voice.py` `PHONEMES` (unknown words stop the render). Lines are cached (`synth.pkl`): editing one line
+re-says only that line. The 11 to 13 Nov voice trial is closed; its log stays as history.
 
-## 1. Pick the topic
+## 1. Topic
 
-Vary across: history of finance, politics and finance, how money is made,
-challenges and stories (living a day on one euro), technical explainers
-(DCF, LBO, IPO pricing), banking careers, and anything else in finance that
-people share. Look for what is getting attention now: search the web for
-recent news, anniversaries and questions people are asking, and prefer a
-surprising angle ("the famous bubble that mostly never happened") over a
-textbook title. Not in `topics.md` "Used" within 60 days. Long-form and
-Short on different topics the same day.
+A surprising, true central question that makes a good film or Short: finance history, bubbles, crises, behavioural
+finance, banking and careers, PE and LBOs, modelling, corporate finance, scandals, money psychology. Search the web
+for what people are asking now. Not in `topics.md` "Used" within 60 days; long video and Short on different topics.
 
-## 2. Research and write
+## 2. Research and script
 
-- Every fact has a source, listed in the episode docstring and in the
-  description. **Every source in the description carries its link** (Pietro, 10 Nov: "since my
-  channel is verified, make sure to add links to the sources and references"): put them in the
-  episode as `sources=[(label, url), ...]` (only URLs actually opened or returned by a search in the
-  run), with `source_note=` for anything that is our own illustration; the engine writes the
-  "Sources and references" list. **Never invent a number, statistic, quote or credential.** If
-  a number cannot be sourced, say it without the number.
-- Write the script as original analysis with a point of view: what the
-  common story gets wrong, why it matters, what to take from it. That is
-  what keeps the channel monetisable (YouTube's inauthentic-content policy
-  excludes mass-produced, template-identical videos).
-- No em dashes. Spoken numbers in words; on-screen numbers in digits.
-- Educational, not financial advice. No "buy this".
+- Every material claim sourced in the episode docstring and linked in the description (`sources=[(label, url)]`,
+  only URLs opened or returned by a search in the run; `source_note=` for our own illustration). **Never invent a
+  number, date, quote, statistic, URL or credential.** Check every calculation with a short script.
+- Keep apart: documented fact, uncertain anecdote ("is supposed to have said"), our interpretation, illustrative
+  reconstruction. Historical quotes verified and attributed; legends told as legends.
+- Original analysis with a point of view (what the common story gets wrong, why it matters): that is what keeps the
+  channel monetisable. No em dashes. Spoken numbers in words; on-screen numbers in digits. Educational, not advice.
 
-## 3. Long-form (16:9)
+## 3. Long video (16:9, 8 to 12 minutes)
 
-Copy `build/youtube_ep001.py` to `build/youtube_ep<NNN>.py`. Chapters of
-3 to 6 beats; each beat is one or two spoken sentences.
+Follow `long-form-standard.md`: hook in 5 to 15 s, context, mechanism, escalation, turning point, analysis,
+conclusion and one takeaway.
 
-**Visuals on everything (Pietro, 8 Nov: "as much visuals as possible";
-quality only goes up).** The reference is the style of the earlier videos
-(Lehman's Last Weekend, 100% Is the Only Standard): a drawn scene for every
-moment. Rules:
-- Give each sentence its own visual with `shows=[...]` (one per sentence).
-- Most beats use a hand-drawn scene from `build/sketch.py` (`kind="sketch"`,
-  a drawing that draws itself beside the line, or `kind="scene"`, the drawing
-  alone): clock, calendar, bricks, dominoes, chart, bars, figures (with
-  magnifying glasses), document with a stamp, tower (cracked), bank, seesaw,
-  scale, coins, flow, phone, magnifier, ship, book, speech bubble, bulb,
-  globe, arrows, house with a price tag, pie, tulip. Add a new scene to
-  `sketch.py` when the story needs one (that is a good daily improvement).
-- Mix in the other kinds for rhythm: icon, icons, split, timeline, flow,
-  verdict (claim plus MYTH/TRUE stamp), quote, number, compare, list.
-- No more than one text-only beat per chapter. Every chapter card gets an
-  `art=` drawing.
-- Thumbnail: `thumb=dict(art=..., art_b=..., big=..., big_a=..., small=..., ghost=...)` gives two
-  options, `thumbnail_a.jpg` and `thumbnail_b.jpg`, for YouTube's Test & compare. **Different
-  colours and styles every day** (Pietro, 12 Nov): `youtube.THUMB_LOOKS` has seven looks (red with
-  the drawing on a card, paper with a red bar, ink with gold, teal with a tilted card, mustard,
-  red and paper split, paper in an ink frame with a ghost number); `thumb_looks()` gives each day
-  two of them, never one used the day before. Inline span colours in `big`/`big_a` are swapped for
-  the look's highlight, and the big line shrinks itself to clear the strap. Name the two looks in
-  the delivery. `looks=[a, b]` in `thumb` overrides, only for a reason.
-
-Check the length and every word before the long render: `python3 build/yt_timing.py build/youtube_ep<NNN>.py --takes` (12 Nov: `--takes`
-transcribes each line once, cached, and writes takes.json; the render does the same and a final second loudness stage brings the master to about -14 LUFS) (11 Nov;
-the voice is cached per line in `synth.pkl`, so the render reuses it and a one-line edit re-says only that line).
-Aim for 8 to 12 minutes; vary the scenes and structure so no two videos look
-alike. Render: `python3 build/youtube_ep<NNN>.py`. Outputs in
-`build/out/<slug>/`: the MP4 (-14 LUFS, voice and sound effects, no music: see section 6), two
-thumbnails, `<slug>.srt` captions, `metadata.json`, `description.txt` with
-chapter times. Look at a contact sheet of frames before delivering: if it
-looks plainer than the last video, it is not done.
+1. Visual plan `build/plans/ep<NNN>.md` **before** rendering: one row per beat (narration, objective, scene family A
+   to L from `scene-library.md`, assets, motion, camera, data and source, effects, score mood, seconds).
+2. Copy the latest `build/youtube_ep<NNN>.py`. Chapters of 3 to 6 beats. Mix scene families; **visual progression**,
+   not a card per sentence: one evolving scene may carry several sentences.
+   - **Filmed beats** where the story has people, places or a mechanism: `show=dict(kind="cine", shot=fn)` with
+     `fn(w, h, dur, ctx)` returning `dict(shots=[...], foley=[...], amb=array)` from `build/cine.py` and
+     `build/cine_lib.py` (worked examples: `build/cine_poc_newton.py`, `build/youtube_cine_test.py`). Aim for one
+     filmed beat per two chapters and a filmed hook when it can be. Reconstructions carry the RECONSTRUCTION badge;
+     props show only sourced figures.
+   - Drawn beats: `build/sketch.py` scenes (`kind="sketch"` beside a line, `kind="scene"` alone) and the other kinds
+     (icon, split, timeline, flow, verdict, quote, number, compare, list). At most one text-only beat per chapter;
+     every chapter card has `art=`. Add a scene or a cine set when the story needs one: a good daily improvement.
+   - `score="reflective" | "suspense" | "light"`: the scored mix (`build/score.py`, one mood per chapter).
+   - `thumb=dict(...)`: two looks from `youtube.THUMB_LOOKS`, never one used the day before.
+3. `python3 build/yt_preview.py build/youtube_ep<NNN>.py` (variety test, must pass), then
+   `python3 build/yt_timing.py build/youtube_ep<NNN>.py --takes` (length, every line heard word for word).
+4. Render `python3 build/youtube_ep<NNN>.py`. Outputs in `build/out/<slug>/`: `<slug>-clean.mp4`,
+   `<slug>-scored.mp4`, `<slug>.mp4` (the recommended one after the score gate), `thumbnail_a.jpg`, `thumbnail_b.jpg`,
+   `<slug>.srt`, `transcript.txt`, `description.txt`, `metadata.json`, `sound.json`, `music.json`. Filmed beats cost
+   0.5 to 1.3 s of render a frame: budget for them.
+5. `python3 build/yt_preview.py build/youtube_ep<NNN>.py --motion`: look at the motion sheets and `motion.json`, not
+   only stills. Then every gate in `quality-gates.md`.
 
 ## 4. Short (9:16)
 
-**Read `docs/production/short-form-standard.md` first (Pietro, 13 Nov): it is the Shorts standard and
-wins over anything below that disagrees.** It adds five formats beside the four-level quiz (story,
-one surprising concept, animated calculation, myth, choice or challenge), 35 to 55 s for most
-Shorts, two alternative titles, a QA report, and an honest judgement of the AI setting and audience.
+Follow `short-form-standard.md`. Formats: A the four-level quiz (the hook is the last question alone, never "That's
+level 4. Keep score."), B story, C one surprising concept, D animated calculation, E myth, F choice or challenge.
+Pick the best for the topic and vary the week. 35 to 55 s for most; under 60 for the quiz.
 
-**Shorts ship without music in the file** (`music=False`, the default): Pietro adds a
-trending sound in the YouTube app when he uploads (see section 6, Music).
+- Levels engine: copy the latest `build/shorts_<slug>.py` (the penny and Friday-13th Shorts are the floor): a colour
+  ground per part, a drawing of the concept in each answer zone, floaters, an animated close; `clear.json` and `WRAP`
+  at zero; two-stage master at -14 LUFS.
+- A filmed segment (a story beat, a character reacting) can come from `cine.py`: the same world is reframed for 9:16
+  (`cine_poc_newton.py --vertical` is the example).
+- Music: the **clean master** is the one delivered (voice, effects, room tone; Pietro adds a sound in the YouTube
+  app). A **scored alternative** is prepared when practical: `python3 build/master.py scored build/out/<slug>/<slug>.mp4
+  <mood> <mood>` writes `<slug>-scored.mp4` and a report; offer it as unheard until Pietro approves a score.py cue.
+  If the scheduled task's own prompt says "no scored master unless Pietro asks", follow the prompt.
+- Set `mood=` so the render writes `music_pick.json` for the music block (music-library skill).
 
-Set `mood=` in the EP (see the music library below): the render picks the library song for the Short.
+## 5. Compliance, metadata and disclosure
 
-A four-level quiz with the Levels engine (`build/levels.py`, copy the latest
-`build/reels_levels<N>.py` to `build/shorts_<slug>.py`), rendered with
-the day's trial voice, under 60 seconds, on a finance topic for a general audience. Or a
-single sharp idea from the long-form, said in its own words (not a cut of the
-same file). Title under 70 characters with #Shorts in the description.
+Run the content-compliance gate. Then:
 
-**Pictures, colour and motion on every Short (Pietro, 10 Nov: "make the video more
-engaging with pictures and colors and more animated"; after seeing it: "much better,
-that is what we are gonna use as standard from now on").** The penny Short,
-`build/shorts_penny-one-year.py`, is the minimum standard: every Short matches or beats
-it. Copy its structure, except the hook:
-- **the hook is the last question alone** (12 Nov, Pietro: "'That's level 4, keep score' is useless and
-  should be removed from all videos"): `say` has one entry, no "That's level 4." / "Keep score." lines
-  and no `lsize`/`cols` for them; the hook `art=` sits centred under the question, about 600 x 480
-  (`art_w`, `art_h`), since nothing sits beside it. The close still asks for the score;
-- a colour ground per part (`bg=` on the hook, each level and the close), cross-faded
-  at the swipes;
-- a drawing in each level's empty answer zone while the question is read and the clock
-  runs (`art=`, with `ans_min` about 520), fading as the answer lands; `art_after=` for a
-  small picture beside the answer; `art=` on the hook sits centred under the question;
-- `floaters=` (faint shapes drifting at the edges) and `art=` on the close (coins falling
-  in under the score);
-- drawings from `build/sketch.py`, sized for 9:16 with `picture(name, t0, dur, w=650)`;
-  add a new scene for the topic when none fits (coins, receipt, card and terminal, price
-  tag, coin line-up and a stamped last coin exist; for buy now, pay later: shopping bag,
-  price tag split in four, payment timeline, credit report, interest stack).
-- the master is two-stage at -14 LUFS (12 Nov, `levels.two_stage`): it lands within 0.2 LU of the
-  target, where the single loudnorm stopped at -14.6 to -15.2; a label like "Last one." is said on
-  its own, and the last level can show the hook's question without reading it again (`("", text)`).
-- an `art_after` picture never covers the answer (13 Nov, `motion.clearAfter`): the render shrinks or narrows the answer, or
-  drops the picture below it, prints what it moved and saves `clear.json`; a `WRAP` line means a hook, answer or close line
-  ends with one word alone: shorten it or set the break with `|`. A level's `foot=` source line shows with or without a chip.
-Keep the safe area clear (the render lists any problem) and look at a contact sheet.
+- **AI disclosure: a recommendation per finished video with its reason** (`quality-gates.md` section 6). Current
+  reasoning: YouTube asks for disclosure of realistic altered or synthetic content and exempts animation; a synthetic
+  narrator is not addressed and disclosure costs nothing in reach or earnings, so the recommendation is Yes, said
+  with that reason. Re-check the help page monthly.
+- "Made for kids": No, unless a video really is aimed at children.
+- Long video: five title candidates and one recommended; description with real chapter times, "Sources and
+  references" with links, the music line (scored: `Music: original score made for this video.`; clean with Pietro's
+  track: `Music: [song title] by [artist], from the YouTube Audio Library`), `Narration: AI-generated voice; script
+  and analysis are our original work.` and the not-financial-advice line (the engine writes them); 2 or 3 hashtags;
+  Studio tags (500 characters at most, `tags_for_studio`); a pinned-comment question.
+- Short: title under 70 characters plus two alternatives; `#Shorts` and one or two hashtags.
+- Title and description PASS on ig-human. No third-party footage, logos or photos of real people; no bank logos or
+  implied affiliation; no promised returns or job outcomes. Rights record `docs/rights/posts/<slug>.md`.
 
-## 5. Checks
+## 6. Deliver
 
-- Every line the recogniser checks is word for word (`takes.json` where
-  written), DNSMOS via `build/quality.py`, loudness, and frames looked at:
-  the thumbnail, every chapter card, two beats per chapter.
-- No layout overflow, no text off the frame.
+Long video, with SendUserFile: the recommended MP4, the clean MP4 (and the scored one if it is not the
+recommendation), both thumbnails, the `.srt`, `description.txt`, the motion sheets and the rights record. Then one
+SendUserMessage: titles, description, chapters, tags, hashtags, pinned comment, voice, music (which master and why,
+the gate result; for clean, the credit line and the Studio steps: Content, the video, Editor, Audio, pick an Audio
+Library track, keep it low under the voice, Save), Studio settings with reasons, sources, quality results, today's
+verified improvement, what needs his review.
 
-## 6. YouTube AI and monetisation compliance
-
-Run the content-compliance gate, then:
-- **Altered or synthetic content**: tick "Yes" in YouTube Studio for every
-  video with the AI voice (no effect on earnings; removes any doubt).
-  `metadata.json` carries the reminder.
-- Description ends with `Narration: AI-generated voice; script and analysis
-  are our original work.` and the not-financial-advice line (added by the
-  engine).
-- **Music (Pietro, 10 Nov: "try to find the most viral ones and use it"; the piano and
-  cello bed was "even too dramatic").** Viral songs are copyrighted, so they never go into
-  our file (Content ID would claim the video, and the compliance gate treats it as STOP).
-  The way to use them is YouTube's own licensed library:
-  - **Shorts**: the MP4 has voice and sound effects only (`music=False`). Each run
-    puts **the library pick first** (`music_pick.json`, printed by the render: the words to
-    search, the start time of its calmest stretch), then one or two sounds trending on YouTube
-    Shorts that week (web search), with the mood that fits the video. Pietro picks one with
-    "Add sound" in the YouTube app at upload (licensed for Shorts) and keeps it low under
-    the voice. If a suggested song is not in the app's library, he picks another from it.
-    Pietro confirmed this way (10 Nov) and asked for **clear instructions every time**:
-    every Short delivery ends with the block below, filled in for that video.
-  - **Pietro's music library (12 Nov; skill `docs/skill/music-library/SKILL.md`, code
-    `build/music_library.py`).** Pietro sends songs he likes; each is analysed (tempo, key, mood,
-    calmest stretch) and every video picks the one closest to its `mood`. The songs are commercial
-    recordings, so they never go into our file and are never committed. They are used two lawful
-    ways, and no edit is ever made to slip a song past Content ID.
-  - **Long-form: no music in the file; Pietro adds it himself** (12 Nov, Pietro: "the music
-    is terrible. From now on, I will add the music myself. You will provide me with a line to
-    fill in the description to give credits for it."). `music` defaults to False in
-    `youtube.mix`, so the MP4 has voice and sound effects only, and `describe()` puts the credit
-    line `Music: [song title] by [artist], from the YouTube Audio Library` above the narration
-    line. Every long-video delivery gives that line and says: fill in the brackets; if the
-    track's Audio Library page shows its own attribution text, paste that instead; Audio
-    Library tracks with no attribution need no line, so delete it. Popular songs cannot go
-    on long videos without a Content ID claim, so the track comes from the Audio Library (or
-    another source licensed for monetised YouTube). Studio steps: Content, the video, Editor,
-    Audio, pick the track, keep it low under the voice, Save. `music=True` brings back
-    the `build/music.py` bed (and the library-matched bed) only for a re-render of an old video. This
-    replaces the library-matched long-video bed set up earlier the same day: the library now serves
-    the Shorts only, because its songs are commercial and cannot go on a long video without a claim.
-  - Instagram Reels stay without music (Pietro adds it in the app).
-- No third-party footage, logos or photos of real
-  people. Fonts, sounds and visuals are ours (see `docs/rights/ledger.md`).
-- Not "made for kids".
-- Rights block in `docs/rights/posts/<slug>.md`.
-
-## 7. Deliver
-
-**Music instructions, in every Short delivery** (Pietro, 10 Nov: "make sure to give me
-clear instructions each time"). Fill in the songs and the times; keep the steps:
+Short: the clean MP4, the scored alternative if made, the cover, the `.srt` if written, `qa.md`, then one message with
+the titles, description, hashtags, tags, pinned comment, voice, the music block below, disclosure and audience with
+the reason, measures, sources and today's improvement.
 
 ```
 Music for this Short (add it in the YouTube app on your phone)
 Suggested sounds:
   1. <library pick: song - artist> (from your music library): <why it fits, one line>; start at <calm_start>
-  2. <song - artist> (trending on Shorts this week): <...>
-  3. <song - artist> (trending, or the library runner-up): <...>
+  2. <song - artist> (verified trending on Shorts this week): <...>   (or: none verified this week)
 Steps:
   1. Open the YouTube app, tap +, then "Upload a video", and pick <slug>.mp4.
-  2. In the Shorts editor tap "Add sound" (the music note), search the first song.
-     If it is not there, try the next; if none is, pick any song the app offers that
-     fits <mood>.
-  3. Choose the part of the song to use: start it on <calm_start for the library pick; a calm or instrumental stretch for the others>,
-     not on a vocal chorus, so it does not fight the voice.
-  4. Tap "Volume": keep "Original sound" at 100 and set the added track to about 15 to 25,
-     then play the first 10 seconds. The voice must be easy to follow; lower the track if not.
-     If you see no sound button: you went past the editor. After picking the file, the
-     trim screen must get "Next" (not "Add details"); the sound button is on the editor
-     screen that follows. Songs from the app's library may be cut to a short clip
-     (YouTube Help says 15 seconds for uploaded videos): place it on the hook.
-  5. Tap Next, paste the title and description, set "No, it's not made for kids", and upload.
-  6. AI label (the phone app may not show it): on a computer open studio.youtube.com,
-     Content, the Shorts tab, click the Short, "Show more", and under "Altered content"
-     (newer Studio: Attributes, "AI use") answer Yes. Save.
-The app's labels can differ slightly between versions; the order stays the same.
+  2. On the trim screen tap "Next" (not "Add details"); in the editor tap "Add sound" and search the first song.
+     If it is not there, try the next; if none is, pick any song the app offers that fits <mood>.
+  3. Start it on <calm_start or a calm, instrumental stretch>, not on a vocal chorus.
+  4. "Volume": original sound 100, the added track about 15 to 25; play the first 10 seconds; the voice must be easy
+     to follow. Library songs may be cut to a short clip (YouTube Help: 15 s on uploaded videos): place it on the hook.
+  5. Next, paste the title and description, "No, it's not made for kids", upload.
+  6. AI setting (the phone may not show it): studio.youtube.com, Content, Shorts, the Short, Show more, "Altered
+     content" (newer Studio: Attributes, "AI use"): answer as recommended. Save.
+If you upload the scored alternative instead, skip steps 2 to 4: it already has our original score.
 ```
 
-For a long video, when Pietro wants to swap our bed for an Audio Library track, give the
-Studio steps: YouTube Studio, Content, the video, Editor, Audio, pick the track, set it
-low under the voice, Save. Only Audio Library tracks there (log any attribution).
+## 7. Log and improve
 
-**Tags and hashtags are different things.** `tags=` is the list for the **Tags** field in
-YouTube Studio (Content, the video, Details, Show more, Tags; 500 characters at most, the engine
-checks it); give it to Pietro as one comma-separated line (`tags_for_studio` in metadata.json).
-`hashtags=` (two or three, no spaces) are written by the engine at the end of the description, so
-Pietro does nothing extra for them.
-
-Send with SendUserFile: the MP4, both thumbnails, the `.srt` and `description.txt`. In the
-reply paste the title, the description (with chapters), the tags, and the
-pinned-comment question, plus the Studio settings to tick and, for a Short, the
-two or three trending sounds to try in the app. Add a row to the
-log, the topic to `topics.md` "Used", the measures and one improvement to
-`quality-log.md`. Commit the episode file and logs (not the MP4) and push.
-
-## Get better every day
-
-Each run starts with yesterday's "next improvement" (a new visual kind,
-tighter pacing, a better thumbnail, a stronger first 15 seconds), measures
-it, and names the next one. Pietro's notes outrank the metrics.
+Rows in `docs/daily/youtube-long.md` or `youtube-shorts.md` (voice, format), the topic in `topics.md` "Used", and a
+row in `quality-log.md`: voice and DNSMOS, exact lines, layout and pacing, drawing-beside-text share and filmed beats,
+static share and longest static run, LUFS and true peak of each master, voice over music, the score gate, render
+time, what improved (built, measured, shown in motion) and one concrete next improvement. A cosmetic change does
+not count. Commit the episode, plan, engine changes, rights and logs (never MP4s, stems, recordings or keys).
 
 ## Never
 
-- Clone or imitate a real person's voice or face.
-- Use music, footage or images we have no rights to.
-- Post or schedule on YouTube: Pietro uploads.
+- Clone or imitate a real person's voice or face; give a historical figure a voice or invented words.
+- Put a commercial or trending song, or anything we have no rights to, in a file; edit audio to dodge Content ID.
+- Claim a listening verdict nobody gave, or an improvement that was not rendered, watched in motion and measured.
+- Post, schedule or change anything on YouTube: Pietro uploads.

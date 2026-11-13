@@ -1,77 +1,105 @@
-# Audio standard: narrator, score, sound
+# Audio standard: voice, music, effects, mix
 
-Pietro, 13 Nov 2026, for long-form YouTube. Read with `long-form-standard.md`.
+Pietro, 13 Nov 2026: his long-form documentary instructions (morning) and the cinematic-upgrade directive (the same
+day), merged. Applies to long videos, Shorts and Reels unless a format file says otherwise. History of every earlier choice stays in `docs/decisions-log.md`.
 
-## Narrator
+## 1. Narrator
 
-**HEART: Kokoro ONNX, voice af_heart, speed 0.9, en-us**, for every long video (and every Short, per
-`short-form-standard.md`) from 13 Nov 2026: `YOUTUBE_PICK = "HEART"` in `build/voice_clone.py`, HEART at 0.9 in
-`build/voices/voices.json`, the default for `youtube.make` and `yt_timing.py`. The daily voice trial is closed and
-must not be resumed; its results stay archived in `docs/daily/youtube-voice-trial.md`. If Pietro names a different
-narrator later, his newest explicit instruction wins.
+**HEART: Kokoro v1.0 ONNX (`kokoro-v1.0.onnx`, `voices-v1.0.bin`), voice `af_heart`, speed 0.9, en-us** for long
+videos, Shorts and Reels (`voice_clone.YOUTUBE_PICK = REEL_PICK = "HEART"`). Synthetic, not a person, Apache 2.0.
+Why and the trial history: `voice-decision.md`. A platform-specific exception needs Pietro's approval in the
+decisions log.
 
-- Synthetic, imitates nobody, never cloned from a real person.
-- Names said correctly: add any new name to `PHONEMES` in `build/voice.py` (the synthesiser refuses unknown
-  words rather than guessing).
-- Every line is checked by the recogniser (`yt_timing.py --takes`, `takes.json`). A real slip gets reworded; a
-  proper name the recogniser cannot spell is logged, not reworded.
-- Never claim the voice was listened to unless a person listened. "Heard word for word" means the recogniser.
+- The narrator has no name, face, credentials or past. Never "when I worked at Goldman Sachs".
+- The daily voice trial is closed and must not be resumed; its results stay in `docs/daily/youtube-voice-trial.md`.
+- Every line is checked by the recogniser (`yt_timing.py --takes`, `takes.json`). A real slip gets reworded; a proper
+  name the recogniser cannot spell is logged, not reworded. "Heard word for word" means the recogniser, not a person.
+- Every line is cached (`synth.pkl` in long videos, `keep_voice`/`redo` in the Levels engine, `lines/` in cine
+  films): editing one line re-says only that line and keeps every other timing.
 
-## Two mixes, every film
+## 2. Pronunciation
 
-| File | What is in it | When it is the one to upload |
+`build/voice.py` `PHONEMES` is the pronunciation dictionary (misaki notation; plurals, -ed and -ing are derived).
+An unknown word stops the render, so nothing is guessed. Covered: bank terms and acronyms (EBITDA, EBIT, DCF, WACC,
+IRR, MOIC, LBO, IPO, EV, FCF, LTV), historical names (Aislabie, Odlyzko, Southwark, Threadneedle, Garraway's),
+companies (JPMorgan, Goldman Sachs, Alibaba, Experian, Affirm). Numbers, currency and maths are written as words in
+the script ("three hundred and fifty pounds", "twenty percent"); the screen shows digits.
+
+`python3 build/narrator_check.py` says 12 fixed finance lines and reports word errors, words per second, peak,
+longest gap and DNSMOS: the regression set for the narrator. 13 Nov, af_heart at 0.9: 12 of 12 said correctly
+(3 recogniser spelling or format differences, not slips: "20%" for "twenty percent", "WAC", "Aisleby"), 2.94 words
+a second, peak -3.2 dBFS, DNSMOS 3.49 (SIG 3.70, BAK 4.20); GEORGE on the same lines 3.42. Nobody listened: the
+workspace has no audio playback. Pietro's ear is the final check.
+
+## 3. Masters
+
+| | CLEAN | SCORED |
 |---|---|---|
-| `<slug>-scored.mp4` | voice, sound effects, original score | the recommendation, when it passes the gate below |
-| `<slug>-clean.mp4` | voice and sound effects, no music | when the score fails the gate, or Pietro wants to add his own track |
-| `<slug>.mp4` | a copy of the recommended one | |
+| Contains | narration, sound effects, ambience | the same plus our original score, ducked |
+| Use | Pietro adds platform-library music in the app or Studio; the safe default anywhere | only where the score's rights cover the platform |
+| Long video file | `<slug>-clean.mp4` | `<slug>-scored.mp4` |
+| Made by | long videos: `youtube.mix`; filmed shorts and films: `master.dual` | the same (same picture, same timing) |
 
-`youtube.mix` writes both; `youtube.sound_report` measures both and picks one (`sound.json`, field
-`recommended`). `score="none"` in the episode makes the clean mix only.
+The picture is rendered once; both masters copy the same video stream. `<slug>.mp4` is a copy of the recommended one.
 
-## The score
+**Long-video score gate** (`youtube.SCORE_GATE`, measured by `youtube.sound_report` into `sound.json`, field
+`recommended`): the scored mix is recommended only if the voice sits at least 18 dB over the ducked music while
+speaking, DNSMOS SIG (the speech itself) of the scored mix is within 0.3 of the clean mix, and 20 seconds of the
+scored mix are heard by the recogniser within 5% of the same 20 seconds of the clean mix. DNSMOS OVRL and BAK are
+reported, not gated: the model counts any music under a voice as background noise (13 Nov: #6 remixed, BAK 4.07
+clean and 2.46 scored with the music 24.6 dB under the voice; the 20 s proof of concept, OVRL 2.44 clean and 2.06
+scored while the recogniser heard every word of both). `score="none"` makes the clean mix only.
 
-Original, synthesised from scratch by `build/music.py` for each film: nothing sampled, no third-party melody,
-chords copied from nobody, nothing for Content ID to claim, no licence needed. Never a commercial song, never a
-protected melody or a distinctive arrangement imitated. Pietro's music library songs are commercial recordings and
-stay out of every long-video file.
+**Description line.** Scored: `Music: original score made for this video.` Clean with Pietro's track: `Music: [song
+title] by [artist], from the YouTube Audio Library` (fill in, paste the library's own attribution text if the track
+page shows one, or delete it if none is needed). Any added track must be licensed for monetised YouTube.
 
-Pick the mood with `score=` in the episode:
+| Format | Default delivery |
+|---|---|
+| Long video | both; `<slug>.mp4` is the scored one if it passes the score gate (`quality-gates.md` 4), else the clean one |
+| YouTube Short | clean is the one delivered (Pietro, 13 Nov, `short-form-standard.md`: he adds a sound in the app); a scored alternative from `score.py` is prepared when practical and offered as unheard until he approves a cue |
+| Instagram Reel | clean (Pietro adds Instagram music in the app); a scored alternative when he asks or when the score is cleared and suits it |
 
-| `score=` | For | Settings (`youtube.SCORES`) |
-|---|---|---|
-| `"reflective"` (default) | history, a story looked back on | 72 BPM, minor, no drums, no bell, level 0.11 |
-| `"suspense"` | a crisis, a run, a collapse (controlled, never melodramatic) | 84 BPM, minor, sparse bell, level 0.12 |
-| `"light"` | a technical explainer | 96 BPM, major, soft drums and bell, level 0.10 |
+Never a commercial or trending song in a file. A version with YouTube-library audio is never uploaded to Instagram,
+and the reverse. No pitch, speed or re-recording tricks to get past Content ID.
 
-The score drops out at each chapter card and is ducked by the voice (side-chain). Pietro found the 8 to 10 Nov
-beds "terrible" and "even too dramatic"; the score is therefore kept low and plain, and the clean file always
-ships beside it.
+## 4. Original score
 
-**Gate** (`youtube.SCORE_GATE`): the scored mix is recommended only if
+`build/score.py`: notes, not loops. Harmony with voice leading, a seeded motif that is stated and answered, one mood
+per section aligned to shots or chapters, sampled instruments from the GeneralUser GS SoundFont (free for commercial
+music; `docs/rights/ledger.md`) rendered offline with TinySoundFont, a synthetic hall. Moods: bustle, explain,
+discover, mystery, decide, peak, crash, reflect, resolve, quiz, reveal. Long videos pick a plan with
+`score="reflective" | "suspense" | "light"` (`youtube.SCORE_PLANS`; `youtube.SCORES` sets tempo and level). If the
+SoundFont is missing the render falls back to the `music.py` bed (synthesised, nothing sampled) and says so;
+`score_engine="music"` forces it. Pietro's music-library songs are commercial recordings and stay out of every file
+(`music-library` skill).
 
-- the voice sits at least 18 dB over the ducked music while speaking,
-- DNSMOS SIG (the speech itself) of the scored mix is within 0.3 of the clean mix, and
-- 20 seconds of the scored mix are heard by the recogniser within 5% of the same 20 seconds of the clean mix.
+Rules: support the content, not movie-trailer drama under every sentence (Pietro found the 10 Nov piano and cello
+"too dramatic" and the pop bed "a lunapark"); change the cue when the chapter or emotion changes; never the melody,
+progression or arrangement of a commercial song. Pietro has not yet heard a `score.py` cue: until he likes one, the
+scored master is offered, not pushed.
 
-DNSMOS OVRL and BAK are reported but not used for the gate: the model counts any music under a voice as
-background noise (13 Nov, #6 remixed: BAK 4.07 clean, 2.46 scored with the music 24.6 dB under the voice).
+## 5. Sound effects and ambience
 
-**Description line.** Scored: `Music: original score made for this video.` Clean with Pietro's track: `Music:
-[song title] by [artist], from the YouTube Audio Library` (fill in, paste the Audio Library's own attribution
-text if the track page shows one, or delete the line if none is needed). Any added track must be licensed for
-monetised YouTube.
+`build/sfx.py`, all synthesised (nothing to license). Reels and Levels: tick, pop, ding, thump. Filmed scenes
+(48 kHz stereo): footsteps on stone (timed from the walk cycle itself, `cine.footsteps`), paper, quill, coin clinks
+(with a glass jar's ring), a soft mallet for numbers and flags landing, a pendulum clock; ambience for an old street
+(distant air, a murmur of many people with no words, carts) and a quiet room. Every effect belongs to an action on
+screen. **No whoosh on routine transitions** (Pietro, 6 Nov).
 
-## Sound effects
+Gap still open in the drawn (non-filmed) parts of a long video: `youtube.scenes` puts a pop on every beat and visual
+change and a ding on every chapter card. Filmed beats carry action-timed foley; the drawn beats should move to
+action-timed sound too (build step in `cinematic-standard.md`).
 
-Sound follows things that happen on screen: a document placed on a desk, coins falling, footsteps, paper, a
-clock, typing, a stamp, a mechanical till, news arriving, a quiet confirmation when a calculation lands, period
-ambience under a historical scene, a trading-floor bed under a market scene. They support, never distract. No
-automatic whoosh, pop or ding on every transition.
+## 6. Mix and loudness
 
-Today the engine puts a pop on every beat and every visual change and a ding on every chapter card
-(`youtube.scenes`); that is the gap that `cinematic-standard.md` build step 4 (sound on actions) closes.
-
-## Master
-
-About -14 LUFS integrated, true peak at or under -1 dBTP (the second loudness stage), AAC 192 kb/s, 48 kHz,
-for both files.
+- Stems: voice, foley, ambience, music. Voice through the narrator chain (`voice.MASTER`).
+- Music ducks about 11 dB while the voice speaks (attack 60 ms, release 350 ms); ambience about 4 dB.
+- Target voice over music while speaking: at least 15 dB (measured, `voice_over_music_db`).
+- Two-stage loudness: measure, normalise linear with the measured values, true-peak limiter, check, trim if off.
+  Long video and Short about -14 LUFS; Reel about -16 LUFS; the limiter ceiling is -1.5 dBTP and a file fails above
+-1.0 dBTP. AAC 192 kb/s, 48 kHz.
+- Measured on the written files, never assumed from settings: LUFS, true peak, LRA, clipped samples, silences over
+  1.2 s, DNSMOS of each master, word errors of the master itself (whole film for short ones, a narrated excerpt
+  for long ones). Report: `sound.json` (long videos), `<slug>-masters.json` (`master.dual`).
+- Where nobody could listen, say so; the numbers are evidence, not a listening verdict.

@@ -1,31 +1,28 @@
 ---
 name: "ib-voiced-reel"
-description: "Make every Instagram Reel for @investmentbankinginterviews voiced: the voice rotates G2, BELLA, EMMA (one per Reel, a one-month test from 8 Nov), with sound effects, voice and quality checks, caption, comment question and the daily quality log. YouTube videos run their own daily voice trial (see youtube-videos-creator)."
+description: "Make every Instagram Reel for @investmentbankinginterviews voiced in the channel narrator HEART (Kokoro af_heart, 0.9, from 13 Nov), with real animation, synchronised sound effects, a clean master plus an original-scored alternative when feasible, checks, caption, comment question and the daily quality log. The Levels quiz is one format, not the only one."
 ---
 
 # Voiced Reels for @investmentbankinginterviews
 
-## The voice rule (from 8 Nov, a one-month test)
+Version 2026-11-13 (cinematic upgrade). Authoritative copy: `docs/skill/ib-voiced-reel/SKILL.md` in the ib-autopost
+repo; the installed plugin is built from it (`docs/production/skill-sync.md`).
 
-Reels rotate three voices, one per Reel, in this order. After a month Pietro
-picks the winner from the results, so the rotation must stay strict:
+**Standards (13 Nov 2026, cinematic upgrade):** `docs/production/cinematic-standard.md`, `audio-standard.md`,
+`quality-gates.md` and `voice-decision.md` in the ib-autopost repo win over this file where they disagree, unless
+`docs/decisions-log.md` records a newer decision by Pietro. An older copy of this skill that names the G2, BELLA,
+EMMA rotation as current is out of date.
 
-| Name | What it is | Engine |
-|---|---|---|
-| **G2** | "E, slower": Kokoro bm_george read slowly, re-spoken by Pocket TTS, 8 exact takes per line, the most consistent kept | Pocket TTS (CC BY 4.0) |
-| **BELLA** | Kokoro af_bella, bright and warm, US | Kokoro (Apache 2.0) |
-| **EMMA** | Kokoro bf_emma, British, calm | Kokoro (Apache 2.0) |
+## The voice rule (from 13 Nov)
 
-1. `voice_clone.next_voice()` returns the next one in the rotation (it reads
-   `build/voices/voice_log.json`). Use it. Do not pick by taste.
-2. If Pietro names a voice for a Reel, use that one; it still counts in the
-   log.
-3. **YouTube (long-form and Shorts) runs its own trial from 11 Nov**: a different
-   Kokoro voice each day (`voice_clone.youtube_voice()`), never the Reel voices.
-   Never in the Reel rotation.
-4. All four are synthetic voices, not a real person. Never clone anyone.
-   Older voices (P1, L2 to L4, F1 to F3) are kept only to re-render old Reels.
-5. Say in every delivery which voice was used.
+**HEART: Kokoro af_heart, speed 0.9, en-us**, the same narrator as the YouTube channel (Pietro's cinematic-upgrade
+directive, 13 Nov). `voice_clone.next_voice()` returns it (`REEL_PICK = "HEART"`); render with
+`python3 build/reels_<slug>.py HEART`. A different voice only if Pietro names one for a Reel, recorded in
+`build/voices/voice_log.json`.
+
+History, kept: the 8 Nov one-month rotation G2, BELLA, EMMA and the older clones (P1, L2 to L4, F1 to F3) stay in
+`voice_log.json`, `voices.json` and `docs/production/voice-decision.md`, for re-rendering old Reels only. Never clone
+anyone. The narrator is synthetic, has no name, face, credentials or past, and never says "when I worked at...".
 
 ## Before making anything
 
@@ -39,12 +36,15 @@ From the repo root:
 `bash build/setup_voice.sh && source ~/voice-tools/env.sh`
 It downloads Kokoro, Pocket TTS, the speech recogniser, the speaker model and
 the DNSMOS quality model (about 1 GB, a few minutes). No key is needed for
-G2, BELLA, EMMA or GEORGE. Never print or commit a key if one is around.
+HEART or any stock Kokoro voice. Never print or commit a key if one is around.
 
 ## Make the Reel
 
-1. **Format**: the Levels quiz by default (`build/levels.py`; copy the latest
-   `build/reels_levels<N>.py`). Pick a topic not in `docs/daily/topics.md`
+1. **Format**: the Levels quiz is the main recurring series (`build/levels.py`; copy the latest
+   `build/reels_levels<N>.py`), not the only format: an animated story, one concept, a calculation, a myth or a
+   choice (formats B to F of `docs/production/short-form-standard.md`) when the topic is better told that way.
+   Every segment carries real movement that explains the idea (`cinematic-standard.md` section 6); filmed scenes
+   from `build/cine.py` can be used in 9:16 (the world reframes with `cine.stage()`). Pick a topic not in `docs/daily/topics.md`
    "Used" for Reels; IB interview technicals first.
 2. **Write the episode file** `build/reels_<slug>.py`. Work every answer in
    its docstring. Never invent a number, statistic or credential. No em
@@ -54,8 +54,7 @@ G2, BELLA, EMMA or GEORGE. Never print or commit a key if one is around.
 3. **New words**: the voice stops on a word it cannot pronounce. Add it to
    `PHONEMES` in `build/voice.py` (plurals, -ed and -ing are worked out from
    the stem automatically).
-4. **Render**: `python3 build/reels_<slug>.py <VOICE>` with the name from
-   `next_voice()`. Kokoro voices take a few minutes, G2 about 30 to 45.
+4. **Render**: `python3 build/reels_<slug>.py HEART` (the name `next_voice()` returns). A few minutes.
 5. **Layout problems** ("SAFE-AREA PROBLEMS"): smaller type (`qsize`,
    `bigsize`) or a shorter chip, then
    `make(EP, "<VOICE>", keep_voice=True)` so the voice stays the same. A
@@ -72,9 +71,17 @@ G2, BELLA, EMMA or GEORGE. Never print or commit a key if one is around.
 
 ## Sound
 
-Sound effects on every Reel (`build/sfx.py`): ticks, pops, dings, thump. The
-more the better. **Never a whoosh on the swipe between scenes.** No music:
-Pietro adds it in the app.
+Sound effects on every Reel (`build/sfx.py`): ticks, pops, dings, thump, and for filmed scenes footsteps, paper,
+coins, quill, a soft mallet on numbers (`audio-standard.md` 5). Each effect belongs to something on screen.
+**Never a whoosh on the swipe between scenes.**
+
+Masters (`audio-standard.md` 3): the **clean master** (voice and effects, no music, about -16 LUFS, true peak at or
+under -1.5 dBTP) is the deliverable; Pietro adds music from Instagram's library in the app. An **original-scored
+alternative** is made when feasible (the IG Reel task's 13 Nov override asks for it):
+`python3 build/master.py scored build/out/<slug>/<slug>.mp4 -16 <mood> <mood>` writes `<slug>-scored.mp4` and
+`<slug>-scored.json` (our own `build/score.py` score, class ORIGINAL_GENERATED, ducked under the voice, mastered to
+-16 LUFS, word check against the clean file). Offer it as an alternative Pietro has not heard yet; the clean file
+stays the default. Never a commercial or trending song in a file, and never a version carrying YouTube-library audio.
 
 ## Compliance
 
@@ -83,13 +90,15 @@ Run the content-compliance gate. Write `docs/rights/posts/<slug>.md`.
 ## Deliver
 
 1. Send the MP4 and the cover with SendUserFile.
-2. Caption: PASS on ig-human, one ask, up to 4 hashtags, then just before the
-   hashtags: `Narration: AI-generated voice; script is our original work.`
-   and, for G2 only, `Voice model: Pocket TTS by Kyutai`.
+2. Caption: PASS on ig-human, one ask, up to 4 hashtags, no promise of returns or jobs, no invented experience,
+   a title that matches the content, then just before the hashtags:
+   `Narration: AI-generated voice; script is our original work.` (and, only for an old G2 re-render,
+   `Voice model: Pocket TTS by Kyutai`).
 3. Comment question: a bonus level.
 4. Paste the description and the comment question in the reply, ready to
    copy.
-5. Remind Pietro to turn on Instagram's AI label when he posts.
+5. Remind Pietro to turn on Instagram's AI label when he posts (realistic synthetic voiceover, Meta's rule), with
+   the reason; judge any other disclosure on the finished Reel (`quality-gates.md` section 6).
 6. Say which voice was used.
 7. Add a row to `docs/daily/ig-reels.md`, the topic to `docs/daily/topics.md`
    and the measures plus one improvement to `docs/daily/quality-log.md`.
@@ -105,6 +114,7 @@ outrank the metrics.
 
 ## Never
 
-- Clone any real person. Use only the four voices above.
+- Clone any real person. Use HEART unless Pietro names another voice.
 - Put recordings, decrypted samples or keys in the repo.
-- Add a whoosh, or music.
+- Add a whoosh, or any music we do not hold the rights to. A scored alternative uses only our own score.
+- Post or schedule a Reel: Pietro posts by hand.

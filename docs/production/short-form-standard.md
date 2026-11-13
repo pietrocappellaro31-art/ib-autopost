@@ -14,9 +14,12 @@ no other channel's characters, branding or data. Posting stays manual: Pietro up
   `voice_clone.YOUTUBE_PICK = "HEART"`; `voices.json` HEART speed 0.9. The daily voice trial is over,
   and `docs/daily/youtube-voice-trial.md` stays as history. Render with
   `python3 build/shorts_<slug>.py HEART`.
-- **Music:** one clean master: narration, sound effects and room tone, no music. Pietro adds a
-  sound in the YouTube app. An original-scored second master (our own `build/music.py` bed) waits
-  until there is a bed Pietro likes; it is not made by default. No commercial song is ever in a file.
+- **Music:** the clean master (narration, sound effects and room tone, no music) is the one delivered; Pietro adds a
+  sound in the YouTube app. Later the same day the cinematic-upgrade directive asked for a scored alternative "when
+  practical": `python3 build/master.py scored build/out/<slug>/<slug>.mp4 <mood> <mood>` adds an original `score.py`
+  cue to the finished clean file (`<slug>-scored.mp4`, measured), offered as unheard until Pietro approves a cue.
+  If the day's task prompt says "no scored master unless Pietro asks", the prompt wins. No commercial song is ever
+  in a file.
 - **Formats:** the four-level quiz stays. Five more formats are allowed (below). Pick the one that
   suits the topic best; vary it across the week.
 
@@ -83,9 +86,10 @@ Figures: use our own stick figures (`sketch.figure`, `figures`) when a person he
 idea (walking, pointing, thinking, paying, reacting, deciding), the same figure throughout one
 Short. Original only.
 
-Engine: there is no Remotion or other new engine in this repo (checked 13 Nov). Use
-`levels.py`, `motion.py` and `sketch.py`, and add a scene or motion when the topic needs one. A new
-engine comes in only after it is shown to improve the result.
+Engine: `levels.py`, `motion.py` and `sketch.py` for the quiz and most formats. Since 13 Nov (cinematic upgrade)
+`build/cine.py` can film a segment (a story beat, a figure reacting, a historical moment) in 9:16 from the same
+world as a long video: `python3 build/cine_poc_newton.py --vertical` is the worked example. A filmed segment costs
+about 1 s of render per frame, so use it where it teaches, not as decoration. No Remotion (`animation-engine.md`).
 
 ## 6. Voice
 

@@ -336,6 +336,9 @@ def takes(ep, items, voice_name, work):
     return log
 
 
+CINE, BEATS = [], []          # 13 Nov (cinematic upgrade): filmed beats to splice in; every beat's time
+
+
 def scenes(ep, items):
     sc, t, chapters, sounds = [], 0.0, [], []
     n_ch = len(ep["chapters"])
@@ -358,6 +361,16 @@ def scenes(ep, items):
         else:
             beat = ch["beats"][b]
             shows = beat.get("shows") or [beat.get("show", dict(kind="statement", text=beat["say"]))]
+            BEATS.append(dict(t=t + .25, dur=dur, say=beat["say"], segs=[(x, t + .25 + s0, t + .25 + s1) for x, s0, s1 in segs], chapter=c))
+            if len(shows) == 1 and shows[0].get("kind") == "cine":
+                # 13 Nov (cinematic upgrade, docs/production/animation-engine.md): a filmed shot from cine.py. The page
+                # keeps a dark placeholder; the shot is rendered on its own after the main render and laid over this
+                # beat's time (cine_splice), with its own captions, foley and ambience.
+                CINE.append(dict(t=t, dur=dur + .75, show=shows[0], say=beat["say"], chapter=ch["title"],
+                                 segs=[(x, s0 + .25, s1 + .25) for x, s0, s1 in segs]))
+                sc.append(dict(dur=dur + .75, push=0, enter="", html="", chap=ch["title"], voice=(a, .25), ci=c, nc=n_ch, bg="#2A2018"))
+                t += sc[-1]["dur"]
+                continue
             if len(shows) == 1:
                 vis = visual(shows[0], .25, dur)
             else:                                   # one visual per sentence, each replacing the last
@@ -668,11 +681,38 @@ def mix(ep, work):
     seed = ep.get("music_seed", sum(map(ord, slug)))
     cfg = dict(SCORES.get(mood, dict(level=.2)))
     mv = ep.get("music_level", cfg.pop("level", .2))
-    bed, info = music.track(tm["total"], seed=seed, breaks=tm["chapters"][1:], **cfg)
-    info.update(score=mood, music_level=mv)
-    music.write(work / "music.wav", bed)
+    engine = ep.get("score_engine", "score" if mood in SCORE_PLANS else "music")
+    if engine == "score":
+        # 13 Nov (cinematic upgrade): the orchestral engine, build/score.py. Notes are written per chapter in the
+        # chapter's mood and played on sampled instruments (GeneralUser GS, free for commercial music), so the cue
+        # changes when the film does instead of one loop for eight minutes. music.py stays the fallback.
+        try:
+            import score as SC
+            import master as M
+            secs = score_sections(mood, tm["chapters"], tm["total"])
+            stems, sco = SC.compose(secs, key=ep.get("score_key", "F"), bpm=ep.get("score_bpm", cfg.get("bpm", 76)), seed=seed)
+            M.write_wav(work / "music.wav", SC.master_music(stems))
+            info = dict(engine="score.py + GeneralUser GS v2.0.3 (TinySoundFont)", sections=secs, notes=len(sco.events),
+                        bpm=ep.get("score_bpm", cfg.get("bpm", 76)), key=ep.get("score_key", "F"), mode="per section")
+            # 13 Nov, measured on build/youtube_cine_test.py: level .32 put the score 21 dB under the voice but cost
+            # DNSMOS SIG 0.89 (gate fails); .22 sat 24.2 dB under with SIG within 0.03 of clean (passes); .16, 27 dB.
+            mv = ep.get("music_level", .22)
+        except Exception as e:                     # never lose a render over the score: fall back to music.py
+            print(f"  score.py failed ({e}); falling back to music.py", flush=True)
+            engine = "music"
+    if engine != "score":
+        bed, info = music.track(tm["total"], seed=seed, breaks=tm["chapters"][1:], **cfg)
+        music.write(work / "music.wav", bed)
+    info.update(score=mood, music_level=mv, engine=info.get("engine", "music.py"))
+    if not slug.startswith("test-"):                     # provenance: every original cue is logged (music-library skill)
+        try:
+            import music_library
+            music_library.register_original(f"score-{slug}", f"Original score for {slug}", slug, info["engine"], mood=mood,
+                                            bpm=info.get("bpm"), key=info.get("key"))
+        except Exception as e:
+            print(f"  music library log failed: {e}", flush=True)
     json.dump(info, open(work / "music.json", "w"))
-    print(f"  score: original {mood} score, {info['bpm']:.0f} BPM, {info['key']} {info['mode']}, level {mv}", flush=True)
+    print(f"  score: original {mood} score ({info['engine']}), {float(info['bpm']):.0f} BPM, {info['key']} {info['mode']}, level {mv}", flush=True)
     scored = _mux(work, slug, work / f"{slug}-scored.mp4", work / "music.wav", mv)
     # the ducked music on its own, to measure how far the voice sits above it
     subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", str(work / "voice.wav"), "-i", str(work / "music.wav"), "-filter_complex",
@@ -774,6 +814,68 @@ def sound_report(work, final):
     return rep
 
 
+# 13 Nov (cinematic upgrade): which score.py mood each chapter gets; the last chapter resolves.
+SCORE_PLANS = {
+    "reflective": ["mystery", "explain", "reflect", "explain", "reflect", "resolve"],
+    "suspense":   ["mystery", "decide", "explain", "decide", "crash", "resolve"],
+    "light":      ["explain", "discover", "explain", "bustle", "explain", "resolve"],
+}
+
+
+def score_sections(kind, chapter_starts, total):
+    plan, secs = SCORE_PLANS[kind], []
+    for i, a in enumerate(chapter_starts):
+        b = chapter_starts[i + 1] if i + 1 < len(chapter_starts) else total
+        last = i == len(chapter_starts) - 1
+        secs.append((float(a), float(b), plan[-1] if last else plan[min(i, len(plan) - 2)]))
+    return secs
+
+
+def cine_splice(ep, work, silent, total):
+    """Render each filmed beat with cine.py (same size and fps as the film, its own captions) and lay it over its
+    beat's time. The beats' foley and ambience are added to sfx.wav, so both masters carry them."""
+    import cine
+    import master as M
+    import sfx as FX
+    cdir = work / "cine"
+    cdir.mkdir(exist_ok=True)
+    clips, foley = [], []
+    amb = np.zeros((int((total + 2) * FX.FSR), 2), np.float32)
+    for k, it in enumerate(CINE):
+        built = it["show"]["shot"](W, Hh, it["dur"], dict(say=it["say"], segs=it["segs"], chapter=it["chapter"]))
+        caps = cine.captions([(x, a, b + .15, None) for x, a, b in it["segs"]], W, Hh)
+        html, dur = cine.film_html(built["shots"], W, Hh, caps=caps)
+        mp4, secs = cine.render(html, dur, cdir, f"beat{k}", W, Hh, fps=FPS)
+        clips.append((mp4, it["t"], it["t"] + dur))
+        foley += [(e[0], e[1] + it["t"], *e[2:]) for e in built.get("foley", [])]
+        if built.get("amb") is not None:
+            i = int(it["t"] * FX.FSR)
+            m = max(0, min(len(built["amb"]), len(amb) - i))
+            amb[i:i + m] += built["amb"][:m]
+        print(f"  cine beat {k}: {dur:.1f} s at {it['t']:.1f} s, rendered in {secs:.0f} s", flush=True)
+    out = work / f"{ep['slug']}-silent-cine.mp4"
+    args, graph, last = ["ffmpeg", "-y", "-v", "error", "-i", str(silent)], "", "0:v"
+    for i, (mp4, a, b) in enumerate(clips):
+        args += ["-itsoffset", f"{a:.3f}", "-i", str(mp4)]
+        graph += f"[{last}][{i + 1}:v]overlay=eof_action=pass:enable='between(t,{a:.3f},{b - .02:.3f})'[v{i}];"
+        last = f"v{i}"
+    subprocess.run(args + ["-filter_complex", graph.rstrip(";"), "-map", f"[{last}]", "-c:v", "libx264", "-preset", "medium",
+                           "-crf", "20", "-pix_fmt", "yuv420p", "-movflags", "+faststart", str(out)], check=True)
+    out.replace(silent)                                         # mix() and remix() read <slug>-silent.mp4
+    fol = FX.foley_track(foley, total + 1) if foley else np.zeros_like(amb)
+    k = min(len(fol), len(amb))
+    extra = (fol[:k] + amb[:k]).mean(1)
+    # sfx.wav is at youtube.SR; the cine stems are at 48 kHz
+    ratio = SR / FX.FSR
+    extra = np.interp(np.arange(int(len(extra) * ratio)) / ratio, np.arange(len(extra)), extra).astype(np.float32)
+    fx, _ = M.read_wav(work / "sfx.wav")
+    fx = fx.mean(1) if fx.ndim > 1 else fx
+    n = len(fx)
+    fx[:min(n, len(extra))] += extra[:n] * .5
+    write_wav(work / "sfx.wav", fx)
+    return silent
+
+
 def describe(ep, chapters, total, voice_name, work):
     """description.txt and metadata.json. 10 Nov (Pietro: "since my channel is verified, make sure to add
     links to the sources and references"): every source is listed with its link, from ep["sources"], a list
@@ -802,8 +904,10 @@ def describe(ep, chapters, total, voice_name, work):
                 youtube_altered_or_synthetic=ep.get("ai_disclosure", AI_DISCLOSURE),
                 made_for_kids=False,
                 recommended_file=f"{ep['slug']}-{rec}.mp4",
-                music=(f"original {snd.get('scored', {}) and ep.get('score', 'reflective')} score made for this video by build/music.py "
-                       "(synthesised, nothing sampled, no licence needed)" if rec == "scored"
+                music=(f"original {ep.get('score', 'reflective')} score made for this video by "
+                       + (("build/score.py (our notes, played on GeneralUser GS SoundFont instruments: free for commercial music; "
+                           "class ORIGINAL_GENERATED)") if "score.py" in json.load(open(work / "music.json")).get("engine", "")
+                          else "build/music.py (synthesised, nothing sampled, no licence needed)") if rec == "scored"
                        else "none in the file: Pietro adds a track at upload and fills in the credit line"),
                 music_credit_line=SCORE_CREDIT if rec == "scored" else MUSIC_CREDIT,
                 music_credit_if_clean_with_own_track=MUSIC_CREDIT)
@@ -839,6 +943,8 @@ def make(ep, voice_name=YOUTUBE_VOICE):
     except Exception as e:                                          # a word check must never cost the render
         print("  takes failed:", e)
     PACING.clear()
+    CINE.clear()
+    BEATS.clear()
     sc, chapters, sounds, total = scenes(ep, items)
     late = [p for p in PACING if p[2] > .65 * p[3]]
     json.dump(dict(steps=PACING, late=late), open(work / "pacing.json", "w"))
@@ -859,6 +965,8 @@ def make(ep, voice_name=YOUTUBE_VOICE):
     write_wav(work / "voice.wav", voice * g)
     write_wav(work / "sfx.wav", fx[:n] * g)
     silent = render(ep["slug"], html, total, work)
+    if CINE:                                                        # 13 Nov: filmed beats over their placeholders
+        cine_splice(ep, work, silent, total)
     json.dump(dict(total=total, chapters=[c for c, _ in chapters]), open(work / "timing.json", "w"))
     final = mix(ep, work)
     try:

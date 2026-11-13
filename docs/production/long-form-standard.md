@@ -10,6 +10,8 @@ The companion files:
 - `cinematic-standard.md`: animation, scene variety, what the engine can do today, and what to build next
 - `audio-standard.md`: narrator, the clean and scored mixes, the score, sound effects
 - `quality-gates.md`: the checks a film has to pass before delivery
+- added the same day by the cinematic-upgrade directive: `animation-engine.md` (cine.py), `scene-library.md`
+  (scene families A to L), `voice-decision.md` (HEART and the trial history), `short-form-standard.md`
 
 ## Mission
 
@@ -22,6 +24,7 @@ animated film, not a slideshow. The channel is independent. It uses the IB edito
 1. Read `docs/brand-system.md`, `docs/decisions-log.md`, the four `docs/production/` files,
    `docs/daily/README.md`, `quality-log.md`, `topics.md`, `youtube-long.md`, `youtube-voice-trial.md` (closed,
    history), `youtube-shorts.md`, the YouTube skill, content-compliance, music-library and ig-human.
+   Then `bash build/setup_voice.sh && source ~/voice-tools/env.sh` (voice, recogniser, DNSMOS, SoundFont).
 2. **Yesterday's "Next improvement"** for YouTube long in `quality-log.md` is the first job. Build it, measure it,
    and say what it changed. A cosmetic change does not count as an improvement.
 3. Pick the topic, then research it.
@@ -86,11 +89,28 @@ anywhere, and has no invented credentials.
 `cinematic-standard.md`), assets, what moves and how, camera, data shown and its source, sound effects, score mood,
 expected seconds. A beat solved by a title card or a still drawing needs a reason.
 
+Then `python3 build/yt_preview.py build/youtube_ep<NNN>.py` (variety test, must pass) and note the
+drawing-beside-text share and the filmed-beat count in the log row; the share should fall over the days.
+
+## Filmed beats and the score (cinematic upgrade, 13 Nov)
+
+- **Filmed beats.** Where the story has people, places or a mechanism, film the beat instead of drawing beside a
+  line: `show=dict(kind="cine", shot=fn)`, where `fn(w, h, dur, ctx)` returns `dict(shots=[...], foley=[...],
+  amb=array)` built from `build/cine.py` and `build/cine_lib.py` (`ctx` has the beat's text and sentence times so
+  motion can land on words). The engine renders it at the film's frame rate with its own captions, lays it over the
+  beat's time and adds its foley and ambience to the effects stem, so both mixes carry them. Aim: at least one
+  filmed beat per two chapters, and a filmed hook when it can be. Worked example: `build/cine_poc_newton.py`.
+  A filmed second costs about 0.5 to 1.3 s of render a frame, so budget for it (`animation-engine.md`).
+- **The score.** `score="reflective" | "suspense" | "light"` now writes the scored mix with `build/score.py`
+  (notes per chapter in the chapter's mood from `youtube.SCORE_PLANS`, sampled instruments from the GeneralUser GS
+  SoundFont), and falls back to the `music.py` bed if the SoundFont is missing; `score_engine="music"` forces the
+  old bed. Pietro has not heard a score.py cue yet: ask for his verdict on the first one.
+
 ## Deliverables
 
 Per film, in `build/out/<slug>/`: the scored MP4 (the recommendation when it passes the audio gate), the clean MP4,
 thumbnails A and B, the English `.srt`, `transcript.txt`, `description.txt`, `metadata.json`, `sound.json`
-(quality figures), a motion-preview sheet, the rights record `docs/rights/posts/<slug>.md`, and a quality report
+(quality figures), `music.json`, a motion-preview sheet and `motion.json` (`yt_preview.py --motion`), the rights record `docs/rights/posts/<slug>.md`, and a quality report
 (the quality-log row plus the gate results in the delivery message).
 
 Video: 1920 x 1080, 16:9, H.264, AAC, 24 fps. Audio about -14 LUFS integrated, true peak at or under -1 dBTP.

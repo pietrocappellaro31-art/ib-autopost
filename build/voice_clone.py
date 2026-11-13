@@ -256,7 +256,11 @@ def master_chain_plain(v):
 # YOUTUBE_PICK to it and the trial ends.
 # 13 Nov (Pietro, the Shorts production standard, docs/production/short-form-standard.md): the narrator is
 # Kokoro af_heart, en-us, speed 0.9, for long videos and Shorts. The trial ends; its log stays as history.
+# 13 Nov, cinematic-upgrade directive: the same narrator for finance Reels too (REEL_PICK), ending the G2, BELLA,
+# EMMA rotation; build/voices/voice_log.json and docs/production/voice-decision.md keep the history. To reopen a
+# trial set the pick back to None.
 YOUTUBE_PICK = "HEART"
+REEL_PICK = "HEART"
 TRIAL_START = "2026-11-11"
 
 
@@ -292,7 +296,10 @@ def rotation():
 
 
 def next_voice():
-    """The voice for the next Reel: the rotation voice after the last one logged."""
+    """The voice for the next Reel: REEL_PICK (the channel narrator since 13 Nov), else the rotation voice
+    after the last one logged (the 8 Nov G2, BELLA, EMMA test, kept for the record)."""
+    if REEL_PICK:
+        return REEL_PICK
     rot = rotation()
     log = [x for x in json.load(open(VOICES / "voice_log.json")) if x["voice"] in rot]
     if not log:

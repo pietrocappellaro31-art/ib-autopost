@@ -41,6 +41,9 @@ def words(text):
     t = re.sub(r"\bper cent\b", "percent", t)              # British spelling (EMMA, GEORGE), same words
     t = re.sub(r"\b(\d+) and a half\b", r"\1.5", t)
     t = re.sub(r"\bwhack\b", "wacc", t)                      # 11 Nov: WACC is said "whack"; a recogniser spells it that way
+    # 13 Nov (narrator_check.py): spellings of words said correctly that the recogniser writes another way
+    t = re.sub(r"\b(wac|wack)\b", "wacc", t)
+    t = re.sub(r"\b(aisleby|aislaby|ailsby)\b", "aislabie", t)
     _o = "zero one two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen sixteen seventeen eighteen nineteen".split()
     t = re.sub(r"\b(" + "|".join(_o) + r") point (" + "|".join(_o[:10]) + r")\b",       # 11 Nov: "eight point four" is 8.4
                lambda m: f"{_o.index(m.group(1))}.{_o.index(m.group(2))}", t)

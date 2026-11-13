@@ -14,6 +14,9 @@ two lawful ways:
      (drums or none, bright or dark). That way it sounds like it belongs with the song, and it stays
      wholly original: no melody, chords or audio are taken from the reference.
 
+13 Nov: rights classes (RIGHTS below): REFERENCE_ONLY, ORIGINAL_GENERATED, LICENSED_FOR_YOUTUBE,
+LICENSED_FOR_INSTAGRAM, LICENSED_FOR_ALL_REQUIRED_PLATFORMS; a LICENSED_ class needs proof= (where the licence is
+recorded in docs/rights/ledger.md). Earlier wording:
 A track Pietro holds a real licence for can be marked "licence" (with the proof in docs/rights/ledger.md);
 only those may ever be mixed into a master (mixable()).
 
@@ -190,7 +193,7 @@ def add(paths, note=""):
         dest.write_bytes(p.read_bytes())
         a = analyse(dest)
         lib["tracks"].append(dict(id=tid, title=title, artist=artist, file=dest.name, sha256=h,
-                                  added=str(datetime.date.today()), rights="reference", note=note, **a))
+                                  added=str(datetime.date.today()), rights="REFERENCE_ONLY", note=note, **a))
         known.add(h)
         print(f"  + {tid}: {a['bpm']} BPM, {a['key']} {a['mode']}, energy {a['energy']}, valence {a['valence']}, "
               f"calm from {a['calm_start']}  [{', '.join(a['tags'])}]")
@@ -242,9 +245,49 @@ def set_fields(tid, **fields):
     return t
 
 
-def mixable(track):
-    """Only a track with a recorded licence may go into a master."""
-    return track.get("rights") == "licence"
+# 13 Nov (cinematic upgrade): every piece of music carries one rights class. A track is never mixed into a master
+# unless its class covers the platform the master is for; anything unknown is REFERENCE_ONLY.
+RIGHTS = {
+    "REFERENCE_ONLY": "a commercial or unverified recording: mood, tempo and key reference, and an in-app suggestion; never in a file",
+    "ORIGINAL_GENERATED": "composed by our own code for a video (score.py, music.py); mixable everywhere",
+    "LICENSED_FOR_YOUTUBE": "licence on record that covers monetised YouTube only",
+    "LICENSED_FOR_INSTAGRAM": "licence on record that covers Instagram only",
+    "LICENSED_FOR_ALL_REQUIRED_PLATFORMS": "licence on record that covers YouTube and Instagram",
+}
+LEGACY = {"reference": "REFERENCE_ONLY", "licence": "REFERENCE_ONLY"}   # an old "licence" without a platform is not trusted
+
+
+def rights_class(track):
+    r = track.get("rights", "REFERENCE_ONLY")
+    return LEGACY.get(r, r) if r not in RIGHTS else r
+
+
+def mixable(track, platform=None):
+    """May this track go into a master for this platform ("youtube" or "instagram"; None means every platform)?
+    Fails closed: unknown classes, missing proof for a licence, or a commercial reference are never mixable."""
+    r = rights_class(track)
+    if r == "ORIGINAL_GENERATED":
+        return True
+    if r.startswith("LICENSED_") and not track.get("proof"):
+        return False
+    if r == "LICENSED_FOR_ALL_REQUIRED_PLATFORMS":
+        return True
+    if r == "LICENSED_FOR_YOUTUBE":
+        return platform == "youtube"
+    if r == "LICENSED_FOR_INSTAGRAM":
+        return platform == "instagram"
+    return False
+
+
+def register_original(lib_id, title, video, engine, mood=None, bpm=None, key=None, note=""):
+    """Record a cue our code composed (class ORIGINAL_GENERATED) in library.json "originals", for provenance."""
+    import datetime
+    lib = load()
+    lib.setdefault("originals", [])
+    lib["originals"] = [o for o in lib["originals"] if o["id"] != lib_id]
+    lib["originals"].append(dict(id=lib_id, title=title, video=video, engine=engine, mood=mood, bpm=bpm, key=key,
+                                 rights="ORIGINAL_GENERATED", added=str(datetime.date.today()), note=note))
+    save(lib)
 
 
 def bed(track, total_s, seed=1, breaks=(), level=.9):
@@ -277,7 +320,9 @@ if __name__ == "__main__":
     cmd, *rest = sys.argv[1:] or ["list"]
     if cmd == "add":
         add(rest)
-    elif cmd == "set":                                   # set <id> title=... artist=... search=... rights=...
+    elif cmd == "set" and any(a.startswith("rights=") and a.split("=", 1)[1] not in RIGHTS for a in sys.argv[3:]):
+        sys.exit(f"rights must be one of {', '.join(RIGHTS)}")
+    elif cmd == "set":                                   # set <id> title=... artist=... search=... rights=... proof=...
         print(set_fields(rest[0], **dict(kv.split("=", 1) for kv in rest[1:])))
     elif cmd == "reanalyse":
         reanalyse()

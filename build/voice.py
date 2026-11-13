@@ -28,6 +28,20 @@ DIR = os.environ.get("KOKORO_DIR", "")
 
 # Words outside misaki's dictionaries, with their phonemes written by hand.
 PHONEMES = {
+    # 13 Nov, cinematic upgrade: finance terms the narrator must never guess (narrator_check.py)
+    "lbo": "ˌɛlbˌiˈO",
+    "lbos": "ˌɛlbˌiˈOz",
+    "ipo": "ˌIpˌiˈO",
+    "ipos": "ˌIpˌiˈOz",
+    "ev": "ˌiˈvi",
+    "fcf": "ˌɛfsˌiˈɛf",
+    "ltv": "ˌɛltˌiˈvi",
+    "jpmorgan": "ʤˈApˈi mˈɔɹɡən",
+    "goldman": "ɡˈOldmən",
+    "sachs": "sˈæks",
+    "threadneedle": "θɹˈɛdnˌidᵊl",
+    "garraway's": "ɡˈæɹəwˌAz",
+    "tulips": "tˈuləps",
     "aislabie": "ˈAzləbi",                # 13 Nov, YouTube #6 (John Aislabie, 1720)
     "odlyzko": "Odlˈɪʒkˌo",
     "southwark": "sˈʌðəɹk",
