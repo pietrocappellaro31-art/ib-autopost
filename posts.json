@@ -582,8 +582,8 @@
       "series": "Technical of the Day",
       "scheduled_utc": "2026-11-13T13:00:00",
       "caption": "Why does every banker quote EBITDA? And what can't it see?\n\nIt's before interest, so you can compare 2 companies with very different debt loads, which is why it pairs with enterprise value and never with equity value.\n\nIt's before D&A too.\n\nThe blind spot is capex. Company A and Company B both have EBITDA of 100. A spends 10 on capex, B spends 60, so after that you're looking at 90 against 40.\n\nIt misses working capital and tax as well. A fast-growing business can post rising EBITDA while its cash disappears into receivables.\n\nA comparison tool, not cash flow. Say both halves.\n\n#investmentbanking #ibinterview #ebitda #valuation",
-      "published_id": null,
-      "published_at_utc": null,
+      "published_id": "17916041565507155",
+      "published_at_utc": "2026-11-13T14:44:34.575730+00:00",
       "images": [
         "n1-10-ebitda-01.jpg",
         "n1-10-ebitda-02.jpg",
