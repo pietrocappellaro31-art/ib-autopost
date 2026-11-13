@@ -1,0 +1,14 @@
+# yt-006-newton-bought-back-in (YouTube long-form #6, 13 Nov 2026)
+
+- Platform: YouTube long-form (16:9), uploaded by hand by Pietro. Nothing posted or scheduled by Claude.
+- Concept: Isaac Newton and the South Sea Bubble of 1720. The shared story says a genius was fooled by a bubble; the records of his trades (Odlyzko, Notes and Records of the Royal Society, 2019; Physics Today, 2020) show he sold his whole stake on 19 and 23 April 1720 for about £20,000, then in June moved almost all his government bonds back into South Sea stock near the top and was worth about £20,000 by mid 1721 (from just over £30,000). Compared with Thomas Guy, who sold too and stayed out (Guy's Hospital, 1721), the 1721 inquiry, the Bubble Act (1720 to 1825), and the "madness of people" quote traced to a second-hand note of 1756. Point of view: the costly decision is the second one. Interview tie. Original analysis; no advice.
+- Script: ours. Every fact sourced in `build/youtube_ep006.py` (docstring, 6 sources) and in the description with links. Our own illustration, labelled: the chart of approximate 1720 prices, drawn by us from the sources.
+- Quotes: Newton's letter of 14 September 1724 (one sentence, as quoted in Physics Today); Andrew Odlyzko, Physics Today, July 2020 (one sentence); the "madness of people" line, shown as attributed and discussed as unproven. Short, attributed, used for commentary and teaching.
+- Real people named as historical facts: Isaac Newton, Thomas Guy, Jonathan Swift, John Aislabie, Joseph Spence, Andrew Odlyzko (the researcher, named with his published article). No portraits, photos or likenesses of anyone: the apple, crowd, pockets, hospital, parchment and letter are our own generic drawings. No crest or logo of any company or institution.
+- Voice: ISABELLA, synthetic (Kokoro bf_isabella, British female, Apache 2.0), the 13 Nov voice of the YouTube voice trial. Not a real person, no cloning. The narrator does not claim to be a person.
+- Visuals: drawn by us in `build/sketch.py` and `build/youtube.py` (new today: price_path, apple_fall, crowd_rush, empty_pockets, hospital, scroll, letter). Fonts: Source Serif 4, IBM Plex Sans (SIL OFL).
+- Music: none in the file. Pietro adds a track himself at upload (YouTube Studio Editor or his own editor), from the YouTube Audio Library or another source licensed for monetised YouTube, and fills in or deletes the credit line in the description.
+- Sound effects: synthesised in `build/sfx.py`.
+- Disclosure: description ends with the AI-narration line and the not-financial-advice line. Studio: Altered or synthetic content / AI use = Yes; Made for kids = No.
+- Claims: education, not investment advice; said on screen and in the narration. The closing question (would you have stayed out?) asks for an opinion and recommends nothing.
+- Approval: Pietro reviews the file before uploading.

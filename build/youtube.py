@@ -138,6 +138,20 @@ def words_kara(text, start, dur, hl=(), size=72, serif=True, hide=False, color=I
              **({"hide": 1} if hide else {}))
 
 
+PACING = []          # (kind, steps, last step at, sentence length): written to pacing.json by make()
+
+
+def pace(i, n, t0, dur, kind="", span=.55, gap=.9, lead=.1):
+    """When step i of n appears (13 Nov). Steps used to be spread over 70 to 75% of the sentence, so on a short
+    sentence the last box of a flow landed after its words (#5). Now every step is up by `span` of the sentence
+    and no two steps are more than `gap` seconds apart, so the last step lands while it is still being said."""
+    step = min(gap, dur * span / max(n - 1, 1)) if n > 1 else 0
+    at = t0 + lead + i * step
+    if i == n - 1 and kind:
+        PACING.append((kind, n, round(at - t0, 2), round(dur, 2), round(lead + (n - 1) * dur * .75 / n, 2)))   # last: the old pacing
+    return at
+
+
 def visual(show, t0, dur):
     k = show.get("kind", "statement")
     if k == "statement":
@@ -154,7 +168,7 @@ def visual(show, t0, dur):
         out = ""
         for i, it in enumerate(show["items"]):
             out += A(f'<span style="color:{RED};font-family:&quot;Serif&quot;;font-weight:700;margin-right:28px">{i + 1:02d}</span>{H.escape(it)}',
-                     "rise", t0 + .2 + i * dur * .8 / n, .45,
+                     "rise", pace(i, n, t0 + .1, dur, "list"), .45,
                      style="font-family:'Serif',serif;font-weight:700;font-size:78px;line-height:1.15;margin:16px 0")
         return (A(H.escape(show.get("title", "")), "fade", t0, .4, cls="lbl", style="margin-bottom:18px") if show.get("title") else "") + out
     if k == "compare":
@@ -177,7 +191,7 @@ def visual(show, t0, dur):
         n = len(show["items"])
         cells = ""
         for i, (ic, lab) in enumerate(show["items"]):
-            at = t0 + .15 + i * dur * .75 / n
+            at = pace(i, n, t0 + .05, dur, "icons")
             cells += (f'<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:34px">'
                       + badge(ic, 330, at=at, ring=RED if i == show.get("hi", -1) else "rgba(10,10,10,.12)")
                       + A(H.escape(lab), "rise", at + .3, .45, style="font-family:'Serif',serif;font-weight:700;font-size:66px;text-align:center;line-height:1.1")
@@ -190,7 +204,7 @@ def visual(show, t0, dur):
         pts = ""
         for i, (when, lab) in enumerate(show["items"]):
             x = 4 + 92 * i / max(n - 1, 1)
-            at = t0 + .3 + i * dur * .7 / n
+            at = pace(i, n, t0 + .2, dur, "timeline")
             hot = i == show.get("hi", n - 1)
             pts += (f'<div style="position:absolute;left:{x}%;top:0;transform:translateX(-50%);width:420px;text-align:center">'
                     + A(H.escape(when), "rise", at, .4, cls="num", style=f"font-size:84px;color:{RED if hot else INK};height:120px")
@@ -203,7 +217,7 @@ def visual(show, t0, dur):
         n = len(show["items"])
         out = ""
         for i, (ic, lab) in enumerate(show["items"]):
-            at = t0 + .1 + i * dur * .75 / n
+            at = pace(i, n, t0, dur, "flow")
             hot = i == n - 1
             out += A(f'<div style="display:flex;flex-direction:column;align-items:center;gap:22px">{icon(ic, 210, RED if hot else INK, at + .2, .8, 6)}'
                      f'<div style="font-family:Sans;font-size:52px;font-weight:600;text-align:center;line-height:1.15">{H.escape(lab)}</div></div>',
@@ -752,7 +766,12 @@ def make(ep, voice_name=YOUTUBE_VOICE):
         takes(ep, items, voice_name, work)
     except Exception as e:                                          # a word check must never cost the render
         print("  takes failed:", e)
+    PACING.clear()
     sc, chapters, sounds, total = scenes(ep, items)
+    late = [p for p in PACING if p[2] > .65 * p[3]]
+    json.dump(dict(steps=PACING, late=late), open(work / "pacing.json", "w"))
+    print(f"  pacing: {len(PACING)} step visuals, last step at {max((p[2] / p[3] for p in PACING), default=0):.0%} of its sentence at worst, {len(late)} late"
+          f" (old pacing: {max((p[4] / p[3] for p in PACING), default=0):.0%} at worst)", flush=True)
     html, total = page(sc)
     print(f"  timing: {total / 60:.2f} min, {len(sc)} scenes, {int((total + .5) * FPS)} frames to render", flush=True)
     n = int((total + 1) * SR)

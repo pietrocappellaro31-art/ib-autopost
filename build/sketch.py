@@ -43,6 +43,8 @@ Scenes (opts in brackets):
   doubling_bars(days, known, line); each drawn edge to edge of the 800 x 640 canvas so it fills its box
   12 Nov, long video (where money comes from): t_account(left, right, amount, destroy), keystroke(amount, pre, label),
   goldsmith(bars, notes), multiplier(start, ratio, steps), outflow(label, n), token(coin, reserve, rule, lock)
+  13 Nov, long video (Newton and the South Sea Bubble): price_path(points, marks, upto, counter), apple_fall(label),
+  crowd_rush(n, target), empty_pockets(label), hospital(label), scroll(title, lines, seal), letter(date, sign, hi_line)
   13 Nov (Friday the 13th Short): fri13_page(), year_grid(year), road_cat(), ladder_wallet(tag), friday_bars(n, hi);
   cat_svg(x, y, s) draws a sitting black cat for floaters and the close
 """
@@ -1895,3 +1897,159 @@ def friday_bars(p, n=9, hi=5, **_):
 
 
 SCENES.update({f.__name__: f for f in (fri13_page, year_grid, road_cat, ladder_wallet, friday_bars)})
+# ---- 13 Nov, long video (Newton and the South Sea Bubble): the 1720 price path with the moments marked,
+# a falling apple, a crowd running in, pockets turned out, a hospital, a sealed parchment and a letter with a
+# quill. Generic shapes of our own: no portrait of anyone, no company crest.
+
+SOUTH_SEA_1720 = (("JAN", 128), ("MAR", 330), ("APR", 350), ("MAY", 550), ("JUN", 890), ("AUG", 1000), ("SEP", 150), ("DEC", 100))
+
+
+def price_path(p, points=SOUTH_SEA_1720, marks=(), upto=None, unit="£", note="APPROX. PRICE, 1720", counter=True, **_):
+    """A price chart in red marker drawn month by month, with a counter riding the last point. marks=[(index,
+    label, colour)] pins a flag on a point ("SOLD" in teal, "BOUGHT" in red). upto=k draws only the first k
+    points, the rest dashed in grey as what is still to come."""
+    n = len(points)
+    upto = n if upto is None else upto
+    top = max(v for _, v in points)
+    xy = [(110 + i * 630 / (n - 1), 520 - 400 * v / top) for i, (_, v) in enumerate(points)]
+    p.line([(80, 60), (80, 540), (770, 540)], 0, .25, w=6)
+    p.text(80, 40, note, .05, size=28, weight=700, color=GREY, anchor="start")
+    for frac_v in (.25, .5, .75, 1):
+        y = 520 - 400 * frac_v
+        p.line([(80, y), (770, y)], .05, .2, color="#D9D4CC", w=2)
+        p.text(70, y + 10, f"{unit}{int(top * frac_v):,}", .08, size=22, color=GREY, anchor="end", weight=600)
+    for i, (m, _) in enumerate(points):
+        p.text(xy[i][0], 580, m, .1 + .02 * i, size=26, weight=700, color=INK if i < upto else GREY)
+    seg = .55 / max(upto - 1, 1)
+    for i in range(min(upto, n) - 1):
+        p.line([xy[i], xy[i + 1]], .15 + i * seg, seg * 1.05, color=RED, w=12, j=1.5)
+    if upto < n:
+        p.line(xy[upto - 1:], .7, .2, color=GREY, w=6, dash="4 18")
+        p.text(xy[-1][0], xy[-1][1] - 40, "?", .8, size=80, serif=True, weight=700, color=RED, fx="pop")
+    last = xy[upto - 1]
+    if counter:                                                  # off on a thumbnail, where it would freeze on the first value
+        p.parts.append(_count(last[0], last[1] - 34, points[0][1], points[upto - 1][1], p.at(.15), round(.55 * p.dur, 2),
+                              size=40, color=INK, pre=unit))
+    for idx, label, col in marks:
+        x, y = xy[idx]
+        at = .2 + idx * seg
+        p.line([(x, y), (x, y + 70 if y < 300 else y - 90)], at, .12, color=col, w=5)
+        fy = y + 70 if y < 300 else y - 150
+        p.fill(_tile(x - 85, fy, 170, 60, col, label, 32, rx=12, stroke=col), at + .05)
+        p.fill(f'<circle cx="{x}" cy="{y}" r="15" fill="{col}" stroke="#fff" stroke-width="5"/>', at)
+
+
+def apple_fall(p, label="", **_):
+    """A tree branch; an apple drops along a dotted arc, bounces once on the ground and settles: gravity, the
+    thing he could calculate."""
+    p.line([(60, 90), (330, 110), (470, 80)], 0, .3, color="#7A5230", w=14)
+    for x, y in ((150, 70), (250, 120), (380, 70), (440, 120)):
+        p.fill(f'<ellipse cx="{x}" cy="{y}" rx="46" ry="24" fill="{TEAL}" transform="rotate(-20 {x} {y})"/>', .15)
+    p.line([(300, 130), (330, 260), (360, 400), (380, 520)], .35, .25, color=GREY, w=4, dash="6 16")
+    apple = (f'<g><circle cx="380" cy="500" r="52" fill="{RED}" stroke="{INK}" stroke-width="6"/>'
+             f'<path d="M380 452 Q384 430 396 420" fill="none" stroke="{INK}" stroke-width="7" stroke-linecap="round"/>'
+             f'<ellipse cx="410" cy="430" rx="22" ry="11" fill="{TEAL}"/><circle cx="360" cy="482" r="10" fill="#fff" opacity=".8"/></g>')
+    kf = [[p.at(.3), -80, -390, .9, 1, -30], [p.at(.55), 0, 0, 1, 1, 0], [p.at(.62), 10, -60, 1, 1, 12],
+          [p.at(.7), 14, 0, 1, 1, 18], [p.at(1), 14, 0, 1, 1, 18]]
+    p.parts.append(f"<g class=\"a\" data-fx=\"kf\" data-at=\"{p.at(.3)}\" data-d=\"{.7 * p.dur:.2f}\" data-kf='{_json(kf)}' "
+                   f'style="transform-box:fill-box;transform-origin:center">{apple}</g>')
+    p.line([(60, 560), (760, 560)], 0, .3, w=6)
+    if label:
+        p.fill(_tile(520, 220, 240, 80, "#F2C35B", label, 40, color=INK, rx=16), .75)
+
+
+def _json(x):
+    import json
+    return json.dumps(x)
+
+
+def crowd_rush(p, n=7, target="SOUTH SEA", **_):
+    """Stick figures hurrying in from the left towards a door with a sign, one after another, the last in red
+    (late, near the top): the crowd, and joining it."""
+    p.rect(600, 200, 170, 360, 0, .3, w=8)
+    p.rect(640, 320, 90, 240, .1, .2, w=6)
+    p.fill(_tile(570, 130, 230, 66, RED, target, 30, rx=10, stroke=RED), .15)
+    gap, s = (84, .95) if n <= 6 else (70, .78)
+    for i in range(n):
+        x = 520 - i * gap
+        col = RED if i == n - 1 else None
+        fr = .2 + .07 * i
+        p.parts.append(f'<g class="a" data-fx="slide" data-at="{p.at(fr)}" data-d=".6" data-x0="-140" data-x1="0" data-ease="out">')
+        figure(p, x, 555, s, fr, col)
+        p.line([(x - 70, 470), (x - 40, 470)], fr + .02, .1, color=GREY, w=4)
+        p.line([(x - 80, 500), (x - 45, 500)], fr + .03, .1, color=GREY, w=4)
+        p.parts.append("</g>")
+    p.line([(20, 562), (780, 562)], 0, .3, w=6)
+
+
+def empty_pockets(p, label="", **_):
+    """A pair of trousers with both pockets pulled inside out, and three coins dropping out and rolling away."""
+    p.line([(250, 120), (550, 120), (590, 560), (430, 560), (400, 300), (370, 560), (210, 560)], 0, .45, w=8, closed=True)
+    p.line([(250, 150), (550, 150)], .1, .2, w=6)
+    for side in (-1, 1):
+        x = 400 + side * 150
+        p.fill(f'<path d="M{x - 45} 160 Q{x} 300 {x + 45} 160 Z" fill="#fff" stroke="{INK}" stroke-width="6"/>', .4)
+    for k, (x, dx) in enumerate(((260, -150), (540, 160), (300, -60))):
+        cid = f'<circle cx="{x}" cy="250" r="30" fill="#E0A93B" stroke="#8A5F12" stroke-width="5"/>'
+        p.parts.append(f'<g class="a" data-fx="slide" data-at="{p.at(.5 + .08 * k)}" data-d=".7" data-x0="0" data-x1="{dx}" '
+                       f'data-y0="0" data-y1="320" data-r="{200 * (1 if dx > 0 else -1)}" data-ease="inout" '
+                       f'style="transform-box:fill-box;transform-origin:center">{cid}</g>')
+    p.line([(40, 600), (760, 600)], 0, .3, w=6)
+    if label:
+        p.text(400, 60, label, .8, size=44, serif=True, weight=700, color=RED, fx="pop")
+
+
+def hospital(p, label="HOSPITAL", **_):
+    """A plain three-storey building with rows of windows that light up and a red cross over the door."""
+    p.rect(150, 170, 500, 390, 0, .35, w=8)
+    p.line([(130, 170), (400, 70), (670, 170)], .1, .25, w=8)
+    for r in range(3):
+        for c in range(5):
+            if r == 2 and c == 2:
+                continue
+            x, y = 185 + c * 92, 200 + r * 110
+            p.box(x, y, 60, 70, "#F2C35B", .3 + .03 * (r * 5 + c), rx=6)
+            p.rect(x, y, 60, 70, .3 + .03 * (r * 5 + c), .1, w=4)
+    p.rect(360, 430, 80, 130, .55, .2, w=6)
+    p.fill(f'<g><rect x="380" y="100" width="40" height="110" rx="6" fill="{RED}"/><rect x="345" y="135" width="110" height="40" rx="6" fill="{RED}"/></g>', .7)
+    p.text(400, 610, label, .8, size=38, weight=700, color=INK)
+    p.line([(60, 560), (740, 560)], 0, .3, w=6)
+
+
+def scroll(p, title="AN ACT", lines=4, seal="1720", **_):
+    """A parchment that unrolls downwards, lines of text writing themselves on, and a red wax seal pressed at the foot."""
+    p.parts.append(f'<g class="a" data-fx="growYdown" data-at="{p.at(.05)}" data-d="{.35 * p.dur:.2f}" style="transform-box:fill-box;transform-origin:top">'
+                   f'<rect x="190" y="70" width="420" height="470" rx="10" fill="#F3E6C4" stroke="{INK}" stroke-width="6"/></g>')
+    p.fill(f'<rect x="170" y="45" width="460" height="46" rx="23" fill="#E2CFA0" stroke="{INK}" stroke-width="6"/>', 0)
+    p.fill(f'<rect x="170" y="525" width="460" height="46" rx="23" fill="#E2CFA0" stroke="{INK}" stroke-width="6"/>', .4)
+    p.text(400, 160, title, .4, size=46, serif=True, weight=700)
+    for i in range(lines):
+        w = 300 - 40 * (i % 2)
+        p.line([(400 - w / 2, 220 + i * 52), (400 + w / 2, 220 + i * 52)], .45 + .06 * i, .12, color=GREY, w=8)
+    p.fill(f'<g><circle cx="530" cy="460" r="58" fill="{RED}" stroke="#8E2209" stroke-width="6"/>'
+           f'<text x="530" y="472" text-anchor="middle" font-family="\'Serif\',serif" font-weight="700" font-size="34" fill="#fff">{H.escape(seal)}</text></g>',
+           .78, fx="stamp")
+
+
+def letter(p, date="1724", sign="I.N.", hi_line=1, **_):
+    """A handwritten letter on a desk: a date, wavy lines writing on, one underlined in red, a quill that moves
+    along as it writes, and initials at the foot."""
+    p.box(150, 60, 500, 520, "#fff", 0, rx=10, fx="fade")
+    p.rect(150, 60, 500, 520, 0, .25, w=6)
+    p.text(610, 120, date, .1, size=36, serif=True, weight=700, color=GREY, anchor="end")
+    for i in range(6):
+        y = 180 + i * 60
+        xs = [200 + k * 25 for k in range(17 - (i == 5) * 6)]
+        pts = [(x, y + 8 * math.sin(k * 1.3 + i)) for k, x in enumerate(xs)]
+        p.line(pts, .15 + .09 * i, .1, color=INK, w=4, j=1)
+        if i == hi_line:
+            p.line([(195, y + 22), (xs[-1] + 5, y + 22)], .8, .15, color=RED, w=7)
+    p.text(560, 550, sign, .72, size=44, serif=True, weight=600, color=INK)
+    quill = (f'<g><path d="M0 0 Q60 -120 150 -200 Q90 -90 10 4 Z" fill="#fff" stroke="{INK}" stroke-width="5"/>'
+             f'<path d="M0 0 L150 -200" stroke="{GREY}" stroke-width="3"/></g>')
+    kf = [[p.at(.15), 200, 190], [p.at(.65), 600, 480], [p.at(.72), 560, 545], [p.at(1), 640, 500]]
+    kf = [[t, x, y, 1, 1, 0] for t, x, y in kf]
+    p.parts.append(f"<g class=\"a\" data-fx=\"kf\" data-at=\"{p.at(.1)}\" data-d=\"{.9 * p.dur:.2f}\" data-kf='{_json(kf)}'>{quill}</g>")
+
+
+SCENES.update({f.__name__: f for f in (price_path, apple_fall, crowd_rush, empty_pockets, hospital, scroll, letter)})
