@@ -244,7 +244,9 @@ def master_chain(voice_name):
 # video and Short, in the order of "youtube_trial" in voices.json (Reel voices excluded so the
 # channels stay distinct). When the list runs out it starts again; when Pietro picks one, set
 # YOUTUBE_PICK to it and the trial ends.
-YOUTUBE_PICK = None
+# 13 Nov (Pietro, the Shorts production standard, docs/production/short-form-standard.md): the narrator is
+# Kokoro af_heart, en-us, speed 0.9, for long videos and Shorts. The trial ends; its log stays as history.
+YOUTUBE_PICK = "HEART"
 TRIAL_START = "2026-11-11"
 
 

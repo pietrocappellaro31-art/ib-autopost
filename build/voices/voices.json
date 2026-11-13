@@ -699,11 +699,11 @@
   "rotation": false
  },
  "HEART": {
-  "name": "HEART: American female, warm (YouTube voice trial, day 1)",
+  "name": "HEART: American female, warm (the YouTube narrator from 13 Nov; trial day 1 on 11 Nov at 0.97)",
   "engine": "kokoro",
   "kokoro_voice": "af_heart",
-  "speed": 0.97,
-  "source": "Kokoro af_heart (Apache 2.0), said directly; audition 10 Nov: DNSMOS and word check on 3 lines, speed set for about 2.8 words a second",
+  "speed": 0.9,
+  "source": "Kokoro af_heart (Apache 2.0), said directly; audition 10 Nov: DNSMOS and word check on 3 lines, speed set for about 2.8 words a second; 13 Nov, Pietro: the YouTube narrator for long videos and Shorts, en-us, speed 0.9",
   "youtube_trial": 1,
   "rotation": false
  },

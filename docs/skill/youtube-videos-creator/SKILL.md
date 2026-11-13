@@ -21,21 +21,14 @@ repo root.
 
 ## Voice
 
-**A different voice every day, until Pietro picks one** (Pietro, 10 Nov: "experiment with
-different voices. A different one each day, until we find the perfect one"; from 11 Nov).
-Today's voice, the same for the day's long video and Short:
-
-    python3 -c "import sys; sys.path.insert(0,'build'); from voice_clone import youtube_voice; print(youtube_voice())"
-
-The order is `youtube_trial` in `build/voices/voices.json` (14 Kokoro voices, Apache 2.0,
-auditioned 10 Nov; the Reel voices BELLA, EMMA and G2 are left out so the channels stay
-distinct). It goes round again when the list ends. `youtube.make` uses it by default; render
-a Short with `python3 build/shorts_<slug>.py <VOICE>`. In every delivery say which voice it
-was and ask Pietro for a one-line verdict; log the voice and the measures in
-`docs/daily/youtube-voice-trial.md`. When he picks one, set `YOUTUBE_PICK` in
-`build/voice_clone.py` and the trial ends. GEORGE (every video to 10 Nov) is the baseline.
-Every voice is synthetic, not a person. The narrator has no name, face or invented
-life story: never "when I worked at a bank".
+**HEART, from 13 Nov: Kokoro af_heart, en-us, speed 0.9, for long videos and Shorts** (Pietro, 13 Nov,
+`docs/production/short-form-standard.md`). `voice_clone.YOUTUBE_PICK = "HEART"`, so `youtube_voice()`
+returns HEART and `youtube.make` uses it by default; render a Short with
+`python3 build/shorts_<slug>.py HEART`. The daily voice trial (11 to 13 Nov: HEART, MICHAEL,
+ISABELLA) is over; `docs/daily/youtube-voice-trial.md` stays as history, and the voice and DNSMOS
+now go in the quality-log row. Do not restart the rotation unless Pietro asks. HEART is
+synthetic, not a person. The narrator has no name, face or invented life story: never "when I
+worked at a bank".
 
 ## 1. Pick the topic
 
@@ -105,6 +98,11 @@ chapter times. Look at a contact sheet of frames before delivering: if it
 looks plainer than the last video, it is not done.
 
 ## 4. Short (9:16)
+
+**Read `docs/production/short-form-standard.md` first (Pietro, 13 Nov): it is the Shorts standard and
+wins over anything below that disagrees.** It adds five formats beside the four-level quiz (story,
+one surprising concept, animated calculation, myth, choice or challenge), 35 to 55 s for most
+Shorts, two alternative titles, a QA report, and an honest judgement of the AI setting and audience.
 
 **Shorts ship without music in the file** (`music=False`, the default): Pietro adds a
 trending sound in the YouTube app when he uploads (see section 6, Music).

@@ -388,3 +388,14 @@ What has been settled, and what is still open. Newest first.
   the YouTube Audio Library` for him to fill in or delete. `youtube.THUMB_LOOKS` holds seven thumbnail looks;
   each day uses two, never one from the day before. YouTube #4 remixed without music (mix DNSMOS 2.48 to 3.20)
   and #5 re-rendered without music in the new looks the same day.
+- **Shorts production standard; HEART is the YouTube narrator** (13 Nov, Pietro sent the permanent Shorts
+  instructions). Saved as `docs/production/short-form-standard.md`, which every Shorts run reads first. Pietro
+  chose (13 Nov): install it as the standing rules (no remake of the day's Short); HEART (Kokoro af_heart,
+  en-us, speed 0.9) for long videos and Shorts, so the daily voice trial ends (`YOUTUBE_PICK = "HEART"`, HEART
+  speed 0.97 to 0.9; the trial log stays as history); one clean master only, with an original-scored master
+  waiting until there is a `music.py` bed he likes. New in the standard: formats B to F beside the
+  four-level quiz, 35 to 55 s for most Shorts, two alternative titles, a QA report, music suggestions only when
+  verified, and the AI setting and audience judged on the actual video. Checked the same day: no Remotion or other
+  engine in the repo, no `docs/production/cinematic-standard.md` or `audio-standard.md`; the standard says so
+  and builds new formats on `levels.py`, `motion.py` and `sketch.py`. A one-line check of HEART at 0.9: word for
+  word, DNSMOS 3.54, about 2.7 words a second.

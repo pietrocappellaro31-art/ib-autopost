@@ -12,6 +12,9 @@ to one" written as "1 to 1" or the lender heard as "a firm"); DNSMOS 3.34 to 3.5
 af_nicole (whispery, DNSMOS 1.94) and am_eric (ran sentences together when slowed).
 Baseline: GEORGE (bm_george, every video to 10 Nov), DNSMOS 3.42 on the same lines.
 
+**Closed 13 Nov (Pietro): HEART (af_heart, en-us, speed 0.9) is the YouTube narrator for long videos and
+Shorts.** The rows below are history; the voice and DNSMOS now go in `quality-log.md`.
+
 Each run fills in its row: DNSMOS on voice.wav, exact lines, and Pietro's verdict when he gives one.
 
 | Date | Voice | What it is | Speed | Long DNSMOS | Short DNSMOS | Exact lines | Pietro's verdict |
