@@ -47,7 +47,7 @@ if [ ! -f soundfonts/GeneralUser-GS.sf2 ]; then
   echo "9575028c7a1f589f5770fccc8cff2734566af40cd26ed836944e9a5152688cfe  soundfonts/GeneralUser-GS.sf2" | sha256sum -c -
 fi
 [ -f soundfonts/GeneralUser-GS-LICENSE.txt ] || curl -sSL -o soundfonts/GeneralUser-GS-LICENSE.txt "$SF/documentation/LICENSE.txt" || true
-python3 -c "import tinysoundfont" 2>/dev/null || pip install -q --break-system-packages tinysoundfont
+python3 -c "import tinysoundfont" 2>/dev/null || pip install -q --break-system-packages --no-deps tinysoundfont   # 13 Nov: its optional pyaudio dependency fails to build here; not needed to render
 if [ -n "${VOICE_KEY:-}" ]; then
   for enc in "$REPO"/build/voices/*.flac.enc; do            # Pietro's older clones, only for re-renders
     n=$(basename "$enc" .flac.enc)
