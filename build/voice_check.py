@@ -60,7 +60,9 @@ def words(text):
     t = re.sub(r"\b(dollars?|pounds?|euros?)\b", " ", t)
     t = re.sub(r"\bsafe keeping\b", "safekeeping", t)
     t = re.sub(r"\bstable coin", "stablecoin", t)
-    t = re.sub(r"\bsouthsea\b", "south sea", t)                     # 13 Nov (YouTube #6): the place and the company
+    t = re.sub(r"\bsouthsea\b", "south sea", t)
+    t = re.sub(r"\bd c f\b", "dcf", t)                               # 13 Nov (Levels #12): letters a recogniser spaces out
+    t = re.sub(r"\be b i t d a\b", "ebitda", t)                     # 13 Nov (YouTube #6): the place and the company
     t = re.sub(r"(?<=[a-z])'s\b", "s", t)
     _o2 = "ten eleven twelve thirteen fourteen fifteen sixteen seventeen eighteen nineteen".split()
     _tn2 = "twenty thirty forty fifty sixty seventy eighty ninety".split()

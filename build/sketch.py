@@ -47,6 +47,8 @@ Scenes (opts in brackets):
   crowd_rush(n, target), empty_pockets(label), hospital(label), scroll(title, lines, seal), letter(date, sign, hi_line)
   13 Nov (Friday the 13th Short): fri13_page(), year_grid(year), road_cat(), ladder_wallet(tag), friday_bars(n, hi);
   cat_svg(x, y, s) draws a sitting black cat for floaters and the close
+  13 Nov (Levels #12, terminal value): tv_timeline(n), two_ways(left, right), exit_stack(ebitda, mult, total),
+  discount_shrink(later, tv, fc, share)
 """
 
 import html as H
@@ -2053,3 +2055,97 @@ def letter(p, date="1724", sign="I.N.", hi_line=1, **_):
 
 
 SCENES.update({f.__name__: f for f in (price_path, apple_fall, crowd_rush, empty_pockets, hospital, scroll, letter)})
+
+
+# ---- 13 Nov (Levels #12, terminal value). Generic blocks, a signpost and stacks of our own: no company,
+# no real model. Each drawn edge to edge of the 800 x 640 canvas so it fills its box.
+
+def tv_timeline(p, n=5, **_):
+    """The DCF on one baseline: five small cash flows (the forecast), then one tall block standing for every
+    year after, marked with an infinity sign. The tall block is what the Reel is about."""
+    base = 540
+    p.line([(20, base), (780, base)], .0, .25, w=7)
+    for k in range(n):
+        x, h_ = 30 + 74 * k, 110 + 10 * k
+        p.fill(f'<rect x="{x}" y="{base - h_}" width="58" height="{h_}" rx="8" fill="{TEAL}" stroke="{INK}" stroke-width="5"/>',
+               .08 + .07 * k)
+        p.text(x + 29, base + 50, f"Y{k + 1}", .08 + .07 * k, size=34, weight=700)
+    p.line([(30, 330), (30, 310), (398, 310), (398, 330)], .45, .2, w=5, color=GREY)
+    p.text(214, 290, "FORECAST", .47, size=34, weight=700, color=GREY)
+    _slide(p, .55, f'<rect x="440" y="40" width="330" height="{base - 40}" rx="14" fill="{GOLD}" stroke="{INK}" stroke-width="6"/>'
+                   f'<text x="605" y="210" text-anchor="middle" font-family="\'Serif\',serif" font-weight="700" font-size="150" '
+                   f'fill="{INK}">∞</text>'
+                   f'<text x="605" y="330" text-anchor="middle" font-family="\'Sans\',sans-serif" font-weight="700" font-size="42" '
+                   f'fill="{INK}">TERMINAL</text>'
+                   f'<text x="605" y="384" text-anchor="middle" font-family="\'Sans\',sans-serif" font-weight="700" font-size="42" '
+                   f'fill="{INK}">VALUE</text>', y0=-120, d=.5)
+    p.text(605, base + 50, "YEAR 5 ON", .7, size=34, weight=700, color=RED)
+
+
+def two_ways(p, left=("GROWTH", "FOREVER"), right=("EXIT", "MULTIPLE"), **_):
+    """A signpost with two arms: perpetuity growth one way, an exit multiple the other. A small figure at the
+    foot looks up."""
+    p.fill(f'<rect x="385" y="70" width="30" height="530" rx="8" fill="#B8862B" stroke="{INK}" stroke-width="5"/>', .0)
+    p.line([(250, 600), (550, 600)], .02, .2, w=7)
+    _slide(p, .12, f'<path d="M30 175 L90 110 L392 110 L392 240 L90 240 Z" fill="{TEAL}" stroke="{INK}" stroke-width="6" '
+                   f'stroke-linejoin="round"/>'
+                   f'<text x="245" y="168" text-anchor="middle" font-family="\'Sans\',sans-serif" font-weight="700" font-size="46" '
+                   f'fill="#fff">{left[0]}</text>'
+                   f'<text x="245" y="218" text-anchor="middle" font-family="\'Sans\',sans-serif" font-weight="600" font-size="32" '
+                   f'fill="#fff">{left[1]}</text>', x0=60, d=.4)
+    _slide(p, .42, f'<path d="M408 290 L710 290 L770 355 L710 420 L408 420 Z" fill="{RED}" stroke="{INK}" stroke-width="6" '
+                   f'stroke-linejoin="round"/>'
+                   f'<text x="560" y="348" text-anchor="middle" font-family="\'Sans\',sans-serif" font-weight="700" font-size="46" '
+                   f'fill="#fff">{right[0]}</text>'
+                   f'<text x="560" y="398" text-anchor="middle" font-family="\'Sans\',sans-serif" font-weight="600" font-size="32" '
+                   f'fill="#fff">{right[1]}</text>', x0=-60, d=.4)
+    p.line([(40, 400), (110, 360), (180, 335), (260, 322), (340, 315)], .25, .4, w=6, color=TEAL, dash="14 10")
+    figure(p, 190, 590, .8, .6)
+    p.text(285, 470, "?", .75, size=70, serif=True, weight=700, color=RED, fx="pop")
+
+
+def exit_stack(p, ebitda="$50", mult=8, total="$400", **_):
+    """One EBITDA block on the left, then the same block stacked eight times on the right, one by one, and a
+    tag with the total."""
+    base, bh = 590, 58
+    p.line([(20, base), (780, base)], .0, .2, w=7)
+    p.fill(f'<rect x="40" y="{base - bh}" width="220" height="{bh}" rx="8" fill="{TEAL}" stroke="{INK}" stroke-width="5"/>'
+           f'<text x="150" y="{base - bh / 2 + 15}" text-anchor="middle" font-family="\'Sans\',sans-serif" font-weight="700" '
+           f'font-size="40" fill="#fff">{ebitda}</text>', .04)
+    p.text(150, base - bh - 24, "EBITDA, YEAR 5", .08, size=30, weight=700)
+    p.text(345, base - 40, f"× {mult}", .2, size=84, serif=True, weight=700, color=RED, fx="pop")
+    for k in range(mult):
+        y = base - bh * (k + 1)
+        p.fill(f'<rect x="460" y="{y}" width="220" height="{bh}" rx="8" fill="{TEAL}" stroke="{INK}" stroke-width="5"/>'
+               f'<text x="570" y="{y + bh / 2 + 13}" text-anchor="middle" font-family="\'Sans\',sans-serif" font-weight="700" '
+               f'font-size="34" fill="#fff">{ebitda}</text>', .25 + .055 * k, fx="rise")
+    p.parts.append('<g class="a" data-fx="float" data-at="0" data-d="1" data-amp="7" data-w="2.2">')
+    p.fill(_ptag(250, 150, 300, total, GOLD, INK, 70, rot=-6), .78)
+    p.parts.append("</g>")
+
+
+def discount_shrink(p, later="$400", tv="$248", fc="$76", share="77%", **_):
+    """The terminal value at year 5 (tall gold block) shrinks on its way to today, where it stands under the
+    five years of forecast (a small teal block). A tag shows its share of the total."""
+    base = 560
+    p.line([(20, base), (780, base)], .0, .2, w=7)
+    p.fill(f'<rect x="30" y="{base - 400}" width="220" height="400" rx="12" fill="{GOLD}" stroke="{INK}" stroke-width="6"/>'
+           f'<text x="140" y="{base - 190}" text-anchor="middle" font-family="\'Serif\',serif" font-weight="700" font-size="62" '
+           f'fill="{INK}">{later}</text>', .03)
+    p.text(140, base + 52, "YEAR 5", .05, size=34, weight=700)
+    p.line([(270, 240), (380, 210), (480, 250)], .25, .3, w=7, dash="16 12")
+    p.line([(455, 222), (482, 252), (446, 268)], .4, .1, w=7)
+    p.text(375, 180, "÷ 1.61", .3, size=40, weight=700, color=RED)
+    p.fill(f'<rect x="530" y="{base - 248}" width="240" height="248" rx="12" fill="{GOLD}" stroke="{INK}" stroke-width="6"/>'
+           f'<text x="650" y="{base - 104}" text-anchor="middle" font-family="\'Serif\',serif" font-weight="700" font-size="58" '
+           f'fill="{INK}">{tv}</text>', .48, fx="rise")
+    p.fill(f'<rect x="530" y="{base - 248 - 76}" width="240" height="76" rx="12" fill="{TEAL}" stroke="{INK}" stroke-width="6"/>'
+           f'<text x="650" y="{base - 248 - 24}" text-anchor="middle" font-family="\'Serif\',serif" font-weight="700" font-size="44" '
+           f'fill="#fff">{fc}</text>', .6, fx="rise")
+    p.text(650, base + 52, "TODAY", .5, size=34, weight=700, color=TEAL)
+    p.parts.append('<g class="a" data-fx="float" data-at="0" data-d="1" data-amp="7" data-w="2.2">')
+    p.fill(_ptag(390, 480, 220, share, RED, "#fff", 54, rot=-5), .78)
+    p.parts.append("</g>")
+
+
+SCENES.update({f.__name__: f for f in (tv_timeline, two_ways, exit_stack, discount_shrink)})

@@ -347,19 +347,65 @@ window.clearAfter = function () {
   seek(0);
   return out;
 };
+window.wordify = function () {
+  // 14 Nov: blocks with plain text (chips) get word spans so the line check can see their words.
+  // Unstyled inline spans do not change the layout.
+  document.querySelectorAll('.olchk').forEach(b => {
+    if (b.querySelector('.w')) return;
+    const walk = document.createTreeWalker(b, NodeFilter.SHOW_TEXT);
+    const nodes = []; while (walk.nextNode()) if (walk.currentNode.textContent.trim()) nodes.push(walk.currentNode);
+    nodes.forEach(t => {
+      const f = document.createDocumentFragment();
+      t.textContent.split(/(\s+)/).forEach(x => {
+        if (!x) return;
+        if (/^\s+$/.test(x)) { f.appendChild(document.createTextNode(x)); return; }
+        const sp = document.createElement('span'); sp.className = 'w ow'; sp.textContent = x; f.appendChild(sp);
+      });
+      t.parentNode.replaceChild(f, t);
+    });
+  });
+};
+window.lineWords = function (b) {
+  // Words per rendered line, top to bottom (an explicit <br> line is the author's choice and is skipped).
+  const tops = [];
+  b.querySelectorAll('.w').forEach(w => { const r = w.getBoundingClientRect(); if (r.width) tops.push(Math.round(r.top / 8)); });
+  const lines = [...new Set(tops)].sort((a, c) => a - c);
+  return {n: tops.length, counts: lines.map(l => tops.filter(t => t === l).length), brs: b.querySelectorAll('br').length};
+};
+window.lone = function (b) {
+  // 14 Nov: a single word alone on ANY line, not only the last ("Can shareholders' / equity / be negative?").
+  const L = lineWords(b);
+  if (L.n < 3 || L.counts.length < 2 || L.brs) return false;
+  return L.counts.some(c => c === 1);
+};
+window.unorphan = function () {
+  // 14 Nov: the hook question and the big answers (.olfix) re-balance themselves. A block with a word
+  // alone on a line shrinks in 3% steps (to 85%) until every line has two words or more; the move is reported.
+  const out = [];
+  document.querySelectorAll('.scene').forEach(s => {
+    if (s.style.visibility !== 'visible') return;
+    s.querySelectorAll('.olfix').forEach(b => {
+      if (b.dataset.unorph) return;
+      if (!lone(b)) return;
+      const fs0 = parseFloat(getComputedStyle(b).fontSize);
+      let fs = fs0;
+      while (lone(b) && fs > .85 * fs0) { fs *= .97; b.style.fontSize = fs.toFixed(1) + 'px'; }
+      b.dataset.unorph = 1;
+      out.push(`"${b.textContent.trim().slice(0, 50)}" ${Math.round(fs0)} to ${Math.round(fs)} px` + (lone(b) ? ' CHECK still a word alone' : ''));
+    });
+  });
+  return out;
+};
 window.orphans = function () {
   // 13 Nov: any text block (.olchk) that wraps with a single word alone on its last line.
+  // 14 Nov: on any line, and chips are checked too (wordify).
   const bad = [];
   document.querySelectorAll('.scene').forEach(s => {
     if (s.style.visibility !== 'visible') return;
     s.querySelectorAll('.olchk').forEach(b => {
-      if (getComputedStyle(b).opacity === '0') return;
-      const tops = [];
-      b.querySelectorAll('.w').forEach(w => { const r = w.getBoundingClientRect(); if (r.width) tops.push(Math.round(r.top / 8)); });
-      if (tops.length < 3) return;
-      const lines = [...new Set(tops)];
-      if (lines.length > 1 && tops.filter(t => t === lines[lines.length - 1]).length === 1)
-        bad.push(`one word alone on the last line: "${b.textContent.trim().slice(0, 60)}"`);
+      for (let q = b; q && q !== s; q = q.parentElement)            // hidden itself or inside something hidden
+        if (getComputedStyle(q).opacity === '0') return;
+      if (lone(b)) bad.push(`one word alone on a line (${lineWords(b).counts.join('/')} words per line): "${b.textContent.trim().slice(0, 60)}"`);
     });
   });
   return bad;
@@ -455,6 +501,15 @@ def build(slug, scenes, theme="ink", cover_at=0.0, crf=18, check_at=(), fit=Fals
                 print(f"  fitted {len(fits)} drawings: drawn width {min(r['before'] for r in fits):.2f}-{max(r['before'] for r in fits):.2f}"
                       f" of the box before, {min(r['after'] for r in fits):.2f}-{max(r['after'] for r in fits):.2f} after"
                       + (f"  CHECK under 85%: drawings {small}" if small else ""), flush=True)
+        pg.evaluate("wordify()")
+        # 14 Nov: the hook and the big answers re-balance before anything is checked or filmed.
+        unorph = []
+        for t in [s_["start"] + s_["dur"] - .4 for s_ in starts] + list(check_at):
+            unorph += pg.evaluate(f"window.NOPUSH = true; seek({t}); unorphan()")
+        for x in unorph:
+            print("  re-balanced " + x)
+        if unorph:
+            (work / "unorphan.json").write_text(json.dumps(unorph, indent=1))
         # 13 Nov: pictures beside answers are moved clear of the words before anything is checked or filmed.
         cleared = pg.evaluate("window.NOPUSH = true; clearAfter()")
         if cleared:

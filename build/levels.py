@@ -215,8 +215,9 @@ def scene(ep, parts, at, hook_end, lv, total):
     # frame 0; the highlighter swipes on as it is said.
     hk = ep["hook"]
     hs = seg("hook")
-    q_html = kara(hk["say"][0][1], at["hook"] + hs[0][1], hs[0][2] - hs[0][1], hk.get("cols"), hl=hk.get("hl", ()), lit=True, cls="olchk",
-                  style=f"font-family:'Serif',serif;font-weight:700;font-size:{hk.get('qsize', 86)}px;line-height:1.06;letter-spacing:-.02em")
+    q_html = kara(hk["say"][0][1], at["hook"] + hs[0][1], hs[0][2] - hs[0][1], hk.get("cols"), hl=hk.get("hl", ()), lit=True, cls="olchk olfix",
+                  style=f"font-family:'Serif',serif;font-weight:700;font-size:{hk.get('qsize', 86)}px;line-height:1.06;letter-spacing:-.02em;"
+                        f"text-wrap:balance")      # 14 Nov: the hook balances and re-balances itself (motion.unorphan)
     lines = "".join(kara(d, at["hook"] + a, b - a, hk.get("cols"), hide=True,
                          style=f"font-family:'Serif',serif;font-style:italic;font-weight:600;font-size:{hk.get('lsize', 70)}px;line-height:1.12;"
                                f"margin-top:6px;white-space:nowrap")      # 10 Nov: never "That's level / 4."
@@ -262,7 +263,7 @@ def scene(ep, parts, at, hook_end, lv, total):
         for j, ((s, d, *style), (_, a, b)) in enumerate(zip(L["a"], asg)):
             kind = style[0] if style else ("big" if j == 0 else "line")
             if kind == "big":
-                ans += kara(d, aa + a, b - a, L.get("acols"), hide=True, cls="ansbig olchk",
+                ans += kara(d, aa + a, b - a, L.get("acols"), hide=True, cls="ansbig olchk olfix",
                             style=f"font-family:'Serif',serif;font-weight:700;font-size:{L.get('bigsize', 122)}px;line-height:1.02;"
                                   f"letter-spacing:-.03em;color:{TEAL};text-wrap:balance")
             else:
@@ -279,7 +280,7 @@ def scene(ep, parts, at, hook_end, lv, total):
             t0 = aa + chip_time(asg, L.get("chip_at", 0))
             foot = (f'<div style="font-size:28px;font-weight:500;opacity:.6;margin-top:10px">{L["foot"]}</div>' if L.get("foot") else "")
             chip = A(f'<div style="display:inline-block;border:3px solid {TEAL};background:rgba(15,118,110,.08);border-radius:24px;'
-                     f'padding:18px 30px;font-size:44px;font-weight:600;line-height:1.3">{L["chip"]}</div>{foot}',
+                     f'padding:18px 30px;font-size:44px;font-weight:600;line-height:1.3" class="olchk">{L["chip"]}</div>{foot}',
                      "pop", t0, .45, cls="anschip", style="margin-top:30px;transform-origin:left center")
         art = ""
         if L.get("art"):

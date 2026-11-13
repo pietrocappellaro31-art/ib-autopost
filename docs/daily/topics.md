@@ -26,6 +26,7 @@ number with no source is cut.
 | 2026-11-12 | Reel (loop, no voice) | Leverage and MOIC: same $100 company sold for $150, all equity 1.5x vs $40 equity + $60 debt 2.25x; sold for $80, 0.8x vs 0.5x |
 | 2026-11-13 | YouTube Short | Friday the 13th and money: three in 2026 (Feb, Mar, Nov), Dutch insurers 7,500 road accidents vs 7,800 on ordinary Fridays (2008), the $800-900 million "lost in business" estimate (Dossey, via National Geographic 2014), stock returns: Kolb and Rodriguez 1987 lower vs Coutts 1999 UK FT 30 1935-94 higher |
 | 2026-11-13 | YouTube long | Isaac Newton and the South Sea Bubble: sold his whole stake 19 and 23 April 1720 (about £20,000 profit), back in from mid June near the top with almost all his bonds, worth about £20,000 by mid 1721 from just over £30,000 (Odlyzko 2019/2020); share path £128 Jan to £1,000 Aug to £150 end Sep; Bubble Act 1720 to 1825; 1721 inquiry, Aislabie, directors stripped of 82%; Thomas Guy sold at £600 and founded Guy's Hospital 1721; the "madness of people" line from Spence's 1756 notes, second hand; the 1724 "pockets empty" letter |
+| 2026-11-13 | Reel | Terminal value: everything after the forecast, perpetuity growth or exit multiple, year 5 EBITDA $50 at 8x = $400 (a year 5 number), discounted at 10% about $248 vs about $76 for 5 years of $20, so about 77% of the DCF (no "typical share" claimed) |
 
 ## Ideas (YouTube long and Shorts)
 

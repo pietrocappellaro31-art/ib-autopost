@@ -227,6 +227,16 @@ def master_chain(voice_name):
     v = voices().get(key(voice_name) or "")
     if not v:
         return None
+    if v.get("denoise"):
+        # 13 Nov (Levels #12, G2): a non-local-means de-noise AFTER the voice's own chain. On the G2 stem
+        # DNSMOS voice 3.29 -> 3.35 (SIG 3.53 -> 3.57, BAK 4.09 -> 4.14), same 17/20 sentences heard
+        # exactly cut by cut; strength 2e-4 to 8e-4 scored the same, placed before the chain it did nothing;
+        # afftdn (nr 6 or 10) and a stronger de-ess scored lower.
+        return master_chain_plain(v) + "," + v["denoise"]
+    return master_chain_plain(v)
+
+
+def master_chain_plain(v):
     if v.get("chain") == "bright":
         return BRIGHT
     if v.get("chain") == "kokoro" or v.get("engine") == "kokoro":

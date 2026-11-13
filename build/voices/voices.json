@@ -671,7 +671,8 @@
   "chain": "bright",
   "coherent": true,
   "takes": 8,
-  "rotation": true
+  "rotation": true,
+  "denoise": "anlmdn=s=0.0004"
  },
  "BELLA": {
   "name": "BELLA: American female, bright and warm (Reels rotation)",
