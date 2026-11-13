@@ -297,6 +297,18 @@
    "rights": "ORIGINAL_GENERATED",
    "added": "2026-11-13",
    "note": ""
+  },
+  {
+   "id": "score-yt-007-panic-of-1907-v2",
+   "title": "Original score for yt-007-panic-of-1907-v2",
+   "video": "yt-007-panic-of-1907-v2",
+   "engine": "score.py + GeneralUser GS v2.0.3 (TinySoundFont)",
+   "mood": "suspense",
+   "bpm": 84,
+   "key": "F",
+   "rights": "ORIGINAL_GENERATED",
+   "added": "2026-11-13",
+   "note": ""
   }
  ]
 }
