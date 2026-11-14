@@ -1,11 +1,11 @@
 ---
 name: "ib-voiced-reel"
-description: "Make every Instagram Reel for @investmentbankinginterviews to the same cinematic standards as the YouTube films: the HEART narrator (Kokoro af_heart, 0.9) with a natural delivery, a drawn scene or filmed segment in every beat (more animated, never text alone), synchronised sound effects, a clean master plus an original-scored alternative when feasible, motion and quality gates, caption, comment question and the daily quality log. The Levels quiz is one format, not the only one."
+description: "Make every Instagram Reel for @investmentbankinginterviews to the same cinematic standards as the YouTube films: the HEART narrator (Kokoro af_heart, 0.9) with a natural, unprocessed delivery, a drawn scene or filmed segment in every beat (more animated, never text alone), synchronised sound effects, a clean master plus an original-scored alternative when feasible, motion and quality gates, caption, comment question and the daily quality log. The Levels quiz is one format, not the only one."
 ---
 
 # Voiced Reels for @investmentbankinginterviews
 
-Version 2026-11-14 (cinematic upgrade; Pietro's 14 Nov notes: more animated, drawn scenes everywhere, a more natural voice). Authoritative copy: `docs/skill/ib-voiced-reel/SKILL.md` in the ib-autopost
+Version 2026-11-14b (cinematic upgrade; Pietro's 14 Nov notes: more animated, drawn scenes everywhere, a more natural voice, unprocessed). Authoritative copy: `docs/skill/ib-voiced-reel/SKILL.md` in the ib-autopost
 repo; the installed plugin is built from it (`docs/production/skill-sync.md`).
 
 **Standards (13 Nov 2026, Pietro: "Do the new standards apply to reels as well? They should."):** every Reel
@@ -19,6 +19,13 @@ that names the G2, BELLA, EMMA rotation, "no music in any file" or the Levels qu
 ## Pietro, 14 Nov: more animated, drawn scenes everywhere, a more natural voice
 
 From 15 Nov (`docs/decisions-log.md`): every beat carries a large drawn scene or a filmed `cine.py` shot through the question, the think time and the answer (never text alone, drawings at 85%+ of their box, at least two filmed beats); the drawings act the idea out; HEART stays, with a more natural delivery (whole passages synthesised together, natural pauses and emphasis, spoken-style script). Our own drawings only: no stock, licensed or AI images.
+
+**Not processed (Pietro, 14 Nov evening: "robotic / processed sound" was what felt least natural):** the narrator chain
+`voice.MASTER` is now a highpass and a 1.5 dB dip at 7.2 kHz only (no compressor, no echo, no pre-limiter); the
+Reel master runs `levels.two_stage` at -16 LUFS with one true-peak limiter; stems are written with headroom. Every
+render prints the SIG drop from voice to mix (gate 0.15 or less) and clipped voice samples (gate 0): a CHECK on
+either is fixed before delivery. Do not add compression, reverb, echo, de-noise or an exciter to HEART.
+`docs/production/audio-standard.md` 1b.
 
 ## The voice rule (from 13 Nov)
 

@@ -17,7 +17,7 @@ import zipfile
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 SKILLS = ["youtube-videos-creator", "ib-voiced-reel", "music-library", "content-compliance"]
-VERSION = "2.2.0"                     # 14 Nov 2026: Pietro's Reel notes (drawn scenes in every beat, natural HEART); 2.1.0 13 Nov evening
+VERSION = "2.3.0"                     # 14 Nov 2026, evening: a natural, unprocessed narrator (Pietro); 2.2.0 the Reel notes the same afternoon; 2.1.0 13 Nov evening
 SECRET = re.compile(r"(gh[pousr]_[A-Za-z0-9]{20,}|EAA[A-Za-z0-9]{20,}|sk-[A-Za-z0-9]{20,}|BEGIN [A-Z ]*PRIVATE KEY|VOICE_KEY=\S{6,})")
 
 

@@ -93,7 +93,9 @@ about 1 s of render per frame, so use it where it teaches, not as decoration. No
 
 ## 6. Voice
 
-HEART at 0.9 (above). Natural, expressive delivery; numbers, financial terms and company names
+HEART at 0.9 (above), left natural (Pietro, 14 Nov: no processed sound; `audio-standard.md` 1b: the plain narrator
+chain, no pre-limiter, the SIG-drop and stem-clip gate). Each beat said in one pass; script lines written to be
+spoken (contractions, short sentences). Natural, expressive delivery; numbers, financial terms and company names
 said right (add words to `PHONEMES` in `build/voice.py`). Every line is checked (`takes.json`,
 WER 0). When the recogniser reports a miss, listen to the actual line: it may be a real slip
 (reword it) or a false miss (teach the word check). The narrator has no credentials and no life

@@ -18,6 +18,10 @@
   configuration was not available, so an auditory match to Pietro's reference is unconfirmed. Pietro's listening
   verdict on the proof of concept is the open item.
 
+**14 Nov, Pietro: "the voice should feel more natural"** (least natural: robotic / processed sound). The voice and
+speed stay; the processing after Kokoro was cut back to a highpass and a light 7 kHz dip, with no pre-limiter
+(`audio-standard.md` 1b). A/B clips of the cash machine Short (old and new chain) went to Pietro for his ear.
+
 ## History (kept, not deleted)
 
 | Dates | Where | Voice(s) | Record |

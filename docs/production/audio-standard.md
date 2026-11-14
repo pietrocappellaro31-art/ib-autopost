@@ -17,6 +17,31 @@ decisions log.
 - Every line is cached (`synth.pkl` in long videos, `keep_voice`/`redo` in the Levels engine, `lines/` in cine
   films): editing one line re-says only that line and keeps every other timing.
 
+## 1b. A natural voice, not a processed one (Pietro, 14 Nov)
+
+Pietro, on the first cash machine Short: "from tomorrow on voice should feel more natural"; asked what was least
+natural, he chose **robotic / processed sound**. HEART at 0.9 stays; what changed is what we did to it after Kokoro.
+
+- **Narrator chain** (`voice.MASTER`, used by Shorts, Reels, long videos and cine films): `highpass=f=70` and a 1.5 dB
+  dip at 7.2 kHz, nothing else. No compressor, no echo or "room" on the voice, no warmth boost. The 8 Nov chain
+  (`voice.MASTER_8NOV`: 2.5:1 compression and a 19/31 ms echo, a comb filter on a dry voice) is kept only to re-render
+  an old video exactly.
+- **No limiter before the master.** The 0.4 pre-limiter of the no-music masters cut 16% of the narration by up to
+  2 dB; every no-music master (Shorts -14, Reels -16) now runs `levels.two_stage`: one plain gain, one true-peak
+  limiter at 4x sample rate. `ep["limit"] = .4` restores the old behaviour for a re-render.
+- **Stems never clip.** `levels.mux` writes voice and effects with one common gain so the peak is 0.89 at most
+  (the voice levelled to RMS 0.12 had reached full scale and was clipped in `voice.wav`).
+- **Gate, printed by every render** (`sound.json`): `sig_drop` (DNSMOS SIG of the voice stem minus SIG of the clean
+  mix) 0.15 or less, and `voice_stem_clipped` 0.
+- Measured 14 Nov on the cash machine narration, voice alone at -14 LUFS: old chain OVRL 3.29 (SIG 3.55), new chain
+  3.40 (SIG 3.62), untouched Kokoro 3.40; short-term loudness spread 9.8 dB (squashed) to 12.4 dB (raw 12.5). The
+  same Short remixed: mix OVRL 3.12 to 3.29, SIG 3.49 to 3.57, BAK 3.83 to 4.03, SIG drop 0.16 to 0.10, -14.2 LUFS,
+  -1.7 dBTP. Not yet heard by anyone but Pietro's A/B clips.
+- Delivery (the Reel note of the same day, `decisions-log.md`, applies to Shorts and long videos too): whole passages
+  synthesised together (the story engine says each beat in one pass); a beat split sentence by sentence
+  (`split=True`) only when the recogniser hears a word wrong in context and rewording cannot fix it; lines written to
+  be said (contractions, short sentences, how a person explains it aloud).
+
 ## 2. Pronunciation
 
 `build/voice.py` `PHONEMES` is the pronunciation dictionary (misaki notation; plurals, -ed and -ing are derived).
@@ -93,7 +118,7 @@ action-timed sound too (build step in `cinematic-standard.md`).
 
 ## 6. Mix and loudness
 
-- Stems: voice, foley, ambience, music. Voice through the narrator chain (`voice.MASTER`).
+- Stems: voice, foley, ambience, music. Voice through the narrator chain (`voice.MASTER`, the natural chain of 1b).
 - Music ducks about 11 dB while the voice speaks (attack 60 ms, release 350 ms); ambience about 4 dB.
 - Target voice over music while speaking: at least 15 dB (measured, `voice_over_music_db`).
 - Two-stage loudness: measure, normalise linear with the measured values, true-peak limiter, check, trim if off.

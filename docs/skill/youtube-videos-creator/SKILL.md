@@ -1,11 +1,11 @@
 ---
 name: "youtube-videos-creator"
-description: "Daily YouTube run for the finance channel: research a topic that could travel, write and render one cinematic long-form 16:9 documentary (filmed scenes, original score, clean and scored masters) and one Short in the HEART narrator, with thumbnails, titles, description, chapters and tags, checked against YouTube's AI, originality and monetisation rules. Posting stays manual."
+description: "Daily YouTube run for the finance channel: research a topic that could travel, write and render one cinematic long-form 16:9 documentary (filmed scenes, original score, clean and scored masters) and one Short in the HEART narrator (natural, unprocessed), with thumbnails, titles, description, chapters and tags, checked against YouTube's AI, originality and monetisation rules. Posting stays manual."
 ---
 
 # YouTube Videos Creator
 
-Version 2026-11-13 (cinematic upgrade). The authoritative copy is `docs/skill/youtube-videos-creator/SKILL.md` in the
+Version 2026-11-14 (cinematic upgrade; Pietro's 14 Nov note: a natural, unprocessed narrator). The authoritative copy is `docs/skill/youtube-videos-creator/SKILL.md` in the
 ib-autopost repo; the installed plugin is built from it (`docs/production/skill-sync.md`).
 
 **The standards live in the repo and win over this file where they disagree:** `docs/production/long-form-standard.md`,
@@ -36,6 +36,18 @@ posting: Pietro uploads.
 nobody. The narrator has no name, face, credentials or past: never "when I worked at a bank". Names and terms go
 in `build/voice.py` `PHONEMES` (unknown words stop the render). Lines are cached (`synth.pkl`): editing one line
 re-says only that line. The 11 to 13 Nov voice trial is closed; its log stays as history.
+
+**A natural voice, not a processed one (Pietro, 14 Nov: "from tomorrow on voice should feel more natural"; least
+natural was "robotic / processed sound").** `docs/production/audio-standard.md` 1b:
+- The narrator chain `voice.MASTER` is a highpass and a 1.5 dB dip at 7.2 kHz, nothing more. Never add compression,
+  echo or reverb, de-noise or an exciter to HEART; no limiter before the master (Shorts and Reels: `levels.two_stage`,
+  one true-peak limiter). `voice.MASTER_8NOV` exists only to re-render an old video exactly.
+- Every render prints `SIG drop voice to mix` (gate 0.15 or less) and clipped voice-stem samples (gate 0); fix a CHECK
+  before delivery and log both in the quality-log row.
+- Delivery: each beat or passage said in one pass (the story engine does); `split=True` (sentence by sentence) only
+  when the recogniser hears a word wrong in context and rewording cannot fix it. Write lines to be said: contractions,
+  short sentences, how a person explains it aloud, no read-out constructions.
+- Nobody here can listen: when the voice changes, send Pietro a short A/B clip of the same lines.
 
 ## 1. Topic
 

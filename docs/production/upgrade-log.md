@@ -101,3 +101,31 @@ Thumbnails: flat area 57% / 57% against 78% / 78% for #7's drawn ones (8x8 block
 - Each patch_span pass re-encodes both masters once more (crf 20): fine for a fix, not for repeated use.
 
 - 14 Nov 2026: ib-voiced-reel 2.2.0 (repo copy and plugin): Pietro's Reel notes (a drawn scene or filmed shot in every beat through question, think and answer, at least two filmed beats, drawings at 85%+ of their box and acting the idea out; HEART kept with a natural delivery and a spoken-style script). Plugin sent to Pietro to install.
+
+## 14 Nov 2026, evening: a natural, unprocessed narrator (Pietro)
+
+Pietro on the cash machine Short: "from tomorrow on voice should feel more natural"; least natural: "robotic / processed sound".
+
+### Built
+
+- `voice.MASTER` (shared by Shorts, Reels, long videos, cine films): highpass 70 Hz and a 1.5 dB dip at 7.2 kHz only. The 8 Nov
+  chain (2.5:1 compressor, 19/31 ms echo, warmth boost) kept as `voice.MASTER_8NOV` for exact re-renders.
+- `levels.shorts_mix`: no 0.4 pre-limiter by default; every no-music master (Shorts and Reels) runs `levels.two_stage`
+  (its default target now -16 LUFS like `mux`, Shorts set -14).
+- `levels.mux`: stems written with headroom (peak 0.89), so `voice.wav` never clips.
+- `levels.sound_report`: `sig_drop` (DNSMOS SIG voice stem minus clean mix; gate 0.15) and `voice_stem_clipped` (gate 0),
+  printed with a CHECK by the Levels and story engines.
+- Skills: youtube-videos-creator and ib-voiced-reel 2.3.0 (repo copies and plugins), `audio-standard.md` 1b,
+  `short-form-standard.md` 6, `voice-decision.md`, decisions log.
+
+### Checked
+
+Cash machine narration, voice alone at -14 LUFS: old chain OVRL 3.29 / SIG 3.55, new 3.40 / 3.62 (raw Kokoro 3.40); the pre-limiter
+had been cutting 16% of the speech (p95 2.2 dB); loudness spread 9.8 dB to 12.4 dB. The Short remixed with the new chain (same picture
+and takes): mix OVRL 3.12 to 3.29, SIG 3.49 to 3.57, BAK 3.83 to 4.03, SIG drop 0.16 to 0.10, -14.2 LUFS, -1.7 dBTP, 0 clipped.
+
+### Not done or not verified
+
+- Nobody here can listen. Two 13 s A/B clips (old and new chain, same lines, both -14 LUFS) went to Pietro.
+- A naturalness predictor (UTMOS) could not be fetched in this workspace; DNSMOS SIG is the proxy.
+- The plugins are updated only when Pietro installs the `.plugin` files.
