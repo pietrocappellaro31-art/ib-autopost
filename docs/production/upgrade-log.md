@@ -99,3 +99,5 @@ Thumbnails: flat area 57% / 57% against 78% / 78% for #7's drawn ones (8x8 block
 
 - Nobody listened: the workspace cannot play audio.
 - Each patch_span pass re-encodes both masters once more (crf 20): fine for a fix, not for repeated use.
+
+- 14 Nov 2026: ib-voiced-reel 2.2.0 (repo copy and plugin): Pietro's Reel notes (a drawn scene or filmed shot in every beat through question, think and answer, at least two filmed beats, drawings at 85%+ of their box and acting the idea out; HEART kept with a natural delivery and a spoken-style script). Plugin sent to Pietro to install.

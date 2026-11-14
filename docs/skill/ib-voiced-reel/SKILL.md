@@ -1,11 +1,11 @@
 ---
 name: "ib-voiced-reel"
-description: "Make every Instagram Reel for @investmentbankinginterviews to the same cinematic standards as the YouTube films: the HEART narrator (Kokoro af_heart, 0.9), real animation and filmed segments, synchronised sound effects, a clean master plus an original-scored alternative when feasible, motion and quality gates, caption, comment question and the daily quality log. The Levels quiz is one format, not the only one."
+description: "Make every Instagram Reel for @investmentbankinginterviews to the same cinematic standards as the YouTube films: the HEART narrator (Kokoro af_heart, 0.9) with a natural delivery, a drawn scene or filmed segment in every beat (more animated, never text alone), synchronised sound effects, a clean master plus an original-scored alternative when feasible, motion and quality gates, caption, comment question and the daily quality log. The Levels quiz is one format, not the only one."
 ---
 
 # Voiced Reels for @investmentbankinginterviews
 
-Version 2026-11-13 (cinematic upgrade). Authoritative copy: `docs/skill/ib-voiced-reel/SKILL.md` in the ib-autopost
+Version 2026-11-14 (cinematic upgrade; Pietro's 14 Nov notes: more animated, drawn scenes everywhere, a more natural voice). Authoritative copy: `docs/skill/ib-voiced-reel/SKILL.md` in the ib-autopost
 repo; the installed plugin is built from it (`docs/production/skill-sync.md`).
 
 **Standards (13 Nov 2026, Pietro: "Do the new standards apply to reels as well? They should."):** every Reel
@@ -51,11 +51,15 @@ HEART or any stock Kokoro voice. Never print or commit a key if one is around.
    `build/reels_levels<N>.py`), not the only format: an animated story, one concept, a calculation, a myth or a
    choice (formats B to F of `docs/production/short-form-standard.md`) when the topic is better told that way.
    Every segment carries real movement that explains the idea (`cinematic-standard.md` section 6); filmed scenes
-   from `build/cine.py` can be used in 9:16 (the world reframes with `cine.stage()`). Pick a topic not in `docs/daily/topics.md`
+   from `build/cine.py` can be used in 9:16 (the world reframes with `cine.stage()`). **Pictures in every beat
+   (Pietro, 14 Nov):** each level or beat has a large drawn scene (`art=`, `art_after=`) or a filmed window (`film=`,
+   see `levels.film_window`) through the question, the think time and the answer; at least two filmed beats; the
+   drawing acts the idea out (builds, moves, splits, counts) and fills 85% or more of its box. Our own drawings only. Pick a topic not in `docs/daily/topics.md`
    "Used" for Reels; IB interview technicals first.
 2. **Write the episode file** `build/reels_<slug>.py`. Work every answer in
    its docstring. Never invent a number, statistic or credential. No em
-   dashes. Spoken text uses words for numbers; on-screen text uses digits.
+   dashes. Spoken text uses words for numbers; on-screen text uses digits. Write it to be said: contractions, short
+   sentences, how a person explains it out loud (Pietro, 14 Nov: "the voice should feel more natural").
    Each hook is one sentence in one `say` entry, and it is the only entry:
    the question alone. Never "That's level 4. Keep score." (Pietro, 11 Nov).
 3. **New words**: the voice stops on a word it cannot pronounce. Add it to
@@ -70,7 +74,7 @@ HEART or any stock Kokoro voice. Never print or commit a key if one is around.
 ## Checks before delivering (`quality-gates.md` section 9)
 
 - Motion in motion: `python3 build/yt_preview.py --clip build/out/<slug>/<slug>.mp4` (static share, longest static
-  run, logged) and a contact sheet of the hook, each level or beat, the transitions and the close. Cards with only a
+  run, mean motion, logged; mean motion above the last Reel's, 1.62 on Levels #13) and a contact sheet of the hook, each level or beat, the transitions and the close. Cards with only a
   push-in fail.
 - Facts and rights as for any film: every number worked in the docstring, reconstructions badged, props show only
   sourced figures.
@@ -79,7 +83,10 @@ HEART or any stock Kokoro voice. Never print or commit a key if one is around.
   (DNSMOS overall; about 3.1 to 3.5 is studio-clean).
 - Loudness about -16 LUFS, true peak no higher than -1.5 dB
   (`ffmpeg -i <mp4> -af ebur128=peak=true -f null -`).
-- Look at frames: the cover, each level settled, the transitions.
+- Look at frames: the cover, each level settled, the transitions. No frame of a level is text alone; the fit step
+  reports every drawing at 85% or more of its box.
+- Voice: listen-proxy checks for a natural read: whole passages synthesised together where the timings allow, pauses
+  between sentences that vary, no line that sounds read out.
 
 ## Sound
 
