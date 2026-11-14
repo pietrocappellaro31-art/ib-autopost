@@ -67,7 +67,7 @@ PHONEMES = {
     "dcf": "dˌisˌiˈɛf",
     "that's": "ðæts",
     "questions": "kwˈɛsʧᵊnz",
-    "moic": "mˈYk",
+    "moic": "mˈYɪk",                     # 14 Nov, Levels #13: MOY-ick, two syllables (as one syllable the recogniser heard "Mike" once)
     "irr": "ˌIˌɑɹˈɑɹ",
     "you've": "juv",
     "here's": "hˈɪɹz",

@@ -298,8 +298,14 @@ def scene(ep, parts, at, hook_end, lv, total):
                 art += A(L["art_after"](aa), "life", aa + .1, T["end"] - aa + .3, fi=.35, fo=.2, cls="nochk aftr",
                          settle=round(T["end"] - .35, 3),
                          style=f"position:absolute;right:0;top:0;z-index:-1")
+        filmbox = ""
+        if L.get("film"):
+            # 14 Nov (build step 7, second filmed beat): a level can carry a filmed window under its answer, shown
+            # from the moment the card swipes in, so the question is set up on film and the answer is filmed too
+            filmbox = (f'<div id="filmbox{i}" class="nochk" style="position:relative;margin:{L.get("film_gap", 30)}px auto 0;'
+                       f'width:{L["film_w"]}px;height:{L["film_h"]}px;outline:5px solid {INK};border-radius:4px;background:#2B2F3A"></div>')
         answer = (f'<div style="position:relative;margin-top:22px;min-height:{L.get("ans_min", 420 if L.get("art") else 0)}px">'
-                  f'{art}{rip}{ans}{chip}</div>')
+                  f'{art}{rip}{ans}{chip}{filmbox}</div>')
         grp = ghost(i + 1) + lockup(i + 1, L["tail"], RED if last else INK) + qcard + think + answer
         els.append(group(column(grp), T["start"] - .02, T["end"] - T["start"] + T_SW + .02))
         check_at.append(T["end"] - .2)
@@ -473,18 +479,14 @@ def remix(ep, voice_name):
     work = OUT / ep["slug"]
     parts = reuse(work)
     at, hook_end, lv, total = timeline(ep, parts)
-    film_fx = []
-    if ep["hook"].get("film"):
-        mp4, cover, film_fx = film_hook(ep, mp4, cover, at, hook_end)
+    silent = OUT / (ep["slug"] + "-silent") / (ep["slug"] + "-silent.mp4")
+    # 14 Nov: the old path referred to mp4 and cover before they existed whenever the hook was filmed; the films
+    # are laid in again here (same numbers, so the same picture) to get their foley and the filmed picture
+    mp4, _, fol = films(ep, silent, silent.with_suffix(".jpg"), at, hook_end, lv)
     voice, sfx = soundtrack(parts, at, lv, total + .6, ep)
-    if film_fx:                                              # the filmed hook's foley, timed by the same numbers as its picture
-        from scipy.signal import resample_poly
-        import sfx as sfx_lib
-        fol = resample_poly(sfx_lib.foley_track(film_fx, total + .6).mean(1), 1, 2).astype(np.float32)
-        k = min(len(sfx), len(fol))
-        sfx[:k] += fol[:k] * ep["hook"].get("foley_gain", .5)
+    sfx = add_foley(sfx, fol, total)
     sfx = sfx * shorts_mix(ep)[1]
-    mux(ep, voice_name, voice, sfx, total, OUT / (ep["slug"] + "-silent") / (ep["slug"] + "-silent.mp4"))
+    mux(ep, voice_name, voice, sfx, total, mp4)
     print(f"  -> remixed {ep['slug']}.mp4")
 
 
@@ -578,58 +580,111 @@ def two_stage(ep, mp4, work, graph, final, tp=-1.5):
     return final
 
 
-def film_hook(ep, mp4, cover, at, hook_end, T_SW=.34):
-    """13 Nov (cinematic-standard.md section 8, step 7: a filmed segment inside the Levels engine). The hook's
-    ink-framed window (#filmbox) is measured on the filmed page at the start and the end of the hook (the page's
-    slow push moves it a pixel or two, so the film follows it linearly), ep["hook"]["film"](dur, w, h, t_end)
-    returns (shots, foley events) for cine.py, the shots are filmed at the window's size, and the film is laid
-    into the window and fades out with the hook card. The cover is taken again from the result.
-    Returns (mp4, cover, foley events)."""
+def film_window(ep, mp4, box, t0, t_rest, t_out, fn, tag, T_SW=.34, fade_out=True):
+    """13 Nov (cinematic-standard.md section 8, step 7: a filmed segment inside the Levels engine); generalised
+    14 Nov to any window (the hook's #filmbox, a level's #filmbox<i>). The window is measured on the filmed page
+    every 30 ms through the card's whip in (t0 to t_rest) and whip out (t_out to t_out + T_SW), and at points in
+    between (the page's slow push moves it a pixel or two), the film is laid into it piecewise-linearly, and fades
+    with the card. fn(dur, w, h) returns (shots, foley events in film seconds).
+    14 Nov: the film gets the card's motion blur. The page's pass blurs the card by 26 px per 1000 px of swipe
+    (motion.py 'pass': bl = b * 26 as x = -b * 1000), so the film's Gaussian sigma follows the measured offset
+    from where the window rests, stepped every 30 ms (gblur with timeline enable). Before, the film stayed sharp
+    inside a blurred card. Returns (mp4, foley events in Reel seconds, the window record)."""
     import cine
     from playwright.sync_api import sync_playwright
-    hk = ep["hook"]
     src = OUT / (ep["slug"] + "-silent") / "motion.html"
+    times = sorted(set([round(t0 + .03 * k, 3) for k in range(int((t_rest - t0) / .03) + 1)]
+                       + [round(t_rest + (t_out - t_rest) * k / 4, 3) for k in range(5)]
+                       + [round(t_out + .03 * k, 3) for k in range(1, int(T_SW / .03) + 2)]))
     with sync_playwright() as p:
         b = p.chromium.launch()
         pg = b.new_page(viewport={"width": 1080, "height": 1920})
         pg.goto(src.resolve().as_uri())
         pg.evaluate("document.fonts.ready")
-        # 13 Nov: the hook card whips off to the left at the swipe, so the window is followed through the exit
-        # too (sampled every 30 ms), not only across the hook
-        times = [0.0, hook_end] + [round(hook_end + .03 * k, 3) for k in range(1, int(T_SW / .03) + 1)]
         rects = []
         for t in times:
             pg.evaluate(f"seek({t})")
-            rects.append(pg.evaluate("(() => { const r = document.getElementById('filmbox').getBoundingClientRect();"
+            rects.append(pg.evaluate(f"(() => {{ const r = document.getElementById('{box}').getBoundingClientRect();"
                                      " return [r.left, r.top, r.width, r.height]; })()"))
         b.close()
-    (x0, y0, fw, fh), (x1, y1, _, _) = rects[0], rects[1]
+    rest = [r for t, r in zip(times, rects) if t_rest - 1e-3 <= t <= t_out + 1e-3]
+    fw, fh = rest[0][2], rest[0][3]
     fw, fh = int(round(fw / 2) * 2), int(round(fh / 2) * 2)
-    dur = round(hook_end + T_SW + .1, 2)
-    shots, fx = hk["film"](dur, fw, fh, hook_end - at["hook"])
+    dur = round(t_out + T_SW + .1 - t0, 2)
+    shots, fx = fn(dur, fw, fh)
     html, total = cine.film_html(shots, fw, fh, caps="", mark=False)
     work = OUT / ep["slug"]
     work.mkdir(parents=True, exist_ok=True)
-    film, secs = cine.render(html, total, work, "hook-film", fw, fh, fps=30)
-    out = pathlib.Path(str(mp4).replace("-silent.mp4", "-silent-film.mp4"))
+    film, secs = cine.render(html, total, work, tag, fw, fh, fps=30)
+    out = pathlib.Path(str(mp4).replace(".mp4", f"-{tag}.mp4"))
     def pw(i):                                    # piecewise-linear position through the sampled moments
         e = f"{rects[-1][i]:.2f}"
         for (ta, ra), (tb, rb) in reversed(list(zip(zip(times, rects), zip(times[1:], rects[1:])))):
             e = f"if(lt(t,{tb:.3f}),{ra[i]:.2f}+({rb[i] - ra[i]:.3f})*(t-{ta:.3f})/{max(tb - ta, 1e-3):.3f},{e})"
         return e
     xe, ye = pw(0), pw(1)
-    graph = (f"[1:v]format=yuva420p,fade=t=out:st={hook_end + T_SW - .12:.3f}:d=0.12:alpha=1[f];"
-             f"[0:v][f]overlay=x='{xe}':y='{ye}':eof_action=pass:enable='lte(t,{dur})'[v]")
+    x_in, x_out = rest[0][0], rest[-1][0]
+    steps = []
+    for (ta, ra), (tb, rb) in zip(zip(times, rects), zip(times[1:], rects[1:])):
+        xm = (ra[0] + rb[0]) / 2
+        ref = x_in if tb <= t_rest + 1e-3 else x_out if ta >= t_out - 1e-3 else None
+        if ref is None:
+            continue
+        sig = 26 * abs(xm - ref) / 1000
+        if sig > .3:
+            steps.append((round(ta, 3), round(tb, 3), round(sig, 2)))
+    blur = "".join(f"gblur=sigma={g}:enable='between(t,{a_},{b_})'," for a_, b_, g in steps)
+    end = t_out + T_SW
+    graph = (f"[1:v]setpts=PTS+{t0:.3f}/TB,{blur}format=yuva420p"
+             + (f",fade=t=out:st={end - .12:.3f}:d=0.12:alpha=1" if fade_out else "") + "[f];"
+             f"[0:v][f]overlay=x='{xe}':y='{ye}':eof_action=pass:enable='between(t,{t0:.3f},{end + .1:.3f})'[v]")
     subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", str(mp4), "-i", str(film), "-filter_complex", graph, "-map", "[v]",
                     "-c:v", "libx264", "-crf", "20", "-preset", "medium", "-pix_fmt", "yuv420p", str(out)], check=True)
-    cov = pathlib.Path(str(cover).replace(".jpg", "-film.jpg"))
-    subprocess.run(["ffmpeg", "-y", "-v", "error", "-ss", f"{max(hook_end - .2, 0):.3f}", "-i", str(out), "-frames:v", "1",
-                    "-q:v", "2", str(cov)], check=True)
-    json.dump(dict(box_start=rects[0], box_end=rects[1], film=[fw, fh], dur=dur, render_seconds=round(secs, 1), foley=len(fx)),
-              open(work / "film.json", "w"), indent=1)
-    print(f"  filmed hook: {fw} x {fh} px, {dur:.2f} s, window moved {x1 - x0:+.1f}, {y1 - y0:+.1f} px over the hook, "
-          f"{len(fx)} foley events", flush=True)
-    return out, cov, fx
+    rec = dict(box=box, t0=round(t0, 3), rest=rest[0], rest_end=rest[-1], bottom=round(max(r[1] + r[3] for r in rest), 1),
+               film=[fw, fh], dur=dur, render_seconds=round(secs, 1), foley=len(fx), blur_steps=steps)
+    print(f"  filmed {box}: {fw} x {fh} px, {dur:.2f} s from {t0:.2f} s, bottom {rec['bottom']} px, {len(fx)} foley events, "
+          f"{len(steps)} motion-blur steps (max sigma {max([g for *_, g in steps] or [0])})", flush=True)
+    return out, [(e[0], e[1] + t0, *e[2:]) for e in fx], rec
+
+
+def films(ep, mp4, cover, at, hook_end, lv, T_SW=.34):
+    """Every filmed window of the episode (the hook's, then any level's), with their foley as (events, gain)
+    and film.json. The cover is taken again from the result. Returns (mp4, cover, [(events, gain), ...])."""
+    hk, recs, fol = ep["hook"], [], []
+    if hk.get("film"):
+        mp4, fx, rec = film_window(ep, mp4, "filmbox", 0.0, 0.0, hook_end, lambda d, w, h: hk["film"](d, w, h, hook_end - at["hook"]),
+                                   "hook-film", T_SW)
+        recs.append(rec); fol.append((fx, hk.get("foley_gain", .5)))
+    for i, L in enumerate(ep["levels"]):
+        if not L.get("film"):
+            continue
+        t0, end = lv[i]["start"] - .02, lv[i]["end"]
+        marks = dict(q=at[f"q{i}"] - t0, a=at[f"a{i}"] - t0, think=lv[i]["think0"] - t0, end=end - t0)
+        mp4, fx, rec = film_window(ep, mp4, f"filmbox{i}", t0, t0 + T_SW + .03, end, lambda d, w, h, m=marks, L=L: L["film"](d, w, h, m),
+                                   f"l{i}-film", T_SW)
+        recs.append(rec); fol.append((fx, L.get("foley_gain", .5)))
+    if recs:
+        cov = pathlib.Path(str(cover).replace(".jpg", "-film.jpg"))
+        subprocess.run(["ffmpeg", "-y", "-v", "error", "-ss", f"{max(hook_end - .2, 0):.3f}", "-i", str(mp4), "-frames:v", "1",
+                        "-q:v", "2", str(cov)], check=True)
+        cover = cov
+        json.dump(recs, open(OUT / ep["slug"] / "film.json", "w"), indent=1)
+    return mp4, cover, fol
+
+
+def add_foley(sfx, fol, total):
+    """The filmed windows' foley, timed by the same numbers as their pictures, onto the effects track."""
+    if not fol:
+        return sfx
+    from scipy.signal import resample_poly
+    import sfx as sfx_lib
+    for fx, gain in fol:
+        if not fx:
+            continue
+        f = resample_poly(sfx_lib.foley_track(fx, total + .6).mean(1), 1, 2).astype(np.float32)
+        k = min(len(sfx), len(f))
+        sfx[:k] += f[:k] * gain
+    return sfx
 
 
 def make(ep, voice_name="af_heart", keep_voice=False, redo=()):
@@ -659,16 +714,9 @@ def make(ep, voice_name="af_heart", keep_voice=False, redo=()):
     sc, check_at = scene(ep, parts, at, hook_end, lv, total)
     mp4, cover, problems = build(ep["slug"] + "-silent", [sc], theme="paper", cover_at=hook_end - .2, crf=21,
                                  check_at=check_at, fit=ep.get("fit", True))
-    film_fx = []
-    if ep["hook"].get("film"):
-        mp4, cover, film_fx = film_hook(ep, mp4, cover, at, hook_end)
+    mp4, cover, fol = films(ep, mp4, cover, at, hook_end, lv)
     voice, sfx = soundtrack(parts, at, lv, total + .6, ep)
-    if film_fx:                                              # the filmed hook's foley, timed by the same numbers as its picture
-        from scipy.signal import resample_poly
-        import sfx as sfx_lib
-        fol = resample_poly(sfx_lib.foley_track(film_fx, total + .6).mean(1), 1, 2).astype(np.float32)
-        k = min(len(sfx), len(fol))
-        sfx[:k] += fol[:k] * ep["hook"].get("foley_gain", .5)
+    sfx = add_foley(sfx, fol, total)
     sfx = sfx * shorts_mix(ep)[1]                            # 11 Nov: effects a touch lower on YouTube Shorts
     work = OUT / ep["slug"]
     work.mkdir(parents=True, exist_ok=True)

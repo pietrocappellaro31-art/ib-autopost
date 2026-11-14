@@ -11,3 +11,4 @@
 | 2026-11-12 | w2-two-ways-to-pay | Same $100 company. Two ways to pay. (viral reference proposal 1, R2; 12 s loop) | none (no voice by design) | 12.6 s | |
 | 2026-11-13 | w2-levels-12 | IB Interview Levels #12: can terminal value be most of a DCF? | G2 | 56.4 s | superseded by w2-levels-12-heart, not to post |
 | 2026-11-13 | w2-levels-12-heart | IB Interview Levels #12: can terminal value be most of a DCF? (cinematic standard: filmed hook; clean + scored alternative) | HEART | 55.4 s | |
+| 2026-11-14 | w2-levels-13 | IB Interview Levels #13: 2x in 3 years or 3x in 7, which has the higher IRR? (filmed hook and filmed level 4 answer; clean + scored alternative) | HEART | 53.9 s | |

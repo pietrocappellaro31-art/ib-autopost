@@ -552,3 +552,51 @@ def monitor_dcf(t_on=.2, t_tv=1.6, bars=5, cx=900, cy=600, w=560, h=340, tv_labe
                     for i, part in enumerate(tv_label.split())) + "</g>"
           + f'<g {kv(opacity=[[0, 0], [t_tv + .5, 0], [t_tv + .8, 1]])}>' + _t(round(tx + tw / 2, 1), base + 26, "YEAR 5 ON", 15, RED, weight=700, family="Sans") + "</g>")
     return s
+
+
+def monitor_irr(t_on=.2, t_b=.9, t_ans=None, cx=900, cy=600, w=560, h=340, a=("A", 3, "2x"), b=("B", 7, "3x"), years=7,
+                irr=("26%", "17%")):
+    """14 Nov. A monitor showing two deals on one timeline of `years` years: deal A's bar runs a[1] years and ends on
+    its multiple, deal B's runs b[1] years. With t_ans set, each deal's yearly return (irr) arrives and the faster
+    deal is ticked in teal while the slower one dims: the IRR answer, filmed. Shot seconds. Only the numbers the
+    episode works out are drawn; nothing else on the screen is a claim."""
+    x0, y0 = cx - w / 2, cy - h / 2
+    s = (f'<ellipse cx="{cx}" cy="{cy + 40}" rx="{w * .75:.0f}" ry="{h * .7:.0f}" fill="#BFE3D6" opacity=".14"/>'
+         + _r(cx - 18, y0 + h, 36, 860 - (y0 + h), "#3B3F48", sw=2.6) + _r(cx - 90, 846, 180, 16, "#3B3F48", rx=6, sw=2.6)
+         + _r(x0 - 16, y0 - 16, w + 32, h + 32, "#1E2128", rx=14, sw=3.6)
+         + f'<rect x="{x0}" y="{y0}" width="{w}" height="{h}" fill="#F4EFE6"/>')
+    s += _t(x0 + 26, y0 + 34, "MOIC vs IRR", 22, INK, anchor="start", weight=600, family="Sans", extra='letter-spacing="2"')
+    lx, rx_ = x0 + 62, x0 + w - 26                      # the timeline, year 0 to `years`
+    step = (rx_ - lx) / years
+    axis = y0 + h - 40
+    s += f'<path d="M{lx},{axis} L{rx_},{axis}" stroke="{INK}" stroke-width="3"/>'
+    for k in range(years + 1):
+        x = lx + k * step
+        s += f'<path d="M{x:.1f},{axis - 7} L{x:.1f},{axis + 7}" stroke="{INK}" stroke-width="2.4"/>'
+        s += _t(round(x, 1), axis + 28, str(k), 16, INK, weight=600, family="Sans")
+    s += _t(lx - 30, axis + 28, "YR", 14, INK, weight=700, family="Sans")
+    rows = [(a, y0 + 74, t_on, TEAL), (b, y0 + 74 + (axis - y0 - 74) * .52, t_b, MUSTARD)]
+    bh = min(54, (axis - y0 - 74) * .34)
+    for k, ((name, yrs, mult), ry, t, col) in enumerate(rows):
+        bw = yrs * step
+        dim = f'{kv(opacity=[[0, 1], [t_ans + .6, 1], [t_ans + 1.0, .45]])}' if (t_ans is not None and k == 1) else ""
+        s += f'<g {dim}>' if dim else "<g>"
+        s += _t(x0 + 30, ry + bh / 2 + 9, name, 26, INK, weight=700, family="Sans")
+        s += (f'<g {kv(clip=[[0, 0, 100, 0, 0], [t, 0, 100, 0, 0], [t + .55 + .06 * yrs, 0, 0, 0, 0, "out"]])}>'
+              f'<rect x="{lx:.1f}" y="{ry:.1f}" width="{bw:.1f}" height="{bh:.1f}" rx="8" fill="{col}" stroke="{INK}" stroke-width="2.8"/>'
+              + _t(round(lx + bw - 12, 1), round(ry + bh / 2 + 10, 1), mult, 28, "#fff" if k == 0 else INK, anchor="end", weight=700, family="Sans")
+              + "</g>")
+        s += f'<g {kv(opacity=[[0, 0], [t + .4, 0], [t + .7, 1]])}>' + _t(round(lx + bw / 2, 1), round(ry - 10, 1), f"{yrs} YEARS", 15, INK, weight=600, family="Sans") + "</g>"
+        s += "</g>"
+        if t_ans is not None:
+            ta = t_ans + .35 * k
+            tx, ty = (lx + bw + 18, ry + bh / 2 + 12) if k == 0 else (lx + bw * .42, ry + bh / 2 + 11)
+            s += (f'<g {kv(opacity=[[0, 0], [ta, 0], [ta + .25, 1]])}>'
+                  + _t(round(tx, 1), round(ty, 1), f"{irr[k]} A YEAR", 30 if k == 0 else 22, TEAL if k == 0 else INK,
+                       anchor="start", weight=700, family="Sans") + "</g>")
+    if t_ans is not None:                                # the faster deal ticked
+        tx, ty = lx + a[1] * step, rows[0][1]        # on the top corner of deal A's bar end
+        s += (f'<g {kv(opacity=[[0, 0], [t_ans + .7, 0], [t_ans + .9, 1]])}>'
+              f'<circle cx="{tx:.1f}" cy="{ty:.1f}" r="19" fill="{TEAL}" stroke="{INK}" stroke-width="2.8"/>'
+              f'<path d="M{tx - 9:.1f},{ty:.1f} l6,7 l12,-14" fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/></g>')
+    return s

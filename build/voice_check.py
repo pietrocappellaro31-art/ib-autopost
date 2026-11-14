@@ -45,6 +45,7 @@ def words(text):
     # 13 Nov (narrator_check.py): spellings of words said correctly that the recogniser writes another way
     t = re.sub(r"\b(wac|wack)\b", "wacc", t)
     t = re.sub(r"\b(aisleby|aislaby|ailsby)\b", "aislabie", t)
+    t = re.sub(r"\b(moick|moik|moike|moyk|moyick|moyic|moic|moek|moyek|moyak|moiak)\b", "moic", t)   # 14 Nov: MOIC said MOY-ick; never "mike"
     _o = "zero one two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen sixteen seventeen eighteen nineteen".split()
     t = re.sub(r"\b(" + "|".join(_o) + r") point (" + "|".join(_o[:10]) + r")\b",       # 11 Nov: "eight point four" is 8.4
                lambda m: f"{_o.index(m.group(1))}.{_o.index(m.group(2))}", t)

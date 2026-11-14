@@ -30,6 +30,7 @@ number with no source is cut.
 | 2026-11-13 | Reel | Terminal value: everything after the forecast, perpetuity growth or exit multiple, year 5 EBITDA $50 at 8x = $400 (a year 5 number), discounted at 10% about $248 vs about $76 for 5 years of $20, so about 77% of the DCF (no "typical share" claimed) |
 | 2026-11-13 | YouTube long | The Panic of 1907: no central bank; trust companies ~5% cash vs ~25% at national banks; United Copper corner ($62 to $15, 14 to 16 Oct); Knickerbocker run (~$8m, shut after noon 22 Oct, refused by the Clearing House); call money 9.5% to 70% to 100%; Treasury $25m, Morgan's $25m pool, Rockefeller $10m, clearing house certificates, NYC bonds $30m; Morgan Library 3 Nov, doors locked, pledges after 4 a.m., $25m trust pool; output -17% in 1908; Aldrich quote; Federal Reserve Act 23 Dec 1913 |
 | 2026-11-14 | YouTube Short (story) | The first cash machine: Shepherd-Barron's bank closed on a Saturday, the bath and the chocolate bar machine idea, Barclays Enfield June 1967, carbon 14 cheques, £10 a time at most, six-digit PIN cut to four because his wife could remember four |
+| 2026-11-14 | Reel | MOIC vs IRR: MOIC = multiple on invested capital (out / in), $100 to $250 = 2.5x, IRR adds time (a yearly rate), 2x in 3 years about 26% a year vs 3x in 7 about 17% (one cash flow in and out); bonus: 2^(7/3) about 5x |
 
 ## Ideas (YouTube long and Shorts)
 
