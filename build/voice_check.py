@@ -70,6 +70,15 @@ def words(text):
     t = re.sub(r"\bclearinghouse", "clearing house", t)             # 13 Nov (YouTube #7)
     t = re.sub(r"\bcheque(s?)\b", r"check\1", t)                     # 14 Nov: British spelling of the same word
     t = re.sub(r"\bcache machine", "cash machine", t)                 # 14 Nov: homophones; "cash machine" is the phrase
+    # 14 Nov (YouTube #8): spelling variants of words said correctly, and spoken decades ("the nineteen seventies"
+    # is written "the 1970s")
+    t = re.sub(r"\badvisors?\b", lambda m: m.group(0).replace("advisor", "adviser"), t)
+    t = re.sub(r"\bjudgment\b", "judgement", t)
+    t = re.sub(r"\bconnolly\b", "connally", t)
+    t = re.sub(r"\b(\d\d)(\d)0s\b", lambda m: f"{m.group(1)}{m.group(2)}0s", t)
+    t = re.sub(r"\b(nineteen|eighteen|twenty) (twenties|thirties|forties|fifties|sixties|seventies|eighties|nineties)\b",
+               lambda m: str({"eighteen": 18, "nineteen": 19, "twenty": 20}[m.group(1)])
+               + str("twenties thirties forties fifties sixties seventies eighties nineties".split().index(m.group(2)) + 2) + "0s", t)
     t = re.sub(r"\b(organi|recogni|reali|apologi)s(e|ed|es|ing)\b", r"\1z\2", t)   # British -ise, American -ize
     _teen = "eleven twelve thirteen fourteen fifteen sixteen seventeen eighteen nineteen".split()
     _dig = "one two three four five six seven eight nine".split()

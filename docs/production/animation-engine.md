@@ -34,6 +34,11 @@ A fully filmed 10-minute video would take about 2 to 3 hours to render on this m
   film's size and frame rate, overlays it on the silent film and adds its foley and ambience to `sfx.wav`); `score=`
   writes the scored mix with `score.py`; `sound_report()` runs the score gate. Tested end to end on
   `build/youtube_cine_test.py` (13 Nov).
+- `build/youtube.py` thumbnails from the film (14 Nov): `thumb=dict(film_a=dict(shot=fn, dur=, t=, segs=, pos=), film_b=...)`
+  builds the shot as in the film (no overlays or captions), takes a still at `t` and lays it as a full-height panel on
+  the art side of the look, faded into the ground, labelled RECONSTRUCTION (`film_still`, `film_panel`). Drawings stay
+  the fallback (`art=`).
+- `build/cine_1971.py` 1960s and 1970s sets and the eleven filmed beats of YouTube #8.
 - `build/master.py scored <clean.mp4>` a scored alternative for a finished Levels Short or Reel.
 - `build/yt_preview.py` variety test, motion sheets, motion measures.
 

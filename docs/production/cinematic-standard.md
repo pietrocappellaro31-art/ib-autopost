@@ -99,8 +99,10 @@ identical cards" fails, and so does swapping one repeated template for another.
    handheld drift, push-ins that land on measured targets.
 2. **People** (done 13 Nov, first version): articulated figures, gait from distance walked, poses, faces, held
    props. Next: hand poses, a sitting-down and standing-up transition helper, a 3/4 view.
-3. **Sets** (started): London 1720 street and study. Next: a modern trading floor, a bank office, a city street
-   today, a boardroom, a kitchen table (household finance).
+3. **Sets** (started): London 1720 street and study; New York 1907 street, library and trading hall (13 Nov);
+   14 Nov (YouTube #8, `cine_1971.py`): a 1971 living room with a console TV whose screen takes content, a gold vault,
+   a dealing room with a split-flap board that counts on cue and telephones that ring, a wooden lodge with an easel.
+   Next: a modern trading floor with screens, a bank office, a city street today, a boardroom, a kitchen table.
 4. **Data in the world** (started): price paths that draw with flags; numbers that lift off documents. Next:
    balance sheet that rearranges, cash-flow waterfall, LBO structure, debt schedule (see `scene-library.md`).
 5. **Transitions** (started): push into an object and match on it, cut on action, dissolve. Next: object wipes
@@ -111,8 +113,9 @@ identical cards" fails, and so does swapping one repeated template for another.
 
 ## 9. What the engine cannot do yet (13 Nov, after the prototype)
 
-Hands are mitts (no finger poses); figures are side or front views (no 3/4 turn); only two sets exist (London 1720
-street and study); a modern trading floor, bank office, boardroom and household set are not built; the balance
+Hands are mitts (no finger poses); figures are side or front views (no 3/4 turn); sets exist for London 1720,
+New York 1907 and 1960s-70s rooms (living room, vault, dealing room, lodge); a present-day trading floor, bank office
+and boardroom are not built; the balance
 sheet, waterfall, LBO and debt-schedule scenes in `scene-library.md` are specified, not built; a filmed second costs
 0.5 to 1.3 s of render per frame, so a fully filmed 10-minute film is 2 to 3 hours on 2 CPUs. Long films are hybrid
 until that changes.

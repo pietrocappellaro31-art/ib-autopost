@@ -19,6 +19,13 @@ plus `build/cine_lib.py`; "sketch" = `build/sketch.py` drawings in the existing 
 | K | Quiz interaction | timers, choices, reveals, level meter | levels (the four-level format); a filmed hook (`levels.film_hook`, hook `film=`; first used on Levels #12: an analyst at his desk, his screen builds the DCF) | the film blurred with the card at the swipe; a filmed answer beat |
 | L | Cinematic conclusion | the takeaway made visible | cine: the price path with the decision marked and the future dashed | a slow pull-back from the key object to the whole scene |
 
+1960s and 1970s, ready in `cine_1971.py` (14 Nov): sets `living_room_1971` (a console TV; `tv_screen(items=, quote=)` puts
+numbered items or a quote card on its screen), `vault_1971` (cages of gold bars, a counter, a vault door), `dealing_room`
+(a split-flap board whose rows count on cue, `desk_phone` handsets that jiggle when they ring), `lodge_1971` (an easel
+whose items write themselves on cue); props `gold_bar`, `bar_stack`, `dollar_bundle`, `dollar_bill` (generic), `typewriter`;
+looks `suit_1971` to `suit_1971d`, `home_1971`, `lady_1971`; foley `ring`, `clank`, `flap`, `office_ambience`. Data in
+the world: `vault_gap` draws two quantities at one honest scale as physical columns.
+
 Modern objects ready in cine_lib: `phone`, `card`, `terminal`, `ledger_book`, `cup`; set `office_today` (an analyst's desk at dusk) and `monitor_dcf` (a DCF on screen, bars then the terminal-value block). Modern looks: `modern_navy`,
 `modern_grey`.
 

@@ -342,6 +342,14 @@ LOOKS = {
     "lady_1907": dict(coat="#5A3F5E", coat2="#452F49", vest="#F7F5F2", legs="#5A3F5E", stock="#5A3F5E", shoe="#2A1E18", skin="#F1CBAA", hair="#5A3A28", hat="wide", style="dress", cuff="#F7F5F2", era="1907"),
     "lady_1907b": dict(coat="#2E5670", coat2="#22435A", vest="#F7F5F2", legs="#2E5670", stock="#2E5670", shoe="#2A1E18", skin="#B97A55", hair="#1E1410", hat="wide", style="dress", cuff="#F7F5F2", era="1907"),
     "modern_grey": dict(coat="#4A4D52", coat2="#36383C", vest="#F7F5F2", legs="#4A4D52", stock="#4A4D52", shoe=INK, skin="#8A5638", hair="#14100D", hat="", style="suit", cuff="#F7F5F2", tie=TEAL),
+    # 14 Nov, YouTube #8 (1960 to 1973): generic period suits in browns, tans and grey-blues with wide ties, a 1970s
+    # dress, a cardigan for home. Nobody's likeness; used by build/cine_1971.py.
+    "suit_1971": dict(coat="#6B4A32", coat2="#553A27", vest="#F1E6CF", legs="#6B4A32", stock="#6B4A32", shoe=INK, skin="#E5B391", hair="#5A3A28", hat="", style="suit", cuff="#F1E6CF", tie=MUSTARD, era="1971"),
+    "suit_1971b": dict(coat="#3E4F66", coat2="#2F3D50", vest="#EEF0F2", legs="#3E4F66", stock="#3E4F66", shoe=INK, skin="#D9A684", hair="#2A1E18", hat="", style="suit", cuff="#EEF0F2", tie=RED, era="1971"),
+    "suit_1971c": dict(coat="#A68A5E", coat2="#8C7349", vest="#F7F1E4", legs="#7A6446", stock="#7A6446", shoe="#2A1E18", skin="#F0C7A4", hair="#BDB4A6", hat="", style="suit", cuff="#F7F1E4", tie=TEAL, era="1971"),
+    "suit_1971d": dict(coat="#2E2E33", coat2="#1F1F23", vest="#F2F2F2", legs="#2E2E33", stock="#2E2E33", shoe=INK, skin="#8D5A3B", hair="#14100D", hat="", style="suit", cuff="#F2F2F2", tie="#7A3B22", era="1971"),
+    "home_1971": dict(coat="#C9733A", coat2="#A85E2E", vest="#F1E6CF", legs="#5B4A3A", stock="#5B4A3A", shoe="#2A1E18", skin="#E9BC98", hair="#7A4A2A", hat="", style="suit", cuff="#F1E6CF", tie="#C9733A", era="1971"),
+    "lady_1971": dict(coat="#3F7A5A", coat2="#2F6048", vest="#F7F5F2", legs="#3F7A5A", stock="#3F7A5A", shoe="#2A1E18", skin="#F1CBAA", hair="#8A5A2A", hat="", style="dress", cuff="#F7F5F2", era="1971"),
 }
 
 SW = 3.2   # ink stroke
@@ -362,7 +370,7 @@ def _leg(L, back):
         thigh = _p("M-15,-4 C-17,30 -14,60 -11,84 L11,84 C14,60 17,30 15,-4 Z", legs)
         shin = _p("M-11,-2 C-11,30 -9,56 -8,76 L8,76 C9,56 11,30 11,-2 Z", stock)
     shoe_d = "M-10,-5 L14,-4 C26,-3 31,3 29,9 L-10,9 Q-13,2 -10,-5 Z"
-    buckle = '' if L["style"] in ("suit",) or L.get("era") == "1907" else f'<rect x="4" y="-4" width="7" height="5" rx="1" fill="{MUSTARD}" stroke="{INK}" stroke-width="1.5"/>'
+    buckle = '' if L["style"] in ("suit",) or L.get("era") in ("1907", "1971") else f'<rect x="4" y="-4" width="7" height="5" rx="1" fill="{MUSTARD}" stroke="{INK}" stroke-width="1.5"/>'
     return (f'<g class="hip{side}">{thigh}<g class="kn{side}">{shin}'
             f'<g class="ft{side}">{_p(shoe_d, shoe)}{buckle}</g></g></g>')
 

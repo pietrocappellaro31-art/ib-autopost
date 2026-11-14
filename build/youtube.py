@@ -32,6 +32,7 @@ and sound.json (voice over music, DNSMOS, loudness).
 import html as H
 import collections
 import json
+import math
 import pathlib
 import re
 import subprocess
@@ -591,12 +592,43 @@ def thumb_looks(date=None):
     return THUMB_LOOKS[(2 * d) % 7], THUMB_LOOKS[(2 * d + 1) % 7]
 
 
-def thumb_html(look, text, size, small, art, ghost=""):
-    """One 1280x720 thumbnail in the given look: the big line, a strap, the drawing, the IB mark."""
+def film_still(spec, work, name):
+    """14 Nov: a frame of a filmed shot for a thumbnail, so the thumbnail shows the film rather than a drawing.
+    spec = dict(shot=fn, dur=seconds, t=seconds, segs=[(text, start, end), ...] optional, pos="60% 40%" optional).
+    The shot is built at 1920x1080 exactly as in the film, without its title and badge overlays or captions."""
+    import cine
+    dur = spec.get("dur", 8.0)
+    segs = spec.get("segs") or [(spec.get("say", ""), .3, dur - .5)]
+    built = spec["shot"](1920, 1080, dur, dict(say=spec.get("say", ""), segs=segs, chapter=0))
+    shots = [dict(S, over=[]) for S in built["shots"]]
+    html, total = cine.film_html(shots, 1920, 1080, mark=False)
+    return cine.stills(html, [min(spec.get("t", total * .6), total - .05)], work, name)[0]
+
+
+def film_panel(look, path, pos="50% 50%", label="Reconstruction"):
+    """The filmed frame as a full-height panel on the art side of the layout, faded into the ground on its inner
+    edge, with a small honesty label."""
+    lay = look["layout"]
+    uri = pathlib.Path(path).resolve().as_uri()
+    if lay == "left":
+        box, fade = "left:0;width:640px", f"linear-gradient(270deg,{look['bg']} 0%,rgba(0,0,0,0) 22%)"
+    else:                                            # right, split (the red panel holds the type), frame
+        box, fade = "right:0;width:660px", f"linear-gradient(90deg,{look['bg'] if lay != 'split' else RED} 0%,rgba(0,0,0,0) 22%)"
+    tag = (f"<div style='position:absolute;bottom:22px;{'left:22px' if lay == 'left' else 'right:22px'};background:rgba(10,10,10,.72);color:#F7F5F2;"
+           f"font:600 15px Sans;letter-spacing:.16em;text-transform:uppercase;padding:6px 10px'>{H.escape(label)}</div>")
+    return (f"<div style='position:absolute;top:0;bottom:0;{box};background:url({uri}) {pos}/cover no-repeat'>"
+            f"<div style='position:absolute;inset:0;background:{fade}'></div>{tag}</div>")
+
+
+def thumb_html(look, text, size, small, art, ghost="", film=None):
+    """One 1280x720 thumbnail in the given look: the big line, a strap, the drawing (or a filmed frame), the IB mark."""
     text = re.sub(r"color:\s*#(?:0A0A0A|D93A12|0F766E|fff|FFFFFF)", f"color:{look['hl']}", text)
     lay = look["layout"]
     art_html = ""
-    if art:
+    if film:
+        art_html = film_panel(look, *film)
+        art = art or ("film", {})
+    elif art:
         name, opts = art
         frame = (f"background:#F7F5F2;border-radius:44px;padding:24px 10px;box-shadow:0 30px 80px rgba(0,0,0,.3);" if look.get("card") else "")
         side = "left:30px;transform-origin:left center" if lay == "left" else "right:30px;transform-origin:right center"
@@ -632,8 +664,11 @@ def thumbnail(ep, work, date=None):
     t = ep["thumb"]
     css = CSS.replace("FONTS/", f"{FONTS.resolve()}/") + "body{margin:0}.t{width:1280px;height:720px;position:relative;overflow:hidden;font-family:'Sans'}"
     la, lb = (THUMB_LOOKS[[l["name"] for l in THUMB_LOOKS].index(n)] for n in t["looks"]) if t.get("looks") else thumb_looks(date)
-    a = thumb_html(la, t.get("big_a", t["big"]), t.get("size_a", 100), t.get("small", ""), t.get("art"), t.get("ghost", ""))
-    b = thumb_html(lb, t["big"], t.get("size", 104), t.get("small", ""), t.get("art_b", t.get("art")), t.get("ghost", ""))
+    fa, fb = t.get("film_a", t.get("film")), t.get("film_b", t.get("film"))      # 14 Nov: filmed frames
+    pa = (film_still(fa, work, "thumb-film-a"), fa.get("pos", "50% 50%"), fa.get("label", "Reconstruction")) if fa else None
+    pb = (film_still(fb, work, "thumb-film-b"), fb.get("pos", "50% 50%"), fb.get("label", "Reconstruction")) if fb else None
+    a = thumb_html(la, t.get("big_a", t["big"]), t.get("size_a", 100), t.get("small", ""), t.get("art"), t.get("ghost", ""), film=pa)
+    b = thumb_html(lb, t["big"], t.get("size", 104), t.get("small", ""), t.get("art_b", t.get("art")), t.get("ghost", ""), film=pb)
     json.dump(dict(a=la["name"], b=lb["name"]), open(work / "thumb_looks.json", "w"))
     with sync_playwright() as p:
         br = p.chromium.launch()
@@ -995,6 +1030,64 @@ def redescribe(ep):
     chapters = [(c, ch["title"]) for c, ch in zip(tm["chapters"], ep["chapters"])]
     old = json.load(open(work / "metadata.json"))
     return describe(ep, chapters, tm["total"], old.get("voice", YOUTUBE_VOICE), work)
+
+
+def patch_span(ep, t0, t1, voice_name=YOUTUBE_VOICE):
+    """14 Nov: fix a drawn stretch of a finished render without rendering the whole film again (a full render is
+    about an hour with its filmed beats and score). Rebuilds the page from the episode as it is now, renders the
+    frames from t0 to t1, lays them over <slug>-silent.mp4 (the picture with the filmed beats already spliced in),
+    and muxes that picture with the untouched audio of <slug>-clean.mp4 and <slug>-scored.mp4. The span is trimmed
+    so it never covers a filmed beat (the drawn page only has a placeholder there; the first use of this put two
+    frames of placeholder at each end of a chapter card). Only for changes that keep every timing (a chapter card's
+    drawing, a label, a colour): the narration must be unchanged, which the function checks against timing.json."""
+    work = OUT / ep["slug"]
+    items = synth(ep, voice_name, work)
+    PACING.clear(); CINE.clear(); BEATS.clear(); CAM_USE.clear()
+    sc, chapters, sounds, total = scenes(ep, items)
+    tm = json.load(open(work / "timing.json"))
+    assert abs(total - tm["total"]) < .01, f"timings changed ({total:.2f} s vs {tm['total']:.2f} s): render the film again"
+    for it in CINE:                                   # keep clear of every filmed beat
+        ca, cb = it["t"], it["t"] + it["dur"]
+        if ca < t1 and cb > t0:
+            if ca <= t0 + 1e-6:
+                t0 = cb
+            else:
+                t1 = min(t1, ca)
+    assert t1 - t0 > .2, "nothing left to patch outside the filmed beats"
+    html, total = page(sc)
+    src = work / "patch.html"
+    src.write_text(html)
+    f0, f1 = int(math.ceil(t0 * FPS - 1e-6)), int(math.ceil(t1 * FPS - 1e-6))      # every frame shown before t1
+    clip = work / "patch.mp4"
+    ff = subprocess.Popen(["ffmpeg", "-y", "-v", "error", "-f", "image2pipe", "-framerate", str(FPS), "-c:v", "mjpeg", "-i", "-",
+                           "-c:v", "libx264", "-preset", "medium", "-crf", "18", "-pix_fmt", "yuv420p", str(clip)], stdin=subprocess.PIPE)
+    with sync_playwright() as p:
+        b = p.chromium.launch()
+        pg = b.new_page(viewport={"width": W, "height": Hh})
+        pg.goto(src.resolve().as_uri())
+        pg.evaluate("Promise.all([400,500,600].map(w => document.fonts.load(w + ' 40px Sans')).concat([document.fonts.load(\"700 40px 'Serif'\"),"
+                    " document.fonts.load(\"italic 600 40px 'Serif'\")]))")
+        pg.evaluate("fitSketches()")
+        for f in range(f0, f1):
+            pg.evaluate(f"seek({f / FPS})")
+            ff.stdin.write(pg.screenshot(type="jpeg", quality=90))
+        b.close()
+    ff.stdin.close()
+    ff.wait()
+    a, z = f0 / FPS, f1 / FPS
+    silent, fixed = work / f"{ep['slug']}-silent.mp4", work / "patched-silent.mp4"
+    subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", str(silent), "-itsoffset", f"{a:.4f}", "-i", str(clip), "-filter_complex",
+                    f"[0:v][1:v]overlay=eof_action=pass:enable='between(t,{a - .001:.4f},{z - 1 / FPS + .001:.4f})'[v]", "-map", "[v]",
+                    "-c:v", "libx264", "-preset", "medium", "-crf", "20", "-pix_fmt", "yuv420p", "-movflags", "+faststart", str(fixed)], check=True)
+    for name in (f"{ep['slug']}-clean.mp4", f"{ep['slug']}-scored.mp4"):
+        film, tmp = work / name, work / ("patched-" + name)
+        subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", str(fixed), "-i", str(film), "-map", "0:v", "-map", "1:a", "-c", "copy",
+                        "-movflags", "+faststart", str(tmp)], check=True)
+        tmp.replace(film)
+    fixed.replace(silent)
+    rec = json.load(open(work / "sound.json")).get("recommended", "clean")
+    (work / f"{ep['slug']}.mp4").write_bytes((work / f"{ep['slug']}-{rec}.mp4").read_bytes())
+    print(f"  patched {f1 - f0} frames ({a:.3f} to {z:.3f} s) into both masters; {ep['slug']}.mp4 is the {rec} one again", flush=True)
 
 
 def make(ep, voice_name=YOUTUBE_VOICE):

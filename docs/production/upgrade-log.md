@@ -74,3 +74,28 @@ frame, and the opening title sits over the hawker for half a second.
   LBO and debt-schedule scenes are specified in `scene-library.md`, not built.
 - A fully filmed 10-minute film would take 2 to 3 hours to render here; long films stay hybrid.
 - The installed plugins are updated only when Pietro installs the `.plugin` files.
+
+## 14 Nov 2026: YouTube #8 (the gold window, 1971)
+
+### Built
+
+- **Thumbnails from the film** (`youtube.film_still`, `youtube.film_panel`; `thumb=dict(film_a=..., film_b=...)`): the shot is built
+  as in the film without overlays or captions, a still is taken at a chosen second and laid as a full-height panel on the art
+  side of the look, faded into its ground and labelled RECONSTRUCTION. Drawings remain the fallback.
+- **Sets, step 3** (`build/cine_1971.py`): `living_room_1971` with a console TV (`tv_screen(items=, quote=)`), `vault_1971`,
+  `dealing_room` (split-flap board rows that count on cue, phones that ring), `lodge_1971` (easel that writes on cue); props
+  (gold bars, bundles, a generic bill, typewriter, desk phone); looks `suit_1971` to `suit_1971d`, `home_1971`, `lady_1971`.
+- **Foley** (`sfx.py`): `ring`, `clank`, `flap`, `office_ambience`.
+- **`youtube.patch_span(ep, t0, t1)`**: re-render a drawn stretch of a finished film into both masters when timings are unchanged.
+- **Word check** (`voice_check.words`): adviser/advisor, judgement/judgment, Connally/Connolly, spoken decades ("the nineteen
+  seventies" = 1970s). Names in `voice.PHONEMES`: Bretton, Triffin, Connally, Kissinger, Smithsonian, Paul, Volcker, IMF, Knox, Bordo.
+
+### Checked
+
+Thumbnails: flat area 57% / 57% against 78% / 78% for #7's drawn ones (8x8 blocks with grey-level spread under 2), edge density
+7.2 / 6.2 against 5.4 / 6.6. Film: 165 s filmed out of 593 s (28%, #7 v2 14%); static share 17.2%, longest static run 6 s.
+
+### Not done or not verified
+
+- Nobody listened: the workspace cannot play audio.
+- Each patch_span pass re-encodes both masters once more (crf 20): fine for a fix, not for repeated use.

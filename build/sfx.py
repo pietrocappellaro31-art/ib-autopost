@@ -218,7 +218,65 @@ def room_tone(sec, seed=0, clock=True, street=.25):
     return (out / (np.abs(out).max() + 1e-9) * .4).astype(np.float32)
 
 
-FOLEY = {"step": footstep, "paper": paper, "quill": quill, "clink": clink, "hit": soft_hit, "tick": clock_tick}
+def ring(seed=0, sec=1.2):
+    """A 1960s desk telephone bell: a clapper striking two bells about 20 times a second, a short burst."""
+    rng = np.random.default_rng(seed)
+    t = _ft(sec)
+    strike = (np.sin(2 * np.pi * 20 * t) > 0).astype(float)
+    bell = sum(np.sin(2 * np.pi * f * rng.uniform(.99, 1.01) * t) * g for f, g in ((1250, 1), (1630, .6), (2900, .25)))
+    env = np.clip(t / .02, 0, 1) * np.clip((sec - t) / .15, 0, 1)
+    out = bell * (.55 + .45 * strike) * env
+    return (out / (np.abs(out).max() + 1e-9)).astype(np.float32)
+
+
+def clank(seed=0, pitch=180):
+    """A heavy metal bar set down on metal: a dull knock and a short inharmonic ring (gold bars, a cart, a vault)."""
+    rng = np.random.default_rng(seed)
+    t = _ft(.8)
+    knock = _band(rng.standard_normal(len(t)), 120, 1800) * np.exp(-t * 90)
+    tone = sum(np.sin(2 * np.pi * pitch * m * rng.uniform(.98, 1.02) * t) * np.exp(-t * (9 + 4 * m)) / m for m in (1, 2.43, 3.9, 6.1))
+    out = knock * .8 + tone * .5
+    return (out / (np.abs(out).max() + 1e-9)).astype(np.float32)
+
+
+def flap(seed=0, n=8, sec=.5):
+    """A split-flap board changing: a fast run of light plastic clicks."""
+    rng = np.random.default_rng(seed)
+    t = _ft(sec)
+    out = np.zeros(len(t))
+    for k in range(n):
+        i = int((k / n) * (len(t) - 600) + rng.integers(0, 200))
+        out[i:i + 600] += _band(rng.standard_normal(600), 1500, 7000) * np.exp(-np.arange(600) / 60) * rng.uniform(.5, 1)
+    return (out / (np.abs(out).max() + 1e-9)).astype(np.float32)
+
+
+def office_ambience(sec, seed=0, busy=1.0, phones=0):
+    """A busy 1970s office or dealing room: air handling, a murmur of voices with no words, distant typewriters,
+    and (phones > 0) bells ringing far off now and then. Stereo, peak about .5."""
+    rng = np.random.default_rng(seed)
+    n = int(sec * FSR)
+    out = street_ambience(sec, seed, crowd=1.2 * busy) * .8
+    for c in range(2):
+        out[:, c] += _band(rng.standard_normal(n), 80, 400) * .15
+    for _ in range(int(sec * 2 * busy)):                       # typewriter keys, far away
+        at = rng.uniform(0, max(sec - .2, .1))
+        i = int(at * FSR)
+        k = _band(rng.standard_normal(500), 1200, 6000) * np.exp(-np.arange(500) / 50) * .08
+        m = max(0, min(500, n - i))
+        out[i:i + m, rng.integers(0, 2)] += k[:m]
+    for _ in range(int(phones * sec / 3)):
+        at = rng.uniform(0, max(sec - 1.3, .1))
+        i = int(at * FSR)
+        r = ring(int(rng.integers(0, 99)), 1.0) * .06
+        m = max(0, min(len(r), n - i))
+        pan = rng.uniform(0, 1)
+        out[i:i + m, 0] += r[:m] * (1 - pan)
+        out[i:i + m, 1] += r[:m] * pan
+    return (out / (np.abs(out).max() + 1e-9) * .5).astype(np.float32)
+
+
+FOLEY = {"step": footstep, "paper": paper, "quill": quill, "clink": clink, "hit": soft_hit, "tick": clock_tick,
+         "ring": ring, "clank": clank, "flap": flap}
 
 
 def foley_track(events, total, stereo=True):

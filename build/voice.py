@@ -51,6 +51,16 @@ PHONEMES = {
     "heinze": "hˈInts",                   # 13 Nov, YouTube #7 (the Panic of 1907)
     "cortelyou": "kˈɔɹtəljˌu",
     "aldrich": "ˈɔldɹɪʧ",
+    "bretton": "bɹˈɛtᵊn",                 # 14 Nov, YouTube #8 (the gold window, 1971)
+    "triffin": "tɹˈɪfɪn",
+    "connally": "kˈɑnəli",
+    "kissinger": "kˈɪsɪnʤəɹ",
+    "smithsonian": "smɪθsˈOniən",
+    "paul": "pˈɔl",
+    "volcker": "vˈOlkəɹ",
+    "imf": "ˌIˌɛmˈɛf",
+    "knox": "nˈɑks",
+    "bordo": "bˈɔɹdO",
     "pierpont": "pˈɪɹpɑnt",
     "rockefeller": "ɹˈɑkəfˌɛləɹ",
     "shareholders'": "ʃˈɛɹhˌOldəɹz",       # 12 Nov, Levels #11
