@@ -10,10 +10,15 @@ An episode:
     EP = dict(slug="shorts-...", kicker="...", mood="playful", lufs=-14, music=False,
               beats=[dict(tag="THE MYTH", say=[(spoken, display), ...], art=lambda t0, d: picture(...),
                           bg="#...", hl=[...], size=64, sfx=[(seconds after the beat starts, "pop"|"tick"|"ding"|
-                          "thump", gain), ...], hold=.45), ...],
+                          "thump"|"step"|"paper"|"clink"|"knock", gain), ...], hold=.45), ...],
               close=dict(say=[...], bg="#...", art=lambda t0, d: ...),   # the comment ask and the brand
               floaters=lambda total: html)
     make(EP, "HEART")
+
+14 Nov: a beat can take badge="RECONSTRUCTION" (a pill beside its label), split=True (said one sentence at a time),
+art=lambda t0, d, seg: ... (seg: each sentence's absolute start and end, to act on the words), and sfx offsets tied
+to the words: ("s", j, o) or ("e", j, o) seconds from sentence j's start or end, ("d", f) a fraction of the drawing
+time. Cue kinds now include the foley set: "step", "paper", "clink", "knock".
 """
 
 import html as H
@@ -40,8 +45,14 @@ def synth(ep, voice_name):
     for ss in texts.values():
         v.phonemes(" ".join(ss))                       # fail early on an unknown word
     parts = {}
+    split = {f"b{i}" for i, b in enumerate(ep["beats"]) if b.get("split")}
     for n, (k, ss) in enumerate(texts.items()):
         pace = (ep.get("speed", 1.0) + (.012 if n % 3 == 1 else -.008 if n % 3 == 2 else 0)) * getattr(v, "pace_scale", 1.0)
+        if k in split:
+            # 14 Nov: a beat whose word blurred in the flowing passage ("PIN" heard as "pen") is said one sentence
+            # at a time, which said it cleanly when tested alone.
+            parts[k] = L.joined(v, [[x] for x in ss], pace, gap=.2)
+            continue
         try:
             parts[k] = passage(v, " ".join(ss), pace)
         except ValueError:
@@ -87,6 +98,29 @@ def pill(tag, at, color=RED):
              style="transform-origin:left center")
 
 
+def _arity(f):
+    import inspect
+    return len(inspect.signature(f).parameters)
+
+
+def sentences(parts, at, k):
+    """The absolute (start, end) of each spoken sentence of part k, so a drawing can act on the words (14 Nov)."""
+    return [(round(at[k] + x, 3), round(at[k] + y, 3)) for _, x, y in parts[k][1]]
+
+
+def cue_time(off, i, parts, at, spans):
+    """A cue's time: a number is seconds after the beat starts (as before); 14 Nov, tied to the words instead:
+    ("s", j, o) is o seconds after sentence j starts, ("e", j, o) o seconds after it ends, ("d", f) a fraction f
+    of the beat's drawing time."""
+    k = f"b{i}"
+    if not isinstance(off, tuple):
+        return at[k] + off
+    if off[0] == "d":
+        return at[k] + .05 + off[1] * (spans[i][1] - at[k])
+    seg = sentences(parts, at, k)[off[1]]
+    return (seg[0] if off[0] == "s" else seg[1]) + off[2]
+
+
 def scene(ep, parts, at, spans, total):
     els = [hud(ep, spans, at["close"], total)]
     seg = lambda k: parts[k][1]
@@ -100,10 +134,15 @@ def scene(ep, parts, at, spans, total):
                       for j, ((s, d), (_, x, y)) in enumerate(zip(b["say"], seg(k))))
         art = ""
         if b.get("art"):
+            args = (ba + .05, s1 - ba) + ((sentences(parts, at, k),) if _arity(b["art"]) > 2 else ())
             art = (f'<div class="nochk" style="position:relative;margin:28px auto 0;width:{b.get("art_w", ART_W)}px;'
-                   f'height:{b.get("art_h", ART_H)}px">{b["art"](ba + .05, s1 - ba)}</div>')
+                   f'height:{b.get("art_h", ART_H)}px">{b["art"](*args)}</div>')
         extra = b["over"](ba, s1 - ba) if b.get("over") else ""
-        inner = (f'<div>{pill(b["tag"], max(s0, 0) + .15, b.get("tag_color", RED))}</div>'
+        badge = (A(f'<span style="display:inline-block;border:3px solid {INK};color:{INK};font-size:24px;font-weight:700;'
+                   f'letter-spacing:.14em;padding:9px 16px;border-radius:12px;margin-left:14px;vertical-align:middle;'
+                   f'background:rgba(255,255,255,.55)">{H.escape(b["badge"])}</span>', "fade", round(max(s0, 0) + .25, 3), .4,
+                   style="display:inline-block") if b.get("badge") else "")      # 14 Nov: RECONSTRUCTION, as the gate asks
+        inner = (f'<div>{pill(b["tag"], max(s0, 0) + .15, b.get("tag_color", RED))}{badge}</div>'
                  f'<div style="margin-top:22px">{cap}</div>{art}{extra}')
         col = (f'<div style="position:absolute;left:0;top:120px;width:{W}px;height:1090px;display:flex;flex-direction:column;'
                f'justify-content:flex-start">{inner}</div>')
@@ -173,10 +212,23 @@ def soundtrack(ep, parts, at, spans, total):
         raw(fx, sig, t, gain)
 
     S = dict(tick=sfx_lib.tick(), pop=sfx_lib.pop(), thump=sfx_lib.thump(), ding=sfx_lib.ding(12))
+    from scipy.signal import resample_poly
+    foley = dict(step=lambda k: sfx_lib.footstep(k, "floor"), paper=lambda k: sfx_lib.paper(k, .4),
+                 clink=lambda k: sfx_lib.clink(k), knock=lambda k: sfx_lib.soft_hit(k, 180))
+    n_fx = [0]
+
+    def cue(kind):
+        """14 Nov: the 48 kHz foley of the filmed scenes (footsteps, paper, a coin clink, a soft knock) joins the
+        story cues, resampled to the engine's 24 kHz, a new take (seed) every time so steps never repeat."""
+        if kind in S:
+            return S[kind]
+        n_fx[0] += 1
+        return resample_poly(foley[kind](n_fx[0]), 1, 2).astype(np.float32)
+
     for i, b in enumerate(ep["beats"]):
         put(S["pop"], max(spans[i][0], 0) + .17, .24)
         for off, kind, gain in b.get("sfx", ()):
-            put(S[kind], at[f"b{i}"] + off, gain, slide=kind != "tick")
+            put(cue(kind), cue_time(off, i, parts, at, spans), gain, slide=kind not in ("tick", "step"))
     ca = at["close"]
     end_voice = ca + parts["close"][1][-1][2]
     put(S["pop"], ca - .1, .2)

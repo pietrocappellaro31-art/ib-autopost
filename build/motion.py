@@ -22,7 +22,8 @@ render is deterministic: the same input always gives the same video.
     data-show=1                                             count is visible before it starts
     chars: children .c reveal one by one out of a blur (data-st stagger, data-cd per char)
     spin: rotates continuously at data-deg degrees per second
-    swing: pendulum rotation (data-amp degrees, data-w rad/s, data-ph), for walking limbs
+    swing: pendulum rotation (data-amp degrees, data-w rad/s, data-ph), for walking limbs; data-gate=1 swings only
+           from data-at for data-d seconds, easing in and out over 0.22 s (14 Nov: a walk that starts and stops)
     count: data-lin=1 counts linearly, data-pad=N zero-pads to N digits
     kara: karaoke captions; children .w light up at data-t seconds after data-at (data-c colour);
           data-hide=1 keeps words invisible until spoken (answers)
@@ -182,7 +183,8 @@ function place(el, local) {
         c.style.opacity = q; c.style.filter = q < 1 ? `blur(${(1-q)*12}px)` : 'none';
         c.style.transform = `translateY(${(1-q)*22}px)`; }); }
   else if (fx === 'swing') { const a = +(el.dataset.amp||16), w = +(el.dataset.w||7), ph = +(el.dataset.ph||0);
-      tf = `rotate(${Math.sin(local*w + ph)*a}deg)`; }
+      const g = el.dataset.gate ? clamp((local - at) / .22) * clamp((at + d - local) / .22) : 1;
+      tf = `rotate(${Math.sin(local*w + ph)*a*g}deg)`; }
   else if (fx === 'slide') { const q = el.dataset.ease === 'inout' ? E.inout(raw) : el.dataset.ease === 'out' ? E.out3(raw) : raw;
       const x0 = +(el.dataset.x0||0), x1 = +(el.dataset.x1||0), y0 = +(el.dataset.y0||0), y1 = +(el.dataset.y1||0);
       tf = `translate(${x0 + (x1-x0)*q}px,${y0 + (y1-y0)*q}px)` + (el.dataset.r ? ` rotate(${q * +el.dataset.r}deg)` : ''); }
@@ -410,6 +412,30 @@ window.orphans = function () {
   });
   return bad;
 };
+window.artText = function () {
+  // 14 Nov: a drawing's ink over the words. The safe-area check skips drawings (.nochk), so a drawing that grew
+  // or was refitted onto a caption went unnoticed (the PIN boxes over "But his wife said" on the first cut).
+  // Every visible shape of every drawing (svg.sk) is tested against every visible text block (.olchk).
+  const bad = [], vis = (n, stop) => { for (let q = n; q && q !== stop; q = q.parentElement)
+    if (getComputedStyle(q).opacity === '0' || getComputedStyle(q).visibility === 'hidden') return false; return true; };
+  document.querySelectorAll('.scene').forEach(s => {
+    if (s.style.visibility !== 'visible') return;
+    const caps = [...s.querySelectorAll('.olchk')].filter(c => vis(c, s)).map(c => [c, c.getBoundingClientRect()]);
+    s.querySelectorAll('svg.sk').forEach(svg => {
+      if (!vis(svg, s)) return;
+      svg.querySelectorAll('rect,circle,ellipse,path,text,polygon,line').forEach(el => {
+        if (!vis(el, svg.parentElement)) return;
+        const r = el.getBoundingClientRect();
+        if (r.width < 2 && r.height < 2) return;
+        caps.forEach(([c, q]) => {
+          const ox = Math.min(r.right, q.right) - Math.max(r.left, q.left), oy = Math.min(r.bottom, q.bottom) - Math.max(r.top, q.top);
+          if (ox > 6 && oy > 6) bad.push(`drawing <${el.tagName}> ${Math.round(r.left)},${Math.round(r.top)} over "${c.textContent.trim().slice(0, 40)}"`);
+        });
+      });
+    });
+  });
+  return [...new Set(bad)].slice(0, 6);
+};
 window.check = function () {
   // Every visible text-bearing element must sit inside the safe area.
   const bad = [];
@@ -523,10 +549,12 @@ def build(slug, scenes, theme="ink", cover_at=0.0, crf=18, check_at=(), fit=Fals
         for i, s in enumerate(starts):
             pg.evaluate(f"window.NOPUSH = true; seek({s['start'] + s['dur'] - .4})")
             problems += pg.evaluate("check()")
+            problems += pg.evaluate("artText()")
             wraps += pg.evaluate("orphans()")
         for t in check_at:                       # extra settled moments inside long scenes
             pg.evaluate(f"window.NOPUSH = true; seek({t})")
             problems += [f"t={t:.1f} " + x for x in pg.evaluate("check()")]
+            problems += [f"t={t:.1f} " + x for x in pg.evaluate("artText()")]
             wraps += [f"t={t:.1f} " + x for x in pg.evaluate("orphans()")]
         for x in dict.fromkeys(wraps):           # 13 Nov: a word alone on a line is flagged, not left to the eye
             print("  WRAP " + x)

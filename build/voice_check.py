@@ -67,6 +67,8 @@ def words(text):
     t = re.sub(r"\bstable coin", "stablecoin", t)
     t = re.sub(r"\bsouthsea\b", "south sea", t)
     t = re.sub(r"\bclearinghouse", "clearing house", t)             # 13 Nov (YouTube #7)
+    t = re.sub(r"\bcheque(s?)\b", r"check\1", t)                     # 14 Nov: British spelling of the same word
+    t = re.sub(r"\bcache machine", "cash machine", t)                 # 14 Nov: homophones; "cash machine" is the phrase
     t = re.sub(r"\b(organi|recogni|reali|apologi)s(e|ed|es|ing)\b", r"\1z\2", t)   # British -ise, American -ize
     _teen = "eleven twelve thirteen fourteen fifteen sixteen seventeen eighteen nineteen".split()
     _dig = "one two three four five six seven eight nine".split()

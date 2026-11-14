@@ -8,3 +8,4 @@
 | 2026-11-12 | shorts-cent-doubled-30-days | $1 million now, or 1 cent doubled for 30 days? Pick one | MICHAEL | 59.8 s | |
 | 2026-11-13 | shorts-friday-13th-stocks | Do stocks really do worse on Friday the 13th? | ISABELLA | 59.0 s | |
 | 2026-11-13 | shorts-friday-13th-myth | Do stocks really do worse on Friday the 13th? We checked (Format E, myth; replaces the morning quiz) | HEART | 41.6 s | |
+| 2026-11-14 | shorts-first-cash-machine | His Bank Closed on a Saturday. So He Came Up With the Cash Machine (Format B, story) | HEART | 42.9 s | |

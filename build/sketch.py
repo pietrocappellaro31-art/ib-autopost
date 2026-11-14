@@ -51,6 +51,9 @@ Scenes (opts in brackets):
   discount_shrink(later, tv, fc, share)
   13 Nov (Friday the 13th myth Short, story engine): trader(p, x, y, s, pose) the recurring character (stand, worry,
   point, cheer, shrug, read); myth_hook(), study_1987(), not_confirmed(), uk_years(start, end), higher_bar(), myth_stamp()
+  14 Nov (first cash machine Short): trader(walk=(t0, t1), turn=[(t, dir)]) walks and turns his head; bank_closed(walk_s),
+  bath_idea(swap_at), cash_machine(walk_s, at_s), radio_cheque(at_s), ten_pounds(at_s), pin_six(cut_s), four_dots(),
+  pin_asks(); _banknote() draws a generic note
 """
 
 import html as H
@@ -2298,25 +2301,55 @@ SCENES.update({f.__name__: f for f in (trust_vs_bank, rate_gauge, library_lock, 
 SUIT, TIE, SKIN = "#22324A", RED, "#F2D2B6"
 
 
-def trader(p, x, y, s=1.0, pose="stand", frac=0.0, look=1):
+def trader(p, x, y, s=1.0, pose="stand", frac=0.0, look=1, walk=None, turn=()):
     """The trader standing with his feet at (x, y). pose: stand, worry (hands on head), point (right arm out to
-    look's side), cheer (both arms up), shrug (palms up), read (holding a sheet). His arms swing a little."""
+    look's side), cheer (both arms up), shrug (palms up), read (holding a sheet). His arms swing a little.
+    14 Nov: walk=(t0, t1) in scene seconds gives him a walk cycle: each leg swings from its hip in opposite phase,
+    the arms swing against the legs and the bob quickens, easing in and out at both ends (motion.py swing with
+    data-gate). The caller moves him across the scene over the same window. turn=[(t, d), ...] turns his head:
+    at t the face (eyes, mouth, hair parting) slides d (-1 left, 0 to the viewer, 1 right) over 0.35 s."""
     S = lambda v: v * s
-    legs = (f'<path d="M{x - S(26)} {y} L{x - S(14)} {y - S(120)} L{x + S(14)} {y - S(120)} L{x + S(26)} {y}" fill="none" '
-            f'stroke="{INK}" stroke-width="{S(16):.1f}" stroke-linecap="round" stroke-linejoin="round"/>'
-            f'<ellipse cx="{x - S(30)}" cy="{y + S(4)}" rx="{S(22)}" ry="{S(9)}" fill="{INK}"/>'
-            f'<ellipse cx="{x + S(30)}" cy="{y + S(4)}" rx="{S(22)}" ry="{S(9)}" fill="{INK}"/>')
+    shoes = lambda fx_, fy: f'<ellipse cx="{fx_}" cy="{fy + S(4)}" rx="{S(22)}" ry="{S(9)}" fill="{INK}"/>'
+    if walk:
+        w0, w1 = walk
+        legs = ""
+        for k, sx in enumerate((-1, 1)):
+            hip = (x + sx * S(14), y - S(120))
+            legs += (f'<g class="a" data-fx="swing" data-gate="1" data-at="{w0:.2f}" data-d="{w1 - w0:.2f}" data-amp="20" '
+                     f'data-w="8" data-ph="{k * 3.1416:.4f}" style="transform-box:view-box;transform-origin:{hip[0]:.1f}px {hip[1]:.1f}px">'
+                     f'<path d="M{hip[0]:.1f} {hip[1]:.1f} L{x + sx * S(20):.1f} {y}" fill="none" stroke="{INK}" stroke-width="{S(16):.1f}" '
+                     f'stroke-linecap="round"/>{shoes(x + sx * S(20) + look * S(10), y)}</g>')
+        legs += (f'<path d="M{x - S(14)} {y - S(120)} L{x + S(14)} {y - S(120)}" stroke="{INK}" stroke-width="{S(16):.1f}" '
+                 f'stroke-linecap="round"/>')
+    else:
+        legs = (f'<path d="M{x - S(26)} {y} L{x - S(14)} {y - S(120)} L{x + S(14)} {y - S(120)} L{x + S(26)} {y}" fill="none" '
+                f'stroke="{INK}" stroke-width="{S(16):.1f}" stroke-linecap="round" stroke-linejoin="round"/>'
+                + shoes(x - S(30), y) + shoes(x + S(30), y))
     body = (f'<path d="M{x - S(46)} {y - S(118)} Q{x - S(50)} {y - S(250)} {x} {y - S(258)} Q{x + S(50)} {y - S(250)} '
             f'{x + S(46)} {y - S(118)} Z" fill="{SUIT}" stroke="{INK}" stroke-width="{S(5):.1f}"/>'
             f'<path d="M{x - S(16)} {y - S(254)} L{x} {y - S(226)} L{x + S(16)} {y - S(254)} Z" fill="#fff"/>'
             f'<path d="M{x} {y - S(236)} L{x - S(10)} {y - S(200)} L{x} {y - S(150)} L{x + S(10)} {y - S(200)} Z" fill="{TIE}"/>')
-    head = (f'<circle cx="{x}" cy="{y - S(310)}" r="{S(50)}" fill="{SKIN}" stroke="{INK}" stroke-width="{S(5):.1f}"/>'
-            f'<path d="M{x - S(50)} {y - S(318)} Q{x - S(40)} {y - S(372)} {x + S(6)} {y - S(364)} Q{x + S(46)} {y - S(360)} '
-            f'{x + S(50)} {y - S(320)} Q{x + S(20)} {y - S(342)} {x - S(50)} {y - S(318)} Z" fill="{INK}"/>'
-            f'<circle cx="{x - S(17)}" cy="{y - S(306)}" r="{S(6)}" fill="{INK}"/><circle cx="{x + S(17)}" cy="{y - S(306)}" r="{S(6)}" fill="{INK}"/>')
+    skull = f'<circle cx="{x}" cy="{y - S(310)}" r="{S(50)}" fill="{SKIN}" stroke="{INK}" stroke-width="{S(5):.1f}"/>'
+    hair = (f'<path d="M{x - S(50)} {y - S(318)} Q{x - S(40)} {y - S(372)} {x + S(6)} {y - S(364)} Q{x + S(46)} {y - S(360)} '
+            f'{x + S(50)} {y - S(320)} Q{x + S(20)} {y - S(342)} {x - S(50)} {y - S(318)} Z" fill="{INK}"/>')
+    eyes = f'<circle cx="{x - S(17)}" cy="{y - S(306)}" r="{S(6)}" fill="{INK}"/><circle cx="{x + S(17)}" cy="{y - S(306)}" r="{S(6)}" fill="{INK}"/>'
     mouth = {"worry": f'<path d="M{x - S(14)} {y - S(278)} Q{x} {y - S(290)} {x + S(14)} {y - S(278)}" fill="none" stroke="{INK}" stroke-width="{S(4):.1f}" stroke-linecap="round"/>',
              "shrug": f'<path d="M{x - S(14)} {y - S(282)} H{x + S(14)}" stroke="{INK}" stroke-width="{S(4):.1f}" stroke-linecap="round"/>'}.get(
         pose, f'<path d="M{x - S(16)} {y - S(286)} Q{x} {y - S(270)} {x + S(16)} {y - S(286)}" fill="none" stroke="{INK}" stroke-width="{S(4):.1f}" stroke-linecap="round"/>')
+    face = eyes + mouth
+    if turn or walk:
+        # The face sits on its own layer so it can slide round the head; a walker looks where he is going.
+        d0 = look if walk else 0
+        keys, cur = [[0, d0 * S(13), 0, 1, 1]], d0
+        for t, d in sorted(turn):
+            keys += [[round(t, 3), cur * S(13), 0, 1, 1], [round(t + .35, 3), d * S(13), 0, 1, 1]]
+            cur = d
+        kf = H.escape(_json([[round(v, 2) for v in k] for k in keys]))
+        face = (f'<g class="a" data-fx="kf" data-at="0" data-d="1" data-kf="{kf}">'
+                f'{eyes}{mouth}</g>')
+        hair = (f'<g class="a" data-fx="kf" data-at="0" data-d="1" data-kf="{H.escape(_json([[k[0], round(k[1] * .5, 2), 0, 1, 1] for k in keys]))}">'
+                f'{hair}</g>')
+    head = skull + hair + face
     sh_l, sh_r = (x - S(42), y - S(236)), (x + S(42), y - S(236))
     hands = {"stand": ((x - S(62), y - S(130)), (x + S(62), y - S(130))),
              "worry": ((x - S(40), y - S(352)), (x + S(40), y - S(352))),
@@ -2329,15 +2362,24 @@ def trader(p, x, y, s=1.0, pose="stand", frac=0.0, look=1):
         return (f'<path d="M{sh[0]:.1f} {sh[1]:.1f} Q{ex:.1f} {ey:.1f} {hd[0]:.1f} {hd[1]:.1f}" fill="none" stroke="{SUIT}" '
                 f'stroke-width="{S(20):.1f}" stroke-linecap="round"/><circle cx="{hd[0]:.1f}" cy="{hd[1]:.1f}" r="{S(13):.1f}" fill="{SKIN}" '
                 f'stroke="{INK}" stroke-width="{S(4):.1f}"/>')
+    def walking_arm(sh, hd, k):
+        if not walk:
+            return arm(sh, hd, k)
+        return (f'<g class="a" data-fx="swing" data-gate="1" data-at="{walk[0]:.2f}" data-d="{walk[1] - walk[0]:.2f}" data-amp="16" '
+                f'data-w="8" data-ph="{(1 - k) * 3.1416:.4f}" style="transform-box:view-box;transform-origin:{sh[0]:.1f}px {sh[1]:.1f}px">'
+                f'{arm(sh, hd, k)}</g>')
     sheet = (f'<rect x="{x - S(56)}" y="{y - S(250)}" width="{S(112)}" height="{S(80)}" rx="{S(6)}" fill="#fff" stroke="{INK}" '
              f'stroke-width="{S(4):.1f}" transform="rotate(-6 {x} {y - S(210)})"/>') if pose == "read" else ""
-    # the right arm swings gently on its shoulder; the whole figure bobs
+    # the right arm swings gently on its shoulder; the whole figure bobs (a quicker, smaller bob while walking)
     p.parts.append(f'<g class="a" data-fx="float" data-at="0" data-d="1" data-amp="{S(5):.1f}" data-w="1.3">')
-    p.fill(legs + body + arm(sh_l, hands[0], 0) + head + mouth + sheet, frac, .35)
+    if walk:
+        p.parts.append(f'<g class="a" data-fx="swing" data-gate="1" data-at="{walk[0]:.2f}" data-d="{walk[1] - walk[0]:.2f}" '
+                       f'data-amp="1.6" data-w="16" style="transform-box:view-box;transform-origin:{x}px {y}px">')
+    p.fill(legs + body + walking_arm(sh_l, hands[0], 0) + head + sheet, frac, .35)
     p.parts.append(f'<g class="a" data-fx="swing" data-at="0" data-d="1" data-amp="{4 if pose in ("point", "cheer") else 2}" '
                    f'data-w="2.2" style="transform-box:view-box;transform-origin:{sh_r[0]:.0f}px {sh_r[1]:.0f}px">')
-    p.fill(arm(sh_r, hands[1], 1), frac + .03, .3)
-    p.parts.append("</g></g>")
+    p.fill(walking_arm(sh_r, hands[1], 1), frac + .03, .3)
+    p.parts.append("</g></g>" + ("</g>" if walk else ""))
 
 
 def myth_hook(p, **_):
@@ -2445,3 +2487,217 @@ def trader_asks(p, **_):
 
 SCENES.update({f.__name__: f for f in (trader_asks,)})
 
+
+
+# ---- 14 Nov (the first cash machine Short, Format B story): the trader plays John Shepherd-Barron in an
+# illustrated reconstruction, now walking (trader(walk=...)) and turning his head (trader(turn=...)). Generic
+# shapes of our own: no bank logo, no real machine's design, no banknote design.
+
+BRICK, NOTE_G = "#B5523B", "#7FB59B"
+
+
+def _banknote(x, y, w_=150, h_=72, rot=0, fill=NOTE_G):
+    """A generic note: a green slip with a border and a round mark, no denomination or design."""
+    return (f'<g transform="rotate({rot} {x + w_ / 2} {y + h_ / 2})"><rect x="{x}" y="{y}" width="{w_}" height="{h_}" rx="8" '
+            f'fill="{fill}" stroke="{INK}" stroke-width="4"/><rect x="{x + 9}" y="{y + 9}" width="{w_ - 18}" height="{h_ - 18}" '
+            f'rx="5" fill="none" stroke="#2F6B55" stroke-width="3"/><circle cx="{x + w_ / 2}" cy="{y + h_ / 2}" r="{h_ * .22:.1f}" '
+            f'fill="#2F6B55" fill-opacity=".55"/></g>')
+
+
+def bank_closed(p, walk_s=1.5, **_):
+    """The hook: a bank front with its door shut; the man walks in from the left with a cheque, stops at the
+    door, a CLOSED sign flips down on the door and he turns to the viewer. SATURDAY tag; marked illustration."""
+    t0 = p.t0
+    p.fill(f'<path d="M372 214 L590 84 L800 214 Z" fill="#E4D6BD" stroke="{INK}" stroke-width="6" stroke-linejoin="round"/>'
+           f'<rect x="392" y="214" width="396" height="400" fill="#EFE6D6" stroke="{INK}" stroke-width="6"/>'
+           f'<text x="590" y="186" text-anchor="middle" font-family="\'Serif\',serif" font-weight="700" font-size="52" '
+           f'fill="{INK}" letter-spacing="6">BANK</text>', 0, .3)
+    for cx in (424, 482, 698, 756):
+        p.box(cx - 17, 236, 34, 372, "#D9CBB0", .02, rx=4)
+    p.fill(f'<rect x="525" y="368" width="130" height="246" rx="6" fill="#5B3A29" stroke="{INK}" stroke-width="6"/>'
+           f'<circle cx="636" cy="496" r="7" fill="#F2C35B"/><rect x="372" y="612" width="428" height="26" fill="#CDBE9F" '
+           f'stroke="{INK}" stroke-width="5"/>', .03)
+    p.fill(_tile(0, 0, 250, 74, INK, "SATURDAY", 38), .05)
+    stop = t0 + walk_s
+    p.parts.append(f'<g class="a" data-fx="flipin" data-at="{stop + .05:.2f}" data-d=".45" '
+                   f'style="transform-box:fill-box;transform-origin:center top">'
+                   f'<path d="M560 368 L590 320 L620 368" fill="none" stroke="{INK}" stroke-width="4"/>'
+                   f'<rect x="505" y="368" width="170" height="68" rx="10" fill="#fff" stroke="{RED}" stroke-width="7"/>'
+                   f'<text x="590" y="416" text-anchor="middle" font-family="\'Sans\',sans-serif" font-weight="700" '
+                   f'font-size="36" fill="{RED}" letter-spacing="3">CLOSED</text></g>')
+    p.parts.append(f'<g class="a" data-fx="slide" data-at="{t0 + .05:.2f}" data-d="{walk_s - .05:.2f}" data-x0="-420" data-x1="0">')
+    trader(p, 320, 630, 1.05, "read", 0, look=1, walk=(t0 + .05, stop), turn=[(stop + .55, 0)])
+    p.parts.append("</g>")
+    p.parts.append(f'<g class="a" data-fx="pop" data-at="{stop + .7:.2f}" data-d=".4" style="transform-box:fill-box;'
+                   f'transform-origin:center"><text x="420" y="250" text-anchor="middle" font-family="\'Serif\',serif" '
+                   f'font-weight="700" font-size="110" fill="{RED}">!</text></g>')
+    p.text(0, 636, "our illustration", .1, size=26, weight=600, color=GREY, anchor="start")
+
+
+def bath_idea(p, swap_at=None, **_):
+    """That evening: the man in a bath, bubbles rising, a thought bubble where a chocolate bar becomes a note."""
+    p.fill(f'<path d="M20 380 H580 V420 Q580 600 470 600 H130 Q20 600 20 420 Z" fill="#fff" stroke="{INK}" stroke-width="7"/>'
+           f'<rect x="70" y="596" width="24" height="40" rx="8" fill="{INK}"/><rect x="506" y="596" width="24" height="40" rx="8" fill="{INK}"/>'
+           f'<path d="M560 380 V270 Q560 240 590 240 H610" fill="none" stroke="{GREY}" stroke-width="14" stroke-linecap="round"/>', 0, .3)
+    # his head and knees above the foam, the head tilting as he thinks
+    p.parts.append('<g class="a" data-fx="swing" data-at="0" data-d="1" data-amp="5" data-w="1.4" '
+                   'style="transform-box:view-box;transform-origin:220px 380px">')
+    p.fill(f'<circle cx="220" cy="300" r="62" fill="{SKIN}" stroke="{INK}" stroke-width="6"/>'
+           f'<path d="M158 290 Q170 226 226 234 Q276 236 282 292 Q246 266 158 290 Z" fill="{INK}"/>'
+           f'<circle cx="246" cy="304" r="7" fill="{INK}"/><circle cx="268" cy="302" r="7" fill="{INK}"/>'
+           f'<path d="M238 334 Q256 346 274 332" fill="none" stroke="{INK}" stroke-width="5" stroke-linecap="round"/>', .02)
+    p.parts.append("</g>")
+    p.fill(f'<path d="M340 380 Q380 300 430 380" fill="{SKIN}" stroke="{INK}" stroke-width="6"/>', .04)
+    p.fill(''.join(f'<circle cx="{x}" cy="{y}" r="{r}" fill="#fff" stroke="#9DC7C1" stroke-width="4"/>' for x, y, r in
+                   ((60, 380, 34), (120, 372, 26), (300, 384, 30), (470, 376, 36), (530, 384, 24), (400, 390, 20))), .05)
+    for k in range(7):
+        x = 60 + k * 76
+        p.parts.append(f'<g class="a" data-fx="slide" data-at="{p.at(.05 + .1 * k)}" data-d="2.2" data-y0="0" data-y1="-260" '
+                       f'data-x0="0" data-x1="{(-1) ** k * 30}"><circle cx="{x}" cy="360" r="{9 + 3 * (k % 3)}" fill="#fff" '
+                       f'fill-opacity=".85" stroke="#9DC7C1" stroke-width="3"/></g>')
+    # the thought: dots up to a cloud
+    for k, (x, y, r) in enumerate(((330, 210, 12), (372, 168, 18))):
+        p.fill(f'<circle cx="{x}" cy="{y}" r="{r}" fill="#fff" stroke="{INK}" stroke-width="5"/>', .15 + .06 * k)
+    p.fill(f'<path d="M430 40 Q470 0 530 24 Q580 -6 640 24 Q712 10 740 64 Q800 90 772 150 Q790 214 720 226 Q690 270 620 250 '
+           f'Q560 280 510 244 Q440 254 430 196 Q380 160 418 110 Q396 60 430 40 Z" fill="#fff" stroke="{INK}" stroke-width="6"/>', .25)
+    choc = ''.join(f'<rect x="{530 + 46 * c}" y="{86 + 44 * r}" width="40" height="38" rx="5" fill="#7A4A2E"/>'
+                   for c in range(3) for r in range(2))
+    sw = swap_at or p.at(.58)
+    c0 = min(p.at(.32), sw - .8)
+    p.parts.append(f'<g class="a" data-fx="life" data-at="{c0:.2f}" data-d="{sw - c0 + .1:.2f}" data-fi=".25" data-fo=".15">'
+                   f'<rect x="516" y="72" width="164" height="114" rx="10" fill="#5A321E" stroke="{INK}" stroke-width="5"/>{choc}</g>')
+    p.parts.append(f'<g class="a" data-fx="coinflip" data-at="{sw:.2f}" data-d="1.0" data-turns="2" '
+                   f'style="transform-box:fill-box;transform-origin:center">{_banknote(508, 92, 180, 86)}</g>')
+    p.parts.append(f'<g class="a" data-fx="fade" data-at="{sw + .35:.2f}" data-d=".4"><text x="598" y="226" text-anchor="middle" '
+                   f'font-family="\'Sans\',sans-serif" font-weight="700" font-size="30" fill="{TEAL}">CASH</text></g>')
+
+
+def cash_machine(p, walk_s=1.4, at_s=None, **_):
+    """June 1967: a brick wall with a cash machine (slot, small window, a drawer), a JUNE 1967 date tag and a street
+    sign; the man walks up to it, turns to it, and notes slide out of the slot."""
+    t0 = p.t0
+    bricks = ''.join(f'<rect x="{x + (22 if r % 2 else 0)}" y="{60 + r * 40}" width="80" height="34" rx="3" fill="{BRICK}" '
+                     f'fill-opacity="{.8 + .2 * ((x * 7 + r * 3) % 5) / 5:.2f}"/>' for r in range(14) for x in range(300, 800, 88))
+    p.fill(f'<rect x="300" y="54" width="500" height="580" fill="#8E3B2A"/>{bricks}', 0, .3)
+    p.fill(f'<rect x="420" y="190" width="290" height="330" rx="14" fill="#C9CED3" stroke="{INK}" stroke-width="7"/>'
+           f'<rect x="450" y="220" width="230" height="90" rx="8" fill="#1E2A2A"/>'
+           f'<text x="565" y="276" text-anchor="middle" font-family="\'Sans\',sans-serif" font-weight="700" font-size="30" '
+           f'fill="#9DE2C9" letter-spacing="3">CASH</text>'
+           f'<rect x="460" y="340" width="210" height="16" rx="8" fill="{INK}"/>'
+           f'<rect x="470" y="400" width="190" height="80" rx="8" fill="#AEB4BA" stroke="{INK}" stroke-width="5"/>'
+           f'<rect x="545" y="430" width="40" height="12" rx="6" fill="{INK}"/>', .05)
+    p.fill(_tile(0, 0, 280, 80, RED, "JUNE 1967", 44), .1)
+    p.fill(f'<rect x="20" y="104" width="240" height="56" rx="8" fill="#fff" stroke="{INK}" stroke-width="5"/>'
+           f'<text x="140" y="142" text-anchor="middle" font-family="\'Sans\',sans-serif" font-weight="700" font-size="28" '
+           f'fill="{INK}" letter-spacing="2">ENFIELD</text>', .16)
+    stop = t0 + walk_s
+    out = (t0 + at_s) if at_s else stop + .6
+    for k in range(3):
+        p.parts.append(f'<g class="a" data-fx="slide" data-ease="out" data-at="{out + .18 * k:.2f}" data-d=".5" data-x0="0" '
+                       f'data-x1="0" data-y0="-34" data-y1="{6 + 12 * k}"><g class="a" data-fx="fade" data-at="{out + .18 * k:.2f}" '
+                       f'data-d=".1">{_banknote(500, 346, 130, 58, (-1) ** k * 4)}</g></g>')
+    p.fill(f'<rect x="460" y="340" width="210" height="16" rx="8" fill="{INK}"/>', .05)       # the slot's lip over the notes
+    p.parts.append(f'<g class="a" data-fx="slide" data-at="{t0 + .05:.2f}" data-d="{walk_s - .05:.2f}" data-x0="-360" data-x1="0">')
+    trader(p, 330, 630, .9, "point", 0, look=1, walk=(t0 + .05, stop))
+    p.parts.append("</g>")
+
+
+def radio_cheque(p, at_s=None, **_):
+    """How it worked: a paper cheque with a CARBON 14 label and a radiation sign glowing, sliding down into the
+    machine's drawer, which shuts."""
+    p.fill(f'<rect x="120" y="420" width="560" height="200" rx="18" fill="#C9CED3" stroke="{INK}" stroke-width="7"/>'
+           f'<rect x="170" y="452" width="460" height="40" rx="10" fill="{INK}"/>', 0, .3)
+    go = p.t0 + (at_s or p.dur * .55)
+    p.parts.append(f'<g class="a" data-fx="slide" data-ease="inout" data-at="{go:.2f}" data-d=".7" data-x0="0" data-x1="0" '
+                   f'data-y0="0" data-y1="140"><g class="a" data-fx="kf" data-at="0" data-d="1" '
+                   f'data-kf="{H.escape(_json([[0, 0, 0, 1, 1], [round(go + .45, 2), 0, 0, 1, 1], [round(go + .7, 2), 0, 0, 1, 0]]))}">')
+    p.fill(f'<rect x="140" y="40" width="520" height="300" rx="14" fill="#FFF8E6" stroke="{INK}" stroke-width="7" '
+           f'transform="rotate(-3 400 190)"/>'
+           f'<text x="190" y="110" font-family="\'Serif\',serif" font-weight="700" font-size="46" fill="{INK}">CHEQUE</text>'
+           f'<rect x="190" y="150" width="280" height="12" rx="6" fill="{GREY}"/><rect x="190" y="186" width="220" height="12" rx="6" fill="{GREY}"/>'
+           f'<rect x="190" y="252" width="250" height="44" rx="10" fill="{INK}"/>'
+           f'<text x="315" y="284" text-anchor="middle" font-family="\'Sans\',sans-serif" font-weight="700" font-size="26" '
+           f'fill="#F2C35B" letter-spacing="2">CARBON 14</text>', .05)
+    # a generic radiation sign: yellow disc, three black blades, pulsing
+    blades = ''.join(f'<path d="M560 190 L{560 + 62 * math.cos(math.radians(a)):.1f} {190 + 62 * math.sin(math.radians(a)):.1f} '
+                     f'A62 62 0 0 1 {560 + 62 * math.cos(math.radians(a + 60)):.1f} {190 + 62 * math.sin(math.radians(a + 60)):.1f} Z" '
+                     f'fill="{INK}"/>' for a in (-120, 0, 120))
+    p.parts.append(f'<g class="a" data-fx="float" data-at="0" data-d="1" data-amp="4" data-w="3">')
+    p.fill(f'<circle cx="560" cy="190" r="84" fill="#F2C35B" stroke="{INK}" stroke-width="6"/>{blades}'
+           f'<circle cx="560" cy="190" r="20" fill="#F2C35B" stroke="{INK}" stroke-width="6"/><circle cx="560" cy="190" r="10" fill="{INK}"/>', .2)
+    p.parts.append("</g></g></g>")
+    for k in range(3):
+        p.parts.append(f'<g class="a" data-fx="ripple" data-at="{p.at(.25 + .1 * k)}" data-d="1.1" '
+                       f'style="transform-box:fill-box;transform-origin:center"><circle cx="560" cy="190" r="46" fill="none" '
+                       f'stroke="#F2C35B" stroke-width="6"/></g>')
+    p.text(400, 560, "MILDLY RADIOACTIVE", .3, size=30, weight=700, color="#fff")
+
+
+def ten_pounds(p, at_s=None, **_):
+    """The limit: notes drop one by one onto a pile beside a counter running £0 to £10, then a MAX stamp."""
+    p.fill(f'<rect x="10" y="60" width="330" height="200" rx="22" fill="#fff" stroke="{INK}" stroke-width="6"/>', 0, .3)
+    p.text(175, 120, "PAID OUT", .02, size=30, weight=700, color=GREY)
+    p.parts.append(_count(175, 230, 0, 10, p.t0 + .3, 2.0, size=110, color=INK, pre="£"))
+    for k in range(10):
+        t = p.t0 + .3 + .2 * k
+        p.parts.append(f'<g class="a" data-fx="slide" data-ease="out" data-at="{t:.2f}" data-d=".35" data-x0="0" data-x1="0" '
+                       f'data-y0="-380" data-y1="0"><g class="a" data-fx="fade" data-at="{t:.2f}" data-d=".08">'
+                       f'{_banknote(420 + (k % 2) * 14, 560 - 30 * k, 300, 110, (-1) ** k * 3)}</g></g>')
+    st = p.t0 + (at_s or 2.6)
+    p.parts.append(f'<g class="a" data-fx="stamp" data-at="{st:.2f}" data-d="0.35" data-rot="-10" '
+                   f'style="transform-box:fill-box;transform-origin:center">'
+                   f'<rect x="40" y="330" width="290" height="130" rx="16" fill="#fff" fill-opacity=".92" stroke="{RED}" stroke-width="12"/>'
+                   f'<text x="185" y="425" text-anchor="middle" font-family="\'Serif\',serif" font-weight="700" font-size="92" '
+                   f'fill="{RED}">MAX</text></g>')
+
+
+def pin_six(p, cut_s=None, **_):
+    """The PIN: six boxes fill with dots one by one (keypad taps); then the last two are struck out and fall, leaving
+    four; a note card pins HIS WIFE'S LIMIT: 4 DIGITS (a label, not a quote) and the man turns to it and shrugs."""
+    t0 = p.t0
+    for k in range(6):
+        x = 20 + k * 128
+        fall = k >= 4
+        cut = t0 + (cut_s or p.dur * .55)
+        if fall:
+            p.parts.append(f'<g class="a" data-fx="slide" data-ease="inout" data-at="{cut + .1 * (k - 4):.2f}" data-d=".8" '
+                           f'data-x0="0" data-x1="{20 * (k - 3)}" data-y0="0" data-y1="240" data-r="{14 * (k - 3)}" style="transform-box:fill-box;transform-origin:center">'
+                           f'<g class="a" data-fx="kf" data-at="0" data-d="1" data-kf="{H.escape(_json([[0, 0, 0, 1, 1], [round(cut + .4, 2), 0, 0, 1, 1], [round(cut + .75, 2), 0, 0, 1, 0]]))}">')
+        p.fill(f'<rect x="{x}" y="40" width="112" height="140" rx="16" fill="#fff" stroke="{RED if fall else INK}" stroke-width="7"/>', .02 * k)
+        p.fill(f'<circle cx="{x + 56}" cy="110" r="22" fill="{INK}"/>', 0, .2)
+        p.parts[-1] = p.parts[-1].replace(f'data-at="{p.at(0)}"', f'data-at="{t0 + .25 + .22 * k:.2f}"', 1)
+        if fall:
+            p.parts.append(f'<g class="a" data-fx="strike" data-at="{cut - .35:.2f}" data-d=".25"><path d="M{x - 6} 50 L{x + 118} 170" '
+                           f'stroke="{RED}" stroke-width="12" stroke-linecap="round"/></g></g></g>')
+    p.fill(f'<rect x="420" y="262" width="370" height="170" rx="14" fill="#F2C35B" stroke="{INK}" stroke-width="6" '
+           f'transform="rotate(3 605 347)"/><text x="605" y="314" text-anchor="middle" font-family="\'Sans\',sans-serif" '
+           f'font-weight="700" font-size="28" fill="{INK}" letter-spacing="3" transform="rotate(3 605 347)">HIS WIFE\'S LIMIT</text>', .62)
+    p.parts[-1] = p.parts[-1].replace(f'data-at="{p.at(.62)}"', f'data-at="{t0 + (cut_s or p.dur * .55) - .5:.2f}"', 1)
+    p.parts.append(f'<g class="a" data-fx="fade" data-at="{t0 + (cut_s or p.dur * .55) - .3:.2f}" data-d=".3">'
+                   f'<text x="605" y="396" text-anchor="middle" font-family="\'Serif\',serif" font-weight="700" font-size="64" '
+                   f'fill="{RED}" transform="rotate(3 605 347)">4 DIGITS</text></g>')
+    trader(p, 210, 630, .95, "shrug", .1, look=1, turn=[(t0 + (cut_s or p.dur * .55) - .2, 1)])
+
+
+def four_dots(p, **_):
+    """The standard: card after card and screen after screen pop in, each with four dots, around a big 4."""
+    p.fill(f'<circle cx="400" cy="330" r="150" fill="{TEAL}" stroke="{INK}" stroke-width="7"/>'
+           f'<text x="400" y="400" text-anchor="middle" font-family="\'Serif\',serif" font-weight="700" font-size="220" '
+           f'fill="#fff">4</text>', 0, .4)
+    spots = ((20, 30, -8), (290, 0, 4), (560, 30, 9), (0, 420, 6), (300, 520, -3), (570, 430, -7))
+    for k, (x, y, r) in enumerate(spots):
+        dots = ''.join(f'<circle cx="{x + 46 + 38 * j}" cy="{y + 70}" r="12" fill="{INK}"/>' for j in range(4))
+        p.fill(f'<g transform="rotate({r} {x + 110} {y + 60})"><rect x="{x}" y="{y}" width="220" height="120" rx="16" '
+               f'fill="{"#F2C35B" if k % 2 else "#fff"}" stroke="{INK}" stroke-width="6"/>{dots}</g>', .15 + .1 * k)
+
+
+def pin_asks(p, **_):
+    """The close: the man turns to the viewer and points, a speech bubble asking 4 OR 6?"""
+    p.fill(f'<path d="M120 60 H520 Q560 60 560 100 V300 Q560 340 520 340 H330 L280 410 L290 340 H120 Q80 340 80 300 V100 '
+           f'Q80 60 120 60 Z" fill="#fff" stroke="{INK}" stroke-width="7"/>', .1)
+    p.text(320, 236, "4 OR 6?", .3, size=104, serif=True, weight=700, color=RED, fx="pop")
+    trader(p, 700, 630, .95, "point", .05, look=-1, turn=[(p.at(.15), 0)])
+
+
+SCENES.update({f.__name__: f for f in (bank_closed, bath_idea, cash_machine, radio_cheque, ten_pounds, pin_six, four_dots,
+                                       pin_asks)})
