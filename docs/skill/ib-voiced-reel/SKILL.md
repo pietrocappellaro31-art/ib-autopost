@@ -16,6 +16,10 @@ gate), the formats A to F of `short-form-standard.md` and `voice-decision.md`, e
 where they disagree, unless `docs/decisions-log.md` records a newer decision by Pietro. An older copy of this skill
 that names the G2, BELLA, EMMA rotation, "no music in any file" or the Levels quiz as the only format is out of date.
 
+## Pietro, 14 Nov: more animated, drawn scenes everywhere, a more natural voice
+
+From 15 Nov (`docs/decisions-log.md`): every beat carries a large drawn scene or a filmed `cine.py` shot through the question, the think time and the answer (never text alone, drawings at 85%+ of their box, at least two filmed beats); the drawings act the idea out; HEART stays, with a more natural delivery (whole passages synthesised together, natural pauses and emphasis, spoken-style script). Our own drawings only: no stock, licensed or AI images.
+
 ## The voice rule (from 13 Nov)
 
 **HEART: Kokoro af_heart, speed 0.9, en-us**, the same narrator as the YouTube channel (Pietro's cinematic-upgrade

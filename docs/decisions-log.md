@@ -18,6 +18,11 @@ What has been settled, and what is still open. Newest first.
 
 ## Settled
 
+- **Reels: more animated, drawn scenes everywhere, a more natural HEART** (14 Nov, afternoon, Pietro after Levels #13: "From tomorrow on make the reel even more animated and with more images kind of style. Also, the voice should feel more natural." Asked which: drawn scenes everywhere, and keep HEART but fix the delivery). From 15 Nov every Reel:
+  (1) **pictures in every beat**: no card is ever text alone. Every level or beat carries a large drawn scene (`sketch.py`, our own illustrations) or a filmed `cine.py` shot, in the question, the think time AND the answer (not a drawing that fades as the answer lands); drawings fill at least 85% of their box; at least two filmed beats per Reel. Our own drawings only: no stock photos, no AI images, no licensed photos.
+  (2) **more animation**: the drawings act out the idea (things move, build, split, count) rather than pop in and sit; mean motion above the 1.62 of Levels #13 and no beat with only a push-in.
+  (3) **a more natural voice, still HEART** (af_heart, 0.9 unless a listen says otherwise): whole passages synthesised together rather than line by line where the timings allow, natural pauses and emphasis, spoken-style script lines (contractions, short sentences, how a person explains it aloud), fewer read-out constructions. No voice change without Pietro.
+
 - **Reels follow the same cinematic standards** (13 Nov, evening, Pietro: "Do the new standards apply to reels as
   well? They should."). Every Instagram Reel follows `docs/production/` exactly as Shorts and long videos do: the
   cinematic standard (real motion that explains, filmed segments from `cine.py` where a story or a person helps,
