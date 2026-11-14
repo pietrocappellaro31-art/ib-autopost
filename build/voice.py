@@ -292,9 +292,15 @@ def passage(voice, text, speed=None):
     return audio, out
 
 
-# A voice-recording chain for ffmpeg: rumble cut, a little warmth, the
-# synthetic fizz around 7 kHz taken down, gentle compression and a very small
-# room, so the voice sounds recorded rather than generated.
-MASTER = ("highpass=f=75,equalizer=f=220:t=q:w=1:g=1.5,equalizer=f=7200:t=q:w=1.3:g=-2.5,"
-          "acompressor=threshold=-20dB:ratio=2.5:attack=12:release=140:makeup=1.5,"
-          "aecho=0.9:0.85:19|31:0.09|0.05")
+# The narrator chain (14 Nov, Pietro: the voice should feel more natural; asked what was least natural, he picked
+# "robotic / processed sound"). The 8 Nov chain below added a 19/31 ms "small room" echo (a comb filter on a dry
+# voice), 2.5:1 compression and a warmth boost, and the masters then ran it into a limiter at 0.4 that was cutting
+# 16% of the speech by up to 2 dB. Measured on the cash machine Short's narration, voice alone at -14 LUFS:
+# old chain DNSMOS 3.29 (SIG 3.55), no echo 3.32, no echo and no pre-limiter 3.31, this chain 3.40 (SIG 3.62), the
+# untouched Kokoro output 3.40; the short-term loudness spread went from 9.8 dB (squashed) back to 12.4 dB (the raw
+# voice's 12.5). So the narrator is now left almost as Kokoro says it: rumble cut and a light 1.5 dB dip of the
+# synthetic fizz at 7 kHz. No compressor, no echo, no limiter before the master's single true-peak limiter.
+MASTER = "highpass=f=70,equalizer=f=7200:t=q:w=1.3:g=-1.5"
+MASTER_8NOV = ("highpass=f=75,equalizer=f=220:t=q:w=1:g=1.5,equalizer=f=7200:t=q:w=1.3:g=-2.5,"
+               "acompressor=threshold=-20dB:ratio=2.5:attack=12:release=140:makeup=1.5,"
+               "aecho=0.9:0.85:19|31:0.09|0.05")      # until 13 Nov; kept to re-render an old video exactly

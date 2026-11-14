@@ -502,13 +502,22 @@ def shorts_mix(ep):
     Shorts) now uses room .0006, effects .8 and the limiter. Override with ep["room"], ep["fx_gain"],
     ep["limit"] (None: no limiter)."""
     plain = not ep.get("music")
+    # 14 Nov: no limiter before the master by default. At 0.4 it was cutting 16% of the narration by up to 2 dB
+    # (a squashed, processed sound, Pietro's note); every no-music master now goes through two_stage, whose one
+    # true-peak limiter at 4x sample rate holds the ceiling. ep["limit"] = .4 restores the old pre-limiter.
     return (ep.get("room", .0006 if plain else .0012), ep.get("fx_gain", .8 if plain else 1.0),
-            ep.get("limit", .4 if plain else None))
+            ep.get("limit", None))
 
 
 def mux(ep, voice_name, voice, sfx, total, mp4):
     work = OUT / ep["slug"]
     room, _, limit = shorts_mix(ep)
+    # 14 Nov: the stems are written with headroom. Voice levelled to RMS 0.12 peaked over full scale and
+    # write_wav clipped it (the cash machine Short's voice.wav hit 1.0); one common gain keeps the voice and
+    # effects balance, and the master sets the loudness afterwards.
+    peak = max(float(np.abs(voice).max()), float(np.abs(sfx).max()), 1e-9)
+    if peak > .89:
+        voice, sfx = voice * (.89 / peak), sfx * (.89 / peak)
     write_wav(work / "voice.wav", voice)
     write_wav(work / "sfx.wav", sfx)
     final = work / f"{ep['slug']}.mp4"
@@ -531,7 +540,7 @@ def mux(ep, voice_name, voice, sfx, total, mp4):
         graph = (f"[1:a]{chain},aresample=48000,asplit=2[v][key];[2:a]aresample=48000[fx];"
                  f"[3:a]volume={ep.get('music_level', .2)}[m];[m][key]sidechaincompress=threshold=0.02:ratio=5:attack=30:release=350[md];"
                  "[v][fx][md]amix=inputs=3:normalize=0,loudnorm=I=-14:TP=-1.5:LRA=11[a]")
-    if not ep.get("music") and ep.get("master", "two_stage" if ep.get("lufs", -16) == -14 else "loudnorm") == "two_stage":
+    if not ep.get("music") and ep.get("master", "two_stage") == "two_stage":     # 14 Nov: Reels (-16) too
         return two_stage(ep, mp4, work, graph, final)
     subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", str(mp4), "-i", str(work / "voice.wav"), "-i", str(work / "sfx.wav"), *extra,
                     "-filter_complex", graph, "-map", "0:v", "-map", "[a]", "-c:v", "copy", "-c:a", "aac", "-b:a", "192k",
@@ -557,7 +566,7 @@ def two_stage(ep, mp4, work, graph, final, tp=-1.5):
     Measured on the compound interest Short's stems (MICHAEL): single stage -15.2 LUFS, mix DNSMOS 3.12;
     two stage -14.1 LUFS, -1.7 dBTP, mix 3.10. Default for -14 LUFS masters with no music bed;
     ep["master"] = "loudnorm" restores the single stage."""
-    target = ep.get("lufs", -14)
+    target = ep.get("lufs", -16)                           # 14 Nov: the same default as mux (Reels -16)
     pre = work / "premaster.wav"
     g1 = graph.split("loudnorm=")[0].rstrip(",") + "[a]"
     subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", str(work / "voice.wav"), "-i", str(work / "sfx.wav"),
@@ -749,7 +758,9 @@ def make(ep, voice_name="af_heart", keep_voice=False, redo=()):
     json.dump(report, open(work / "sound.json", "w"), indent=1)
     print(f"  sound: DNSMOS voice {report['voice']['ovrl']} / mix {report['mix']['ovrl']} (bak {report['mix']['bak']}), "
           f"voice over effects {report['voice_over_fx_db']} dB while speaking, {report['lufs']} LUFS, {report['tp']} dBTP"
-          + ("" if report["mix"]["ovrl"] >= 3.1 else "  CHECK mix below 3.1"))
+          + ("" if report["mix"]["ovrl"] >= 3.1 else "  CHECK mix below 3.1")
+          + f"; SIG drop voice to mix {report['sig_drop']}" + ("  CHECK over 0.15" if (report['sig_drop'] or 0) > .15 else "")
+          + (f"  CHECK voice stem clipped {report['voice_stem_clipped']} samples" if report['voice_stem_clipped'] else ""))
     print(f"  -> {final.name}  {total:.1f}s  voice {voice_name}" + ("  CHECK over 60 s" if total > 60 else ""))
     return final, problems
 
@@ -779,4 +790,15 @@ def sound_report(work, final, voice, sfx):
     summ = out[out.rfind("Summary:"):]
     i, p = re.search(r"I:\s+(-?[\d.]+) LUFS", summ), re.search(r"Peak:\s+(-?[\d.]+) dBFS", summ)
     rep["lufs"], rep["tp"] = (float(i.group(1)) if i else None), (float(p.group(1)) if p else None)
+    # 14 Nov (Pietro: the voice should feel more natural, not processed): what the mix costs the voice itself.
+    # SIG is DNSMOS's speech-distortion score; the gate (audio-standard.md 1b) is a drop of 0.15 or less from the
+    # voice stem to the clean mix, and a voice stem that never reaches full scale.
+    try:
+        rep["sig_drop"] = round(rep["voice"]["sig"] - rep["mix"]["sig"], 2)
+    except TypeError:
+        rep["sig_drop"] = None
+    import wave
+    with wave.open(str(work / "voice.wav")) as w:
+        vv = np.frombuffer(w.readframes(w.getnframes()), np.int16)
+    rep["voice_stem_clipped"] = int(np.sum(np.abs(vv.astype(np.int32)) >= 32766))
     return rep

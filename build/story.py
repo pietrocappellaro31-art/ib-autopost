@@ -274,7 +274,9 @@ def make(ep, voice_name="HEART"):
     report = L.sound_report(work, final, voice, fx)
     json.dump(report, open(work / "sound.json", "w"), indent=1)
     print(f"  sound: DNSMOS voice {report['voice']['ovrl']} / mix {report['mix']['ovrl']} (bak {report['mix']['bak']}), "
-          f"voice over effects {report['voice_over_fx_db']} dB while speaking, {report['lufs']} LUFS, {report['tp']} dBTP")
+          f"voice over effects {report['voice_over_fx_db']} dB while speaking, {report['lufs']} LUFS, {report['tp']} dBTP; "
+          f"SIG drop voice to mix {report['sig_drop']}" + ("  CHECK over 0.15" if (report['sig_drop'] or 0) > .15 else "")
+          + (f"  CHECK voice stem clipped {report['voice_stem_clipped']} samples" if report['voice_stem_clipped'] else ""))
     print(f"  -> {final.name}  {total:.1f}s  voice {voice_name}")
     return final, problems
 
