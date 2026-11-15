@@ -163,6 +163,8 @@ function place(el, local) {
       tf = `translateY(${(1 - E.out3(a)) * 26}px)`; }
   else if (fx === 'scale') { const q = E.inout(raw), s0 = +(el.dataset.s0 || 1), s1 = +(el.dataset.s1 || 1);
       tf = `scale(${s0 + (s1 - s0) * q})`; }
+  else if (fx === 'scaleY') { const q = E.inout(raw), s0 = +(el.dataset.s0 || 1), s1 = +(el.dataset.s1 || 1);
+      tf = `scaleY(${s0 + (s1 - s0) * q})`; el.style.transformOrigin = 'center bottom'; }   // 15 Nov: a bar shrinks or grows to a value
   else if (fx === 'strike') { tf = `scaleX(${E.inout(raw)})`; el.style.transformOrigin = 'left center'; }
   else if (fx === 'flipin') { const q = E.out3(raw); o = raw > 0 ? 1 : 0; tf = `perspective(700px) rotateX(${(1-q)*-90}deg)`; }
   else if (fx === 'flipout') { const q = E.inout(raw); o = raw < 1 ? 1 : 0; tf = `perspective(700px) rotateX(${q*90}deg)`; }

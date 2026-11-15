@@ -2701,3 +2701,245 @@ def pin_asks(p, **_):
 
 SCENES.update({f.__name__: f for f in (bank_closed, bath_idea, cash_machine, radio_cheque, ten_pounds, pin_six, four_dots,
                                        pin_asks)})
+
+
+# ---- 15 Nov (the $2.04 billion jackpot Short, Format D animated calculation): 30 payments that grow 5% a year,
+# brought back to today. Generic shapes of our own: no lottery logo, ticket or ball design, no real person.
+# Bar heights are our own arithmetic (see build/shorts_jackpot-two-billion.py): payment k = $30.7M x 1.05^k, and its
+# value today at about 4.4% a year (the rate that makes the 30 add up to the $997.6M cash option).
+
+GOLD, GOLD_D = "#F2C35B", "#8A5F12"
+JP_P, JP_G, JP_R = 30.704927, 1.05, 1.0443215        # first payment $M, growth, implied yearly rate (estimate)
+
+
+def _set(p, shape):
+    """A piece of the set that is already there at frame 0 (15 Nov: the hook shows its drawing from the first frame,
+    only the action animates)."""
+    p.parts.append(f'<g class="a" data-fx="fade" data-at="-1" data-d=".05">{shape}</g>')
+
+
+def _bars30(x0=60, base=560, top=380, wbar=18, gap=5.0, pv=False):
+    """The 30 payments as (x, height) pairs; pv=True gives each one's value today instead."""
+    scale = top / (JP_P * JP_G ** 29)
+    out = []
+    for k in range(30):
+        v = JP_P * JP_G ** k / (JP_R ** k if pv else 1)
+        out.append((x0 + k * (wbar + gap), v * scale))
+    return out
+
+
+def _bar(x, base, w_, h_, fill, stroke=INK):
+    return f'<rect x="{x:.1f}" y="{base - h_:.1f}" width="{w_}" height="{h_:.1f}" rx="4" fill="{fill}" stroke="{stroke}" stroke-width="3"/>'
+
+
+def _ball(cx, cy, r, n, fill="#fff"):
+    """A generic numbered ball (no game's colours or logo)."""
+    return (f'<circle cx="{cx}" cy="{cy}" r="{r}" fill="{fill}" stroke="{INK}" stroke-width="{max(r * .07, 3):.1f}"/>'
+            f'<circle cx="{cx}" cy="{cy}" r="{r * .55:.1f}" fill="#fff" stroke="{INK}" stroke-width="{max(r * .04, 2):.1f}"/>'
+            f'<text x="{cx}" y="{cy + r * .2:.1f}" text-anchor="middle" font-family="\'Serif\',serif" font-weight="700" '
+            f'font-size="{r * .6:.1f}" fill="{INK}">{n}</text>'
+            f'<ellipse cx="{cx - r * .4:.1f}" cy="{cy - r * .45:.1f}" rx="{r * .22:.1f}" ry="{r * .1:.1f}" fill="#fff" '
+            f'fill-opacity=".8" transform="rotate(-35 {cx - r * .4:.1f} {cy - r * .45:.1f})"/>')
+
+
+def jackpot_hook(p, half_s=None, **_):
+    """The hook: a towering gold column $2.04B stands from frame 0 beside the trader; on 'about half' a teal column
+    rises to half its height beside it, the missing half outlined in red dashes with a bobbing question mark, and
+    the trader turns to the viewer and shrugs."""
+    t0 = p.t0
+    hs = t0 + (half_s or p.dur * .45)
+    _set(p, f'<path d="M20 600 L780 600" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+            f'<rect x="70" y="80" width="200" height="520" rx="10" fill="{GOLD}" stroke="{INK}" stroke-width="7"/>'
+            + "".join(f'<path d="M84 {120 + 52 * j} H256" stroke="{GOLD_D}" stroke-opacity=".35" stroke-width="5"/>' for j in range(9))
+            + f'<rect x="58" y="10" width="224" height="70" rx="14" fill="{INK}"/>'
+              f'<text x="170" y="62" text-anchor="middle" font-family="\'Serif\',serif" font-weight="700" font-size="50" fill="{GOLD}">$2.04B</text>')
+    # the cash column rises to half on the words
+    p.parts.append(f'<g class="a" data-fx="growY" data-at="{hs:.2f}" data-d=".8" style="transform-box:fill-box">'
+                   f'<rect x="320" y="340" width="200" height="260" rx="10" fill="{TEAL}" stroke="{INK}" stroke-width="7"/></g>')
+    p.parts.append(f'<g class="a" data-fx="pop" data-at="{hs + .7:.2f}" data-d=".35" style="transform-box:fill-box;transform-origin:center">'
+                   f'<text x="420" y="490" text-anchor="middle" font-family="\'Serif\',serif" font-weight="700" font-size="46" fill="#fff">HALF</text></g>')
+    p.parts.append(f'<g class="a" data-fx="draw" data-at="{hs + .8:.2f}" data-d=".6"><path d="M320 340 V80 H520 V340" fill="none" '
+                   f'stroke="{RED}" stroke-width="7" stroke-dasharray="20 14" stroke-linejoin="round"/></g>')
+    p.parts.append(f'<g class="a" data-fx="float" data-at="0" data-d="1" data-amp="10" data-w="2.6">'
+                   f'<g class="a" data-fx="pop" data-at="{hs + 1.1:.2f}" data-d=".4" style="transform-box:fill-box;transform-origin:center">'
+                   f'<text x="420" y="262" text-anchor="middle" font-family="\'Serif\',serif" font-weight="700" font-size="170" fill="{RED}">?</text></g></g>')
+    trader(p, 660, 600, .9, "point", (-1 - t0) / p.dur, look=-1, turn=[(hs + .9, 0)])
+
+
+def before_tax(p, stamp_s=None, **_):
+    """Not taxes: the two numbers hang as tags, each with a BEFORE TAX chip; a tax form slides in below and a red
+    LATER stamp lands on it."""
+    for k, (lab, fill) in enumerate((("$2.04B", GOLD), ("$997.6M", TEAL))):
+        x = 200 + 380 * k
+        p.parts.append(f'<g class="a" data-fx="swing" data-at="0" data-d="1" data-amp="5" data-w="2.2" data-ph="{k * 1.4}" '
+                       f'style="transform-box:view-box;transform-origin:{x}px 20px">')
+        p.fill(f'<path d="M{x} 20 L{x} 70" stroke="{INK}" stroke-width="4"/>'
+               + _ptag(x, 140, 360, lab, fill=fill, color=INK if k == 0 else "#fff", size=54, rot=0), .03 + .12 * k)
+        p.fill(_tile(x - 130, 240, 260, 64, INK, "BEFORE TAX", 30), .25 + .12 * k)
+        p.parts.append("</g>")
+    st = p.t0 + (stamp_s or p.dur * .55)
+    p.parts.append(f'<g class="a" data-fx="slide" data-ease="out" data-at="{st - .75:.2f}" data-d=".6" data-x0="700" data-x1="0">'
+                   f'<rect x="200" y="330" width="400" height="290" rx="12" fill="#fff" stroke="{INK}" stroke-width="6" transform="rotate(-3 400 475)"/>'
+                   f'<text x="240" y="395" font-family="\'Serif\',serif" font-weight="700" font-size="48" fill="{INK}" transform="rotate(-3 400 475)">TAX</text>'
+                   + "".join(f'<rect x="240" y="{420 + 34 * j}" width="{300 - 40 * (j % 2)}" height="12" rx="6" fill="#DCD7CF" '
+                             f'transform="rotate(-3 400 475)"/>' for j in range(5)) + "</g>")
+    p.parts.append(f'<g class="a" data-fx="stamp" data-at="{st:.2f}" data-d=".35" data-rot="-12" style="transform-box:fill-box;transform-origin:center">'
+                   f'<rect x="250" y="440" width="300" height="110" rx="14" fill="#fff" fill-opacity=".9" stroke="{RED}" stroke-width="10"/>'
+                   f'<text x="400" y="520" text-anchor="middle" font-family="\'Serif\',serif" font-weight="700" font-size="76" fill="{RED}">LATER</text></g>')
+
+
+def thirty_bars(p, grow_s=None, five_s=None, **_):
+    """The fine print: 30 gold bars rise one by one, left to right (a tick each), each 5% taller than the last; a
+    total counts up to $2.04B over them; the first and last payments get their labels; on '5%' a red +5% chip
+    jumps from bar to bar."""
+    t0 = p.t0
+    g0 = t0 + (grow_s if grow_s is not None else .2)
+    base = 560
+    bars = _bars30(pv=False)
+    p.line([(40, base), (770, base)], 0, .3, w=6)
+    step = .075
+    for k, (x, h_) in enumerate(bars):
+        p.parts.append(f'<g class="a" data-fx="growY" data-at="{g0 + step * k:.2f}" data-d=".3" style="transform-box:fill-box">'
+                       f'{_bar(x, base, 18, h_, GOLD)}</g>')
+    p.parts.append(_count(400, 90, 0, 2.04, round(g0, 2), round(step * 30 + .3, 2), size=74, color=INK, pre="$", suf="B", dec=2))
+    p.text(400, 140, "30 PAYMENTS ADDED UP", .05, size=28, weight=700, color=GREY)
+    p.parts.append(f'<g class="a" data-fx="fade" data-at="{g0 + .3:.2f}" data-d=".3">'
+                   f'<text x="70" y="{base - bars[0][1] - 18:.0f}" font-family="\'Sans\',sans-serif" font-weight="700" font-size="28" fill="{INK}">$30.7M</text></g>')
+    p.parts.append(f'<g class="a" data-fx="fade" data-at="{g0 + step * 30:.2f}" data-d=".3">'
+                   f'<text x="775" y="{base - bars[-1][1] - 18:.0f}" text-anchor="end" font-family="\'Sans\',sans-serif" font-weight="700" '
+                   f'font-size="28" fill="{INK}">$126.4M</text></g>')
+    p.text(60, 605, "TODAY", .1, size=28, weight=700, color=GREY, anchor="start")
+    p.text(775, 605, "YEAR 29", .1, size=28, weight=700, color=GREY, anchor="end")
+    fs = t0 + (five_s or p.dur * .6)
+    kf = [[round(fs, 2), 0, 0, .6, 0]] + [[round(fs + .25 + .18 * j, 2), 115 * j, -24 * j, 1, 1] for j in range(6)] + [[round(fs + 1.5, 2), 575, -140, 1, 1]]
+    p.parts.append(f'<g class="a" data-fx="kf" data-at="0" data-d="1" data-kf="{H.escape(_json(kf))}" style="transform-box:fill-box;transform-origin:center">'
+                   + _tile(80, 330, 120, 60, RED, "+5%", 34) + "</g>")
+
+
+def dollar_today(p, grow_s=None, **_):
+    """A dollar today beats a dollar later: TODAY's coin sits on a bank pile that grows coin by coin as the years
+    tick on a little counter (interest); LATER's dollar arrives alone at the end, the same size it always was."""
+    t0 = p.t0
+    gs = t0 + (grow_s or p.dur * .45)
+    p.text(200, 50, "TODAY", 0, size=40, weight=700, color=TEAL)
+    p.text(600, 50, "LATER", 0, size=40, weight=700, color=RED)
+    p.line([(400, 80), (400, 600)], .02, .3, color=GREY, w=4, dash="12 12")
+    coin(p, 200, 470, 90, "$1", "gold", .05, flip=2)
+    for j in range(5):
+        p.parts.append(f'<g class="a" data-fx="slide" data-ease="out" data-at="{gs + .3 * j:.2f}" data-d=".35" data-y0="-300" data-y1="0">'
+                       f'<g class="a" data-fx="fade" data-at="{gs + .3 * j:.2f}" data-d=".06">'
+                       f'<ellipse cx="200" cy="{372 - 34 * j}" rx="78" ry="22" fill="{GOLD_D}"/>'
+                       f'<ellipse cx="200" cy="{366 - 34 * j}" rx="78" ry="22" fill="{GOLD}" stroke="{INK}" stroke-width="4"/></g></g>')
+    p.parts.append(f'<g class="a" data-fx="pop" data-at="{gs:.2f}" data-d=".35" style="transform-box:fill-box;transform-origin:center">'
+                   + _tile(50, 110, 300, 64, TEAL, "+ INTEREST", 34) + "</g>")
+    p.parts.append(_count(600, 220, 0, 29, round(gs - .2, 2), 1.6, size=64, color=INK, pre="YEAR "))
+    p.parts.append(f'<g class="a" data-fx="slide" data-ease="out" data-at="{gs + 1.3:.2f}" data-d=".6" data-x0="260" data-x1="0">'
+                   f'<g class="a" data-fx="fade" data-at="{gs + 1.3:.2f}" data-d=".1">')
+    coin(p, 600, 470, 90, "$1", "nickel", 0)
+    p.parts[-1] = p.parts[-1].replace(f'data-at="{p.at(0)}"', f'data-at="{gs + 1.3:.2f}"', 1)
+    p.parts.append("</g></g>")
+    p.parts.append(f'<g class="a" data-fx="pop" data-at="{gs + 1.9:.2f}" data-d=".3" style="transform-box:fill-box;transform-origin:center">'
+                   f'<text x="600" y="345" text-anchor="middle" font-family="\'Sans\',sans-serif" font-weight="700" font-size="34" fill="{RED}">STILL $1</text></g>')
+
+
+def shrink_bars(p, shrink_s=None, **_):
+    """Bring each payment back to today: the 30 gold bars stand as before, then, left to right, each shrinks to its
+    value today, leaving a dashed ghost of what it was; the far ones fall the most and the row ends nearly flat.
+    The last bar's two labels: $126.4M then about $35.9M today."""
+    t0 = p.t0
+    ss = t0 + (shrink_s or p.dur * .3)
+    base = 560
+    full, pv = _bars30(), _bars30(pv=True)
+    p.line([(40, base), (770, base)], 0, .2, w=6)
+    step = .06
+    for k, ((x, h_), (_, h2)) in enumerate(zip(full, pv)):
+        p.parts.append(f'<g class="a" data-fx="fade" data-at="{ss + step * k:.2f}" data-d=".2">'
+                       f'<rect x="{x:.1f}" y="{base - h_:.1f}" width="18" height="{h_:.1f}" rx="4" fill="none" stroke="{GREY}" '
+                       f'stroke-width="3" stroke-dasharray="6 5"/></g>')
+        p.parts.append(f'<g class="a" data-fx="growY" data-at="{t0 + .02 * k:.2f}" data-d=".25" style="transform-box:fill-box">'
+                       f'<g class="a" data-fx="scaleY" data-at="{ss + step * k:.2f}" data-d=".55" data-s0="1" data-s1="{h2 / h_:.4f}" '
+                       f'style="transform-box:fill-box">{_bar(x, base, 18, h_, GOLD)}</g></g>')
+    xl, hl = full[-1]
+    p.parts.append(f'<g class="a" data-fx="kf" data-at="0" data-d="1" data-kf="{H.escape(_json([[0, 0, 0, 1, 1], [round(ss + step * 29, 2), 0, 0, 1, 1], [round(ss + step * 29 + .3, 2), 0, 0, 1, 0]]))}">'
+                   f'<text x="775" y="{base - hl - 18:.0f}" text-anchor="end" font-family="\'Sans\',sans-serif" font-weight="700" font-size="28" fill="{INK}">$126.4M</text></g>')
+    p.parts.append(f'<g class="a" data-fx="pop" data-at="{ss + step * 29 + .35:.2f}" data-d=".35" style="transform-box:fill-box;transform-origin:center">'
+                   f'<text x="775" y="{base - pv[-1][1] - 18:.0f}" text-anchor="end" font-family="\'Sans\',sans-serif" font-weight="700" '
+                   f'font-size="30" fill="{RED}">≈ $35.9M TODAY</text></g>')
+    p.text(60, 605, "TODAY", .1, size=28, weight=700, color=GREY, anchor="start")
+    p.text(775, 605, "YEAR 29", .1, size=28, weight=700, color=GREY, anchor="end")
+    p.text(400, 70, "VALUE TODAY", .02, size=36, weight=700, color=GREY)
+
+
+def cash_pile(p, at_s=None, **_):
+    """Add them up: the 30 shrunk bars slide right one after another into one teal column that rises as they land,
+    a counter running to $997.6M; then a CASH OPTION label and a check."""
+    t0 = p.t0
+    a = t0 + (at_s if at_s is not None else .3)
+    base = 560
+    pv = _bars30(x0=40, wbar=12, gap=5, top=380 * 1.0)
+    pvh = [h_ / JP_R ** k for k, (_, h_) in enumerate(pv)]
+    p.line([(20, base), (780, base)], 0, .2, w=6)
+    step = .05
+    for k, ((x, _), h2) in enumerate(zip(pv, pvh)):
+        t = a + step * k
+        p.parts.append(f'<g class="a" data-fx="fade" data-at="{t0 + .01 * k:.2f}" data-d=".2">'
+                       f'<g class="a" data-fx="slide" data-ease="inout" data-at="{t:.2f}" data-d=".45" data-x0="0" data-x1="{640 - x:.0f}" '
+                       f'data-y0="0" data-y1="-{20 + 8 * (k % 4)}"><g class="a" data-fx="kf" data-at="0" data-d="1" '
+                       f'data-kf="{H.escape(_json([[0, 0, 0, 1, 1], [round(t + .35, 2), 0, 0, 1, 1], [round(t + .45, 2), 0, 0, 1, 0]]))}">'
+                       f'{_bar(x, base, 12, h2 * 1.9, GOLD)}</g></g></g>')
+    p.parts.append(f'<g class="a" data-fx="growY" data-at="{a + .3:.2f}" data-d="{step * 30 + .2:.2f}" style="transform-box:fill-box">'
+                   f'<rect x="590" y="150" width="170" height="410" rx="10" fill="{TEAL}" stroke="{INK}" stroke-width="7"/></g>')
+    p.parts.append(_count(330, 140, 0, 997.6, round(a + .3, 2), round(step * 30 + .2, 2), size=78, color=INK, pre="$", suf="M", dec=1))
+    p.parts.append(f'<g class="a" data-fx="pop" data-at="{a + step * 30 + .6:.2f}" data-d=".35" style="transform-box:fill-box;transform-origin:center">'
+                   + _tile(150, 200, 360, 70, TEAL, "CASH OPTION", 38) + "</g>")
+    p.parts.append(f'<g class="a" data-fx="draw" data-at="{a + step * 30 + .9:.2f}" data-d=".35">'
+                   f'<path d="M620 340 L665 390 L735 290" fill="none" stroke="#fff" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/></g>')
+
+
+def rate_dial(p, rate_s=None, more_s=None, **_):
+    """Our estimate: a dial from 0% to 10% whose needle swings up to about 4.4% as the rate is said; on 'higher
+    rates' it swings on towards 7% and the teal cash column beside it sinks (an illustration of the direction,
+    no figure)."""
+    t0 = p.t0
+    rs = t0 + (rate_s if rate_s is not None else .3)
+    ms = t0 + (more_s or p.dur * .6)
+    cx, cy, R = 300, 470, 250
+    ang = lambda pct: 180 + 18 * pct                     # 0% left (180 deg) to 10% right (360 deg)
+    pt = lambda a_, r: (cx + r * math.cos(math.radians(a_)), cy + r * math.sin(math.radians(a_)))
+    arc = " ".join(f"{'M' if i == 0 else 'L'}{pt(180 + i * 6, R)[0]:.1f} {pt(180 + i * 6, R)[1]:.1f}" for i in range(31))
+    p.fill(f'<path d="{arc} Z" fill="#fff" stroke="{INK}" stroke-width="7" stroke-linejoin="round"/>', 0, .3)
+    for pct in range(11):
+        a_ = ang(pct)
+        (x1, y1), (x2, y2) = pt(a_, R - 8), pt(a_, R - (40 if pct % 5 == 0 else 24))
+        p.line([(x1, y1), (x2, y2)], .03 + .01 * pct, .1, w=6 if pct % 5 == 0 else 4, j=.4)
+    for pct, lab in ((0, "0%"), (5, "5%"), (10, "10%")):
+        x, y = pt(ang(pct), R - 78)
+        p.text(round(x), round(y + 12), lab, .1, size=30, weight=700, color=GREY)
+    a1, a2 = 18 * 4.43, 18 * 7
+    kf = [[0, 0, 0, 1, 1, 0], [round(rs, 2), 0, 0, 1, 1, 0], [round(rs + .9, 2), 0, 0, 1, 1, round(a1, 1)],
+          [round(ms, 2), 0, 0, 1, 1, round(a1, 1)], [round(ms + .8, 2), 0, 0, 1, 1, a2]]
+    p.parts.append(f'<g class="a" data-fx="kf" data-at="0" data-d="1" data-kf="{H.escape(_json(kf))}" '
+                   f'style="transform-box:view-box;transform-origin:{cx}px {cy}px">'
+                   f'<path d="M{cx} {cy - 12} L{cx - R + 50} {cy} L{cx} {cy + 12} Z" fill="{RED}" stroke="{INK}" stroke-width="4" '
+                   f'stroke-linejoin="round"/></g>')
+    p.fill(f'<circle cx="{cx}" cy="{cy}" r="24" fill="{INK}"/>', .05)
+    p.parts.append(f'<g class="a" data-fx="pop" data-at="{rs + .9:.2f}" data-d=".35" style="transform-box:fill-box;transform-origin:center">'
+                   + _tile(150, 520, 300, 80, RED, "≈ 4.4% A YEAR", 40) + "</g>")
+    p.parts.append(f'<g class="a" data-fx="scaleY" data-at="{ms + .1:.2f}" data-d=".8" data-s0="1" data-s1=".72" style="transform-box:fill-box">'
+                   f'<rect x="610" y="190" width="150" height="410" rx="10" fill="{TEAL}" stroke="{INK}" stroke-width="7"/></g>')
+    p.text(685, 170, "CASH", .1, size=32, weight=700, color=TEAL)
+    p.parts.append(f'<g class="a" data-fx="pop" data-at="{ms + .7:.2f}" data-d=".3" style="transform-box:fill-box;transform-origin:center">'
+                   f'<path d="M665 300 L705 300 L705 360 L735 360 L685 420 L635 360 L665 360 Z" fill="#fff" stroke="{INK}" stroke-width="4"/></g>')
+
+
+def jackpot_asks(p, **_):
+    """The close: the trader turns to the viewer and points; a speech bubble asks CASH OR 30?"""
+    p.fill(f'<path d="M120 60 H520 Q560 60 560 100 V300 Q560 340 520 340 H330 L280 410 L290 340 H120 Q80 340 80 300 V100 '
+           f'Q80 60 120 60 Z" fill="#fff" stroke="{INK}" stroke-width="7"/>', .1)
+    p.text(320, 185, "CASH", .3, size=92, serif=True, weight=700, color=TEAL, fx="pop")
+    p.text(320, 290, "OR 30?", .42, size=92, serif=True, weight=700, color=RED, fx="pop")
+    trader(p, 700, 630, .95, "point", .05, look=-1, turn=[(p.at(.15), 0)])
+
+
+SCENES.update({f.__name__: f for f in (jackpot_hook, before_tax, thirty_bars, dollar_today, shrink_bars, cash_pile, rate_dial,
+                                       jackpot_asks)})

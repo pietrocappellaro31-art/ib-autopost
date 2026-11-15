@@ -512,6 +512,8 @@ def shorts_mix(ep):
 def mux(ep, voice_name, voice, sfx, total, mp4):
     work = OUT / ep["slug"]
     room, _, limit = shorts_mix(ep)
+    # 15 Nov: the room tone is seeded (ep["room_seed"], default 1). Unseeded, every remix drew new noise and the same
+    # stems measured SIG drop 0.13 to 0.18 and mix OVRL 3.17 to 3.25, so the gate measured the dice, not the change.
     # 14 Nov: the stems are written with headroom. Voice levelled to RMS 0.12 peaked over full scale and
     # write_wav clipped it (the cash machine Short's voice.wav hit 1.0); one common gain keeps the voice and
     # effects balance, and the master sets the loudness afterwards.
@@ -526,7 +528,7 @@ def mux(ep, voice_name, voice, sfx, total, mp4):
     if ep.get("denoise") and "anlmdn" not in chain:          # 13 Nov: per episode (G2 carries it in voices.json)
         chain += "," + ep["denoise"]
     lim = f"alimiter=limit={limit}:attack=2:release=50:level=false," if limit else ""
-    graph = (f"[1:a]{chain}[v];anoisesrc=color=brown:amplitude={room}:sample_rate={SR}:duration={total + .6:.2f}[room];"
+    graph = (f"[1:a]{chain}[v];anoisesrc=color=brown:amplitude={room}:seed={ep.get('room_seed', 1)}:sample_rate={SR}:duration={total + .6:.2f}[room];"
              f"[v][2:a][room]amix=inputs=3:normalize=0,{lim}loudnorm=I={ep.get('lufs', -16)}:TP={ep.get('tp', -1.5)}:LRA=11[a]")
     # ep["lufs"] (10 Nov): YouTube Shorts ship without music now and still master at -14 like YouTube; Reels stay -16.
     extra = []
