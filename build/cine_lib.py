@@ -785,3 +785,70 @@ def document_shot(style="opinion", head="", sub="", quote="", hl=(), start=(0, N
         return dict(shots=[shot], foley=foley, amb=amb)
     fn.__name__ = f"document_{style}"
     return fn
+def monitor_ev(t_on=.2, t_cash=None, t_ans=None, cx=900, cy=600, w=560, h=340, eq=100, debt=0, cash=30, wobble_until=None):
+    """15 Nov (Levels #14). A monitor with two columns on one baseline: EQUITY VALUE grows to its height, then an
+    EV column stands beside it. Hook mode (t_cash None): the EV column is a dashed outline with a question mark
+    whose height swings above and below equity (is EV higher or lower?) until wobble_until. Answer mode: at t_cash
+    the line DEBT $0 shows and a CASH block lifts off the top of the EV column (equity + debt - cash), the column
+    settling at its value; at t_ans it fills teal, its value lands and a tick and LOWER mark it. Shot seconds. Only
+    the episode's worked numbers are drawn."""
+    x0, y0 = cx - w / 2, cy - h / 2
+    s = (f'<ellipse cx="{cx}" cy="{cy + 40}" rx="{w * .75:.0f}" ry="{h * .7:.0f}" fill="#BFE3D6" opacity=".14"/>'
+         + _r(cx - 18, y0 + h, 36, 860 - (y0 + h), "#3B3F48", sw=2.6) + _r(cx - 90, 846, 180, 16, "#3B3F48", rx=6, sw=2.6)
+         + _r(x0 - 16, y0 - 16, w + 32, h + 32, "#1E2128", rx=14, sw=3.6)
+         + f'<rect x="{x0}" y="{y0}" width="{w}" height="{h}" fill="#F4EFE6"/>')
+    s += _t(x0 + 24, y0 + 32, "EQUITY VALUE vs EV", 20, INK, anchor="start", weight=600, family="Sans", extra='letter-spacing="2"')
+    axis = y0 + h - 40
+    top = y0 + 84
+    k = (axis - top) / max(eq, eq + debt)            # px per $
+    cw = w * .26
+    xa, xb = x0 + w * .14, x0 + w * .60
+    s += f'<path d="M{x0 + 20},{axis} L{x0 + w - 20},{axis}" stroke="{INK}" stroke-width="3"/>'
+    he = eq * k
+    s += (f'<g {kv(clip=[[0, 100, 0, 0, 0], [t_on, 100, 0, 0, 0], [t_on + .6, 0, 0, 0, 0, "out"]])}>'
+          f'<rect x="{xa:.1f}" y="{axis - he:.1f}" width="{cw:.1f}" height="{he:.1f}" rx="6" fill="{MUSTARD}" stroke="{INK}" stroke-width="2.8"/>'
+          + _t(round(xa + cw / 2, 1), round(axis - he / 2 + 12, 1), f"${eq}", 34, INK, weight=700) + "</g>")
+    s += _t(round(xa + cw / 2, 1), axis + 28, "EQUITY", 18, INK, weight=700, family="Sans")
+    s += f'<g {kv(opacity=[[0, 0], [t_on + .5, 0], [t_on + .8, 1]])}>' + _t(round(xb + cw / 2, 1), axis + 28, "EV", 18, TEAL, weight=700, family="Sans") + "</g>"
+    ev = eq + debt - cash
+    hv = ev * k
+    t1 = t_on + .7
+    if t_cash is None:                                   # hook: the EV outline swings above and below equity
+        end = wobble_until or (t1 + 4)
+        ys, t, j = [[0, axis - he], [t1, axis - he]], t1, 0
+        while t < end:
+            t += .7
+            ys.append([round(t, 2), round(axis - he * (1.28 if j % 2 == 0 else .7), 1), "inout"])
+            j += 1
+        ys.append([round(end + .5, 2), axis - he, "inout"])
+        hs = [[a[0], round(axis - a[1], 1)] + a[2:] for a in ys]
+        s += (f'<g {kv(opacity=[[0, 0], [t1 - .1, 0], [t1 + .2, 1]])}>'
+              f'<rect x="{xb:.1f}" y="{axis - he:.1f}" width="{cw:.1f}" height="{he:.1f}" rx="6" fill="#E3F1EC" stroke="{TEAL}" '
+              f'stroke-width="3" stroke-dasharray="10 7" {kv(y=ys, height=hs)}/>'
+              + _t(round(xb + cw / 2, 1), round(axis - he / 2 + 18, 1), "?", 54, TEAL, weight=700) + "</g>")
+        return s
+    # answer mode: EV starts at equity + debt, cash lifts off the top
+    h0 = (eq + debt) * k
+    s += (f'<g {kv(opacity=[[0, 0], [t1 - .1, 0], [t1 + .2, 1]])}>'
+          f'<rect x="{xb:.1f}" y="{axis - h0:.1f}" width="{cw:.1f}" height="{h0:.1f}" rx="6" fill="#E3F1EC" stroke="{TEAL}" '
+          f'stroke-width="3" stroke-dasharray="10 7" {kv(y=[[0, axis - h0], [t_cash + .2, axis - h0], [t_cash + .8, axis - hv, "inout"]], height=[[0, h0], [t_cash + .2, h0], [t_cash + .8, hv, "inout"]])}/></g>')
+    s += (f'<g {kv(opacity=[[0, 0], [t_cash - .7, 0], [t_cash - .45, 1]])}>'
+          + _t(x0 + w - 24, y0 + 32, f"DEBT ${debt}", 20, INK, anchor="end", weight=700, family="Sans") + "</g>")
+    hc = cash * k
+    blk = (f'<rect x="{xb:.1f}" y="{axis - h0:.1f}" width="{cw:.1f}" height="{hc:.1f}" rx="5" fill="#7FB59B" stroke="{INK}" stroke-width="2.6"/>'
+           + _t(round(xb + cw / 2, 1), round(axis - h0 + hc / 2 + 8, 1), f"CASH -${cash}", 18, INK, weight=700, family="Sans"))
+    s += (f'<g {kv(opacity=[[0, 0], [t_cash - .25, 0], [t_cash, 1], [t_cash + 1.2, 1], [t_cash + 1.6, 0]])}>'
+          f'<g {kv(translate=[[0, 0, 0], [t_cash + .2, 0, 0], [t_cash + 1.4, w * .2, -46, 8]])}>{blk}</g></g>')
+    if t_ans is not None:
+        s += (f'<g {kv(opacity=[[0, 0], [t_ans, 0], [t_ans + .3, 1]])}>'
+              f'<rect x="{xb:.1f}" y="{axis - hv:.1f}" width="{cw:.1f}" height="{hv:.1f}" rx="6" fill="{TEAL}" stroke="{INK}" stroke-width="2.8"/>'
+              + _t(round(xb + cw / 2, 1), round(axis - hv / 2 + 12, 1), f"${ev}", 34, "#fff", weight=700) + "</g>")
+        tx, ty = xb + cw + 22, axis - hv
+        s += (f'<g {kv(opacity=[[0, 0], [t_ans + .6, 0], [t_ans + .8, 1]])}>'
+              f'<circle cx="{tx:.1f}" cy="{ty:.1f}" r="19" fill="{TEAL}" stroke="{INK}" stroke-width="2.8"/>'
+              f'<path d="M{tx - 9:.1f},{ty:.1f} l6,7 l12,-14" fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>'
+              + _t(round(tx + 26, 1), round(ty + 8, 1), "LOWER", 22, TEAL, anchor="start", weight=700, family="Sans") + "</g>")
+        # a dashed line at equity's height across both, so 'lower' reads at a glance
+        s += (f'<path d="M{xa:.1f},{axis - he:.1f} L{xb + cw:.1f},{axis - he:.1f}" stroke="{INK}" stroke-width="2.4" stroke-dasharray="8 6" '
+              f'{kv(opacity=[[0, 0], [t_ans + .3, 0], [t_ans + .6, .7]])}/>')
+    return s

@@ -12,3 +12,4 @@
 | 2026-11-13 | w2-levels-12 | IB Interview Levels #12: can terminal value be most of a DCF? | G2 | 56.4 s | superseded by w2-levels-12-heart, not to post |
 | 2026-11-13 | w2-levels-12-heart | IB Interview Levels #12: can terminal value be most of a DCF? (cinematic standard: filmed hook; clean + scored alternative) | HEART | 55.4 s | |
 | 2026-11-14 | w2-levels-13 | IB Interview Levels #13: 2x in 3 years or 3x in 7, which has the higher IRR? (filmed hook and filmed level 4 answer; clean + scored alternative) | HEART | 53.9 s | |
+| 2026-11-15 | w2-levels-14 | IB Interview Levels #14: can enterprise value be lower than equity value? (a drawing through every level; filmed hook and filmed level 4; clean + scored alternative) | HEART | 54.1 s | |

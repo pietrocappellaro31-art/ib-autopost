@@ -155,11 +155,14 @@ def timeline(ep, parts):
 
 # --------------------------------------------------------------- scene ----
 
-def lockup(n, tail, tail_col=INK):
-    return (f'<div style="display:flex;align-items:center;gap:30px">'
-            f'<div class="num" style="font-size:200px;line-height:.86;color:{RED};letter-spacing:-.04em">{n}</div>'
-            f'<div><div class="lbl" style="font-size:30px;letter-spacing:.24em;opacity:.55">LEVEL</div>'
-            f'<div class="it" style="font-size:78px;line-height:1;font-weight:600;color:{tail_col};margin-top:6px">{tail}</div></div></div>')
+def lockup(n, tail, tail_col=INK, size=200):
+    """The level numeral and its tail. 15 Nov: size= (a level with a drawing for the whole level gives the numeral
+    150 px so the picture keeps its height)."""
+    k = size / 200
+    return (f'<div style="display:flex;align-items:center;gap:{30 * k:.0f}px">'
+            f'<div class="num" style="font-size:{size}px;line-height:.86;color:{RED};letter-spacing:-.04em">{n}</div>'
+            f'<div><div class="lbl" style="font-size:{30 * k:.0f}px;letter-spacing:.24em;opacity:.55">LEVEL</div>'
+            f'<div class="it" style="font-size:{78 * k:.0f}px;line-height:1;font-weight:600;color:{tail_col};margin-top:6px">{tail}</div></div></div>')
 
 
 def card(inner, accent=None):
@@ -304,9 +307,22 @@ def scene(ep, parts, at, hook_end, lv, total):
             # from the moment the card swipes in, so the question is set up on film and the answer is filmed too
             filmbox = (f'<div id="filmbox{i}" class="nochk" style="position:relative;margin:{L.get("film_gap", 30)}px auto 0;'
                        f'width:{L["film_w"]}px;height:{L["film_h"]}px;outline:5px solid {INK};border-radius:4px;background:#2B2F3A"></div>')
+        scn = ""
+        if L.get("scene"):
+            # 15 Nov (Pietro, 14 Nov: a picture in every beat, through the question, the think time AND the answer):
+            # one drawing for the whole level, in the flow between the clock and the answer, so it never sits under
+            # a word. It gets the level's moments in Reel seconds (each sentence of the question and of the answer)
+            # and acts the idea out across them: it builds as the question is asked and its key move lands on the
+            # answer.
+            m = dict(start=T["start"], q=qa, qs=[(qa + a, qa + b) for _, a, b in qs], think=T["think0"], a=aa,
+                     as_=[(aa + a, aa + b) for _, a, b in asg], end=T["end"])
+            sw_, sh_ = L.get("scene_w", W), L.get("scene_h", 400)
+            scn = A(f'<div style="position:relative;width:{sw_}px;height:{sh_}px;margin:0 auto">{L["scene"](m, sw_, sh_)}</div>',
+                    "life", T["start"] + .2, T["end"] - T["start"] + .3, fi=.3, fo=.1, cls="nochk",
+                    style=f"margin-top:{L.get('scene_gap', 24)}px")
         answer = (f'<div style="position:relative;margin-top:22px;min-height:{L.get("ans_min", 420 if L.get("art") else 0)}px">'
                   f'{art}{rip}{ans}{chip}{filmbox}</div>')
-        grp = ghost(i + 1) + lockup(i + 1, L["tail"], RED if last else INK) + qcard + think + answer
+        grp = ghost(i + 1) + lockup(i + 1, L["tail"], RED if last else INK, L.get("lock", 200)) + qcard + think + scn + answer
         els.append(group(column(grp), T["start"] - .02, T["end"] - T["start"] + T_SW + .02))
         check_at.append(T["end"] - .2)
 
@@ -646,13 +662,21 @@ def film_window(ep, mp4, box, t0, t_rest, t_out, fn, tag, T_SW=.34, fade_out=Tru
             steps.append((round(ta, 3), round(tb, 3), round(sig, 2)))
     blur = "".join(f"gblur=sigma={g}:enable='between(t,{a_},{b_})'," for a_, b_, g in steps)
     end = t_out + T_SW
-    graph = (f"[1:v]setpts=PTS+{t0:.3f}/TB,{blur}format=yuva420p"
+    # 15 Nov (the 14 Nov Reel's next improvement): the window's frame blurs with the film. The page's own 5 px ink
+    # outline stays sharp inside a blurred card, so the film now carries the outline itself (a 5 px ink pad) and a
+    # transparent margin M as wide as the strongest blur; the blur then spreads the film's edge and its frame into
+    # the margin together, as the card's blur does. At rest the drawn outline sits exactly on the page's.
+    M = int(2 * max([g for *_, g in steps] or [0]) + 4) // 2 * 2 if steps else 0
+    frame = (f"pad=iw+10:ih+10:5:5:color=0x0A0A0A,format=yuva420p,pad=iw+{2 * M}:ih+{2 * M}:{M}:{M}:color=0x00000000,"
+             if M else "format=yuva420p,")
+    off = 5 + M if M else 0
+    graph = (f"[1:v]setpts=PTS+{t0:.3f}/TB,{frame}{blur}format=yuva420p"
              + (f",fade=t=out:st={end - .12:.3f}:d=0.12:alpha=1" if fade_out else "") + "[f];"
-             f"[0:v][f]overlay=x='{xe}':y='{ye}':eof_action=pass:enable='between(t,{t0:.3f},{end + .1:.3f})'[v]")
+             f"[0:v][f]overlay=x='{xe}-{off}':y='{ye}-{off}':eof_action=pass:enable='between(t,{t0:.3f},{end + .1:.3f})'[v]")
     subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", str(mp4), "-i", str(film), "-filter_complex", graph, "-map", "[v]",
                     "-c:v", "libx264", "-crf", "20", "-preset", "medium", "-pix_fmt", "yuv420p", str(out)], check=True)
     rec = dict(box=box, t0=round(t0, 3), rest=rest[0], rest_end=rest[-1], bottom=round(max(r[1] + r[3] for r in rest), 1),
-               film=[fw, fh], dur=dur, render_seconds=round(secs, 1), foley=len(fx), blur_steps=steps)
+               film=[fw, fh], dur=dur, render_seconds=round(secs, 1), foley=len(fx), blur_steps=steps, frame_margin=M)
     print(f"  filmed {box}: {fw} x {fh} px, {dur:.2f} s from {t0:.2f} s, bottom {rec['bottom']} px, {len(fx)} foley events, "
           f"{len(steps)} motion-blur steps (max sigma {max([g for *_, g in steps] or [0])})", flush=True)
     return out, [(e[0], e[1] + t0, *e[2:]) for e in fx], rec
@@ -724,7 +748,7 @@ def make(ep, voice_name="af_heart", keep_voice=False, redo=()):
     at, hook_end, lv, total = timeline(ep, parts)
     sc, check_at = scene(ep, parts, at, hook_end, lv, total)
     mp4, cover, problems = build(ep["slug"] + "-silent", [sc], theme="paper", cover_at=hook_end - .2, crf=21,
-                                 check_at=check_at, fit=ep.get("fit", True))
+                                 check_at=check_at, fit=ep.get("fit", True) and ep.get("fit_zmax", 2.2))
     mp4, cover, fol = films(ep, mp4, cover, at, hook_end, lv)
     voice, sfx = soundtrack(parts, at, lv, total + .6, ep)
     sfx = add_foley(sfx, fol, total)

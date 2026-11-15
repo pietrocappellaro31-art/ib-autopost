@@ -282,7 +282,10 @@ window.fitSvg = function (svg, zmax, zmin) {
   svg.setAttribute('viewBox', `${x.toFixed(1)} ${y.toFixed(1)} ${w.toFixed(1)} ${h.toFixed(1)}`);
   svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
   svg.dataset.fitted = (800 / w).toFixed(2);
-  return {zoom: +(800 / w).toFixed(2), before: +fill0.toFixed(2), after: +Math.min(b.width / w, 1).toFixed(2)};
+  // 15 Nov: the share is the larger of width and height: a tall drawing (a clock) in a wide box fills it when it
+  // runs top to bottom, and the old width-only measure called that 58%.
+  const fill1 = Math.min(Math.max(b.width / w, b.height / h), 1);
+  return {zoom: +(800 / w).toFixed(2), before: +fill0.toFixed(2), after: +fill1.toFixed(2), w: +(b.width / w).toFixed(2), h: +(b.height / h).toFixed(2)};
 };
 window.fitSketches = function (zmax = 1.5, zmin = .8) {
   // Each drawing is measured at the end of its own life (the nearest 'life' parent), when all of it is drawn.
@@ -522,7 +525,9 @@ def build(slug, scenes, theme="ink", cover_at=0.0, crf=18, check_at=(), fit=Fals
         if loaded < 6:
             raise RuntimeError(f"only {loaded} of 6 brand fonts loaded")
         if fit:                                  # 12 Nov: every drawing zoomed onto what is drawn
-            fits = pg.evaluate("fitSketches()")
+            # 15 Nov: fit=<number> is the largest zoom (levels passes 2.2, so a small drawing such as flow, coins or
+            # the clock is scaled up to fill its box instead of stopping at 1.5x); fit=True keeps the 1.5 default
+            fits = pg.evaluate("fitSketches()" if fit is True else f"fitSketches({float(fit)})")
             if fits:
                 (work / "fit.json").write_text(json.dumps(fits, indent=1))
                 small = [k for k, r in enumerate(fits) if r["after"] < .85]

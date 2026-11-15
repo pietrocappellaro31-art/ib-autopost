@@ -2945,3 +2945,231 @@ def jackpot_asks(p, **_):
 
 SCENES.update({f.__name__: f for f in (jackpot_hook, before_tax, thirty_bars, dollar_today, shrink_bars, cash_pile, rate_dial,
                                        jackpot_asks)})
+
+
+# ---- 15 Nov scenes (Levels #14, enterprise value): one drawing per level, shown through the question, the clock
+# and the answer (Pietro, 14 Nov: a picture in every beat). Each takes m, the level's moments in Reel seconds
+# (levels.scene: q, qs = each question sentence (start, end), think, a, as_ = each answer sentence, end), and acts
+# the idea out across them. Generic shapes of our own: no bank, company or logo. Only the episode's worked numbers.
+
+DEBT_C, CASH_C = "#3B3F48", "#7FB59B"
+
+
+def _abs(p, t):
+    """A Reel time as the Pen's fraction (the Pen counts from t0 over dur)."""
+    return max(0.0, (t - p.t0) / p.dur)
+
+
+def _g(fx, at, d, inner, style="transform-box:fill-box;transform-origin:center", **data):
+    attrs = "".join(f' data-{k}="{v}"' for k, v in data.items())
+    return f'<g class="a" data-fx="{fx}" data-at="{at:.2f}" data-d="{d}"{attrs} style="{style}">{inner}</g>'
+
+
+def _life(at, d, inner, fi=.2, fo=.2):
+    return f'<g class="a" data-fx="life" data-at="{at:.2f}" data-d="{d:.2f}" data-fi="{fi}" data-fo="{fo}">{inner}</g>'
+
+
+def _office(x, base, w_=200, h_=230):
+    """A generic office block: flat roof, a grid of windows, a door."""
+    s = (f'<rect x="{x}" y="{base - h_}" width="{w_}" height="{h_}" rx="6" fill="#fff" stroke="{INK}" stroke-width="6"/>'
+         f'<rect x="{x - 12}" y="{base - h_ - 22}" width="{w_ + 24}" height="26" rx="5" fill="{INK}"/>')
+    for r in range(3):
+        for c in range(3):
+            s += (f'<rect x="{x + 22 + c * (w_ - 44) / 3:.0f}" y="{base - h_ + 24 + r * 52}" width="{(w_ - 44) / 3 - 14:.0f}" height="34" '
+                  f'rx="4" fill="#DCEFEA" stroke="{INK}" stroke-width="3"/>')
+    return s + f'<rect x="{x + w_ / 2 - 26:.0f}" y="{base - 62}" width="52" height="62" rx="4" fill="{TEAL}" stroke="{INK}" stroke-width="4"/>'
+
+
+def ev_whole(p, m=None, **_):
+    """Level 1, what enterprise value is. The business stands in the middle; as the question is asked the lenders
+    (a bank) arrive on the left and the shareholders on the right, and money travels from each into the business;
+    a question mark bobs over it through the clock. On the answer a teal bracket spans all three and ENTERPRISE
+    VALUE lands on it; on the second sentence DEBT and EQUITY tags drop onto the two sides."""
+    q0 = m["qs"][0][0]
+    base = 560
+    p.parts.append(_g("fade", p.t0, .3, f'<path d="M20 {base} L780 {base}" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+                      + _office(300, base, 200, 250)))
+    # the lenders: a small bank, from the left
+    bank_ = (f'<path d="M30 352 L130 300 L230 352 Z" fill="{INK}"/>'
+             + "".join(f'<rect x="{48 + 46 * k}" y="362" width="22" height="160" fill="#E8E4DE" stroke="{INK}" stroke-width="4"/>' for k in range(4))
+             + f'<rect x="26" y="522" width="208" height="38" fill="{INK}"/>')
+    _slide(p, _abs(p, q0 + .15), bank_ + f'<text x="130" y="285" text-anchor="middle" font-family="\'Sans\',sans-serif" '
+           f'font-weight="700" font-size="30" fill="{INK}">LENDERS</text>', x0=-320, d=.55)
+    # the shareholders, from the right
+    folks = ""
+    for k in range(3):
+        x, s = 600 + 72 * k, .78
+        c = TEAL if k == 1 else INK
+        folks += (f'<circle cx="{x}" cy="{base - 150 * s:.0f}" r="{26 * s:.0f}" fill="#fff" stroke="{c}" stroke-width="6"/>'
+                  f'<path d="M{x} {base - 124 * s:.0f} L{x} {base - 50 * s:.0f} M{x - 40 * s:.0f} {base - 100 * s:.0f} L{x} {base - 110 * s:.0f} '
+                  f'L{x + 40 * s:.0f} {base - 95 * s:.0f} M{x - 30 * s:.0f} {base} L{x} {base - 50 * s:.0f} L{x + 30 * s:.0f} {base}" '
+                  f'fill="none" stroke="{c}" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>')
+    _slide(p, _abs(p, q0 + .55), folks + f'<text x="672" y="395" text-anchor="middle" font-family="\'Sans\',sans-serif" '
+           f'font-weight="700" font-size="30" fill="{INK}">SHAREHOLDERS</text>', x0=320, d=.55)
+    # money from each side into the business, on a loop through the question and the clock
+    t = q0 + 1.0
+    k = 0
+    while t < m["a"] - .2:
+        side = k % 2
+        x0 = 150 if side == 0 else 600
+        note = _note(x0 - 50, 420, 100, 46)
+        dx = 330 - x0 if side == 0 else 420 - x0
+        p.parts.append(_life(t, .9, _g("slide", t, .8, note, style="", x0=0, x1=dx, y0=0, y1=10, ease="inout"), fi=.12, fo=.15))
+        t += .55
+        k += 1
+    # the question mark over the business
+    p.parts.append(_life(m["think"] - .1, m["a"] - m["think"] + .15,
+                         '<g class="a" data-fx="float" data-at="0" data-d="1" data-amp="8" data-w="3">'
+                         f'<text x="400" y="230" text-anchor="middle" font-family="\'Serif\',serif" font-weight="700" font-size="120" '
+                         f'fill="{RED}">?</text></g>'))
+    # the answer: a bracket over all three, ENTERPRISE VALUE
+    a = m["a"]
+    p.line([(30, 250), (30, 214), (770, 214), (770, 250)], _abs(p, a + .02), .45, color=TEAL, w=9)
+    p.parts.append(_g("pop", a + .3, .4, _tile(170, 120, 460, 78, TEAL, "ENTERPRISE VALUE", 44)))
+    if len(m["as_"]) > 1:
+        a1 = m["as_"][1][0]
+        p.parts.append(_g("pop", a1 + .1, .35, _ptag(140, 470, 170, "DEBT", DEBT_C, "#fff", 34)))
+        p.parts.append(_g("pop", a1 + .55, .35, _ptag(680, 500, 190, "EQUITY", GOLD, INK, 34)))
+
+
+def ev_bridge(p, m=None, eq=100, debt=40, cash=10, **_):
+    """Level 2, the bridge. EQUITY grows to $100 on the first sentence; on the second DEBT drops onto it (+$40)
+    and CASH comes off the top (-$10); on 'what's enterprise value' a dashed EV column waits with a question mark;
+    on the answer the EV column fills teal to the same height and counts to $130."""
+    base, k = 548, 2.9
+    ev = eq + debt - cash
+    qs = m["qs"]
+    t_eq = qs[0][0] + .15
+    t_debt = qs[1][0] + .1 if len(qs) > 1 else t_eq + 1
+    t_cash = (qs[1][0] + qs[1][1]) / 2 + .1 if len(qs) > 1 else t_debt + .8
+    t_ask = qs[-1][0] + .1
+    a = m["a"]
+    xs = [20, 215, 410, 610]
+    cw = 170
+    p.parts.append(_g("fade", p.t0, .3, f'<path d="M0 {base} L800 {base}" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'))
+
+    def lab(x, txt, at, col=INK):
+        p.parts.append(_g("fade", at, .3, f'<text x="{x + cw / 2}" y="{base + 46}" text-anchor="middle" font-family="\'Sans\',sans-serif" '
+                                          f'font-weight="700" font-size="32" fill="{col}">{H.escape(txt)}</text>'))
+
+    def val(x, y, txt, at, col="#fff", size=46):
+        p.parts.append(_g("pop", at, .3, f'<text x="{x + cw / 2}" y="{y}" text-anchor="middle" font-family="\'Serif\',serif" '
+                                         f'font-weight="700" font-size="{size}" fill="{col}">{H.escape(txt)}</text>'))
+    # equity grows from the ground
+    he = eq * k
+    p.parts.append(_g("growY", t_eq, .6, f'<rect x="{xs[0]}" y="{base - he:.0f}" width="{cw}" height="{he:.0f}" rx="8" fill="{GOLD}" '
+                                         f'stroke="{INK}" stroke-width="6"/>', style="transform-box:fill-box"))
+    val(xs[0], base - he / 2 + 16, f"${eq}", t_eq + .45, INK)
+    lab(xs[0], "EQUITY", t_eq)
+    # debt drops onto the top of equity's level
+    hd = debt * k
+    _slide(p, _abs(p, t_debt), f'<rect x="{xs[1]}" y="{base - he - hd:.0f}" width="{cw}" height="{hd:.0f}" rx="8" fill="{DEBT_C}" '
+                               f'stroke="{INK}" stroke-width="6"/>'
+                               f'<text x="{xs[1] + cw / 2}" y="{base - he - hd / 2 + 16:.0f}" text-anchor="middle" font-family="\'Serif\',serif" '
+                               f'font-weight="700" font-size="46" fill="#fff">+${debt}</text>', y0=-260, d=.5)
+    p.parts.append(_g("draw", t_debt + .3, .3, f'<path d="M{xs[0] + cw} {base - he:.0f} L{xs[1]} {base - he:.0f}" stroke="{INK}" '
+                                               f'stroke-width="4" stroke-dasharray="10 8" fill="none"/>', style=""))
+    lab(xs[1], "+ DEBT", t_debt)
+    # cash hangs down from the top of debt, then is lifted out
+    hc = cash * k
+    top = base - he - hd
+    p.parts.append(_g("growYdown", t_cash, .45, f'<rect x="{xs[2]}" y="{top:.0f}" width="{cw}" height="{hc:.0f}" rx="6" fill="{CASH_C}" '
+                                                 f'stroke="{INK}" stroke-width="6"/>', style="transform-box:fill-box"))
+    p.parts.append(_g("pop", t_cash + .3, .3, f'<text x="{xs[2] + cw / 2}" y="{top + hc + 52:.0f}" text-anchor="middle" '
+                                              f'font-family="\'Serif\',serif" font-weight="700" font-size="46" fill="{INK}">&#8722;${cash}</text>'))
+    p.parts.append(_g("draw", t_cash + .1, .3, f'<path d="M{xs[1] + cw} {top:.0f} L{xs[2]} {top:.0f}" stroke="{INK}" stroke-width="4" '
+                                               f'stroke-dasharray="10 8" fill="none"/>', style=""))
+    lab(xs[2], "− CASH", t_cash)
+    # the EV column: dashed and empty on the ask, filled on the answer
+    hv = ev * k
+    p.parts.append(_life(t_ask, a - t_ask + .25,
+                         f'<rect x="{xs[3]}" y="{base - hv:.0f}" width="{cw}" height="{hv:.0f}" rx="8" fill="none" stroke="{TEAL}" '
+                         f'stroke-width="6" stroke-dasharray="16 12"/>'
+                         '<g class="a" data-fx="float" data-at="0" data-d="1" data-amp="7" data-w="3">'
+                         f'<text x="{xs[3] + cw / 2}" y="{base - hv / 2 + 40:.0f}" text-anchor="middle" font-family="\'Serif\',serif" '
+                         f'font-weight="700" font-size="120" fill="{TEAL}">?</text></g>', fi=.2, fo=.15))
+    p.parts.append(_g("draw", t_cash + .5, .3, f'<path d="M{xs[2] + cw} {base - hv:.0f} L{xs[3]} {base - hv:.0f}" stroke="{INK}" '
+                                               f'stroke-width="4" stroke-dasharray="10 8" fill="none"/>', style=""))
+    lab(xs[3], "= EV", t_ask, TEAL)
+    p.parts.append(_g("growY", a + .05, .6, f'<rect x="{xs[3]}" y="{base - hv:.0f}" width="{cw}" height="{hv:.0f}" rx="8" fill="{TEAL}" '
+                                            f'stroke="{INK}" stroke-width="6"/>', style="transform-box:fill-box"))
+    p.parts.append(_count(xs[3] + cw / 2, round(base - hv / 2 + 18), 0, ev, round(a + .1, 2), .8, size=54, color="#fff", pre="$"))
+    # the second answer sentence walks the sum: each column pulses in turn
+    if len(m["as_"]) > 1:
+        s0, s1 = m["as_"][1]
+        for j, x in enumerate(xs[:3]):
+            hh = (he, hd, hc)[j]
+            y = (base - he, base - he - hd, top)[j]
+            tb = s0 + (s1 - s0) * (.05 + .3 * j)
+            ring = (f'<rect x="{x - 9}" y="{y - 9:.0f}" width="{cw + 18}" height="{hh + 18:.0f}" rx="12" fill="none" '
+                    f'stroke="{TEAL}" stroke-width="7"/>')
+            p.parts.append(_life(tb, .75, _g("pop", tb, .3, ring), fi=.08, fo=.25))
+
+
+def ev_borrow(p, m=None, amount=50, ev=130, **_):
+    """Level 3, borrow and keep it as cash. A balance: EV $130 sits on the pivot. On 'borrows fifty' a DEBT +$50
+    weight drops on the left pan and the beam tips; on 'keeps it as cash' a CASH +$50 weight drops on the right pan
+    and the beam comes back level; a question mark over EV through the clock; on 'Nothing.' EV is ticked and NO
+    CHANGE lands beside it; on 'they cancel out' the two weights pulse together."""
+    qs, a = m["qs"], m["a"]
+    s0, s1 = qs[0]
+    t_debt = s0 + .25
+    t_cash = s0 + (s1 - s0) * .62
+    cx, cy, half = 400, 330, 290
+    rot = 7.0
+    dy = round(half * math.sin(math.radians(rot)), 1)
+    # stand and EV on top, there from the start
+    p.parts.append(_g("fade", p.t0, .3,
+                      f'<path d="M{cx} {cy} L{cx - 70} 560 L{cx + 70} 560 Z" fill="{INK}"/>'
+                      f'<path d="M80 560 L720 560" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+                      + _tile(cx - 130, 130, 260, 120, TEAL, "", 10)
+                      + f'<text x="{cx}" y="178" text-anchor="middle" font-family="\'Sans\',sans-serif" font-weight="700" font-size="34" fill="#fff">EV</text>'
+                      f'<text x="{cx}" y="232" text-anchor="middle" font-family="\'Serif\',serif" font-weight="700" font-size="56" fill="#fff">${ev}</text>'))
+    keys = [[0, 0, 0, 1, 1, 0], [round(t_debt + .3, 2), 0, 0, 1, 1, 0], [round(t_debt + .9, 2), 0, 0, 1, 1, -rot],
+            [round(t_cash + .3, 2), 0, 0, 1, 1, -rot], [round(t_cash + 1.0, 2), 0, 0, 1, 1, 0]]
+    p.parts.append(f'<g class="a" data-fx="kf" data-at="0" data-d="1" data-kf="{H.escape(_json(keys))}" '
+                   f'style="transform-box:view-box;transform-origin:{cx}px {cy}px">'
+                   f'<rect x="{cx - half - 20}" y="{cy - 10}" width="{2 * half + 40}" height="20" rx="10" fill="{INK}"/>'
+                   f'<circle cx="{cx}" cy="{cy}" r="18" fill="{GOLD}" stroke="{INK}" stroke-width="5"/></g>')
+
+    def pan(x, sign, weight, t_drop):
+        k_ = [[0, 0, 0], [round(t_debt + .3, 2), 0, 0], [round(t_debt + .9, 2), 0, sign * dy], [round(t_cash + .3, 2), 0, sign * dy],
+              [round(t_cash + 1.0, 2), 0, 0]]
+        kk = [[t, x_, y_, 1, 1, 0] for t, x_, y_ in k_]
+        inner = (f'<path d="M{x} {cy} L{x - 90} 470 M{x} {cy} L{x + 90} 470" stroke="{INK}" stroke-width="4"/>'
+                 f'<path d="M{x - 110} 470 L{x + 110} 470 Q{x} 520 {x - 110} 470 Z" fill="#E8E1D4" stroke="{INK}" stroke-width="5"/>')
+        # the weight falls from just above the pan (a first cut dropped it from the question card's height, over its words)
+        inner += _g("fade", t_drop, .15, _g("slide", t_drop, .4, weight, style="", x0=0, x1=0, y0=-170, y1=0, ease="out"), style="")
+        p.parts.append(f'<g class="a" data-fx="kf" data-at="0" data-d="1" data-kf="{H.escape(_json(kk))}">{inner}</g>')
+    w_debt = (f'<rect x="{cx - half - 95}" y="382" width="190" height="88" rx="10" fill="{DEBT_C}" stroke="{INK}" stroke-width="5"/>'
+              f'<text x="{cx - half}" y="418" text-anchor="middle" font-family="\'Sans\',sans-serif" font-weight="700" font-size="28" fill="#fff">DEBT</text>'
+              f'<text x="{cx - half}" y="458" text-anchor="middle" font-family="\'Serif\',serif" font-weight="700" font-size="38" fill="#fff">+${amount}</text>')
+    w_cash = (f'<rect x="{cx + half - 95}" y="382" width="190" height="88" rx="10" fill="{CASH_C}" stroke="{INK}" stroke-width="5"/>'
+              f'<text x="{cx + half}" y="418" text-anchor="middle" font-family="\'Sans\',sans-serif" font-weight="700" font-size="28" fill="{INK}">CASH</text>'
+              f'<text x="{cx + half}" y="458" text-anchor="middle" font-family="\'Serif\',serif" font-weight="700" font-size="38" fill="{INK}">+${amount}</text>')
+    pan(cx - half, 1, w_debt, t_debt)
+    pan(cx + half, -1, w_cash, t_cash)
+    # the question over EV
+    p.parts.append(_life(m["think"] - .1, a - m["think"] + .15,
+                         '<g class="a" data-fx="float" data-at="0" data-d="1" data-amp="7" data-w="3">'
+                         f'<text x="{cx + 175}" y="225" text-anchor="middle" font-family="\'Serif\',serif" font-weight="700" font-size="110" '
+                         f'fill="{RED}">?</text></g>'))
+    # the answer
+    p.parts.append(_g("pop", a + .1, .35, f'<circle cx="{cx + 150}" cy="140" r="30" fill="#fff" stroke="{INK}" stroke-width="5"/>'
+                                          f'<path d="M{cx + 136} 141 l10 11 l20 -22" fill="none" stroke="{TEAL}" stroke-width="8" '
+                                          f'stroke-linecap="round" stroke-linejoin="round"/>'))
+    p.parts.append(_g("pop", a + .35, .35, _ptag(668, 272, 230, "NO CHANGE", TEAL, "#fff", 30, rot=-3)))
+    if len(m["as_"]) > 1:
+        t_c = m["as_"][-1][0]
+        p.parts.append(_g("pop", t_c + .05, .3, f'<text x="{cx}" y="455" text-anchor="middle" font-family="\'Serif\',serif" font-weight="700" '
+                                                f'font-size="80" fill="#fff">=</text>'))
+
+
+SCENES.update({f.__name__: f for f in (ev_whole, ev_bridge, ev_borrow)})
+
+
+def level_picture(name, m, w, h, seed=1, **opts):
+    """15 Nov: a level-long scene (levels.py scene=) sized to its box; t0 and dur span the whole level."""
+    p = Pen(m["start"] + .2, max(m["end"] - m["start"], .5), seed)
+    SCENES[name](p, m=m, **opts)
+    return p.svg().replace(f'width="{W}" height="{Hh}"', f'width="{w}" height="{h}"', 1)
