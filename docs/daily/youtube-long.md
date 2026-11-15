@@ -10,3 +10,4 @@
 | 2026-11-13 | yt-007-panic-of-1907 | In 1907, America Had No Central Bank. So a Banker Locked the Doors. | HEART | 8:49 | |
 | 2026-11-13 | yt-007-panic-of-1907-v2 | In 1907, America Had No Central Bank. So a Banker Locked the Doors. (remake with 6 filmed beats; replaces the first cut) | HEART | 8:49 | |
 | 2026-11-14 | yt-008-gold-window | In 1971 the Dollar Stopped Being Gold. Most Americans Couldn't Swap It Anyway. (11 filmed beats, 4 new sets; scored recommended) | HEART | 9:53 | |
+| 2026-11-15 | yt-009-ponzi-coupon | Ponzi's Scheme Started With a Real Trade. Here's Why It Could Never Work. (14 filmed beats: 7 on 3 new 1920 sets, 7 filmed documents; scored recommended) | HEART | 8:28 | |

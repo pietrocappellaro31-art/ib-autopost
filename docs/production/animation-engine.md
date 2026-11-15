@@ -39,6 +39,9 @@ A fully filmed 10-minute video would take about 2 to 3 hours to render on this m
   the art side of the look, faded into the ground, labelled RECONSTRUCTION (`film_still`, `film_panel`). Drawings stay
   the fallback (`art=`).
 - `build/cine_1971.py` 1960s and 1970s sets and the eleven filmed beats of YouTube #8.
+- `build/cine_lib.py` `document_shot(style, head, sub, quote, hl, start, end, source)` (15 Nov): a filmed document for a
+  quote; the runtime's `data-type`, `data-hl` and `data-caret` ink and highlight text measured per glyph.
+- `build/cine_1920.py` 1920 sets and the filmed beats of YouTube #9.
 - `build/master.py scored <clean.mp4>` a scored alternative for a finished Levels Short or Reel.
 - `build/yt_preview.py` variety test, motion sheets, motion measures.
 

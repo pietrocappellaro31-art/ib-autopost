@@ -271,6 +271,36 @@ function life(t, el) {                            // procedural ambient things i
       else if (attr === 'count') { const d = +(s.dataset.dec || 0); s.textContent = (s.dataset.pre || '') + v[0].toFixed(d).replace(/\B(?=(\d{3})+(?!\d))/g, ',') + (s.dataset.suf || ''); }
       else if (attr === 'clip') s.style.clipPath = `inset(${v[0]}% ${v[1]}% ${v[2]}% ${v[3]}%)`;
       else s.setAttribute(attr, v[0]); }); });
+  // 15 Nov: a document read on screen (cine_lib.document_shot). data-type on a <text>: [[t, chars], ...], how many
+  // characters are inked; the clip is measured on the glyphs themselves (getExtentOfChar), so it lands on the
+  // letter being read, whatever the font. data-hl on a <rect>: [textId, i0, i1, t0, t1], a highlighter sweep over
+  // characters i0..i1-1 of that text between t0 and t1. data-caret on any element: [textId], it sits at the
+  // inked edge while that text is being inked.
+  el.querySelectorAll('[data-type]').forEach(s => {
+    const n = s.getNumberOfChars(); if (!n) return;
+    const c = Math.max(0, Math.min(n, Math.floor(keyed(JSON.parse(s.dataset.type), t)[0])));
+    s._c = c;
+    if (c >= n) { s.style.clipPath = 'none'; s.style.opacity = 1; return; }
+    if (c <= 0) { s.style.opacity = 0; return; }
+    const b = s.getBBox(), e = s.getExtentOfChar(c - 1);
+    const right = Math.max(0, Math.min(100, (1 - (e.x + e.width - b.x) / b.width) * 100));
+    s.style.opacity = 1; s.style.clipPath = `inset(-40% ${right.toFixed(2)}% -40% 0)`; });
+  el.querySelectorAll('[data-hl]').forEach(r => {
+    const [id, i0, i1, t0, t1] = JSON.parse(r.dataset.hl);
+    const s = document.getElementById(id); if (!s) return;
+    const a = s.getExtentOfChar(i0), z = s.getExtentOfChar(Math.max(i0, i1 - 1));
+    const q = CE.inout(cl((t - t0) / Math.max(t1 - t0, .01)));
+    r.setAttribute('x', (a.x - 6).toFixed(1)); r.setAttribute('y', (a.y + a.height * .12).toFixed(1));
+    r.setAttribute('height', (a.height * .84).toFixed(1));
+    r.setAttribute('width', Math.max(0, (z.x + z.width - a.x + 12) * q).toFixed(1));
+    r.style.opacity = q > 0 ? 1 : 0; });
+  el.querySelectorAll('[data-caret]').forEach(k => {
+    const s = document.getElementById(JSON.parse(k.dataset.caret)[0]); if (!s) return;
+    const n = s.getNumberOfChars(), c = s._c ?? 0;
+    if (c <= 0 || c >= n) { k.style.opacity = 0; return; }
+    const e = s.getExtentOfChar(c - 1);
+    k.setAttribute('transform', `translate(${(e.x + e.width + 4).toFixed(1)},${(e.y).toFixed(1)})`);
+    k.style.opacity = .85; });
 }
 window.seek = function (t) {
   grain(t);
@@ -344,6 +374,15 @@ LOOKS = {
     "modern_grey": dict(coat="#4A4D52", coat2="#36383C", vest="#F7F5F2", legs="#4A4D52", stock="#4A4D52", shoe=INK, skin="#8A5638", hair="#14100D", hat="", style="suit", cuff="#F7F5F2", tie=TEAL),
     # 14 Nov, YouTube #8 (1960 to 1973): generic period suits in browns, tans and grey-blues with wide ties, a 1970s
     # dress, a cardigan for home. Nobody's likeness; used by build/cine_1971.py.
+    # 15 Nov, YouTube #9 (Boston, 1920): straw boaters and soft suits, cloche hats and shorter dresses. Generic period
+    # clothing; nobody's likeness; used by build/cine_1920.py.
+    "boater_1920": dict(coat="#4A4D52", coat2="#36383C", vest="#F7F5F2", legs="#4A4D52", stock="#4A4D52", shoe=INK, skin="#E5B391", hair="#5A3A28", hat="boater", style="suit", cuff="#F7F5F2", tie=RED, era="1920"),
+    "boater_1920b": dict(coat="#C2B59A", coat2="#A89B80", vest="#F7F5F2", legs="#8C826E", stock="#8C826E", shoe="#2A1E18", skin="#8D5A3B", hair="#14100D", hat="boater", style="suit", cuff="#F7F5F2", tie=TEAL, era="1920"),
+    "clerk_1920": dict(coat="#2E3A46", coat2="#222C35", vest="#F2F2F2", legs="#2E3A46", stock="#2E3A46", shoe=INK, skin="#F0C7A4", hair="#3A2A20", hat="", style="suit", cuff="#F2F2F2", tie=MUSTARD, era="1920"),
+    "clerk_1920b": dict(coat="#5B4636", coat2="#46362A", vest="#F7F5F2", legs="#5B4636", stock="#5B4636", shoe=INK, skin="#D9A684", hair="#14100D", hat="", style="suit", cuff="#F7F5F2", tie=INK, era="1920"),
+    "lady_1920": dict(coat="#7A3B4A", coat2="#5E2D39", vest="#F7F5F2", legs="#7A3B4A", stock="#7A3B4A", shoe="#2A1E18", skin="#F1CBAA", hair="#3A2A20", hat="cloche", style="dress", cuff="#F7F5F2", era="1920"),
+    "lady_1920b": dict(coat="#2E5A5A", coat2="#224545", vest="#F7F5F2", legs="#2E5A5A", stock="#2E5A5A", shoe="#2A1E18", skin="#B97A55", hair="#1E1410", hat="cloche", style="dress", cuff="#F7F5F2", era="1920"),
+    "worker_1920": dict(coat="#5B6B5A", coat2="#47554A", vest="#C9A27A", legs="#4A3B30", stock="#4A3B30", shoe="#2A1E18", skin="#D59E7B", hair="#3A2A20", hat="cap", style="suit", cuff="#D8CFC0", tie="#7A3B22", era="1920"),
     "suit_1971": dict(coat="#6B4A32", coat2="#553A27", vest="#F1E6CF", legs="#6B4A32", stock="#6B4A32", shoe=INK, skin="#E5B391", hair="#5A3A28", hat="", style="suit", cuff="#F1E6CF", tie=MUSTARD, era="1971"),
     "suit_1971b": dict(coat="#3E4F66", coat2="#2F3D50", vest="#EEF0F2", legs="#3E4F66", stock="#3E4F66", shoe=INK, skin="#D9A684", hair="#2A1E18", hat="", style="suit", cuff="#EEF0F2", tie=RED, era="1971"),
     "suit_1971c": dict(coat="#A68A5E", coat2="#8C7349", vest="#F7F1E4", legs="#7A6446", stock="#7A6446", shoe="#2A1E18", skin="#F0C7A4", hair="#BDB4A6", hat="", style="suit", cuff="#F7F1E4", tie=TEAL, era="1971"),
@@ -370,7 +409,7 @@ def _leg(L, back):
         thigh = _p("M-15,-4 C-17,30 -14,60 -11,84 L11,84 C14,60 17,30 15,-4 Z", legs)
         shin = _p("M-11,-2 C-11,30 -9,56 -8,76 L8,76 C9,56 11,30 11,-2 Z", stock)
     shoe_d = "M-10,-5 L14,-4 C26,-3 31,3 29,9 L-10,9 Q-13,2 -10,-5 Z"
-    buckle = '' if L["style"] in ("suit",) or L.get("era") in ("1907", "1971") else f'<rect x="4" y="-4" width="7" height="5" rx="1" fill="{MUSTARD}" stroke="{INK}" stroke-width="1.5"/>'
+    buckle = '' if L["style"] in ("suit",) or L.get("era") in ("1907", "1920", "1971") else f'<rect x="4" y="-4" width="7" height="5" rx="1" fill="{MUSTARD}" stroke="{INK}" stroke-width="1.5"/>'
     return (f'<g class="hip{side}">{thigh}<g class="kn{side}">{shin}'
             f'<g class="ft{side}">{_p(shoe_d, shoe)}{buckle}</g></g></g>')
 
@@ -397,6 +436,8 @@ def _head(L):
         back_hair = _p("M-18,-58 C-40,-50 -42,-16 -36,8 C-30,22 -18,24 -10,18 C-6,6 -6,-20 -2,-40 Z", hair)
         back_hair += "".join(f'<circle cx="{-30 + 7*i}" cy="{4 + (i % 2)*5}" r="7" fill="{hair}" stroke="{INK}" stroke-width="2.2"/>' for i in range(3))
         top_hair = _p("M-22,-48 C-20,-66 6,-72 22,-60 C30,-54 30,-46 26,-44 C14,-52 -2,-50 -14,-40 Z", hair)
+    elif L["hat"] == "cloche":                                        # 1920: a short bob under the cloche
+        back_hair = _p("M-24,-44 C-32,-34 -30,-14 -18,-10 C-12,-16 -10,-30 -4,-40 Z", hair)
     elif L["hat"] == "wide":                                          # 1907: hair up, under a wide hat
         back_hair = _p("M-20,-50 C-34,-44 -34,-20 -22,-14 C-14,-20 -12,-34 -6,-46 Z", hair)
         top_hair = _p("M-22,-44 C-22,-62 10,-68 24,-54 C14,-52 0,-50 -16,-36 Z", hair)
@@ -425,6 +466,13 @@ def _head(L):
         hat = (_p("M-46,-56 C-24,-66 24,-68 48,-56 C34,-48 -32,-48 -46,-56 Z", L["coat"])
                + _p("M-24,-58 C-22,-82 22,-84 26,-58 Z", L["coat2"])
                + f'<circle cx="18" cy="-70" r="7" fill="{RED}" stroke="{INK}" stroke-width="2"/>')
+    elif L["hat"] == "boater":                                        # 1920: a flat straw boater with a dark band
+        hat = (_p("M-36,-58 C-20,-63 20,-64 40,-58 C32,-54 -26,-54 -36,-58 Z", "#E3C98A")
+               + _p("M-22,-60 L-21,-80 C-6,-83 10,-83 23,-80 L24,-60 Z", "#E8D196")
+               + f'<path d="M-21,-66 L24,-66" stroke="#2A2522" stroke-width="6"/>')
+    elif L["hat"] == "cloche":                                        # 1920: a bell-shaped cloche worn low
+        hat = (_p("M-28,-40 C-34,-70 4,-82 26,-66 C34,-58 34,-48 30,-44 C14,-50 -8,-50 -28,-40 Z", L["coat"])
+               + f'<path d="M-26,-50 C-6,-60 16,-60 30,-52" fill="none" stroke="{L["coat2"]}" stroke-width="5"/>')
     elif L["hat"] == "cap":
         hat = _p("M-24,-50 C-22,-74 18,-76 26,-54 L38,-50 C30,-46 20,-48 -24,-46 Z", "#4A3B30")
     neck = _p("M-7,4 L-6,-12 L8,-12 L8,4 Z", skin)

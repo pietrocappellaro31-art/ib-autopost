@@ -1209,12 +1209,14 @@ SCENES.update({f.__name__: f for f in (sale_bag, four_ones, shopfront, tally_boa
 # ---- 11 Nov (long video, Armistice Day): how the First World War was paid for. Generic shapes of our own:
 # no real posters, mastheads, banknotes or emblems are copied.
 
-def newspaper(p, headline="OVER-SUBSCRIBED", sub="AND STILL THEY POUR IN", date="1914", stamp="", **_):
+def newspaper(p, headline="OVER-SUBSCRIBED", sub="AND STILL THEY POUR IN", date="1914", stamp="", masthead="THE DAILY LEDGER", **_):
     """A folded broadsheet: a made-up masthead bar, a big headline, columns of grey lines; stamp= slams a red
     verdict across it (e.g. FALSE)."""
     p.fill(f'<rect x="90" y="70" width="620" height="500" rx="8" fill="#fff" stroke="{INK}" stroke-width="6" transform="rotate(-2 400 320)"/>', 0)
     p.box(120, 95, 560, 54, INK, .06, rx=4)
-    p.text(400, 134, "THE DAILY LEDGER", .1, size=34, serif=True, weight=700, color="#fff")
+    # 15 Nov (#9): masthead= names the real paper when the label cites it (a made-up masthead beside "Boston Post"
+    # contradicted the label); plain type, no logo
+    p.text(400, 134, masthead, .1, size=34, serif=True, weight=700, color="#fff")
     p.text(670, 180, date, .14, size=26, weight=600, color=GREY, anchor="end")
     size = 64 if len(headline) <= 12 else 54 if len(headline) <= 16 else 44
     p.text(400, 255, headline, .2, size=size, serif=True, weight=700, color=INK, fx="pop")

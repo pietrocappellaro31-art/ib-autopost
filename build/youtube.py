@@ -554,7 +554,7 @@ def render(slug, html, total, work):
         pg.evaluate("Promise.all([400,500,600].map(w => document.fonts.load(w + ' 40px Sans')).concat([document.fonts.load(\"700 40px 'Serif'\"),"
                     " document.fonts.load(\"italic 600 40px 'Serif'\")]))")
         fitted = pg.evaluate("fitSketches()")
-        zooms = pg.evaluate("[...document.querySelectorAll('svg.sk')].map(s => +(s.dataset.fitted || 1))")
+        zooms = pg.evaluate("[...document.querySelectorAll('svg.sk')].map(s => +(s.dataset.fitted || 1))")  or [1.0]
         print(f"  fitted {fitted} drawings to their boxes (zoom {min(zooms):.2f} to {max(zooms):.2f}, median {sorted(zooms)[len(zooms) // 2]:.2f})", flush=True)
         bad = {}
         for f in range(n):
@@ -831,20 +831,22 @@ def lufs_of(path):
 def trim_loudness(final, target=-14.0, ceiling=-1.5):
     """12 Nov: one-pass loudnorm left #4 at -14.6 and #5 at -15.0 LUFS (the true-peak ceiling holds it back).
     Second stage: measure, apply the missing gain, catch the peaks with a look-ahead limiter, keep the video
-    stream as it is, and keep the result only if it lands closer to the target without breaking the ceiling."""
+    stream as it is, and keep the result only if it lands closer to the target without breaking the ceiling.
+    15 Nov (#9): the limiter now runs at 4x the sample rate, so it sees the peaks between samples; at 48 kHz the clean
+    mix came out at -0.6 dBTP after AAC and the stage was dropped, leaving the file at -15.1 LUFS."""
     i0, tp0 = lufs_of(final)
-    if abs(i0 - target) < .4:
+    if abs(i0 - target) < .4 and tp0 <= ceiling:            # 15 Nov: on target but over the -1.5 dBTP ceiling still runs
         return i0
     tmp = final.with_name(final.stem + "-trim.mp4")
     lim = 10 ** ((ceiling - .4) / 20)
     for extra in (0.0, .3, .6):
         subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", str(final), "-af",
-                        f"volume={target - i0 + extra:.2f}dB,alimiter=limit={lim:.3f}:attack=2:release=60:level=false,aresample=48000",
+                        f"aresample=192000,volume={target - i0 + extra:.2f}dB,alimiter=limit={lim:.3f}:attack=2:release=60:level=false,aresample=48000",
                         "-c:v", "copy", "-c:a", "aac", "-b:a", "192k", "-ar", "48000", "-movflags", "+faststart", str(tmp)], check=True)
         i1, tp1 = lufs_of(tmp)
         if i1 >= target - .3 or extra == .6:
             break
-    if abs(i1 - target) < abs(i0 - target) and tp1 <= -1.0:                  # -1 dBTP is the usual streaming ceiling
+    if (abs(i1 - target) < abs(i0 - target) or (abs(i1 - target) < .4 and tp1 < tp0)) and tp1 <= -1.0:                  # -1 dBTP is the usual streaming ceiling
         tmp.replace(final)
         print(f"  loudness: {i0} -> {i1} LUFS, {tp0} -> {tp1} dBTP (second stage)", flush=True)
         return i1
@@ -955,7 +957,10 @@ def cine_splice(ep, work, silent, total):
     args, graph, last = ["ffmpeg", "-y", "-v", "error", "-i", str(silent)], "", "0:v"
     for i, (mp4, a, b) in enumerate(clips):
         args += ["-itsoffset", f"{a:.3f}", "-i", str(mp4)]
-        graph += f"[{last}][{i + 1}:v]overlay=eof_action=pass:enable='between(t,{a:.3f},{b - .02:.3f})'[v{i}];"
+        # 15 Nov (#9): a clip has round(dur * fps) frames, so its last frame can end up to one frame before its
+        # placeholder does; with eof_action=pass that frame showed the dark placeholder (14 one-frame flashes in #9,
+        # found by a brightness scan). The clip's last frame is now held to the end of its slot.
+        graph += f"[{last}][{i + 1}:v]overlay=eof_action=repeat:enable='between(t,{a:.3f},{b - .001:.3f})'[v{i}];"
         last = f"v{i}"
     subprocess.run(args + ["-filter_complex", graph.rstrip(";"), "-map", f"[{last}]", "-c:v", "libx264", "-preset", "medium",
                            "-crf", "20", "-pix_fmt", "yuv420p", "-movflags", "+faststart", str(out)], check=True)

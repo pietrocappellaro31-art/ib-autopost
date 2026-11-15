@@ -28,6 +28,14 @@ DIR = os.environ.get("KOKORO_DIR", "")
 
 # Words outside misaki's dictionaries, with their phonemes written by hand.
 PHONEMES = {
+    # 15 Nov, YouTube #9 (Charles Ponzi and the reply coupon)
+    "ponzi": "pˈɑnzi",
+    "pulitzer": "pˈʊlɪtsəɹ",
+    "ponzi's": "pˈɑnziz",
+    "centavos": "sɛntˈɑvOz",
+    "peseta": "pəsˈAtə",
+    "madoff": "mˈAdɔf",
+    "madoff's": "mˈAdɔfs",
     # 13 Nov, cinematic upgrade: finance terms the narrator must never guess (narrator_check.py)
     "barron": "bˈæɹən",                   # 14 Nov, the first cash machine Short (John Shepherd-Barron)
     "barclays": "bˈɑɹkliz",

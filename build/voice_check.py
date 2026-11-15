@@ -37,6 +37,13 @@ def words(text):
     canonical token ("seven and a half" and "7.5" both become "7.5", "one
     thousand two hundred and fifty" and "1,250" both become "1250")."""
     t = re.sub(r"(\d),(\d)", r"\1\2", text.lower())
+    # 15 Nov (YouTube #9): "$2.50" and "two dollars and fifty cents" are the same words; "every hundred dollars" is
+    # "every $100"; "dollars' worth" keeps no stray apostrophe; British -our spellings match the recogniser's -or
+    t = re.sub(r"\$(\d+)\.(\d\d)\b", r"\1 qqstop \2 cents", t)
+    t = re.sub(r"\b([a-z]+) dollars and ([a-z]+(?: [a-z]+)?) cents\b", r"\1 qqstop \2 cents", t)
+    t = re.sub(r"\bevery hundred\b", "every 100", t)
+    t = re.sub(r"s' ", "s ", t)
+    t = re.sub(r"\bhonour", "honor", t)
     t = t.replace("%", " percent ").replace("-", " ").replace(",", " ")
     t = re.sub(r"(?<=[a-z0-9])[.!?;:](?=\s|$)", " qqstop ", t)   # 13 Nov: a sentence end stops a spoken number ("seventy. Two days" is not 72)
     t = re.sub(r"\bper cent\b", "percent", t)              # British spelling (EMMA, GEORGE), same words

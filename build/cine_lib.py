@@ -600,3 +600,188 @@ def monitor_irr(t_on=.2, t_b=.9, t_ans=None, cx=900, cy=600, w=560, h=340, a=("A
               f'<circle cx="{tx:.1f}" cy="{ty:.1f}" r="19" fill="{TEAL}" stroke="{INK}" stroke-width="2.8"/>'
               f'<path d="M{tx - 9:.1f},{ty:.1f} l6,7 l12,-14" fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/></g>')
     return s
+
+
+# ------------------------------------------------------------------------------------------------ documents
+# 15 Nov 2026 (YouTube #9; the 14 Nov "next improvement"): a sourced quote is no longer a text card. It is a document
+# on a desk, filmed: the sheet slides in under a lamp, the camera pushes onto the passage, the passage inks itself in
+# as the narrator reads it (measured per glyph in the browser, so the edge sits on the letter being said), the key
+# words get a highlighter sweep when they are read, and the camera follows the line being read. The rest of the
+# page is illegible greeked lines, so no unsourced word is ever shown. Replaces kind="quote" (and suits a "term" or
+# a headline): show=dict(kind="cine", shot=document_shot(...)).
+
+DOC_STYLES = dict(
+    opinion=dict(paper="#F8F4EA", ink="#1E1A16", desk="#5A3B26", grain="#4B311F", head_size=40, head_family="Serif", rule=True,
+                 lamp=True, grade="warm", props=("glasses", "pen")),
+    newspaper=dict(paper="#ECE4D2", ink="#1C1A17", desk="#4A4A46", grain="#3E3E3A", head_size=86, head_family="Serif", rule=True,
+                   lamp=False, grade="cool", props=("cup", "pen")),
+    flyer=dict(paper="#F3E7C9", ink="#2A1E14", desk="#6B4A30", grain="#5A3D27", head_size=58, head_family="Serif", rule=False,
+               lamp=True, grade="warm", props=("coins", "pen"), border=True),
+    notice=dict(paper="#FFFFFF", ink="#141414", desk="#3E4A52", grain="#35414A", head_size=34, head_family="Sans", rule=True,
+                lamp=False, grade="cool", props=("pen", "phone")),
+)
+
+
+def _wrap(text, width):
+    import textwrap
+    return textwrap.wrap(text, width, break_on_hyphens=False) or [""]
+
+
+def _greek(x, y, w, n, gap=40, seed=0, color="#B9AE9A"):
+    """Illegible body lines: grey bars, so nothing unsourced is ever readable."""
+    rng = random.Random(seed)
+    s = ""
+    for i in range(n):
+        ww = w * (rng.uniform(.55, .78) if i == n - 1 else rng.uniform(.9, 1.0))
+        s += f'<rect x="{x}" y="{y + i * gap}" width="{ww:.0f}" height="11" rx="5" fill="{color}" opacity=".7"/>'
+    return s
+
+
+def _desk_props(names, st):
+    s = ""
+    for nm in names:
+        if nm == "glasses":
+            s += (f'<g transform="translate(1700,820) rotate(-18)"><circle cx="-46" cy="0" r="40" fill="#FFFFFF" fill-opacity=".18" stroke="{INK}" stroke-width="6"/>'
+                  f'<circle cx="46" cy="0" r="40" fill="#FFFFFF" fill-opacity=".18" stroke="{INK}" stroke-width="6"/>'
+                  f'<path d="M-6,-4 Q0,-14 6,-4 M-86,-6 L-150,-30 M86,-6 L150,-30" fill="none" stroke="{INK}" stroke-width="6"/></g>')
+        elif nm == "pen":
+            s += (f'<g transform="translate(260,860) rotate(28)">' + _r(-12, -150, 24, 230, "#1E1A18", rx=10)
+                  + _r(-12, -170, 24, 24, MUSTARD, rx=6) + f'<path d="M-10,80 L0,118 L10,80 Z" fill="#C9A24A" stroke="{INK}" stroke-width="3"/></g>')
+        elif nm == "cup":
+            s += f'<g transform="translate(1720,780) scale(2.6)">{cup()}</g>'
+        elif nm == "coins":
+            s += "".join(f'<g transform="translate({1660 + 70 * i},{840 - 8 * (i % 2)})">{coin_stack(3 + i, r=26)}</g>' for i in range(3))
+        elif nm == "phone":
+            s += f'<g transform="translate(1720,760) rotate(12)">{phone(130, 250, screen="#2E3A46")}</g>'
+    return s
+
+
+def document_shot(style="opinion", head="", sub="", quote="", hl=(), start=(0, None), end=None, source="", before=3, after=2,
+                  wrap=44, size=58, label="Document", badge_text="", ink_mode="read", seed=1):
+    """A filmed document whose passage is read on screen. Returns fn(w, h, dur, ctx) for a kind="cine" beat.
+    style: opinion | newspaper | flyer | notice (DOC_STYLES). head and sub: the masthead lines (sourced names only).
+    quote: the passage shown legibly, exactly as the source has it. hl: words or phrases in it to highlight.
+    start=(sentence, word): the reading starts at that word of that sentence of the beat (word None: the sentence
+    start); end: the sentence whose end it reaches (default the last). ink_mode "read": the passage is printed
+    faint and inks itself in as it is read; "print": printed dark already (a headline), only the highlights move.
+    source: a small credit line under the passage."""
+    st = DOC_STYLES[style]
+
+    def fn(w, h, dur, ctx):
+        segs = ctx.get("segs") or [("", .3, dur - .5)]
+
+        def at(i, word=None):
+            x, a, b = segs[min(i, len(segs) - 1)]
+            if not word:
+                return a
+            k = x.lower().find(word.lower())
+            return a + (b - a) * max(k, 0) / max(len(x), 1)
+        t_a = max(.7, at(*start) if isinstance(start, tuple) else at(start) - .05)
+        t_b = segs[min(end if end is not None else len(segs) - 1, len(segs) - 1)][2]
+        t_b = max(t_a + 1.0, min(dur - .5, t_b))
+        lines = _wrap(quote, wrap)
+        gap = int(size * 1.36)
+        px, pw = 330, 1260                                             # the sheet, on the focus plane (z 1)
+        top = 150
+        y_head = top + 110
+        body_x = px + 110
+        y_q = y_head + (200 if style == "newspaper" else 150) + before * 40 + 40
+        ph = (y_q - top) + len(lines) * gap + after * 40 + 260
+        # timing: characters are inked at a steady rate through the reading span (spoken words track characters)
+        total_chars = sum(len(x) for x in lines) or 1
+        line_t, acc = [], 0
+        for x in lines:
+            a = t_a + (t_b - t_a) * acc / total_chars
+            acc += len(x)
+            line_t.append((a, t_a + (t_b - t_a) * acc / total_chars))
+        paper = st["paper"]
+        sheet = (f'<g {C.kv(translate=[[0, 0, 160, 1.2], [.05, 0, 160, 1.2], [.75, 0, 0, 0, "out"]], opacity=[[0, 0], [.05, 0], [.35, 1]])}>'
+                 f'<rect x="{px + 14}" y="{top + 18}" width="{pw}" height="{ph}" fill="#000" opacity=".28"/>'
+                 + _r(px, top, pw, ph, paper, sw=2.6))
+        if st.get("border"):
+            sheet += f'<rect x="{px + 28}" y="{top + 28}" width="{pw - 56}" height="{ph - 56}" fill="none" stroke="{st["ink"]}" stroke-width="4"/>'
+        hf = "Serif" if st["head_family"] == "Serif" else "Sans"
+        sheet += _t(px + pw / 2, y_head, head, st["head_size"], fill=st["ink"], family=hf, extra='letter-spacing="3"')
+        if sub:
+            sheet += _t(px + pw / 2, y_head + 58, sub, 28, fill="#6A5F50", weight=500, family="Sans", extra='letter-spacing="2"')
+        if st["rule"]:
+            yy = y_head + (90 if sub else 40)
+            sheet += f'<path d="M{px + 80},{yy} L{px + pw - 80},{yy}" stroke="{st["ink"]}" stroke-width="3"/>'
+            if style == "newspaper":
+                sheet += f'<path d="M{px + 80},{yy + 8} L{px + pw - 80},{yy + 8}" stroke="{st["ink"]}" stroke-width="1.5"/>'
+        sheet += _greek(body_x, y_q - 40 - before * 40, pw - 220, before, seed=seed)
+        hls, texts, found = "", "", set()
+        fam = "'Serif',serif"
+        weight, style_ = ("700", "normal") if style == "newspaper" else ("400", "italic")
+        for i, x in enumerate(lines):
+            y = y_q + i * gap
+            tid = f"dq{seed}_{i}"
+            esc = x.replace("&", "&amp;").replace("<", "&lt;")
+            a, b = line_t[i]
+            for ph_ in hl:                                              # highlight every listed phrase on this line
+                k = x.lower().find(ph_.lower())
+                if k < 0:
+                    continue
+                found.add(ph_)
+                th = a + (b - a) * (k + len(ph_)) / max(len(x), 1) if ink_mode == "read" else t_a + (t_b - t_a) * (sum(len(l) for l in lines[:i]) + k) / total_chars
+                hls += f'<rect data-hl=\'["{tid}",{k},{k + len(ph_)},{th:.3f},{th + .45:.3f}]\' x="0" y="0" width="0" height="0" fill="{MUSTARD}" opacity="0" rx="4"/>'
+            base = (f'<text x="{body_x}" y="{y}" font-family="{fam}" font-weight="{weight}" font-style="{style_}" font-size="{size}" '
+                    f'fill="{st["ink"]}"')
+            if ink_mode == "read":
+                texts += base + f' opacity=".22">{esc}</text>'
+                texts += base + f' id="{tid}" data-type=\'[[0,0],[{a:.3f},0],[{b:.3f},{len(x)},"lin"]]\'>{esc}</text>'
+                texts += f'<g data-caret=\'["{tid}"]\' opacity="0"><rect x="0" y="0" width="5" height="{int(size * .95)}" fill="{RED}"/></g>'
+            else:
+                texts += base + f' id="{tid}">{esc}</text>'
+        y_end = y_q + len(lines) * gap
+        miss = [x for x in hl if x not in found]
+        assert not miss, f"highlight not on one line (rewrap or shorten): {miss} in {lines}"
+        sheet += hls + texts
+        if source:
+            sheet += _t(body_x, y_end + 16, source, 26, fill="#6A5F50", anchor="start", weight=500, family="Sans")
+        sheet += _greek(body_x, y_end + 70, pw - 220, after, seed=seed + 5)
+        sheet += "</g>"
+        desk = (C.defs() + f'<rect x="-1600" y="-1200" width="5200" height="3600" fill="{st["desk"]}"/>'
+                + "".join(f'<path d="M-1600,{y} C-400,{y + 18} 1600,{y - 22} 3600,{y + 6}" stroke="{st["grain"]}" stroke-width="{3 + (y % 5)}" fill="none" opacity=".55"/>'
+                          for y in range(-1100, 2400, 70))
+                + f'<rect x="{px - 120}" y="{top + 60}" width="{pw}" height="{ph}" fill="#E9E1CF" stroke="{INK}" stroke-width="2" transform="rotate(-4 {px} {top})"/>')
+        glow = ""
+        if st["lamp"]:
+            glow = (f'<circle cx="760" cy="420" r="1100" fill="url(#glowWarm)" opacity=".42" data-flick=\'[0.42,0.03,3]\'/>'
+                    + C.motes(200, 0, 1500, 1000, n=34, op=.55, spd=5, seed=seed))
+        else:
+            glow = C.shaft(1100, -300, 520, 1700, angle=18, op=.22, color="230,240,255") + C.motes(200, 0, 1500, 1000, n=22, op=.4, spd=4, seed=seed)
+        props = _desk_props(st["props"], st)
+        # the camera: the whole sheet, then onto the passage, following the line being read, a little closer at the end
+        cy_of = lambda i: y_q + i * gap - size * .35
+        # the passage's centre: the longest line's estimated width (Source Serif italic is about .36 em a character)
+        cx_q = body_x + min(max(len(x) for x in lines) * size * .37, pw - 220) / 2
+        zr = 1.16 if len(lines) <= 3 else 1.06
+        cam = [[0, px + pw / 2, top + 420, .86], [max(.6, t_a - .4), cx_q, cy_of(0) + 60, zr, "inout"]]
+        for i, (a, b) in enumerate(line_t):
+            if i:
+                cam.append([a, cx_q, cy_of(i) + 40, zr + .015 * i, "sine"])
+        cam.append([dur, cx_q, cy_of(len(lines) - 1) + 30, zr + .04 + .015 * len(lines), "sine"])
+        layers = [C.layer(.8, desk, x=-1600, y=-1200, w=5200, h=3600, noblur=True),
+                  C.layer(.86, props, x=-1600, y=-1200, w=5200, h=3600),
+                  C.layer(1.0, sheet, x=-1600, y=-1200, w=5200, h=3600, noblur=True),
+                  C.layer(1.02, glow, x=-1600, y=-1200, w=5200, h=3600, noblur=True)]
+        over = []
+        if badge_text:
+            from cine_1907 import badge
+            over.append(badge(badge_text, w, h))
+        shot = dict(dur=dur, layers=layers, actors=[], cam=cam, focus=[[0, 1.0]], dof=5, band=.1, shake=.28, over=over,
+                    grade=st["grade"], vig=1.2, tin=("dissolve", .35))
+        foley = [("paper", .15, .45, 0)]
+        for ph_ in hl:
+            for i, x in enumerate(lines):
+                k = x.lower().find(ph_.lower())
+                if k >= 0:
+                    a, b = line_t[i]
+                    th = a + (b - a) * (k + len(ph_)) / max(len(x), 1)
+                    foley.append(("quill", th, .12, .2, dict(sec=.45, rate=4.0)))
+        import sfx
+        amb = sfx.room_tone(dur + .5, seed=40 + seed, clock=(style == "opinion"), street=.04 if style == "newspaper" else 0) * .7
+        return dict(shots=[shot], foley=foley, amb=amb)
+    fn.__name__ = f"document_{style}"
+    return fn

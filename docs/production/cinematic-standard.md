@@ -102,9 +102,13 @@ identical cards" fails, and so does swapping one repeated template for another.
 3. **Sets** (started): London 1720 street and study; New York 1907 street, library and trading hall (13 Nov);
    14 Nov (YouTube #8, `cine_1971.py`): a 1971 living room with a console TV whose screen takes content, a gold vault,
    a dealing room with a split-flap board that counts on cue and telephones that ring, a wooden lodge with an easel.
+   15 Nov (YouTube #9, `cine_1920.py`): a Boston street of 1920, a 1920 office with a counter, brass grilles and a
+   counting board, two post-office counters with the sea between them; 1920 looks (boater, cloche).
    Next: a modern trading floor with screens, a bank office, a city street today, a boardroom, a kitchen table.
 4. **Data in the world** (started): price paths that draw with flags; numbers that lift off documents. Next:
    balance sheet that rearranges, cash-flow waterfall, LBO structure, debt schedule (see `scene-library.md`).
+   15 Nov: documents in the world: `cine_lib.document_shot` films a quote on a desk, inked as it is read and
+   highlighted on its key words (replaces the `quote` card; measured static share 50% to 0% on the same line).
 5. **Transitions** (started): push into an object and match on it, cut on action, dissolve. Next: object wipes
    (a page turn, a door), light transitions.
 6. **Speed**: the render is CPU-bound in a headless browser (0.6 to 1.3 s a frame per core). Next: bake blurred

@@ -14,7 +14,7 @@ plus `build/cine_lib.py`; "sketch" = `build/sketch.py` drawings in the existing 
 | F | Calculation | a number built step by step with units | levels quiz answers; sketch: `interest_stack`, `markup_tag`, `doubling_bars`; motion `count` | a calculator tape that prints each step; a DCF timeline discounting year by year |
 | G | Visual metaphor | an abstract idea made physical | sketch: `bubble`, `tower`, `dominoes`, `hourglass72`, `wall` | a balance that tips with leverage; ice melting for inflation |
 | H | Character action | a person doing the thing the narration says | cine rig: walk, sit, read, write, point, reach, hold up, cheer, shrug, concern, talk | stand up and sit down helpers; hand poses; phone in hand; a 3/4 view |
-| I | Document explanation | a letter, filing, contract or statement whose key line matters | cine: `letter` with ink reveal and a hand that follows the nib; `newspaper` price list | a 10-K page with a highlighter sweep; a term sheet with clauses lifting off |
+| I | Document explanation | a letter, filing, contract or statement whose key line matters | cine: `letter` with ink reveal and a hand that follows the nib; `newspaper` price list; `document_shot` (15 Nov: opinion, newspaper, flyer, notice; the passage inks in as read, highlights on the key words; use it for every sourced quote) | a 10-K page with a highlighter sweep; a term sheet with clauses lifting off |
 | J | Chapter transition | a restrained change of chapter with topic art | existing red chapter cards with a drawing; cine: push into an object and match, dissolve, cut on action | a page turn; a door; light change from day to night |
 | K | Quiz interaction | timers, choices, reveals, level meter | levels (the four-level format); a filmed hook (`levels.film_hook`, hook `film=`; first used on Levels #12: an analyst at his desk, his screen builds the DCF) | the film blurred with the card at the swipe; a filmed answer beat |
 | L | Cinematic conclusion | the takeaway made visible | cine: the price path with the decision marked and the future dashed | a slow pull-back from the key object to the whole scene |
@@ -31,3 +31,6 @@ Modern objects ready in cine_lib: `phone`, `card`, `terminal`, `ledger_book`, `c
 
 Rules: each scene has a teaching purpose stated in the visual plan; reconstructions are badged; data comes from the
 docstring's sources; no bank logos; red is the accent, not the crowd.
+
+1920, ready in `cine_1920.py` (15 Nov): sets `boston_street_1920`, `office_1920` (board=, cal=), `post_counter`; props `reply_coupon`,
+`stamp_5c`, `cash_stack`, `promissory_note`; looks `boater_1920`, `boater_1920b`, `clerk_1920`, `clerk_1920b`, `lady_1920`, `lady_1920b`, `worker_1920`.
