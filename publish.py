@@ -235,6 +235,21 @@ def reel_container_resumable(ig_user_id, post, cover_url=None):
     return call_graph(f"{ig_user_id}/media", params, method="POST")
 
 
+def upload_by_url(container_id, url):
+    """The documented alternative: Meta fetches the file itself from a public URL (header file_url)."""
+    request = urllib.request.Request(
+        f"https://rupload.facebook.com/ig-api-upload/{GRAPH_VERSION}/{container_id}", data=b"", method="POST",
+        headers={"Authorization": f"OAuth {os.environ['IG_ACCESS_TOKEN']}", "file_url": url})
+    try:
+        with urllib.request.urlopen(request, timeout=300) as response:
+            body = json.loads(response.read() or b"{}")
+    except urllib.error.HTTPError as error:
+        body = error.read().decode(errors="replace").replace(os.environ["IG_ACCESS_TOKEN"], "<token>")
+        raise RuntimeError(f"rupload (file_url) {error.code}: {body}") from None
+    if not body.get("success"):
+        raise RuntimeError(f"rupload did not confirm the upload: {body}")
+
+
 def upload_binary(container_id, data):
     """Send the video bytes to Meta's upload host (rupload), the documented resumable flow."""
     request = urllib.request.Request(
@@ -274,7 +289,17 @@ def publish_one_reel(ig_user_id, post, image_base, publish=True):
         cover = branch_url(branch, post["cover"]) if post.get("cover") else None
         print(f"  reel {post['video']} from {branch}: {len(data) / 1e6:.1f} MB")
         container_id = reel_container_resumable(ig_user_id, post, cover)["id"]
-        upload_binary(container_id, data)
+        try:
+            upload_binary(container_id, data)
+        except RuntimeError as error:
+            # 16 Nov: a 28 MB Reel came back "ProcessingFailedError, retriable false" on the binary upload while a
+            # 12.6 MB one went through. Fall back to letting Meta fetch the same file from its branch URL, on a
+            # fresh container (a failed container is not reused).
+            if "ProcessingFailedError" not in str(error):
+                raise
+            print(f"  binary upload refused ({str(error)[:80]}); retrying with file_url on a new container")
+            container_id = reel_container_resumable(ig_user_id, post, cover)["id"]
+            upload_by_url(container_id, branch_url(branch, post["video"]))
     else:
         video_url = post["video"] if post["video"].startswith("http") else image_base + post["video"]
         cover = post.get("cover")
