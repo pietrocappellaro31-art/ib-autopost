@@ -854,8 +854,8 @@
       "first_comment": "Bonus level: same $100 loan at 10%, 25% tax, but the interest is paid in kind (added to the loan, no cash paid). Net income still falls $7.50. What happens to cash?",
       "ai_label": true,
       "published_id": null,
-      "last_error": "rupload 400: {\"debug_info\":{\"retriable\":false,\"type\":\"ProcessingFailedError\",\"message\":\"Request processing failed\"}}",
-      "attempts": 1
+      "last_error": "rupload (file_url) 400: {\"debug_info\":{\"retriable\":false,\"type\":\"ProcessingFailedError\",\"message\":\"Request processing failed\"}}",
+      "attempts": 2
     }
   ],
   "reel_slots_et": {
