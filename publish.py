@@ -477,14 +477,14 @@ def media_metrics(media_id, names):
                 for m in res.get("data", []):
                     got[m["name"]] = (m.get("values") or [{}])[0].get("value", m.get("total_value", {}).get("value"))
             except Exception as error:
-                missing.append(f"{name}: {str(error)[:80]}")
+                missing.append(f"{name}: {str(error)[:300]}")
         return got, missing
 
 
 def collect_insights(ig_user_id, limit=40):
     res = call_graph(f"{ig_user_id}/media", {"fields": "id,caption,media_product_type,media_type,timestamp,permalink,"
                                                          "like_count,comments_count", "limit": str(limit)})
-    rows, problems = [], set()
+    rows, problems, first_error = [], set(), []
     supported = {}                       # kind -> metrics Meta accepted on the first post of that kind (call budget:
     for m in res.get("data", []):        # one call a post after that, well inside 200 calls an hour)
         reel = m.get("media_product_type") == "REELS"
@@ -496,6 +496,8 @@ def collect_insights(ig_user_id, limit=40):
             bad = {x.split(":")[0] for x in missing}
             supported[kind] = [x for x in (REEL_METRICS if reel else FEED_METRICS) if x not in bad]
         problems.update(f"{kind} {x.split(':')[0]}" for x in missing)
+        if missing and not first_error:
+            first_error.append(missing[0][:300])
         when = _utc(m["timestamp"].replace("+0000", "+00:00"))
         rows.append(dict(id=m["id"], kind="reel" if reel else m.get("media_type", "").lower(), permalink=m.get("permalink"),
                          posted_et=when.astimezone(EASTERN).strftime("%Y-%m-%d %a %H:%M"),
@@ -508,9 +510,10 @@ def collect_insights(ig_user_id, limit=40):
         vals = (res.get("data") or [{}])[0].get("values") or []
         online = vals[-1].get("value") if vals else None        # {hour (account time zone, Pacific): followers online}
     except Exception as error:
-        problems.add(f"online_followers ({str(error)[:60]})")
+        problems.add("online_followers")
+        first_error.append("online_followers: " + str(error)[:300])
     return dict(updated_utc=datetime.now(timezone.utc).isoformat(timespec="seconds"), media=rows,
-                online_followers_by_hour_pacific=online, unavailable=sorted(problems))
+                online_followers_by_hour_pacific=online, unavailable=sorted(problems), first_errors=first_error)
 
 
 def write_performance(perf):
@@ -533,6 +536,7 @@ def write_performance(perf):
                   + ", ".join(f"{h}h {v}" for h, v in sorted(perf["online_followers_by_hour_pacific"].items(), key=lambda kv: int(kv[0])))]
     if perf.get("unavailable"):
         lines += ["", "Not readable with the current token: " + ", ".join(perf["unavailable"])]
+        lines += [f"- {e}" for e in perf.get("first_errors", [])]
     with open(PERF_MD, "w") as handle:
         handle.write("\n".join(lines) + "\n")
 
