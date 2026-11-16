@@ -280,6 +280,25 @@ def delete_branch(branch):
         print(f"  branch {branch} not deleted: {error}", file=sys.stderr)
 
 
+def cleanup_media_branches(manifest):
+    """Delete reel/* branches no unpublished Reel needs (test uploads, Reels already live). Needs GITHUB_TOKEN."""
+    token = os.environ.get("GITHUB_TOKEN")
+    if not token:
+        return
+    keep = {p.get("media_branch") for p in manifest["posts"] if is_reel(p) and not p.get("published_id")}
+    request = urllib.request.Request(f"https://api.github.com/repos/{REPO}/git/matching-refs/heads/reel/",
+                                     headers={"Authorization": f"Bearer {token}", "Accept": "application/vnd.github+json"})
+    try:
+        with urllib.request.urlopen(request, timeout=30) as response:
+            refs = [r["ref"][len("refs/heads/"):] for r in json.loads(response.read())]
+    except Exception as error:
+        print(f"  media branches not listed: {error}", file=sys.stderr)
+        return
+    for branch in refs:
+        if branch not in keep:
+            delete_branch(branch)
+
+
 def publish_one_reel(ig_user_id, post, image_base, publish=True):
     """Upload, transcode and publish a single Reel. Entries made by build/reel_queue.py carry media_branch, video
     (a file name on that branch) and cover; an entry whose video is a full URL uses the older URL path."""
@@ -521,8 +540,11 @@ def media_metrics(media_id, names):
 
 
 def collect_insights(ig_user_id, limit=40):
-    res = call_graph(f"{ig_user_id}/media", {"fields": "id,caption,media_product_type,media_type,timestamp,permalink,"
-                                                         "like_count,comments_count", "limit": str(limit)})
+    base = "id,caption,media_product_type,media_type,timestamp,permalink,like_count,comments_count"
+    try:                                          # is_ai_generated is readable on IG Media since 22 Jun 2026
+        res = call_graph(f"{ig_user_id}/media", {"fields": base + ",is_ai_generated", "limit": str(limit)})
+    except Exception:
+        res = call_graph(f"{ig_user_id}/media", {"fields": base, "limit": str(limit)})
     rows, problems, first_error = [], set(), []
     supported = {}                       # kind -> metrics Meta accepted on the first post of that kind (call budget:
     for m in res.get("data", []):        # one call a post after that, well inside 200 calls an hour)
@@ -539,6 +561,7 @@ def collect_insights(ig_user_id, limit=40):
             first_error.append(missing[0][:300])
         when = _utc(m["timestamp"].replace("+0000", "+00:00"))
         rows.append(dict(id=m["id"], kind="reel" if reel else m.get("media_type", "").lower(), permalink=m.get("permalink"),
+                         ai_label=m.get("is_ai_generated"),
                          posted_et=when.astimezone(EASTERN).strftime("%Y-%m-%d %a %H:%M"),
                          hours_live=round((datetime.now(timezone.utc) - when).total_seconds() / 3600, 1),
                          caption=(m.get("caption") or "").split("\n")[0][:90],
@@ -648,6 +671,7 @@ def main():
         i = sys.argv.index("--reel-selftest")
         return reel_selftest(resolve_ig_user_id(), sys.argv[i + 1], sys.argv[i + 2])
     if "--insights" in sys.argv:
+        cleanup_media_branches(manifest)
         perf = collect_insights(resolve_ig_user_id())
         write_performance(perf)
         print(f"performance recorded: {len(perf['media'])} posts; unavailable: {perf['unavailable'] or 'none'}")
