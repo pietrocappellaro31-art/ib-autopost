@@ -798,8 +798,8 @@
       "series": "Technical of the Day",
       "scheduled_utc": "2026-11-16T17:30:00",
       "caption": "Is stock-based compensation a real expense? \"It's non-cash\" is only half the answer.\n\nIt hits the income statement, but no cash leaves, so you add it back in operating cash flow.\n\nThe cost shows up somewhere else. Say you own 1% of a company with 100 million shares. It issues 2 million to staff, and your 1 million shares are now about 0.98% of it.\n\nThat's the cost. Dilution.\n\nIn valuation, count it once: either treat it as a cash cost and cut free cash flow, or keep it added back and put the future dilution in your diluted share count.\n\nDoing neither is the mistake I'd look for.\n\nSave this before a tech or growth company interview.\n\n#investmentbanking #ibinterview #valuation #accounting",
-      "published_id": null,
-      "published_at_utc": null,
+      "published_id": "18087995777413218",
+      "published_at_utc": "2026-11-16T20:10:09.310986+00:00",
       "images": [
         "n1-20-sbc-01.jpg",
         "n1-20-sbc-02.jpg",
@@ -853,7 +853,9 @@
       "caption": "Does paying back a loan lower net income?\n\nA lot of people say yes. Money leaves the company, so profit must drop. It doesn't.\n\nInterest is the expense. Borrow $100 at 10% with a 25% tax rate and net income falls by $7.50 a year: $10 of interest, less $2.50 of tax saved. The $100 you hand back is the loan itself, so cash and debt both drop by $100 and the income statement never sees it. You'll find it in financing cash flow.\n\nThat split between interest and principal is what the question is testing.\n\nThere are 4 levels, each harder than the last. Keep count and drop your score in the comments.\n\nNarration: AI-generated voice; script is our original work.\n\n#investmentbanking #financeinterview #accounting #threestatements",
       "first_comment": "Bonus level: same $100 loan at 10%, 25% tax, but the interest is paid in kind (added to the loan, no cash paid). Net income still falls $7.50. What happens to cash?",
       "ai_label": true,
-      "published_id": null
+      "published_id": null,
+      "last_error": "rupload 400: {\"debug_info\":{\"retriable\":false,\"type\":\"ProcessingFailedError\",\"message\":\"Request processing failed\"}}",
+      "attempts": 1
     }
   ],
   "reel_slots_et": {
