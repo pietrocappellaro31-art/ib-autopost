@@ -841,5 +841,10 @@
       "published_id": null,
       "published_at_utc": null
     }
-  ]
+  ],
+  "reel_slots_et": {
+    "A": "12:30",
+    "B": "18:00"
+  },
+  "reel_slots_note": "16 Nov 2026: two Reels a day, posted automatically (Pietro). 12:30 and 18:00 ET match the dispatches that fire reliably (12:33 and 18:03 ET); GitHub's own cron fired about 7 times a day with gaps up to 10 hours. Moved by the daily Reel run from docs/daily/performance.md, with the reason in docs/decisions-log.md."
 }
