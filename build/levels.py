@@ -482,6 +482,10 @@ def reuse(work):
     out/<slug>), so a layout fix does not need the voice generated again:
     a cloned voice takes minutes and gives different takes each time."""
     import wave
+    import story
+    kept = story.load_parts(work)                          # 16 Nov: the raw takes, if the render kept them
+    if kept:
+        return kept
     t = json.load(open(work / "timeline.json"))
     with wave.open(str(work / "voice.wav")) as w:
         a = np.frombuffer(w.readframes(w.getnframes()), np.int16).astype(np.float32) / 32768
@@ -820,9 +824,19 @@ def sound_report(work, final, voice, sfx):
     # SIG is DNSMOS's speech-distortion score; the gate (audio-standard.md 1b) is a drop of 0.15 or less from the
     # voice stem to the clean mix, and a voice stem that never reaches full scale.
     try:
-        rep["sig_drop"] = round(rep["voice"]["sig"] - rep["mix"]["sig"], 2)
+        rep["sig_drop_raw"] = round(rep["voice"]["sig"] - rep["mix"]["sig"], 2)
     except TypeError:
-        rep["sig_drop"] = None
+        rep["sig_drop_raw"] = None
+    # 16 Nov: the gate is level-matched. DNSMOS scores the same voice lower just for being louder (SIG 3.71 at -23
+    # LUFS, 3.60 at -14), so the raw drop mostly measured the master's loudness, not damage. Both files are now
+    # scored at -23 LUFS; sig_drop is that difference (the raw one is kept as sig_drop_raw for the old rows).
+    try:
+        import quality
+        rep["voice_lm"], rep["mix_lm"] = quality.score_at(work / "voice.wav"), quality.score_at(final)
+        rep["sig_drop"] = round(rep["voice_lm"]["sig"] - rep["mix_lm"]["sig"], 2)
+    except Exception as e:
+        rep["sig_drop"] = rep["sig_drop_raw"]
+        rep["lm_error"] = str(e)[:80]
     import wave
     with wave.open(str(work / "voice.wav")) as w:
         vv = np.frombuffer(w.readframes(w.getnframes()), np.int16)

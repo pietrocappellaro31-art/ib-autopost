@@ -3173,3 +3173,258 @@ def level_picture(name, m, w, h, seed=1, **opts):
     p = Pen(m["start"] + .2, max(m["end"] - m["start"], .5), seed)
     SCENES[name](p, m=m, **opts)
     return p.svg().replace(f'width="{W}" height="{Hh}"', f'width="{w}" height="{h}"', 1)
+
+
+# ---- 16 Nov (the 50% puzzle Short, Format C, one surprising concept): a $100 bar that falls 50% and rises 50% and
+# ends at $75; why the rise must be 100%; the same $50 measured from two bases; the loss-to-gain ladder; the
+# 2007 to 2013 S&P 500 round trip. One bar scale throughout (4 px a dollar, $100 = 400 px), so the same $50 is the
+# same height in every drawing. Generic shapes of our own: no index provider's logo or chart, no real person.
+
+PX = 4                                    # pixels a dollar, every 50% drawing
+B50 = 580                                 # their baseline
+
+
+def _money_bar(x, w_, dollars, fill=GOLD, dash=False, col=INK):
+    h_ = dollars * PX
+    if dash:
+        return (f'<rect x="{x}" y="{B50 - h_}" width="{w_}" height="{h_}" rx="10" fill="none" stroke="{col}" stroke-width="6" '
+                f'stroke-dasharray="18 12"/>')
+    return (f'<rect x="{x}" y="{B50 - h_}" width="{w_}" height="{h_}" rx="10" fill="{fill}" stroke="{INK}" stroke-width="7"/>'
+            + "".join(f'<path d="M{x + 14} {B50 - h_ + 40 + 50 * j} H{x + w_ - 14}" stroke="{GOLD_D}" stroke-opacity=".3" '
+                      f'stroke-width="5"/>' for j in range(int((h_ - 40) // 50))))
+
+
+def _t(x, y, s, size=40, col=INK, serif=True, anchor="middle", weight=700):
+    fam = "'Serif',serif" if serif else "'Sans',sans-serif"
+    return (f'<text x="{x}" y="{y}" text-anchor="{anchor}" font-family="{H.escape(fam)}" font-weight="{weight}" font-size="{size}" '
+            f'fill="{col}">{H.escape(s)}</text>')
+
+
+def _arrow(x, y0, y1, col, w=16):
+    """A thick marker arrow from y0 to y1 (down if y1 > y0), drawn on."""
+    sgn = 1 if y1 > y0 else -1
+    head = f"M{x - 34} {y1 - sgn * 40} L{x} {y1} L{x + 34} {y1 - sgn * 40}"
+    return (f'<path d="M{x} {y0} L{x} {y1 - sgn * 6}" fill="none" stroke="{col}" stroke-width="{w}" stroke-linecap="round"/>',
+            f'<path d="{head}" fill="none" stroke="{col}" stroke-width="{w}" stroke-linecap="round" stroke-linejoin="round"/>')
+
+
+def half_hook(p, fall=None, rise=None, **_):
+    """The hook. A $100 gold bar stands from frame 0 under a dashed START line, the trader beside it. On 'falls
+    fifty percent' the bar sinks to half (a red -50% tag drops in, a thump as it lands, the counter runs 100 to 50);
+    on 'rises fifty percent' it grows back by half of what is left (a teal +50% tag, the counter 50 to 75) and stops
+    short: the gap to START is outlined in red with a bobbing question mark, and the trader turns to the viewer."""
+    t0 = p.t0
+    f0 = fall if fall is not None else t0 + .6
+    r0 = rise if rise is not None else f0 + 1.8
+    x, w_ = 110, 230
+    _set(p, f'<path d="M20 {B50} L780 {B50}" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+            f'<path d="M60 {B50 - 400} H600" stroke="{GREY}" stroke-width="5" stroke-dasharray="14 12"/>'
+            + _t(600, B50 - 412, "START", 28, GREY, serif=False, anchor="end"))
+    # the bar: fall to 0.5, then rise by half of that (0.75 of the start), nested so each move is its own ease
+    p.parts.append(f'<g class="a" data-fx="fade" data-at="-1" data-d=".05">'
+                   + _g("scaleY", f0, .7, _g("scaleY", r0, .8, _money_bar(x, w_, 100), style="transform-box:fill-box", s0=1, s1=1.5),
+                        style="transform-box:fill-box", s0=1, s1=.5) + "</g>")
+    # the counter inside the bar, near its foot: $100, then 100 to 50, then 50 to 75
+    p.parts.append(_life(-1, f0 + 1.04, _t(x + w_ / 2, B50 - 40, "$100", 64, INK), fi=.01, fo=.05))
+    p.parts.append(_life(f0, r0 - f0 + .05, _count(x + w_ / 2, B50 - 40, 100, 50, round(f0, 2), .7, size=64, pre="$"), fi=.05, fo=.05))
+    p.parts.append(_life(r0, 99, _count(x + w_ / 2, B50 - 40, 50, 75, round(r0, 2), .8, size=64, pre="$"), fi=.05, fo=.01))
+    # the two moves, as tags beside the bar
+    p.parts.append(_g("slide", f0 - .05, .45, _g("fade", f0 - .05, .1, _ptag(440, B50 - 300, 190, "−50%", RED, "#fff", 46), style=""),
+                      style="", y0=-160, y1=0, ease="out"))
+    a1, a2 = _arrow(430, B50 - 230, B50 - 120, RED, 12)
+    p.parts.append(_g("draw", f0 + .25, .4, a1, style=""))
+    p.parts.append(_g("draw", f0 + .55, .2, a2, style=""))
+    p.parts.append(_g("pop", r0 + .05, .4, _ptag(440, B50 - 60, 190, "+50%", TEAL, "#fff", 46)))
+    # stops short of START: the gap and the question
+    p.parts.append(_g("draw", r0 + .8, .5, f'<path d="M{x} {B50 - 300} V{B50 - 400} H{x + w_} V{B50 - 300}" fill="none" stroke="{RED}" '
+                                         f'stroke-width="7" stroke-dasharray="18 12" stroke-linejoin="round"/>', style=""))
+    p.parts.append(_g("float", 0, 1, _g("pop", r0 + 1.0, .4, _t(x + w_ / 2, B50 - 312, "?", 120, RED)), style="", amp=8, w=2.6))
+    trader(p, 670, B50, .88, "point", (-1 - t0) / p.dur, look=-1, turn=[(r0 + .9, 0)])
+
+
+def seventy_five(p, seg=None, **_):
+    """No, $75. The bar stands at $50 with the dashed $100 START line above; on 'No' a red NO stamp; the $25 rise
+    drops onto the bar as a teal block, '+$25' on it, the counter $75; the missing $25 to START outlined in red.
+    On the second sentence two sums write themselves out on the right: 50% of $100 = $50 (the fall, red), 50% of
+    $50 = $25 (the rise, teal), the two bases ringed."""
+    s0, s1 = seg[0][0], seg[1][0]
+    x, w_ = 70, 230
+    p.parts.append(_g("fade", p.t0, .25, f'<path d="M20 {B50} L780 {B50}" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+                                         f'<path d="M40 {B50 - 400} H330" stroke="{GREY}" stroke-width="5" stroke-dasharray="14 12"/>'
+                      + _t(330, B50 - 412, "START $100", 26, GREY, serif=False, anchor="end") + _money_bar(x, w_, 50), style=""))
+    p.parts.append(_g("fade", p.t0, .25, _t(x + w_ / 2, B50 - 50, "$50", 56), style=""))
+    # +$25 drops on
+    blk = (f'<rect x="{x}" y="{B50 - 300}" width="{w_}" height="100" rx="10" fill="{TEAL}" stroke="{INK}" stroke-width="7"/>'
+           + _t(x + w_ / 2, B50 - 233, "+$25", 50, "#fff"))
+    p.parts.append(_g("slide", s0 + .35, .45, _g("fade", s0 + .35, .08, blk, style=""), style="", y0=-260, y1=0, ease="out"))
+    p.parts.append(_g("draw", s0 + .95, .45, f'<path d="M{x} {B50 - 300} V{B50 - 400} H{x + w_} V{B50 - 300}" fill="none" stroke="{RED}" '
+                                            f'stroke-width="7" stroke-dasharray="18 12" stroke-linejoin="round"/>', style=""))
+    p.parts.append(_g("pop", s0 + 1.1, .35, _t(x + w_ / 2, B50 - 335, "−$25", 44, RED)))
+    # the stamp: NO, $75
+    p.parts.append(f'<g class="a" data-fx="stamp" data-at="{s0 + .05:.2f}" data-d=".35" data-rot="-8" '
+                   f'style="transform-box:fill-box;transform-origin:center">'
+                   f'<rect x="420" y="40" width="330" height="140" rx="16" fill="#fff" fill-opacity=".9" stroke="{RED}" stroke-width="10"/>'
+                   + _t(585, 140, "$75", 100, RED) + "</g>")
+    # the two sums, written out on the words
+    rows = [("50% OF", "$100", "= $50", RED, "THE FALL"), ("50% OF", "$50", "= $25", TEAL, "THE RISE")]
+    for j, (a_, b_, c_, col, lab) in enumerate(rows):
+        y = 300 + 150 * j
+        t = s1 + .15 + .9 * j
+        p.parts.append(_g("fade", t, .3, _t(400, y - 52, lab, 26, col, serif=False, anchor="start"), style=""))
+        txt = (f'<text x="400" y="{y}" font-family="\'Serif\',serif" font-weight="700" font-size="46" fill="{INK}">'
+               f'{H.escape(a_)} <tspan fill="{col}" text-decoration="underline">{H.escape(b_)}</tspan> {H.escape(c_)}</text>')
+        p.parts.append(_g("wipe", t, .55, txt, style=""))
+
+
+def doubles(p, seg=None, lift=None, **_):
+    """To get back it has to double. The $50 bar; on 'double' a second $50 block lifts off it and stacks on top,
+    a x2 tag swings in, the counter runs $50 to $100 and the START line turns teal with a tick. On the second
+    sentence a big teal +100% tag lands and a +50% tag beside it is struck through in red."""
+    s0, s1 = seg[0][0], seg[1][0]
+    d0 = lift if lift is not None else s0 + (seg[0][1] - s0) * .55
+    x, w_ = 90, 230
+    p.parts.append(_g("fade", p.t0, .25, f'<path d="M20 {B50} L780 {B50}" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+                      + _money_bar(x, w_, 50), style=""))
+    line = f'<path d="M50 {B50 - 400} H380" stroke-width="6" stroke-dasharray="14 12" stroke="%s"/>'
+    p.parts.append(_life(p.t0, d0 + .8 - p.t0, line % GREY + _t(380, B50 - 414, "START $100", 26, GREY, serif=False, anchor="end"), fi=.2, fo=.1))
+    p.parts.append(_life(d0 + .7, 99, line % TEAL + _t(380, B50 - 414, "BACK TO $100", 26, TEAL, serif=False, anchor="end"), fi=.15, fo=.1))
+    # the copy lifts off and stacks
+    copy = _money_bar(x, w_, 50).replace(f'y="{B50 - 200}"', f'y="{B50 - 200}"', 1)
+    p.parts.append(_g("slide", d0, .7, _g("fade", d0, .1, copy, style=""), style="", y0=0, y1=-200, ease="inout"))
+    p.parts.append(_life(p.t0, d0 + .05 - p.t0, _t(x + w_ / 2, B50 - 50, "$50", 56), fi=.2, fo=.05))
+    p.parts.append(_life(d0, 99, _count(x + w_ / 2, B50 - 50, 50, 100, round(d0, 2), .7, size=56, pre="$"), fi=.05, fo=.01))
+    p.parts.append(_g("swing", 0, 1, _g("pop", d0 + .3, .4, _ptag(470, B50 - 300, 170, "×2", INK, "#fff", 58)),
+                      style="transform-box:view-box;transform-origin:470px 230px", amp=5, w=2.2))
+    p.parts.append(_g("pop", d0 + .8, .35, f'<circle cx="420" cy="{B50 - 400}" r="28" fill="#fff" stroke="{INK}" stroke-width="5"/>'
+                                          f'<path d="M406 {B50 - 399} l10 11 l20 -22" fill="none" stroke="{TEAL}" stroke-width="8" '
+                                          f'stroke-linecap="round" stroke-linejoin="round"/>'))
+    # the verdict
+    p.parts.append(_g("pop", s1 + .3, .4, _tile(410, 350, 330, 120, TEAL, "+100%", 80)))
+    p.parts.append(_g("fade", s1 + .9, .3, _tile(470, 488, 210, 74, "#fff", "+50%", 46, color=GREY), style=""))
+    p.parts.append(_g("strike", s1 + 1.2, .3, f'<path d="M455 528 L695 523" stroke="{RED}" stroke-width="10" stroke-linecap="round"/>',
+                      style="transform-box:fill-box"))
+
+
+def same_dollars(p, seg=None, **_):
+    """The same $50, two bases. Left: a $100 bar; right: a $50 bar, side by side on one floor. On 'the same both
+    ways' a red arrow runs down the left bar's top half and a teal arrow up from the right bar's top to $100, both
+    the same length, each with a $50 brace label and an = between them. On 'fifty percent' the left one gets
+    '$50 of $100 = 50%'; on 'a hundred percent' the right one gets '$50 of $50 = 100%', each base pulsing."""
+    s0, s1, s2 = seg[0][0], seg[1][0], seg[2][0]
+    xl, xr, w_ = 60, 450, 220
+    p.parts.append(_g("fade", p.t0, .25, f'<path d="M20 {B50} L780 {B50}" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>', style=""))
+    p.parts.append(_g("growY", p.t0 + .05, .5, _money_bar(xl, w_, 100, fill="#FBE7A1"), style="transform-box:fill-box"))
+    p.parts.append(_g("growY", p.t0 + .2, .5, _money_bar(xr, w_, 50), style="transform-box:fill-box"))
+    p.parts.append(_g("draw", p.t0 + .3, .4, f'<path d="M{xr} {B50 - 400} H{xr + w_}" stroke="{TEAL}" stroke-width="6" stroke-dasharray="14 12" fill="none"/>', style=""))
+    # the left bar's top half fades to a ghost as the arrow runs down it
+    a = s0 + .4
+    p.parts.append(_g("fade", a + .2, .4, f'<rect x="{xl}" y="{B50 - 400}" width="{w_}" height="200" rx="10" fill="#FFF8EE" '
+                                         f'stroke="{RED}" stroke-width="6" stroke-dasharray="18 12"/>', style=""))
+    for (x, y0, y1, col) in ((xl + w_ / 2, B50 - 390, B50 - 210, RED), (xr + w_ / 2, B50 - 210, B50 - 390, TEAL)):
+        b1, b2 = _arrow(x, y0, y1, col, 16)
+        p.parts.append(_g("draw", a, .5, b1, style=""))
+        p.parts.append(_g("draw", a + .45, .2, b2, style=""))
+    for x in (xl + w_ + 20, xr - 20):
+        side = 1 if x < 400 else -1
+        p.parts.append(_g("draw", a + .55, .3, f'<path d="M{x} {B50 - 400} q{side * 22} 0 {side * 22} 22 v56 q0 22 {side * 22} 22 '
+                                              f'q{-side * 22} 0 {-side * 22} 22 v56 q0 22 {-side * 22} 22" fill="none" stroke="{INK}" '
+                                              f'stroke-width="5"/>', style=""))
+    p.parts.append(_g("pop", a + .75, .35, _t(400, B50 - 280, "$50", 46) + _t(400, B50 - 330, "=", 60, GREY)))
+    # the two readings
+    p.parts.append(_g("pop", s1 + .2, .4, _tile(xl - 10, 10, w_ + 20, 100, RED, "50%", 68)))
+    p.parts.append(_g("fade", s1 + .5, .3, _t(xl + w_ / 2, 150, "$50 OF $100", 32, RED, serif=False), style=""))
+    p.parts.append(_g("pop", s2 + .3, .4, _tile(xr - 10, 10, w_ + 20, 100, TEAL, "100%", 68)))
+    p.parts.append(_g("fade", s2 + .6, .3, _t(xr + w_ / 2, 150, "$50 OF $50", 32, TEAL, serif=False), style=""))
+    for t, x, h_, col in ((s1 + .6, xl, 400, RED), (s2 + .7, xr, 200, TEAL)):
+        p.parts.append(_life(t, .9, _g("pop", t, .3, f'<rect x="{x - 10}" y="{B50 - h_ - 10}" width="{w_ + 20}" height="{h_ + 10}" '
+                                                      f'rx="14" fill="none" stroke="{col}" stroke-width="7"/>'), fi=.08, fo=.3))
+
+
+LADDER = ((10, 100 / 9), (25, 100 / 3), (50, 100.0), (80, 400.0))   # loss, gain needed = 1 / (1 - loss) - 1
+
+
+def ladder(p, seg=None, **_):
+    """The loss-to-gain ladder: four pairs on one honest scale (0.92 px a percentage point, losses and gains alike). On 'the deeper the fall' the
+    four red losses drop below the line one after another (10, 25, 50, 80); on 'down ten' the first teal gain
+    grows to about 11%; the next two follow on the gap; on 'down eighty' the last one shoots up to 400%, a thump,
+    and its label lands at the top."""
+    s0, s1, s2 = seg[0][0], seg[1][0], seg[2][0]
+    base, k = 450, .92
+    xs = (110, 300, 490, 680)
+    p.parts.append(_g("fade", p.t0, .25, f'<path d="M20 {base} L780 {base}" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+                      + _t(30, base + 150, "LOSS", 28, RED, serif=False, anchor="start")
+                      + _t(30, 40, "GAIN NEEDED TO GET BACK", 28, TEAL, serif=False, anchor="start"), style=""))
+    times = (s1 + .35, seg[1][1] - .1, seg[1][1] + .25, s2 + .55)
+    for j, ((loss, gain), x) in enumerate(zip(LADDER, xs)):
+        tl = s0 + .2 + .3 * j
+        hl = loss * k
+        p.parts.append(_g("growYdown", tl, .4, f'<rect x="{x - 62}" y="{base}" width="56" height="{hl:.0f}" rx="6" fill="{RED}" '
+                                               f'stroke="{INK}" stroke-width="5"/>', style="transform-box:fill-box"))
+        p.parts.append(_g("fade", tl + .3, .3, _t(x - 34, base + hl + 44, f"−{loss}%", 34, RED), style=""))
+        hg = gain * k
+        tg = times[j]
+        p.parts.append(_g("growY", tg, .45 if j < 3 else .7, f'<rect x="{x + 6}" y="{base - hg:.0f}" width="56" height="{hg:.0f}" rx="6" '
+                                                           f'fill="{TEAL}" stroke="{INK}" stroke-width="5"/>', style="transform-box:fill-box"))
+        lab = f"+{gain:.0f}%" if j != 0 else "+11%"
+        p.parts.append(_g("pop", tg + (.35 if j < 3 else .65), .3, _t(x + 34, base - hg - 16, lab, 36 if j < 3 else 46, TEAL)))
+
+
+def _crisis_y(v):
+    return 560 - (v - 600) / 1100 * 400
+
+
+def crisis_path(p, seg=None, **_):
+    """The 2007 to 2013 round trip of the S&P 500 (three real closes; the path between them is drawn smooth, not
+    data). On the first sentence the red line falls from the October 2007 high (1,565) to the March 2009 low (677)
+    and -57% counts on; on the second a dashed record line runs across at 1,565 and the teal line climbs back from
+    the low as +131% counts; on 'March 2013' it reaches the line, a calendar tag drops on the point and ticks."""
+    s0, s1, s2 = seg[0][0], seg[1][0], seg[2][0]
+    yrs = lambda y: 90 + y * 620 / 5.47
+    P0, P1, P2 = (yrs(0), _crisis_y(1565)), (yrs(1.42), _crisis_y(677)), (yrs(5.47), _crisis_y(1569))
+    p.parts.append(_g("fade", p.t0, .25, f'<path d="M40 600 L780 600" stroke="{INK}" stroke-width="5"/>'
+                      + _t(40, 630, "S&P 500 CLOSES (WIKIPEDIA, NPR), PATH SIMPLIFIED", 24, GREY, serif=False, anchor="start", weight=600), style=""))
+    # fall
+    down = (f'M{P0[0]:.0f} {P0[1]:.0f} C{P0[0] + 50:.0f} {P0[1] + 30:.0f}, {P0[0] + 70:.0f} {P0[1] + 120:.0f}, '
+            f'{P0[0] + 100:.0f} {P0[1] + 170:.0f} S{P1[0] - 20:.0f} {P1[1] - 10:.0f}, {P1[0]:.0f} {P1[1]:.0f}')
+    p.parts.append(_g("draw", s0 + .3, 1.6, f'<path d="{down}" fill="none" stroke="{RED}" stroke-width="10" stroke-linecap="round"/>', style=""))
+    p.parts.append(_g("pop", s0 + .1, .3, f'<circle cx="{P0[0]:.0f}" cy="{P0[1]:.0f}" r="13" fill="{INK}"/>'
+                      + _t(P0[0] - 10, P0[1] - 60, "OCT 2007", 26, GREY, serif=False, anchor="start")
+                      + _t(P0[0] - 10, P0[1] - 24, "1,565", 36, INK, anchor="start")))
+    p.parts.append(_g("pop", s0 + 1.9, .3, f'<circle cx="{P1[0]:.0f}" cy="{P1[1]:.0f}" r="13" fill="{RED}"/>'
+                      + _t(P1[0], P1[1] + 46, "MAR 2009 · 677", 26, GREY, serif=False)))
+    p.parts.append(_life(s0 + 1.0, 99, _count(P1[0] - 150, P1[1] - 40, 0, -57, round(s0 + 1.0, 2), 1.0, size=64, color=RED, suf="%"),
+                         fi=.1, fo=.01))
+    # the record line and the climb back
+    p.parts.append(_g("draw", s1 + .1, .6, f'<path d="M{P0[0]:.0f} {P0[1]:.0f} H{P2[0] + 20:.0f}" fill="none" stroke="{TEAL}" '
+                                          f'stroke-width="5" stroke-dasharray="14 12"/>', style=""))
+    up = (f'M{P1[0]:.0f} {P1[1]:.0f} C{P1[0] + 60:.0f} {P1[1] - 20:.0f}, {P1[0] + 90:.0f} {P1[1] - 130:.0f}, {P1[0] + 170:.0f} '
+          f'{P1[1] - 150:.0f} S{P1[0] + 260:.0f} {P1[1] - 200:.0f}, {P1[0] + 330:.0f} {P1[1] - 250:.0f} S{P2[0] - 40:.0f} '
+          f'{P2[1] + 30:.0f}, {P2[0]:.0f} {P2[1]:.0f}')
+    climb = max(s2 + .3 - (s1 + .4), 2.2)                  # reaches the record as 'March 2013' is said
+    p.parts.append(_g("draw", s1 + .4, climb, f'<path d="{up}" fill="none" stroke="{TEAL}" stroke-width="10" stroke-linecap="round"/>',
+                      style="", lin=1))
+    p.parts.append(_life(s1 + .6, 99, _count(P2[0] - 70, P1[1] - 20, 0, 131, round(s1 + .6, 2), climb - .4, size=64, color=TEAL,
+                                             pre="+", suf="%"), fi=.1, fo=.01))
+    # March 2013: the tag lands where the line meets the record
+    tag_t = s1 + .4 + climb
+    p.parts.append(_g("slide", tag_t, .4, _g("fade", tag_t, .08,
+                                              f'<rect x="{P2[0] - 160:.0f}" y="{P2[1] - 120:.0f}" width="170" height="86" rx="12" fill="#fff" '
+                                              f'stroke="{INK}" stroke-width="5"/><rect x="{P2[0] - 160:.0f}" y="{P2[1] - 120:.0f}" width="170" '
+                                              f'height="28" rx="10" fill="{TEAL}"/>'
+                                              + _t(P2[0] - 75, P2[1] - 50, "MAR 2013", 30, INK), style=""),
+                      style="", y0=-120, y1=0, ease="out"))
+    p.parts.append(_g("pop", tag_t + .35, .3, f'<circle cx="{P2[0]:.0f}" cy="{P2[1]:.0f}" r="22" fill="#fff" stroke="{INK}" stroke-width="5"/>'
+                                            f'<path d="M{P2[0] - 11:.0f} {P2[1]:.0f} l8 9 l16 -18" fill="none" stroke="{TEAL}" stroke-width="7" '
+                                            f'stroke-linecap="round" stroke-linejoin="round"/>'))
+
+
+def fifty_asks(p, **_):
+    """The close: the trader points; the bubble reads -50% +50% = $100? with the $100 struck to $75."""
+    p.fill(f'<path d="M110 60 H540 Q580 60 580 100 V300 Q580 340 540 340 H340 L290 410 L300 340 H110 Q70 340 70 300 V100 '
+           f'Q70 60 110 60 Z" fill="#fff" stroke="{INK}" stroke-width="7"/>', .1)
+    p.text(325, 175, "−50% +50%", .25, size=70, serif=True, weight=700, color=INK, fx="pop")
+    p.text(325, 290, "= $75", .45, size=96, serif=True, weight=700, color=RED, fx="pop")
+    trader(p, 700, 630, .95, "point", .05, look=-1, turn=[(p.at(.15), 0)])
+
+
+SCENES.update({f.__name__: f for f in (half_hook, seventy_five, doubles, same_dollars, ladder, crisis_path, fifty_asks)})

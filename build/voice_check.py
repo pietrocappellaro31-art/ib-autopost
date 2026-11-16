@@ -79,6 +79,7 @@ def words(text):
     t = re.sub(r"\bclearinghouse", "clearing house", t)             # 13 Nov (YouTube #7)
     t = re.sub(r"\bcheque(s?)\b", r"check\1", t)                     # 14 Nov: British spelling of the same word
     t = re.sub(r"\bcache machine", "cash machine", t)                 # 14 Nov: homophones; "cash machine" is the phrase
+    t = re.sub(r"\bbackup\b", "back up", t)                           # 16 Nov: the verb said right, the noun written
     # 14 Nov (YouTube #8): spelling variants of words said correctly, and spoken decades ("the nineteen seventies"
     # is written "the 1970s")
     t = re.sub(r"\badvisors?\b", lambda m: m.group(0).replace("advisor", "adviser"), t)

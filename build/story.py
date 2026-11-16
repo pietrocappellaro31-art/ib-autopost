@@ -242,8 +242,30 @@ def soundtrack(ep, parts, at, spans, total):
     return voice * g, fx * g
 
 
+def keep_parts(work, parts):
+    """16 Nov: the raw synthesised parts (float32, before any gain or int16 rounding) as out/<slug>/parts/<k>.npy
+    with their sentence times, so a remix starts from exactly the takes the render used. Before, remix read them back
+    from voice.wav, which had been levelled, peak-scaled and rounded to 16 bits, and each remix moved the voice
+    stem's DNSMOS (SIG 3.65 to 3.68 on the same takes, 15 Nov)."""
+    d = work / "parts"
+    d.mkdir(parents=True, exist_ok=True)
+    for k, (a, segs) in parts.items():
+        np.save(d / f"{k}.npy", np.asarray(a, np.float32))
+    json.dump({k: [list(x) for x in segs] for k, (_, segs) in parts.items()}, open(d / "segments.json", "w"), indent=1)
+
+
+def load_parts(work):
+    """The raw parts kept by keep_parts, or None for a render made before 16 Nov."""
+    d = work / "parts"
+    if not (d / "segments.json").exists():
+        return None
+    segs = json.load(open(d / "segments.json"))
+    return {k: (np.load(d / f"{k}.npy"), [tuple(x) for x in v]) for k, v in segs.items()}
+
+
 def make(ep, voice_name="HEART"):
     v, parts = synth(ep, voice_name)
+    keep_parts(OUT / ep["slug"], parts)
     at, spans, total = timeline(ep, parts)
     print(f"  timing: {total:.1f} s, {len(ep['beats'])} beats" + ("  CHECK over 60 s" if total > 60 else ""), flush=True)
     sc, check_at = scene(ep, parts, at, spans, total)
@@ -275,7 +297,7 @@ def make(ep, voice_name="HEART"):
     json.dump(report, open(work / "sound.json", "w"), indent=1)
     print(f"  sound: DNSMOS voice {report['voice']['ovrl']} / mix {report['mix']['ovrl']} (bak {report['mix']['bak']}), "
           f"voice over effects {report['voice_over_fx_db']} dB while speaking, {report['lufs']} LUFS, {report['tp']} dBTP; "
-          f"SIG drop voice to mix {report['sig_drop']}" + ("  CHECK over 0.15" if (report['sig_drop'] or 0) > .15 else "")
+          f"SIG drop voice to mix {report['sig_drop']} level-matched (raw {report.get('sig_drop_raw')})" + ("  CHECK over 0.15" if (report['sig_drop'] or 0) > .15 else "")
           + (f"  CHECK voice stem clipped {report['voice_stem_clipped']} samples" if report['voice_stem_clipped'] else ""))
     print(f"  -> {final.name}  {total:.1f}s  voice {voice_name}")
     return final, problems
@@ -284,7 +306,7 @@ def make(ep, voice_name="HEART"):
 def remix(ep, voice_name="HEART"):
     """Rebuild only the sound of the last render (same picture, same voice takes) after an effects change."""
     work = OUT / ep["slug"]
-    parts = L.reuse(work)
+    parts = load_parts(work) or L.reuse(work)          # 16 Nov: the raw takes when the render kept them
     at, spans, total = timeline(ep, parts)
     voice, fx = soundtrack(ep, parts, at, spans, total + .6)
     fx = fx * L.shorts_mix(ep)[1]

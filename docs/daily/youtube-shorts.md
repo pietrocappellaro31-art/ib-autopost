@@ -10,3 +10,4 @@
 | 2026-11-13 | shorts-friday-13th-myth | Do stocks really do worse on Friday the 13th? We checked (Format E, myth; replaces the morning quiz) | HEART | 41.6 s | |
 | 2026-11-14 | shorts-first-cash-machine | His Bank Closed on a Saturday. So He Came Up With the Cash Machine (Format B, story) | HEART | 42.9 s | |
 | 2026-11-15 | shorts-jackpot-two-billion | The $2.04 Billion Jackpot Paid $997.6 Million. Here's Why (Format D, animated calculation) | HEART | 53.9 s | |
+| 2026-11-16 | shorts-down-50-up-50 | A Stock Falls 50% and Rises 50%. Are You Back to Even? (Format C, one surprising concept) | HEART | 53.7 s | |

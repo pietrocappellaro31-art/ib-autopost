@@ -33,6 +33,14 @@ natural, he chose **robotic / processed sound**. HEART at 0.9 stays; what change
   (the voice levelled to RMS 0.12 had reached full scale and was clipped in `voice.wav`).
 - **Gate, printed by every render** (`sound.json`): `sig_drop` (DNSMOS SIG of the voice stem minus SIG of the clean
   mix) 0.15 or less, and `voice_stem_clipped` 0.
+- **The gate is level-matched (16 Nov).** DNSMOS scores the same voice lower just for being louder: the raw HEART stem
+  of the 50% Short, only turned up, scored SIG 3.68 at -30 LUFS, 3.71 at -23 and -20, 3.68 at -17 and 3.60 at -14.
+  `build/sig_stages.py` rebuilt that Short's master stage by stage from its raw takes: raw 3.71, int16 stem 3.71,
+  narrator chain 3.70, plain gain to -14 LUFS 3.59, true-peak limiter 3.61, AAC 3.61; with effects and room 3.72,
+  3.61, 3.63, 3.63. So the 0.10 to 0.16 "drop" of 14 and 15 Nov was the master's loudness, not damage: the chain,
+  limiter, encode and effects cost nothing measurable. `sig_drop` now scores voice stem and mix both at -23 LUFS
+  (`quality.score_at`); the old figure stays in `sound.json` as `sig_drop_raw`. Gate unchanged: 0.15 or less.
+  Raw takes are kept per render (`out/<slug>/parts/*.npy`, `story.keep_parts`) and remixes reuse them.
 - Measured 14 Nov on the cash machine narration, voice alone at -14 LUFS: old chain OVRL 3.29 (SIG 3.55), new chain
   3.40 (SIG 3.62), untouched Kokoro 3.40; short-term loudness spread 9.8 dB (squashed) to 12.4 dB (raw 12.5). The
   same Short remixed: mix OVRL 3.12 to 3.29, SIG 3.49 to 3.57, BAK 3.83 to 4.03, SIG drop 0.16 to 0.10, -14.2 LUFS,
