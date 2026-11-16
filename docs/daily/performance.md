@@ -1,6 +1,6 @@
 # Performance (written by publish.py; do not edit by hand)
 
-Updated 2026-11-16T19:16:13+00:00 UTC. Reels live at least 24 hours, best reach first. Watch time in milliseconds as Meta reports it.
+Updated 2026-11-16T20:07:32+00:00 UTC. Reels live at least 24 hours, best reach first. Watch time in milliseconds as Meta reports it.
 
 | Posted (ET) | Reach | Views | Shares | Saves | Likes | Comments | Follows | Avg watch | Opening line |
 |---|---|---|---|---|---|---|---|---|---|
@@ -19,4 +19,4 @@ Updated 2026-11-16T19:16:13+00:00 UTC. Reels live at least 24 hours, best reach 
 | 2026-11-08 Sun 09:12 | 19 | 27 | 0 | 0 | 1 | 1 |  | 16203 | This LBO doubled the money in 5 years. 1 number on the screen is still wrong. Did you catc |
 
 Not readable with the current token: reel follows
-- follows: Graph API 400 on 18097534820482300/insights: {"error":{"message":"(#100) The Media Insights API does not support the follows metric for this media product type.","code":100,"type":"OAuthException","fbtrace_id":"AmnSY7sHD1DwlONntoU4gOf"}}
+- follows: Graph API 400 on 18097534820482300/insights: {"error":{"message":"(#100) The Media Insights API does not support the follows metric for this media product type.","code":100,"type":"OAuthException","fbtrace_id":"AVv7pXcqVTV4C0T79KLjFSp"}}
