@@ -104,6 +104,9 @@ identical cards" fails, and so does swapping one repeated template for another.
    a dealing room with a split-flap board that counts on cue and telephones that ring, a wooden lodge with an easel.
    15 Nov (YouTube #9, `cine_1920.py`): a Boston street of 1920, a 1920 office with a counter, brass grilles and a
    counting board, two post-office counters with the sea between them; 1920 looks (boater, cloche).
+   16 Nov (YouTube #10, `cine_1963.py`): an oil tank yard by the water at dusk and at night (tanks with ladders,
+   catwalks, pipes, valves, lamps; a tank whose front cuts away to show water, oil or nothing, with levels that move
+   and a dip tape), a receipt's journey strip (yard, field-warehouse office, broker, bank); 1963 looks.
    Next: a modern trading floor with screens, a bank office, a city street today, a boardroom, a kitchen table.
 4. **Data in the world** (started): price paths that draw with flags; numbers that lift off documents. Next:
    balance sheet that rearranges, cash-flow waterfall, LBO structure, debt schedule (see `scene-library.md`).

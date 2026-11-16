@@ -120,9 +120,17 @@ scored master is offered, not pushed.
 (distant air, a murmur of many people with no words, carts) and a quiet room. Every effect belongs to an action on
 screen. **No whoosh on routine transitions** (Pietro, 6 Nov).
 
-Gap still open in the drawn (non-filmed) parts of a long video: `youtube.scenes` puts a pop on every beat and visual
-change and a ding on every chapter card. Filmed beats carry action-timed foley; the drawn beats should move to
-action-timed sound too (build step in `cinematic-standard.md`).
+Drawn beats (16 Nov, YouTube #10; closes the gap of 13 Nov): every `sketch.py` drawing reports its actions read off its
+own SVG (`sketch.actions`: a stamp landing, a coin landing, a bar finishing, a marker passage, a shape popping in, a
+paper appearing), `youtube.visual()` does the same for the HTML kinds (compare values, list and flow items, counts,
+verdict stamps), and `youtube.scenes()` puts the matching sound (`sfx.SOUNDS`: stamp, clink, tock, marker, paper,
+hit, softpop) on each action while that visual is on screen. Chapter cards get a low mallet as the title lands plus
+their drawing's own sounds, not a ding. Thinned so a drawing never chatters (0.12 s apart at most, 3 marker passages,
+3 generic pops). `ep["fx"] = "pops"` restores the old pop-per-visual sound for an exact re-render. Measured by
+`python3 build/sfx_sync.py build/youtube_ep<NNN>.py` (both modes on the same script): on #10, key actions with a
+sound within 0.15 s 0% (pops) to 99% (action); 2 sounds to 8; on #9's script 0% to 98%.
+Stems: `youtube.make` caps the voice stem at a peak of 0.89 (16 Nov: on #10 the RMS-levelled voice peaked at 1.51 and
+61 samples clipped in voice.wav).
 
 ## 6. Mix and loudness
 

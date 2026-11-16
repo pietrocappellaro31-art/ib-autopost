@@ -42,6 +42,8 @@ A fully filmed 10-minute video would take about 2 to 3 hours to render on this m
 - `build/cine_lib.py` `document_shot(style, head, sub, quote, hl, start, end, source)` (15 Nov): a filmed document for a
   quote; the runtime's `data-type`, `data-hl` and `data-caret` ink and highlight text measured per glyph.
 - `build/cine_1920.py` 1920 sets and the filmed beats of YouTube #9.
+- `build/cine_1963.py` 1963 sets (tank yard with a cut-away tank, the receipt's journey) and the filmed beats of YouTube #10.
+- `build/sfx_sync.py` (16 Nov): measures whether the drawn beats' sounds land on what moves (coverage of key actions).
 - `build/master.py scored <clean.mp4>` a scored alternative for a finished Levels Short or Reel.
 - `build/yt_preview.py` variety test, motion sheets, motion measures.
 

@@ -32,5 +32,7 @@ Modern objects ready in cine_lib: `phone`, `card`, `terminal`, `ledger_book`, `c
 Rules: each scene has a teaching purpose stated in the visual plan; reconstructions are badged; data comes from the
 docstring's sources; no bank logos; red is the accent, not the crowd.
 
+1963, ready in `cine_1963.py` (16 Nov): sets `tank_farm(night, cut, levels, flow)` (cut-away tank: `tank_body(cut=dict(at, water, oil, oil_at, slick, tape))`), `chain_strip` (yard, field warehouse, broker, bank); props `warehouse_receipt`, `clipboard(text, at)`, `pipe(flow=)`, `valve`, `lamp_post`; looks `inspector_1963`, `worker_1963`, `worker_1963b`, `broker_1963`, `banker_1963`; foley `pump`, `yard_ambience`, `stamp`, `marker`.
+
 1920, ready in `cine_1920.py` (15 Nov): sets `boston_street_1920`, `office_1920` (board=, cal=), `post_counter`; props `reply_coupon`,
 `stamp_5c`, `cash_stack`, `promissory_note`; looks `boater_1920`, `boater_1920b`, `clerk_1920`, `clerk_1920b`, `lady_1920`, `lady_1920b`, `worker_1920`.

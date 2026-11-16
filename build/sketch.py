@@ -59,6 +59,7 @@ Scenes (opts in brackets):
 import html as H
 import math
 import random
+import re
 
 RED, TEAL, INK, PAPER, GREY = "#D93A12", "#0F766E", "#0A0A0A", "#F7F5F2", "#9A958E"
 W, Hh = 800, 640
@@ -610,7 +611,70 @@ SCENES = {f.__name__: f for f in (clock, bricks, dominoes, chart, bars, figures,
 def scene(name, t0, dur, seed=1, **opts):
     p = Pen(t0, dur, seed)
     SCENES[name](p, **opts)
-    return p.svg()
+    out = p.svg()
+    SOUND_LOG.append(dict(name=name, t0=t0, events=actions(out, name)))
+    return out
+
+
+# 16 Nov (YouTube #10): what each drawing does and when, so the drawn beats get a sound on each action instead of one
+# generic pop per visual (audio-standard.md 5). Read off the finished SVG, so drawings that append their parts
+# directly are covered as well as Pen.line and Pen.fill. youtube.scenes() reads SOUND_LOG after building a visual.
+SOUND_LOG = []
+PAPERS = {"document", "newspaper", "letter", "scroll", "receipt", "ledger", "book", "poster", "credit_report", "perpetual",
+          "quote_card", "calendar", "fri13_page", "year_grid"}
+_ACT = re.compile(r'<g class="a" data-fx="([a-zA-Z]+)" data-at="([0-9.\-]+)" data-d="([0-9.]+)"([^>]*)>')
+_COIN = re.compile(r'radialGradient id="coin|#E8B04A|#E2B43C|#F6C19A|#E0A93B|#B9C1C7')
+_PRIORITY = {"stamp": 0, "clink": 1, "paper": 1, "hit": 1, "tock": 2, "softpop": 3, "marker": 4}
+
+
+def actions(svg, name=""):
+    """[(sound, seconds, gain or None, kwargs)] for one drawing: a stamp lands, a coin lands, a bar finishes growing,
+    a shape pops in, a marker stroke draws (strokes close together share one sound). Ambient motion (swing, float,
+    ripple, fades, camera) makes no sound. Thinned so a drawing never chatters: one per 0.12 s at most, the
+    stronger sound kept, at most 3 marker passages and 3 generic pops."""
+    ev, strokes = [], []
+    marks = list(_ACT.finditer(svg))
+    for i, m in enumerate(marks):
+        fx, at, d = m.group(1), float(m.group(2)), float(m.group(3))
+        body = svg[m.end(): marks[i + 1].start() if i + 1 < len(marks) else len(svg)]
+        coin = bool(_COIN.search(body))
+        if fx == "stamp":
+            ev.append(("stamp", at + d * .85))
+        elif fx == "coinflip":
+            ev.append(("clink", at + d))
+        elif fx in ("pop", "scale", "flipin", "slide", "move") and coin:
+            ev.append(("clink", at + d * (.8 if fx != "slide" else 1)))
+        elif fx in ("growY", "growYdown", "scaleY", "growX"):
+            ev.append(("tock", at + d))
+        elif fx in ("pop", "scale", "flipin", "slide", "move"):
+            ev.append(("softpop", at + d * (.5 if fx == "pop" else 1)))
+        elif fx == "press":
+            ev.append(("hit", at + d * .5))
+        elif fx in ("draw", "strike"):
+            strokes.append((at, at + d))
+    strokes.sort()
+    runs = []
+    for a, b in strokes:                                    # strokes within 0.3 s of each other are one passage
+        if runs and a <= runs[-1][1] + .3:
+            runs[-1][1] = max(runs[-1][1], b)
+        else:
+            runs.append([a, b])
+    runs = sorted(sorted(runs, key=lambda r: r[0] - r[1])[:3])
+    ev += [("marker", a, None, dict(sec=min(b - a, 1.0))) for a, b in runs]
+    if name in PAPERS and (ev or strokes):
+        ev.append(("paper", min(e[1] for e in ev) if ev else strokes[0][0]))
+    ev = [e if len(e) == 4 else (e[0], round(e[1], 3), None, {}) for e in ev]
+    ev.sort(key=lambda e: (_PRIORITY[e[0]], e[1]))
+    kept, pops = [], 0
+    for e in ev:                                            # stronger sounds first, then fill the gaps
+        if e[0] != "marker" and any(abs(e[1] - k[1]) < .12 and k[0] != "marker" for k in kept):
+            continue
+        if e[0] == "softpop":
+            if pops >= 3:
+                continue
+            pops += 1
+        kept.append(e)
+    return sorted(kept, key=lambda e: e[1])
 
 
 # ---- 10 Nov scenes: coins and money in colour (Pietro: "pictures and colors and more animated")
@@ -660,7 +724,7 @@ def pricetag(p, value="1\u00a2", tag="?", **_):
     p.circle(520, 170, 8, .28, .1, w=5)
 
 
-def receipt(p, total="$4.97", circle=-1, **_):
+def receipt(p, total="$4.97", circle=-1, coin_vals=("5\u00a2", "1\u00a2"), **_):
     """A shop receipt printing out, the total at the bottom; circle=k rings the k-th character of the total in red."""
     zig = " ".join(f"L{170 + 20 * i} {612 if i % 2 else 600}" for i in range(1, 24))
     p.parts.append(f'<g class="a" data-fx="growYdown" data-at="{p.at(.0)}" data-d="{.5 * p.dur:.2f}">'
@@ -670,12 +734,14 @@ def receipt(p, total="$4.97", circle=-1, **_):
         p.box(500, 120 + 62 * i, 85, 20, "#DCD7CF", .14 + .06 * i, rx=10, fx="growX")
     p.line([(210, 400), (590, 400)], .38, .12, color=GREY, w=4, dash="10 10")
     p.text(215, 490, "TOTAL", .45, size=44, anchor="start", weight=700)
-    p.text(590, 495, total, .5, size=84, anchor="end", serif=True, weight=700, color=INK)
+    # 16 Nov (#10 contact sheet): a long total ("1.8bn lb") ran into TOTAL; the size now fits the 230 px it has
+    fs = min(84, int(230 / (.56 * max(len(total), 1))))
+    p.text(590, 495, total, .5, size=fs, anchor="end", serif=True, weight=700, color=INK)
     if circle >= 0:
-        cx = 590 - (len(total) - 1 - circle) * 42 - 21
+        cx = 590 - (len(total) - 1 - circle) * fs / 2 - fs / 4
         p.circle(cx, 467, 46, .65, .3, color=RED, w=7)
-    coin(p, 690, 520, 62, "5\u00a2", "nickel", .55, fx="pop")
-    coin(p, 110, 540, 56, "1\u00a2", "copper", .6, fx="pop")
+    coin(p, 690, 520, 62, coin_vals[0], "nickel", .55, fx="pop")          # coin_vals=("", ""): no prices on a prop
+    coin(p, 110, 540, 56, coin_vals[1], "copper", .6, fx="pop")
     p.line([(62, 492), (158, 588)], .72, .12, color=RED, w=10)
     p.line([(158, 492), (62, 588)], .76, .12, color=RED, w=10)
 

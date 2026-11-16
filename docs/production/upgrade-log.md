@@ -129,3 +129,18 @@ and takes): mix OVRL 3.12 to 3.29, SIG 3.49 to 3.57, BAK 3.83 to 4.03, SIG drop 
 - Nobody here can listen. Two 13 s A/B clips (old and new chain, same lines, both -14 LUFS) went to Pietro.
 - A naturalness predictor (UTMOS) could not be fetched in this workspace; DNSMOS SIG is the proxy.
 - The plugins are updated only when Pietro installs the `.plugin` files.
+
+## 16 Nov 2026: action-timed sound in the drawn beats (YouTube #10)
+
+The 15 Nov next improvement. Before: one generic pop per visual change and a ding per chapter card, whatever the
+drawing did (audio-standard.md 5, open since 13 Nov). Now each drawing's own actions are read off its SVG and each gets
+a sound at the moment it happens (stamp, coin, bar, marker, paper, card); HTML visuals report theirs too; cards get a
+low mallet and their drawing's sounds. Measured with the new `build/sfx_sync.py` on the same scripts: key actions
+heard within 0.15 s, #10 0% to 99% (88 actions), #9 0% to 98% (53); sounds used 2 to 8; effects per drawn scene 2.1
+to 7.4, the markers at -23 dB under the pops' level. Shown on a timing strip (`build/out/yt-010-salad-oil/sfx_strip.jpg`:
+frames 0.25 s apart with the effects that start in each). Also: the voice stem is capped at a 0.89 peak (61 clipped
+samples on #10's first mix), and `sketch.receipt` fits a long total and can drop the prices on its coins.
+
+### Not done or not verified
+
+- Nobody here can listen; the sound placement is measured, not heard.

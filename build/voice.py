@@ -57,6 +57,13 @@ PHONEMES = {
     "odlyzko": "Odlˈɪʒkˌo",
     "southwark": "sˈʌðəɹk",
     "heinze": "hˈInts",                   # 13 Nov, YouTube #7 (the Panic of 1907)
+    "tino": "tˈinO",                      # 16 Nov, YouTube #10 (the salad oil swindle, 1963)
+    "angelis": "ænʤˈɛlɪs",                # De Angelis
+    "haupt": "hˈWpt",                     # Ira Haupt & Co.
+    "ira": "ˈIɹə",
+    "beane": "bˈin",                      # J. R. Williston & Beane
+    "buffett": "bˈʌfᵻt",
+    "multi": "mˈʌlti",
     "cortelyou": "kˈɔɹtəljˌu",
     "aldrich": "ˈɔldɹɪʧ",
     "bretton": "bɹˈɛtᵊn",                 # 14 Nov, YouTube #8 (the gold window, 1971)

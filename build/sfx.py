@@ -295,3 +295,121 @@ def foley_track(events, total, stereo=True):
         buf[i:i + m, 0] += sig[:m] * gl
         buf[i:i + m, 1] += sig[:m] * gr
     return buf
+
+
+# ------------------------------------------------------------------------------------------------------------------
+# 16 Nov (YouTube #10, the 15 Nov next improvement: action-timed sound in the drawn beats). The drawn beats used to
+# get one generic pop per visual change and a ding per chapter card, whatever the drawing did. Now every sketch.py
+# drawing reports what it does and when (sketch.Pen.snd: a stamp landing, a coin landing, a paper appearing, a bar
+# growing, a marker stroke, a label popping), youtube.visual() does the same for its HTML kinds, and youtube.scenes()
+# lays one of the sounds below on each action. They run at the 24 kHz of the narration (youtube.SR), mono, and are
+# made from the 48 kHz foley above so the drawn and filmed parts of a film sound like one world. Still no whoosh.
+
+def _down(x):
+    from scipy.signal import resample_poly
+    return resample_poly(x, 1, 2).astype(np.float32)
+
+
+def marker(sec=.5, seed=0):
+    """A felt-tip on paper: soft, low-mid scratch with a stroke rhythm, much quieter than a quill."""
+    rng = np.random.default_rng(seed)
+    sec = float(min(max(sec, .18), 1.1))
+    t = _ft(sec)
+    strokes = (.55 + .45 * np.sin(2 * np.pi * rng.uniform(3.5, 5.5) * t + rng.uniform(0, 6))) ** 2
+    edge = np.clip(t / .04, 0, 1) * np.clip((sec - t) / .09, 0, 1)
+    out = _band(rng.standard_normal(len(t)), 900, 4200) * strokes * edge
+    return (out / (np.abs(out).max() + 1e-9)).astype(np.float32)
+
+
+def stamp_hit(seed=0):
+    """A rubber stamp landing: a dull low knock with a short paper slap on top."""
+    t = _ft(.4)
+    knock = np.sin(2 * np.pi * 92 * t) * np.exp(-t * 26) + .5 * np.sin(2 * np.pi * 180 * t) * np.exp(-t * 40)
+    slap = _band(np.random.default_rng(seed).standard_normal(len(t)), 600, 5000) * np.exp(-t * 90) * .7
+    out = knock + slap
+    return (out / (np.abs(out).max() + 1e-9)).astype(np.float32)
+
+
+def _mk(fn, **kw):
+    def make(seed=0, **more):
+        return _down(fn(seed=seed, **{**kw, **more}))
+    return make
+
+
+# name: (maker at 24 kHz taking seed=, default gain)
+SOUNDS.update({
+    "paper": (_mk(paper, sec=.35, crisp=.7), .16),
+    "clink": (_mk(clink), .16),
+    "stamp": (_mk(stamp_hit), .42),
+    "marker": (_mk(marker), .07),
+    "hit": (_mk(soft_hit, pitch=196), .2),
+    "hitlow": (_mk(soft_hit, pitch=131), .22),
+    "tock": (_mk(clock_tick, tock=True), .12),
+    "softpop": (lambda seed=0: pop() * .6, .14),
+})
+
+
+def track_fx(events, total, gain=1.0):
+    """Like track(), for the action-timed sounds: events are (name, seconds[, gain][, kwargs]); each event gets its own
+    seed (repeated coins do not sound identical)."""
+    buf = np.zeros(int((total + 1) * SR), np.float32)
+    for k, ev in enumerate(events):
+        name, at = ev[0], ev[1]
+        fn, g = SOUNDS[name]
+        g = ev[2] if len(ev) > 2 and ev[2] is not None else g
+        kw = dict(ev[3]) if len(ev) > 3 else {}
+        try:
+            sig = fn(seed=k, **kw)
+        except TypeError:
+            sig = fn()
+        sig = sig * g * gain
+        i = int(at * SR)
+        if i < 0 or i >= len(buf):
+            continue
+        buf[i:i + len(sig)] += sig[: len(buf) - i]
+    return buf
+
+
+def yard_ambience(sec, seed=0, wind=1.0, horn=True):
+    """16 Nov (YouTube #10): an oil tank yard by the water at dusk: low wind, water lapping on pilings, the odd far
+    metal knock and, once, a distant ship's horn (two low partials). Stereo, peak about .5."""
+    rng = np.random.default_rng(seed)
+    n = int(sec * FSR)
+    t = np.arange(n) / FSR
+    out = np.zeros((n, 2), np.float32)
+    for c in range(2):
+        gust = .55 + .45 * np.sin(2 * np.pi * rng.uniform(.05, .12) * t + rng.uniform(0, 6))
+        air = _band(rng.standard_normal(n), 50, 420) * gust * wind
+        lap = _band(rng.standard_normal(n), 200, 900) * np.clip(np.sin(2 * np.pi * rng.uniform(.35, .55) * t + rng.uniform(0, 6)), 0, 1) ** 3 * .35
+        out[:, c] = air + lap
+    for _ in range(int(sec / 3)):
+        at = rng.uniform(0, max(sec - 1, .1))
+        s = clank(int(rng.integers(0, 99)), pitch=rng.uniform(140, 240)) * rng.uniform(.08, .18)
+        i = int(at * FSR)
+        pan = rng.uniform(.2, .8)
+        m = max(0, min(len(s), n - i))
+        out[i:i + m, 0] += s[:m] * (1 - pan)
+        out[i:i + m, 1] += s[:m] * pan
+    if horn and sec > 4:
+        i0, ln = int(rng.uniform(1, sec - 3) * FSR), int(2.2 * FSR)
+        tt = np.arange(ln) / FSR
+        env = np.clip(tt / .3, 0, 1) * np.clip((2.2 - tt) / .6, 0, 1)
+        h = (np.sin(2 * np.pi * 110 * tt) + .6 * np.sin(2 * np.pi * 165 * tt) + .2 * np.sin(2 * np.pi * 220 * tt)) * env * .08
+        m = max(0, min(ln, n - i0))
+        out[i0:i0 + m, :] += h[:m, None]
+    return (out / (np.abs(out).max() + 1e-9) * .5).astype(np.float32)
+
+
+def pump(sec=2.0, seed=0):
+    """A pump moving oil through a pipe: a low motor hum with a slow throb and liquid gurgle."""
+    rng = np.random.default_rng(seed)
+    t = _ft(sec)
+    hum = np.sin(2 * np.pi * 58 * t) + .4 * np.sin(2 * np.pi * 116 * t)
+    throb = .6 + .4 * np.sin(2 * np.pi * 3.2 * t)
+    gurgle = _band(rng.standard_normal(len(t)), 120, 700) * (.5 + .5 * np.sin(2 * np.pi * rng.uniform(5, 8) * t)) ** 2
+    edge = np.clip(t / .25, 0, 1) * np.clip((sec - t) / .35, 0, 1)
+    out = (hum * throb * .6 + gurgle) * edge
+    return (out / (np.abs(out).max() + 1e-9)).astype(np.float32)
+
+
+FOLEY.update({"pump": pump, "stamp": stamp_hit, "marker": marker})

@@ -196,8 +196,34 @@ def pace(i, n, t0, dur, kind="", span=.55, gap=.9, lead=.1):
     return at
 
 
+def _snd(*events):
+    """16 Nov: an HTML visual's actions for the action-timed sound (same log as the drawings, sketch.SOUND_LOG)."""
+    sketch.SOUND_LOG.append(dict(name="html", t0=0, events=[(e[0], round(e[1], 3), None, e[2] if len(e) > 2 else {}) for e in events]))
+
+
 def visual(show, t0, dur):
     k = show.get("kind", "statement")
+    n_ = len(show.get("items", ()))
+    if k == "number":
+        _snd(("hit", t0 + .2 + min(1.6, dur * .6)))
+    elif k == "list":
+        _snd(*[("softpop", pace(i, n_, t0 + .1, dur) + .25) for i in range(n_)])
+    elif k == "compare":
+        _snd(("hit", t0 + .45), ("hit", t0 + dur * .45 + .25, {}))
+    elif k == "term":
+        _snd(("hit", t0 + .35))
+    elif k == "icon":
+        _snd(("softpop", t0 + .25), ("marker", t0 + .25, dict(sec=.8)))
+    elif k == "icons":
+        _snd(*[("softpop", pace(i, n_, t0 + .05, dur) + .25) for i in range(n_)])
+    elif k == "timeline":
+        _snd(("marker", t0, dict(sec=min(1.0, dur * .4))), *[("tock", pace(i, n_, t0 + .2, dur) + .35) for i in range(n_)])
+    elif k == "flow":
+        _snd(*[("softpop", pace(i, n_, t0, dur) + .25) for i in range(n_)])
+    elif k == "verdict":
+        _snd(("stamp", t0 + dur * .55 + .3))
+    elif k == "split":
+        _snd(("softpop", t0 + .3), ("hit", t0 + dur * .4 + .2), ("softpop", t0 + dur * .45 + .3))
     if k == "statement":
         return words_kara(show["text"], t0, dur * .9, show.get("hl", ()), size=show.get("size", 112))
     if k == "number":
@@ -402,6 +428,8 @@ def scenes(ep, items):
             chapters.append((t, ch["title"]))
             html = (f'<div class="lbl" style="margin-bottom:26px;color:#fff;opacity:.85">Part {c + 1} of {n_ch}</div>'
                     + words_kara(H.escape(ch["title"]), .25, dur, size=title_size(ch["title"]), hide=True, color="#fff"))
+            mark = len(sketch.SOUND_LOG)
+            _card_events = lambda: [e for d in sketch.SOUND_LOG[mark:] for e in d["events"]]
             if ch.get("art"):
                 name, opts = ch["art"]
                 html = (f'<div style="display:flex;align-items:center;gap:40px"><div style="flex:1">{html}</div>'
@@ -410,7 +438,11 @@ def scenes(ep, items):
             # 12 Nov: every chapter card holds at least 2.8 s (a short title like "Germany's bill" flashed by in 2 s on #4)
             sc.append(dict(dur=max(dur + 1.1, ep.get("card_min", 2.8)), push=.03, enter="", ghost=str(c + 1), html=html, voice=(a, .35),
                            ci=c, nc=n_ch, bg=RED))
-            sounds.append(("ding", t + .3, .1))
+            if ep.get("fx", "action") == "action":            # 16 Nov: the card's drawing sounds its own actions
+                sounds.append(("hitlow", t + .3, .12))
+                sounds += [(e[0], t + e[1], e[2], e[3]) for e in _card_events() if e[1] < max(dur + 1.1, ep.get("card_min", 2.8))]
+            else:
+                sounds.append(("ding", t + .3, .1))
         else:
             beat = ch["beats"][b]
             shows = beat.get("shows") or [beat.get("show", dict(kind="statement", text=beat["say"]))]
@@ -434,25 +466,34 @@ def scenes(ep, items):
                     return "push"
                 CAM_USE["_n"] += 1
                 return CAM_CYCLE[CAM_USE["_n"] % len(CAM_CYCLE)]
+            action = ep.get("fx", "action") == "action"
+            mark = len(sketch.SOUND_LOG)
             if len(shows) == 1:
                 vis = camera(visual(shows[0], .25, dur), cam_for(shows[0]), 0, dur + .75)
+                if action:
+                    sounds += [(e[0], t + e[1], e[2], e[3]) for d in sketch.SOUND_LOG[mark:] for e in d["events"] if e[1] < dur + .75]
             else:                                   # one visual per sentence, each replacing the last
                 assert len(shows) == len(segs), f"{len(shows)} visuals for {len(segs)} sentences: {beat['say'][:40]}"
                 vis = ""
                 for j, (shw, (_, s0, s1)) in enumerate(zip(shows, segs)):
                     a0 = (s0 + .25) if j else 0.0
                     end = (segs[j + 1][1] + .25) if j + 1 < len(segs) else dur + 2
+                    m0 = len(sketch.SOUND_LOG)
                     inner = camera(visual(shw, .25 + s0 if j else .25, max(s1 - s0, .8)), cam_for(shw), round(a0, 3), round(end - a0, 3))
+                    if action:                      # only what happens while this visual is on screen
+                        sounds += [(e[0], t + e[1], e[2], e[3]) for d in sketch.SOUND_LOG[m0:] for e in d["events"]
+                                   if a0 - .05 <= e[1] < min(end, dur + .75)]
                     vis += A(f'<div style="width:100%">{inner}</div>', "life", round(a0, 3),
                              round(end - a0, 3), fi=.3 if j else .01, fo=.3,
                              style="position:absolute;inset:0;display:flex;align-items:center")
-                    if j:
+                    if j and not action:
                         sounds.append(("pop", t + .25 + s0, .12))
             cap = (f'<div class="cap nochk">{words_kara(H.escape(beat["say"]), .25, dur, size=40, serif=False)}</div>'
                    if any(x.get("kind", "statement") not in ("statement", "quote", "verdict") for x in shows) else "")
             sc.append(dict(dur=dur + .75, push=.02, enter="", html=vis + cap,
                            chap=ch["title"], voice=(a, .25), ci=c, nc=n_ch))
-            sounds.append(("pop", t + .3, .14))
+            if not action:
+                sounds.append(("pop", t + .3, .14))
         t += sc[-1]["dur"]
     return sc, chapters, sounds, t
 
@@ -1124,8 +1165,11 @@ def make(ep, voice_name=YOUTUBE_VOICE):
         i = int((t + off) * SR)
         voice[i:i + len(a)] += a[: n - i]
         t += s["dur"]
-    fx = S.track(sounds, total)
+    fx = S.track_fx(sounds, total)               # 16 Nov: per-event seeds and kwargs (track() is the 15 Nov call)
     g = .12 / max(np.sqrt(np.mean(voice[voice != 0] ** 2)), 1e-6)
+    # 16 Nov (#10): the voice levelled to RMS .12 peaked over full scale and 61 samples clipped in voice.wav (the
+    # audio-standard 1b gate is 0). The stems now keep a peak of .89 at most; the masters are normalised later anyway.
+    g = min(g, .89 / max(np.abs(voice).max(), 1e-6))
     write_wav(work / "voice.wav", voice * g)
     write_wav(work / "sfx.wav", fx[:n] * g)
     silent = render(ep["slug"], html, total, work)
