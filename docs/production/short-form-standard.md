@@ -8,6 +8,12 @@ disagrees, this file wins, unless Pietro has since recorded a newer decision in
 The Shorts are for the finance channel's IB identity. They are separate from any other project:
 no other channel's characters, branding or data. Posting stays manual: Pietro uploads.
 
+## Black background (16 Nov, Pietro)
+
+"Set this as the rule from now on for both IG reels and YouTube shorts." Every Short and every Reel renders on black
+(the default of `build/levels.py` and `build/story.py`); per-part colour grounds are retired; drawings sit on paper
+panels; white cards, red accent, bright teal answers, filmed windows as before. Details: `docs/decisions-log.md`.
+
 ## What is settled here (13 Nov)
 
 - **Narrator:** Kokoro af_heart (HEART), en-us, speed 0.9, for Shorts and long videos alike.

@@ -1,6 +1,6 @@
 # Reel style
 
-> **16 Nov 2026 (Pietro): black background from 17 Nov**, same format and quality. `ep["theme"] = "black"` in
+> **16 Nov 2026 (Pietro): black background from 17 Nov, for Reels and YouTube Shorts**, same format and quality. `ep["theme"] = "black"` in
 > `build/levels.py`: black ground, light text on it, answers in bright teal `#5EC8B4`, white question cards kept, level
 > drawings on paper panels, films unchanged. Where this file says paper or light ground, read black for Reels from
 > 17 Nov (`docs/decisions-log.md`).

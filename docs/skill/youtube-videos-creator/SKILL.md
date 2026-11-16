@@ -5,7 +5,7 @@ description: "Daily YouTube run for the finance channel: research a topic that c
 
 # YouTube Videos Creator
 
-Version 2026-11-14 (cinematic upgrade; Pietro's 14 Nov note: a natural, unprocessed narrator). The authoritative copy is `docs/skill/youtube-videos-creator/SKILL.md` in the
+Version 2026-11-16 (black background for Shorts; cinematic upgrade; Pietro's 14 Nov note: a natural, unprocessed narrator). The authoritative copy is `docs/skill/youtube-videos-creator/SKILL.md` in the
 ib-autopost repo; the installed plugin is built from it (`docs/production/skill-sync.md`).
 
 **The standards live in the repo and win over this file where they disagree:** `docs/production/long-form-standard.md`,
@@ -95,12 +95,18 @@ conclusion and one takeaway.
 
 ## 4. Short (9:16)
 
+**Black background (Pietro, 16 Nov: "Set this as the rule from now on for both IG reels and YouTube shorts").** Every
+Short renders on black: it is the default of `levels.py` and `story.py` (`theme="black"`). No colour ground per part
+(`bg=` is ignored on black), light text on the ground, bright teal answers, white cards, every drawing on a paper
+panel, films unchanged. Look at the frames on black: nothing ink-coloured may sit directly on the ground (floaters
+and close art included: give them light fills or leave them out). Same format, quality bar and gates otherwise.
+
 Follow `short-form-standard.md`. Formats: A the four-level quiz (the hook is the last question alone, never "That's
 level 4. Keep score."), B story, C one surprising concept, D animated calculation, E myth, F choice or challenge.
 Pick the best for the topic and vary the week. 35 to 55 s for most; under 60 for the quiz.
 
-- Levels engine: copy the latest `build/shorts_<slug>.py` (the penny and Friday-13th Shorts are the floor): a colour
-  ground per part, a drawing of the concept in each answer zone, floaters, an animated close; `clear.json` and `WRAP`
+- Levels engine: copy the latest `build/shorts_<slug>.py` (the penny and Friday-13th Shorts are the floor): black
+  ground (16 Nov; the colour grounds per part are retired), a drawing of the concept in each answer zone, floaters, an animated close; `clear.json` and `WRAP`
   at zero; two-stage master at -14 LUFS.
 - A filmed segment (a story beat, a character reacting) can come from `cine.py`: the same world is reframed for 9:16
   (`cine_poc_newton.py --vertical` is the example).

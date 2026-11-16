@@ -18,8 +18,9 @@ that names the G2, BELLA, EMMA rotation, "no music in any file" or the Levels qu
 
 ## Pietro, 16 Nov: black background
 
-"From tomorrow on - same exact format and quality but black background please." Every Reel from 17 Nov sets
-`theme="black"` in its `EP` dict (`build/levels.py` THEMES): black ground, light text on the ground, answers in bright
+"From tomorrow on - same exact format and quality but black background please." Then, the same evening: "Set this as
+the rule from now on for both IG reels and YouTube shorts." Black is the default of `build/levels.py` and
+`build/story.py` (THEMES; `theme="paper"` only re-renders older work); per-part colour grounds are ignored on black: black ground, light text on the ground, answers in bright
 teal, white question cards unchanged, each level drawing on a paper panel, films unchanged. Same format, same quality
 bar and gates. Check the frames on black: nothing ink-coloured may sit directly on the ground (an ink label outside a
 panel or a card disappears). Older Reels keep the paper look; do not re-render them.

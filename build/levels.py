@@ -41,7 +41,8 @@ RED, TEAL, INK = "#D93A12", "#0F766E", "#0A0A0A"
 # ground: the kicker, HUD, meter, numerals, tails, answers (bright teal), THINK bar, close and brand turn light. The
 # question cards stay white with ink text, the filmed windows stay as they are, and each level drawing sits on a
 # paper panel (our drawings are ink on paper; on black their outlines and labels would vanish). "paper" (default)
-# is the look of every Reel before 17 Nov.
+# is the look of every Reel before 17 Nov. Later the same evening Pietro made black the rule for Reels and YouTube
+# Shorts, so black is the default (set_theme) and story.py (the Shorts engine) uses the same THEMES.
 THEMES = {
     "paper": dict(page="paper", fg=INK, teal=TEAL, track="rgba(10,10,10,.09)", think="rgba(10,10,10,.08)",
                   chip="rgba(15,118,110,.08)", hl="rgba(217,58,18,.2)", grain="multiply", grain_op=.05, panel=None,
@@ -53,10 +54,16 @@ THEMES = {
 TH = dict(THEMES["paper"])
 
 
+def PANEL():
+    """16 Nov: the paper backing a drawing gets on black (a style suffix), nothing on paper."""
+    return f";background:{TH['panel']};border-radius:26px" if TH["panel"] else ""
+
+
 def set_theme(ep):
-    """Select the episode's theme (ep["theme"], default "paper") for everything scene() draws."""
+    """Select the episode's theme for everything scene() draws. 16 Nov, Pietro ("set this as the rule from now on for
+    both IG reels and YouTube shorts"): the default is "black"; theme="paper" re-renders the look of before 17 Nov."""
     TH.clear()
-    TH.update(THEMES[ep.get("theme", "paper")])
+    TH.update(THEMES[ep.get("theme", "black")])
 W = 752                                    # safe-area width
 
 
@@ -104,6 +111,8 @@ def kara(display, start, dur, cols=None, hide=False, hl=(), cls="", style="", li
             continue
         key = re.sub(r"[^\w$%×/]", "", w).lower()
         c = cols.get(key)
+        if c and TH["panel"]:                          # 16 Nov, black ground: dark teal and ink words lighten
+            c = {TEAL: TH["teal"], INK: TH["fg"]}.get(c, c)
         spans.append(f'<span class="w" data-t="{tt}"' + (f' data-c="{c}"' if c else "")
                      + f' style="display:inline-block">{H.escape(H.unescape(w))}</span>')
     # Highlighter behind a phrase, swiped on as its first word is said.
@@ -281,11 +290,11 @@ def scene(ep, parts, at, hook_end, lv, total):
             # cine.py film is laid into it after the page is filmed (film_hook), so the cover still reads.
             + (f'<div id="filmbox" class="nochk" style="position:relative;margin:0 auto;width:{hk["film_w"]}px;height:{hk["film_h"]}px;'
                f'outline:5px solid {INK};border-radius:4px;background:#2B2F3A"></div>' if hk.get("film") else "")
-            + (f'<div class="nochk" style="position:relative;margin:0 auto;width:{hk.get("art_w", 280)}px;height:{hk.get("art_h", 224)}px">'
+            + (f'<div class="nochk" style="position:relative;margin:0 auto;width:{hk.get("art_w", 280)}px;height:{hk.get("art_h", 224)}px{PANEL()}">'
                f'{hk["art"](at["hook"], hook_end - at["hook"])}</div>'
                if hk.get("art") and not lines and not hk.get("film") else            # 12 Nov, Pietro: no "That's level 4. Keep score." on any video;
                f'<div style="display:flex;align-items:center;justify-content:space-between;gap:20px"><div>{lines}</div>'    # 10 Nov: a picture
-               f'<div class="nochk" style="position:relative;flex:none;width:{hk.get("art_w", 280)}px;height:{hk.get("art_h", 224)}px">'   # beside the
+               f'<div class="nochk" style="position:relative;flex:none;width:{hk.get("art_w", 280)}px;height:{hk.get("art_h", 224)}px{PANEL()}">'   # beside the
                f'{hk["art"](at["hook"], hook_end - at["hook"])}</div></div>' if hk.get("art") and not hk.get("film") else lines)                     # hook lines
             + '</div>')
     els.append(group(column(hook), -1, hook_end + 1 + T_SW, fi=0, fo=T_SW))
@@ -343,12 +352,14 @@ def scene(ep, parts, at, hook_end, lv, total):
             # empty answer zone while the question is read and the clock runs, then fades as
             # the answer lands on top of it.
             art = A(L["art"](T["start"] + .3, aa - T["start"] - .3), "life", T["start"] + .25, aa - T["start"] - .05, fi=.35, fo=.3,
-                    cls="nochk", style=f"position:absolute;left:0;top:0;width:{W}px;height:{L.get('ans_min', 420)}px;z-index:-1")
+                    cls="nochk", style=f"position:absolute;left:0;top:0;width:{W}px;height:{L.get('ans_min', 420)}px;z-index:-1"
+                                      + (f";background:{TH['panel']};border-radius:26px" if TH["panel"] else ""))
             if L.get("art_after"):
                 # 13 Nov: data-settle lets motion.clearAfter() move the answer's words (or the picture) apart
                 art += A(L["art_after"](aa), "life", aa + .1, T["end"] - aa + .3, fi=.35, fo=.2, cls="nochk aftr",
                          settle=round(T["end"] - .35, 3),
-                         style=f"position:absolute;right:0;top:0;z-index:-1")
+                         style=f"position:absolute;right:0;top:0;z-index:-1"
+                               + (f";background:{TH['panel']};border-radius:26px" if TH["panel"] else ""))
         filmbox = ""
         if L.get("film"):
             # 14 Nov (build step 7, second filmed beat): a level can carry a filmed window under its answer, shown
@@ -418,7 +429,7 @@ def scene(ep, parts, at, hook_end, lv, total):
         + [(ep["close"].get("bg"), at["close"] - .35, total + 1)]
     under = ""
     for col, s0, s1 in spans:
-        if not col:
+        if not col or TH["panel"]:                     # 16 Nov: on black the ground stays black (no per-part colour)
             continue
         kf = json.dumps([[round(s0, 3), 0, 0, 1, 0 if s0 > 0 else 1], [round(s0 + .4, 3), 0, 0, 1, 1], [round(s1, 3), 0, 0, 1, 1],
                          [round(s1 + .45, 3), 0, 0, 1, 0]])

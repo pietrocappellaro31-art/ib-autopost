@@ -87,7 +87,7 @@ def hud(ep, spans, close_at, total):
         x = i * (sw + gap)
         fill = A("", "growX", s0 + .1, max(s1 - s0 - .2, .3), style=f"position:absolute;inset:0;background:{RED};border-radius:7px")
         bar += (f'<div style="position:absolute;left:{x:.1f}px;top:58px;width:{sw:.1f}px;height:14px;border-radius:7px;'
-                f'background:rgba(10,10,10,.09);overflow:hidden">{fill}</div>')
+                f'background:{L.TH["track"]};overflow:hidden">{fill}</div>')
     return (f'<div style="position:absolute;left:0;top:0;width:{W}px;height:80px;z-index:6;font-size:26px;font-weight:600;'
             f'letter-spacing:.16em"><span style="opacity:.6">{ep["kicker"]}</span>{bar}</div>')
 
@@ -121,7 +121,19 @@ def cue_time(off, i, parts, at, spans):
     return (seg[0] if off[0] == "s" else seg[1]) + off[2]
 
 
+def panel(inner, w, h, margin):
+    """16 Nov (black ground for Shorts, Pietro): a drawing's box. On black it sits on a paper panel that reaches 24 px
+    past the box above and below and clips at its edges, because our drawings are ink on paper."""
+    if not L.TH["panel"]:
+        return f'<div class="nochk" style="position:relative;margin:{margin};width:{w}px;height:{h}px">{inner}</div>'
+    pad = 24
+    return (f'<div class="nochk" style="position:relative;z-index:0;margin:{margin};width:{w}px;height:{h}px;'
+            f'clip-path:inset(-{pad}px 0 -{pad}px 0 round 26px)"><div style="position:absolute;left:0;right:0;top:-{pad}px;'
+            f'bottom:-{pad}px;background:{L.TH["panel"]};border-radius:26px;z-index:-1"></div>{inner}</div>')
+
+
 def scene(ep, parts, at, spans, total):
+    L.set_theme(ep)                     # 16 Nov: black by default for every Short (levels.THEMES)
     els = [hud(ep, spans, at["close"], total)]
     seg = lambda k: parts[k][1]
     check_at = []
@@ -135,12 +147,12 @@ def scene(ep, parts, at, spans, total):
         art = ""
         if b.get("art"):
             args = (ba + .05, s1 - ba) + ((sentences(parts, at, k),) if _arity(b["art"]) > 2 else ())
-            art = (f'<div class="nochk" style="position:relative;margin:28px auto 0;width:{b.get("art_w", ART_W)}px;'
-                   f'height:{b.get("art_h", ART_H)}px">{b["art"](*args)}</div>')
+            pad = 24 if L.TH["panel"] else 0
+            art = panel(b["art"](*args), b.get("art_w", ART_W), b.get("art_h", ART_H), f"{28 + pad}px auto 0")
         extra = b["over"](ba, s1 - ba) if b.get("over") else ""
         badge = (A(f'<span style="display:inline-block;border:3px solid {INK};color:{INK};font-size:24px;font-weight:700;'
                    f'letter-spacing:.14em;padding:9px 16px;border-radius:12px;margin-left:14px;vertical-align:middle;'
-                   f'background:rgba(255,255,255,.55)">{H.escape(b["badge"])}</span>', "fade", round(max(s0, 0) + .25, 3), .4,
+                   f'background:{"#F7F5F2" if L.TH["panel"] else "rgba(255,255,255,.55)"}">{H.escape(b["badge"])}</span>', "fade", round(max(s0, 0) + .25, 3), .4,
                    style="display:inline-block") if b.get("badge") else "")      # 14 Nov: RECONSTRUCTION, as the gate asks
         inner = (f'<div>{pill(b["tag"], max(s0, 0) + .15, b.get("tag_color", RED))}{badge}</div>'
                  f'<div style="margin-top:22px">{cap}</div>{art}{extra}')
@@ -158,8 +170,8 @@ def scene(ep, parts, at, spans, total):
                           style="font-size:50px;font-weight:600;line-height:1.24;margin-top:18px;text-wrap:balance")
                    for (s, d), (_, x, y) in zip(c["say"][1:], cs[1:]))
     end_voice = ca + cs[-1][2]
-    pic = (f'<div class="nochk" style="position:relative;margin:24px auto 0;width:{c.get("art_w", 520)}px;height:{c.get("art_h", 416)}px">'
-           f'{c["pic"](ca, end_voice - ca + 1)}</div>') if c.get("pic") else ""
+    pic = panel(c["pic"](ca, end_voice - ca + 1), c.get("art_w", 520), c.get("art_h", 416),
+                f"{24 + (24 if L.TH['panel'] else 0)}px auto 0") if c.get("pic") else ""
     els.append(L.group(L.column(f'<div style="margin-top:{-120 if pic else -260}px">{big}{rest}{pic}</div>'), ca - .35,
                        end_voice - ca + 1.0, fo=.45, out="fade"))
     check_at.append(end_voice - .1)
@@ -171,7 +183,7 @@ def scene(ep, parts, at, spans, total):
     grounds.append((c.get("bg"), ca - .35, total + 1))
     under = ""
     for col_, g0, g1 in grounds:
-        if not col_:
+        if not col_ or L.TH["panel"]:                # 16 Nov: on black the ground stays black (no per-beat colour)
             continue
         kf = json.dumps([[round(g0, 3), 0, 0, 1, 0 if g0 > 0 else 1], [round(g0 + .4, 3), 0, 0, 1, 1], [round(g1, 3), 0, 0, 1, 1],
                          [round(g1 + .45, 3), 0, 0, 1, 0]])
@@ -182,8 +194,8 @@ def scene(ep, parts, at, spans, total):
     if c.get("art"):
         under += c["art"](ca, total - ca)
     els.insert(0, f'<div class="nochk" style="position:absolute;left:0;top:0;width:{W}px;height:10px;z-index:0">{under}</div>')
-    grain = A("", "grain", 0, 1, op=.05, fps=12,
-              style=f"position:absolute;left:0;top:0;width:1300px;height:2150px;background:url({L.noise_tile()});mix-blend-mode:multiply")
+    grain = A("", "grain", 0, 1, op=L.TH["grain_op"], fps=12,
+              style=f"position:absolute;left:0;top:0;width:1300px;height:2150px;background:url({L.noise_tile()});mix-blend-mode:{L.TH['grain']}")
     layer = (f'<div class="nochk" style="position:absolute;left:-84px;top:-230px;width:1080px;height:1920px;z-index:9;'
              f'pointer-events:none;overflow:hidden">{grain}</div>')
     return dict(dur=total, push=.02, html="".join(els) + brand + layer), check_at
@@ -269,7 +281,7 @@ def make(ep, voice_name="HEART"):
     at, spans, total = timeline(ep, parts)
     print(f"  timing: {total:.1f} s, {len(ep['beats'])} beats" + ("  CHECK over 60 s" if total > 60 else ""), flush=True)
     sc, check_at = scene(ep, parts, at, spans, total)
-    mp4, cover, problems = build(ep["slug"] + "-silent", [sc], theme="paper", cover_at=ep.get("cover_at", 1.6), crf=21,
+    mp4, cover, problems = build(ep["slug"] + "-silent", [sc], theme=L.TH["page"], cover_at=ep.get("cover_at", 1.6), crf=21,
                                  check_at=check_at, fit=ep.get("fit", True))
     voice, fx = soundtrack(ep, parts, at, spans, total + .6)
     fx = fx * L.shorts_mix(ep)[1]

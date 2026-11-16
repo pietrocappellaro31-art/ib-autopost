@@ -18,6 +18,17 @@ What has been settled, and what is still open. Newest first.
 
 ## Settled
 
+- **Black background is the rule for Reels AND YouTube Shorts** (16 Nov, evening, Pietro after the black preview of
+  Levels #15: "Amazing. Set this as the rule from now on for both IG reels and YouTube shorts."). Black is now the
+  default of both engines: `build/levels.py` (`set_theme`, THEMES) and `build/story.py` (the Shorts engine for
+  formats B to F) render on black unless an episode sets `theme="paper"` (only to re-render something made before
+  17 Nov). On black: no per-part colour grounds (`bg=` is ignored), light text on the ground, bright teal `#5EC8B4`
+  for answers and teal words, white cards kept, every drawing (level scenes, story beat art, answer-zone art, hook
+  art, the close picture) on a paper panel, filmed windows unchanged, grain in screen mode. Older one-off engines
+  (`reels_motion.py`, `reels_two-ways-to-pay.py`, `reels_story.py`) are not used for new work; if one is, render it
+  with `theme="ink"`. YouTube long videos (16:9) and carousels are not changed. Supersedes the "colour ground per part"
+  of the 10 Nov Shorts and the paper ground of `docs/reel-style.md` for new work.
+
 - **Reels: black background from 17 Nov, same format and quality** (16 Nov, Pietro after Levels #15: "From tomorrow
   on - same exact format and quality but black background please."). Every Instagram Reel renders with
   `ep["theme"] = "black"` (`build/levels.py` THEMES): a black ground (motion.py's own dark page, `#0A0A0A`); what sits
