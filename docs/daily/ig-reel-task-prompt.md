@@ -1,7 +1,7 @@
 # Prompt for the "IG Reel daily" scheduled task (16 Nov 2026)
 
-Written for Pietro's decision of 16 Nov (two Reels a day, posted automatically, no approval). A session could not
-edit scheduled tasks, so paste the block below into the task "IG Reel daily" (keep its time, 8:16am New York).
+Written for Pietro's decision of 16 Nov (two Reels a day, posted automatically, no approval). Applied to the task on
+16 Nov at 14:18 ET (first run 17 Nov, 8:16am). Kept here as the record; if the task prompt is ever lost, paste it back.
 
 ```
 Daily IG Reels for the Instagram page @investmentbankinginterviews (Pietro's page): make TWO Reels (A and B) and queue them for automatic posting. Pietro decided on 16 Nov 2026: "We will post two each days. You won't need my approval. You will use your own intelligence to analyze the top performing reels and make improvements if necessary. You will decide at what time to post each day." Pietro is not watching: do not ask questions, take the most reasonable reading and say which at the top.
