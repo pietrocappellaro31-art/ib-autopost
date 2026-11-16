@@ -1,0 +1,12 @@
+# w2-levels-15 (IB Interview Levels #15, a loan through the three statements; HEART, cinematic standard)
+
+- Platform: Instagram Reel, posted by hand by Pietro.
+- Concept: borrow $100 at 10%, 25% tax, interest and tax paid in cash. L1 a loan is not income (cash +100, debt +100, income statement unchanged); L2 net income falls 10 x (1 - 25%) = $7.50; L3 cash down $7.50 is balanced by retained earnings (equity) down $7.50; L4 repaying the $100 principal is not an expense, so net income does not change (cash -100, debt -100, financing cash flow). Bonus: PIK interest, cash +$2.50. No earlier Reel on this (topics.md; Levels #1 L2 and #8 L4 used depreciation, not debt).
+- Script: ours. Every answer worked in build/reels_loan-repay.py. Textbook mechanics, round example numbers. No company, deal, statistic, "typical" figure or credential claimed.
+- Voice: HEART, synthetic (Kokoro af_heart at 0.9, Apache 2.0). Not a real person. No Pocket TTS, so no Kyutai line. No processing beyond the shared natural chain (audio-standard 1b).
+- Visuals and fonts: ours, from the repo. Three level drawings from build/sketch.py (loan_in, interest_bite, bs_tilt, new today): a generic office block, a generic columned "LENDER" front, a page with greeked lines, bars, a balance; no bank, company or logo. Two filmed beats from build/cine.py (cine_lib.office_today and the new cine_lib.monitor_loan): an invented office, no real person, firm or skyline, so no RECONSTRUCTION badge; the monitor shows only the worked numbers ($100, -$100, $0). Source Serif 4, IBM Plex Sans (SIL OFL; docs/rights/ledger.md). No stock, logos or AI images.
+- Sound effects: synthesised in build/sfx.py and the cine.py foley (mallets, clinks, clanks); no whoosh.
+- Music: none in the clean master (the deliverable; Pietro adds a track from Instagram's library in the app). A scored alternative, if delivered, uses only our own score.py cue (ORIGINAL_GENERATED). No commercial or library music in any file.
+- Disclosure: caption narration line; Instagram AI label recommended when posting (realistic synthetic voiceover; Meta asks for a label on realistic-sounding AI audio). The visuals are clearly drawn animation and need no label of their own.
+- Claims: no statistics, no outcomes, no promise of returns or jobs. "A lot of people say yes" in the caption is a framing of the common wrong answer, not a figure.
+- Approval: Pietro posts by hand after reviewing the finished file.

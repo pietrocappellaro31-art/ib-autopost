@@ -193,6 +193,10 @@ function place(el, local) {
   else if (fx === 'coinflip') { const k = Math.max(0, local - at), turns = +(el.dataset.turns || 3);
       const sx = Math.cos(turns * 2 * Math.PI * E.out3(clamp(k / d))); o = local >= at ? 1 : 0;
       tf = `scaleX(${Math.abs(sx) < .05 ? .05 : sx})`; }
+  else if (fx === 'breathe') { const a = +(el.dataset.amp||.03), w = +(el.dataset.w||2.2), ph = +(el.dataset.ph||0);   // 16 Nov: idle life
+      tf = `scale(${1 + Math.sin(local*w + ph)*a})`; }
+  else if (fx === 'bob') { const a = +(el.dataset.amp||6), w = +(el.dataset.w||2.4), ph = +(el.dataset.ph||0);
+      tf = `translateY(${Math.sin(local*w + ph)*a}px)`; }
   else if (fx === 'spin') { tf = `rotate(${local * +(el.dataset.deg||40)}deg)`; }
   else if (fx === 'float') { const a = +(el.dataset.amp||10), w = +(el.dataset.w||1), ph = +(el.dataset.ph||0);
       tf = `translate(${Math.cos(local*w*.7+ph)*a*.6}px,${Math.sin(local*w+ph)*a}px)`; }

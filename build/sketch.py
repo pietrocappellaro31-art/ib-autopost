@@ -3494,3 +3494,243 @@ def fifty_asks(p, **_):
 
 
 SCENES.update({f.__name__: f for f in (half_hook, seventy_five, doubles, same_dollars, ladder, crisis_path, fifty_asks)})
+
+
+# ---- 16 Nov scenes (Levels #15, a loan through the three statements). The 15 Nov Reel's next improvement: each
+# drawing keeps an idle life between its cues (notes keep travelling, the bag bobs, the beam sways a degree, the
+# question mark bobs, tags swing), and every key move is placed on its word (m["qw"], m["aw"]: the word moments
+# levels.py now keeps, the same spread as the karaoke). Generic shapes of our own: no bank, company or logo. Only
+# the episode's worked numbers ($100 loan, 10% interest, 25% tax, $7.50, $2.50).
+
+def _wt(m, w, which="aw", sent=None, default=None, after=0.0):
+    """The moment of a word in the level (see levels.word); default if it is not there."""
+    rows = m.get(which) or []
+    rows = rows if sent is None else rows[sent:sent + 1]
+    for row in rows:
+        for x, t in row:
+            if x == w.lower() and t >= after:
+                return t
+    if default is None:
+        raise KeyError(f"word {w!r} not in {which}")
+    return default
+
+
+def _idle(fx, inner, amp, w, ph=0.0, style="transform-box:fill-box;transform-origin:center"):
+    """A drawing part that never stops moving (motion.py float, swing, breathe, bob), for the gaps between cues."""
+    return f'<g class="a" data-fx="{fx}" data-at="0" data-d="1" data-amp="{amp}" data-w="{w}" data-ph="{ph}" style="{style}">{inner}</g>'
+
+
+def _small_bank(x, base, label="LENDER"):
+    """A small columned bank front, x its left edge (208 wide), standing on base; a pennant on the roof."""
+    s = (f'<path d="M{x + 4} {base - 208} L{x + 104} {base - 262} L{x + 204} {base - 208} Z" fill="{INK}"/>'
+         + "".join(f'<rect x="{x + 22 + 46 * k}" y="{base - 198}" width="22" height="160" fill="#E8E4DE" stroke="{INK}" stroke-width="4"/>'
+                   for k in range(4))
+         + f'<rect x="{x}" y="{base - 38}" width="208" height="38" fill="{INK}"/>'
+         + f'<path d="M{x + 104} {base - 262} L{x + 104} {base - 312}" stroke="{INK}" stroke-width="5"/>')
+    flag = _idle("swing", f'<path d="M{x + 106} {base - 312} L{x + 160} {base - 298} L{x + 106} {base - 284} Z" fill="{RED}" stroke="{INK}" '
+                          f'stroke-width="3"/>', 14, 3.4, style=f"transform-box:view-box;transform-origin:{x + 106}px {base - 298}px")
+    return s + flag + _t(x + 104, base - 9, label, 26, "#fff", serif=False)
+
+
+def _page_is(x, y, w_=230, h_=270, title="INCOME", sub="STATEMENT"):
+    """An income statement page: a title, five greeked lines (no legible figures)."""
+    s = (f'<rect x="{x}" y="{y}" width="{w_}" height="{h_}" rx="8" fill="#FFFDF7" stroke="{INK}" stroke-width="6"/>'
+         + _t(x + w_ / 2, y + 44, title, 30, INK, serif=False) + _t(x + w_ / 2, y + 76, sub, 22, INK, serif=False, weight=600))
+    for k in range(5):
+        s += (f'<path d="M{x + 24} {y + 112 + 30 * k} L{x + w_ - 80 + (k % 2) * 20} {y + 112 + 30 * k}" stroke="{INK}" stroke-opacity=".28" '
+              f'stroke-width="7" stroke-linecap="round"/>')
+    return s
+
+
+def loan_in(p, m=None, amount=100, **_):
+    """Level 1, is a loan income? A lender stands on the left, the company in the middle. On 'borrows' the lender
+    slides in; on '$100' a $100 sack travels to the company and waits there, bobbing, while notes keep moving
+    across through the question and the clock. On 'income?' an INCOME STATEMENT page slides in on the right with a
+    question mark bobbing over it. On 'No.' a NOT INCOME stamp lands on the page; on 'cash' a CASH +$100 tag drops
+    onto the company and on 'debt' a DEBT +$100 tag beside it (both swing a little after); on 'doesn't move' the
+    page gets a teal $0 and a tick."""
+    base = 560
+    t_b = _wt(m, "borrows", "qw", default=m["qs"][0][0] + .3)
+    t_100 = _wt(m, f"${amount}", "qw", default=t_b + .6)
+    t_inc = _wt(m, "income", "qw", default=m["qs"][-1][0] + .3)
+    a = m["a"]
+    p.parts.append(_g("fade", p.t0, .3, f'<path d="M0 {base} L960 {base}" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+                      + _office(250, base, 200, 250) + _t(350, base - 253, "COMPANY", 22, "#fff", serif=False)))
+    _slide(p, _abs(p, t_b - .1), _small_bank(10, base), x0=-300, d=.55)
+    # the sack: from the lender to the company's door, then bobbing beside it until the answer
+    sack = _bag(0, 0, 120, f"${amount}", fill=TEAL)
+    p.parts.append(_life(t_100 - .05, a + .6 - t_100,
+                         _g("slide", t_100, .7, _idle("bob", f'<g transform="translate(114 380)">{sack}</g>', 14, 2.8, style=""),
+                            style="", x0=0, x1=150, y0=0, y1=8, ease="inout"), fi=.12, fo=.25))
+    # notes keep travelling from the lender to the company through the question and the clock (idle life)
+    t, k = t_100 + .8, 0
+    while t < a - .3:
+        note = _note(150, 330 + 18 * (k % 3), 90, 42)
+        p.parts.append(_life(t, .95, _g("slide", t, .85, note, style="", x0=0, x1=150, y0=0, y1=-6, ease="inout"), fi=.12, fo=.18))
+        t += .4
+        k += 1
+    # the income statement page and its question
+    page = _idle("swing", _page_is(480, 250, 210, 270), 3.5, 2.0, style="transform-box:view-box;transform-origin:585px 250px")
+    _slide(p, _abs(p, t_inc - .25), page, x0=300, d=.5)
+    p.parts.append(_life(t_inc + .2, a - t_inc - .05, _idle("bob", _t(585, 440, "?", 120, RED), 16, 3.2, style="")))
+    # the answer
+    p.parts.append(f'<g class="a" data-fx="stamp" data-at="{a + .05:.2f}" data-d="0.35" data-rot="-10" '
+                   f'style="transform-box:fill-box;transform-origin:center">'
+                   f'<rect x="485" y="330" width="200" height="84" rx="10" fill="#FFFDF7" fill-opacity=".85" stroke="{RED}" stroke-width="8"/>'
+                   + _t(585, 366, "NOT", 34, RED) + _t(585, 402, "INCOME", 34, RED) + '</g>')
+    t_cash = _wt(m, "cash", default=a + 1.2)
+    t_debt = _wt(m, "debt", default=t_cash + .5)
+    for tt, y, lab, fill, col in ((t_cash, 330, "CASH", CASH_C, INK), (t_debt, 460, "DEBT", DEBT_C, "#fff")):
+        x = 840
+        tag = _idle("swing", _ptag(x, y, 240, f"{lab} +${amount}", fill, col, 30), 6, 2.4, ph=y / 90,
+                    style=f"transform-box:view-box;transform-origin:{x - 120}px {y}px")
+        p.parts.append(_g("fade", tt - .02, .12, _g("slide", tt - .02, .4, tag, style="", x0=0, x1=0, y0=-120, y1=0, ease="out"), style=""))
+    t_mv = _wt(m, "move", default=m["as_"][-1][0] + .6) if len(m["as_"]) > 2 else m["end"] - .8
+    p.parts.append(_g("pop", t_mv - .1, .35, f'<circle cx="676" cy="266" r="30" fill="#fff" stroke="{INK}" stroke-width="5"/>'
+                                             f'<path d="M662 267 l10 11 l20 -22" fill="none" stroke="{TEAL}" stroke-width="8" '
+                                             f'stroke-linecap="round" stroke-linejoin="round"/>'))
+    p.parts.append(_g("pop", t_mv - .25, .35, _t(585, 500, "$0", 56, TEAL)))
+
+
+def loan_in_fx(m, amount=100):
+    """The sounds of loan_in, on the same words: the sack lands (a soft mallet), the stamp (a hit), the tags (clinks)."""
+    t_100 = _wt(m, f"${amount}", "qw", default=m["qs"][0][0] + .9)
+    t_cash, t_debt = _wt(m, "cash", default=m["a"] + 1.2), _wt(m, "debt", default=m["a"] + 1.7)
+    return [("hit", t_100 + .68, .25, 0, dict(pitch=220)), ("hit", m["a"] + .12, .32, 0, dict(pitch=147)),
+            ("clink", t_cash + .32, .22, -.3), ("clink", t_debt + .32, .22, .3)]
+
+
+def interest_bite(p, m=None, rate=10, tax=25, **_):
+    """Level 2, how much does net income fall? A tall NET INCOME bar. On '10%' the top $10 of it turns red and slides
+    out to the right as INTEREST -$10 (a dashed outline left behind). On '25%' a teal $2.50 piece (TAX SAVED) comes
+    back off the red block onto the bar. Through 'how much ... fall?' and the clock a bracket shows the gap with a
+    bobbing question mark; the red block bobs and the teal piece breathes. On the answer the gap fills red and counts
+    to -$7.50; on '$10' and '$2.50' the two pieces are ringed in turn. Scale: 12 px a dollar of the change."""
+    k = 12
+    base, top, x, cw = 545, 120, 70, 220
+    bite, back = rate * k, round(rate * tax / 100 * k)
+    t_r = _wt(m, f"{rate}%", "qw", default=m["qs"][0][0] + .6)
+    t_t = _wt(m, f"{tax}%", "qw", default=(m["qs"][1][0] + .4) if len(m["qs"]) > 1 else t_r + 1.2)
+    t_f = _wt(m, "fall", "qw", default=m["qs"][-1][0] + .6)
+    a = m["a"]
+    p.parts.append(_g("fade", p.t0, .3, f'<path d="M0 {base} L800 {base}" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'))
+    # the bar below the bite, there from the start (it breathes a little until the bite)
+    p.parts.append(_g("growY", p.t0 + .1, .55, f'<rect x="{x}" y="{top + bite}" width="{cw}" height="{base - top - bite}" rx="8" fill="{GOLD}" '
+                                              f'stroke="{INK}" stroke-width="6"/>', style="transform-box:fill-box"))
+    p.parts.append(_g("fade", p.t0 + .5, .3, _t(x + cw / 2, base - 70, "NET", 36, INK, serif=False) + _t(x + cw / 2, base - 28, "INCOME", 36, INK, serif=False)))
+    # the top $10: gold until the rate is said, then red and out to the right
+    gold_top = f'<rect x="{x}" y="{top}" width="{cw}" height="{bite}" rx="8" fill="{GOLD}" stroke="{INK}" stroke-width="6"/>'
+    p.parts.append(_life(p.t0 + .1, t_r + .2 - p.t0, _g("growY", p.t0 + .1, .55, gold_top, style="transform-box:fill-box"), fi=.05, fo=.1))
+    p.parts.append(_g("draw", t_r + .15, .4, f'<path d="M{x} {top} L{x + cw} {top} L{x + cw} {top + bite} L{x} {top + bite} Z" fill="none" '
+                                             f'stroke="{INK}" stroke-width="4" stroke-dasharray="12 9"/>', style=""))
+    red = (f'<rect x="{x}" y="{top}" width="{cw}" height="{bite}" rx="8" fill="{RED}" stroke="{INK}" stroke-width="6"/>'
+           + _t(x + cw / 2, top + bite / 2 + 15, f"−${rate}", 44, "#fff"))
+    mv = 400
+    p.parts.append(_g("fade", t_r - .05, .15, _g("slide", t_r + .1, .7, _idle("bob", red, 12, 2.5, style=""), style="", x0=0, x1=mv, y0=0, y1=-10,
+                                                ease="inout"), style=""))
+    p.parts.append(_g("fade", t_r + .6, .3, _t(x + mv + cw / 2, top - 30, "INTEREST", 38, RED, serif=False)))
+    # the tax saved: a teal piece leaves the red block and settles back on the bar
+    piece = (f'<rect x="{x + mv}" y="{top + bite - back}" width="{cw}" height="{back}" rx="5" fill="{TEAL}" stroke="{INK}" stroke-width="5"/>')
+    p.parts.append(_g("fade", t_t - .1, .15, _g("slide", t_t, .8, _idle("breathe", piece, .09, 3.4), style="", x0=0, x1=-mv, y0=0, y1=0,
+                                                 ease="inout"), style=""))
+    p.parts.append(_g("pop", t_t + .7, .3, _ptag(x + cw + 150, top + bite + 70, 270, "TAX +$2.50", TEAL, "#fff", 34)))
+    # the question: a bracket on the gap, a bobbing ?
+    gy0, gy1 = top, top + bite - back
+    p.parts.append(_life(t_f - .1, a - t_f + .3,
+                         f'<path d="M{x + cw + 18} {gy0} L{x + cw + 40} {gy0} L{x + cw + 40} {gy1} L{x + cw + 18} {gy1}" fill="none" stroke="{RED}" '
+                         f'stroke-width="7" stroke-linecap="round"/>'
+                         + _idle("bob", _t(x + cw + 90, (gy0 + gy1) / 2 + 40, "?", 110, RED), 16, 3.2, style="")))
+    # the answer: the gap fills red and counts to -$7.50
+    p.parts.append(_g("growYdown", a + .05, .5, f'<rect x="{x}" y="{gy0}" width="{cw}" height="{gy1 - gy0}" rx="8" fill="{RED}" fill-opacity=".22" '
+                                                f'stroke="{RED}" stroke-width="6"/>', style="transform-box:fill-box"))
+    p.parts.append(_count(x + cw / 2, round((gy0 + gy1) / 2 + 20), 0, 7.5, round(a + .1, 2), .8, size=56, color=RED, pre="−$", dec=2))
+    if len(m["as_"]) > 1:
+        t10 = _wt(m, f"${rate}", sent=1, default=m["as_"][1][0] + .1)
+        t25 = _wt(m, "$2.50", sent=1, default=m["as_"][1][1] - .4)
+        for tt, y, h_, xx in ((t10, top - 10, bite + 20, x + mv - 10), (t25, top + bite - back - 10, back + 20, x - 10)):
+            ring = f'<rect x="{xx}" y="{y}" width="{cw + 20}" height="{h_}" rx="12" fill="none" stroke="{TEAL}" stroke-width="7"/>'
+            p.parts.append(_life(tt - .05, .85, _g("pop", tt - .05, .3, ring), fi=.08, fo=.25))
+
+
+def interest_bite_fx(m, rate=10, tax=25):
+    t_r = _wt(m, f"{rate}%", "qw", default=m["qs"][0][0] + .6)
+    t_t = _wt(m, f"{tax}%", "qw", default=t_r + 1.2)
+    return [("hit", t_r + .75, .26, 0, dict(pitch=175)), ("clink", t_t + .78, .2, -.2), ("hit", m["a"] + .1, .28, 0, dict(pitch=262))]
+
+
+def bs_tilt(p, m=None, amt="$7.50", **_):
+    """Level 3, what balances the drop in cash? A balance sheet as a balance: ASSETS on the left pan (a CASH block),
+    LIABILITIES + EQUITY on the right (DEBT under EQUITY). On 'down' the cash block shrinks by the $7.50 and the
+    beam tips (the left side lighter); through the question and the clock it sways about a degree around the tip
+    and a question mark bobs over the equity block. On 'Equity.' the equity block glows; on 'drop' it shrinks by
+    the same $7.50 and the beam comes back level; a = lands between the pans."""
+    qs, a = m["qs"], m["a"]
+    t_dn = _wt(m, "down", "qw", default=qs[0][0] + (qs[0][1] - qs[0][0]) * .7)
+    t_dr = _wt(m, "drop", default=(m["as_"][1][0] + .5) if len(m["as_"]) > 1 else a + 1.0)
+    cx, cy, half = 400, 300, 280
+    rot = 6.0
+    p.parts.append(_g("fade", p.t0, .3,
+                      f'<path d="M{cx} {cy} L{cx - 64} 590 L{cx + 64} 590 Z" fill="{INK}"/>'
+                      f'<path d="M60 590 L740 590" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+                      + _t(cx - half, 130, "ASSETS", 32, INK, serif=False) + _t(cx + half, 112, "LIABILITIES", 28, INK, serif=False)
+                      + _t(cx + half, 146, "+ EQUITY", 28, INK, serif=False)))
+    # the beam's angle through the level: level, tip on 'down', sway a degree while waiting, level again on 'drop'
+    ang = [(0, 0), (t_dn + .2, 0), (t_dn + .9, rot)]
+    t, j = t_dn + 1.5, 0
+    while t < t_dr - .2:
+        ang.append((round(t, 2), rot + (2.2 if j % 2 == 0 else -2.2)))
+        t += .6
+        j += 1
+    ang += [(round(t_dr + .2, 2), rot), (round(t_dr + 1.0, 2), 0)]
+    t, j = t_dr + 1.6, 0
+    while t < m["end"] + .3:                      # and after, a slow settle
+        ang.append((round(t, 2), 1.4 if j % 2 == 0 else -1.4))
+        t += 1.1
+        j += 1
+    keys = [[round(t_, 2), 0, 0, 1, 1, r] for t_, r in ang]
+    p.parts.append(f'<g class="a" data-fx="kf" data-at="0" data-d="1" data-kf="{H.escape(_json(keys))}" '
+                   f'style="transform-box:view-box;transform-origin:{cx}px {cy}px">'
+                   f'<rect x="{cx - half - 20}" y="{cy - 10}" width="{2 * half + 40}" height="20" rx="10" fill="{INK}"/>'
+                   f'<circle cx="{cx}" cy="{cy}" r="18" fill="{GOLD}" stroke="{INK}" stroke-width="5"/></g>')
+    k_ = 2.0            # px per $ of the blocks; the $7.50 shown as 15 px x 4 (made visible: a schematic, not to scale)
+    drop = 60
+
+    def pan(x, sign, inner):
+        kk = [[t_, 0, round(sign * half * math.sin(math.radians(r)), 1), 1, 1, 0] for t_, r in ang]
+        body = (f'<path d="M{x} {cy} L{x - 100} 460 M{x} {cy} L{x + 100} 460" stroke="{INK}" stroke-width="4"/>'
+                f'<path d="M{x - 120} 460 L{x + 120} 460 Q{x} 510 {x - 120} 460 Z" fill="#E8E1D4" stroke="{INK}" stroke-width="5"/>' + inner)
+        p.parts.append(f'<g class="a" data-fx="kf" data-at="0" data-d="1" data-kf="{H.escape(_json(kk))}">{body}</g>')
+    # left: CASH, shrinks on 'down'
+    lx, rx = cx - half, cx + half
+    cash_h = 170
+    cash = (f'<g class="a" data-fx="scaleY" data-at="{t_dn:.2f}" data-d="0.6" data-s0="1" data-s1="{(cash_h - drop) / cash_h:.3f}" '
+            f'style="transform-box:fill-box;transform-origin:center bottom">'
+            f'<rect x="{lx - 85}" y="{460 - cash_h}" width="170" height="{cash_h}" rx="8" fill="{CASH_C}" stroke="{INK}" stroke-width="5"/></g>'
+            + _g("fade", p.t0 + .3, .3, _t(lx, 445, "CASH", 30, INK, serif=False)))
+    cash += _g("pop", t_dn + .4, .3, _ptag(lx + 10, 460 - cash_h - 10, 180, f"−{amt}", RED, "#fff", 28))
+    pan(lx, -1, cash)
+    # right: DEBT (stays) under EQUITY (shrinks on 'drop')
+    debt_h, eq_h = 90, 110
+    eq_top = 460 - debt_h - eq_h
+    right = (f'<rect x="{rx - 85}" y="{460 - debt_h}" width="170" height="{debt_h}" rx="8" fill="{DEBT_C}" stroke="{INK}" stroke-width="5"/>'
+             + _t(rx, 460 - debt_h / 2 + 11, "DEBT", 30, "#fff", serif=False)
+             + f'<g class="a" data-fx="scaleY" data-at="{t_dr:.2f}" data-d="0.6" data-s0="1" data-s1="{(eq_h - drop) / eq_h:.3f}" '
+               f'style="transform-box:fill-box;transform-origin:center bottom">'
+               f'<rect x="{rx - 85}" y="{eq_top}" width="170" height="{eq_h}" rx="8" fill="{GOLD}" stroke="{INK}" stroke-width="5"/></g>'
+             + _g("fade", p.t0 + .3, .3, _t(rx, 460 - debt_h - 18, "EQUITY", 28, INK, serif=False)))
+    right += _life(a, t_dr - a + .1, _g("pop", a, .3, f'<rect x="{rx - 95}" y="{eq_top - 10}" width="190" height="{eq_h + 20}" rx="12" '
+                                                    f'fill="none" stroke="{TEAL}" stroke-width="8"/>'), fi=.06, fo=.2)
+    right += _g("pop", t_dr + .4, .3, _ptag(rx + 10, eq_top - 40, 180, f"−{amt}", RED, "#fff", 28))
+    right += _life(m["think"] - .3, a - m["think"] + .3, _idle("bob", _t(rx, eq_top - 40, "?", 110, RED), 16, 3.2, style=""))
+    pan(rx, 1, right)
+    p.parts.append(_g("pop", t_dr + 1.0, .35, _t(cx, 250, "=", 90, TEAL)))
+
+
+def bs_tilt_fx(m):
+    t_dn = _wt(m, "down", "qw", default=m["qs"][0][0] + 1.0)
+    t_dr = _wt(m, "drop", default=m["a"] + 1.0)
+    return [("clank", t_dn + .85, .16, -.3), ("hit", t_dn + .45, .2, -.3, dict(pitch=196)), ("hit", t_dr + .45, .22, .3, dict(pitch=196)),
+            ("clank", t_dr + .95, .14, 0)]
+
+
+SCENES.update({f.__name__: f for f in (loan_in, interest_bite, bs_tilt)})

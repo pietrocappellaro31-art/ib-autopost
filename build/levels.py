@@ -40,6 +40,30 @@ W = 752                                    # safe-area width
 
 # ---------------------------------------------------------------- text ----
 
+def word_times(display, start, dur):
+    """16 Nov: [(word, moment)] for a sentence, spread by character count exactly as kara() lights them. word is
+    lower case without punctuation ("$30" stays "$30")."""
+    ws = [w for w in display.split() if w != "|"]
+    lens = [max(len(re.sub(r"\W", "", w)), 1) + 1 for w in ws]
+    out, acc = [], 0
+    for w, n in zip(ws, lens):
+        out.append((w.strip(".,!?;:\"'()“”").lower(), round(start + dur * acc / sum(lens), 3)))
+        acc += n
+    return out
+
+
+def word(m, w, sent=None, which="aw", after=0.0):
+    """16 Nov: the moment of word w in a level's answer (which="aw") or question ("qw") sentences, the first one at or
+    after `after`; sent limits it to one sentence. Raises if the word is not there, so a reworded line cannot silently
+    move an action."""
+    rows = m[which] if sent is None else [m[which][sent]]
+    for row in rows:
+        for x, t in row:
+            if x == w.lower() and t >= after:
+                return t
+    raise KeyError(f"word {w!r} not in {which}")
+
+
 def kara(display, start, dur, cols=None, hide=False, hl=(), cls="", style="", lit=False):
     """Karaoke text: each word lights (or, with hide, appears) at its moment.
     Word moments are spread across the sentence by character count; the
@@ -307,6 +331,15 @@ def scene(ep, parts, at, hook_end, lv, total):
             # from the moment the card swipes in, so the question is set up on film and the answer is filmed too
             filmbox = (f'<div id="filmbox{i}" class="nochk" style="position:relative;margin:{L.get("film_gap", 30)}px auto 0;'
                        f'width:{L["film_w"]}px;height:{L["film_h"]}px;outline:5px solid {INK};border-radius:4px;background:#2B2F3A"></div>')
+        # 16 Nov (the 15 Nov Reel's next improvement): every level's moments, with each word's moment in each question
+        # and answer sentence (the same character-count spread as kara, so a word on screen and its action agree), are
+        # kept on the level (T["m"]) for scenes and for filmed windows (films() passes them in film seconds).
+        qdisp = [d for s_, d in L["q"] if s_]
+        m = dict(start=T["start"], q=qa, qs=[(qa + a, qa + b) for _, a, b in qs], think=T["think0"], a=aa,
+                 as_=[(aa + a, aa + b) for _, a, b in asg], end=T["end"],
+                 qw=[word_times(d, qa + a, b - a) for d, (_, a, b) in zip(qdisp, qs)],
+                 aw=[word_times(x[1], aa + a, b - a) for x, (_, a, b) in zip(L["a"], asg)])
+        T["m"] = m
         scn = ""
         if L.get("scene"):
             # 15 Nov (Pietro, 14 Nov: a picture in every beat, through the question, the think time AND the answer):
@@ -314,8 +347,6 @@ def scene(ep, parts, at, hook_end, lv, total):
             # a word. It gets the level's moments in Reel seconds (each sentence of the question and of the answer)
             # and acts the idea out across them: it builds as the question is asked and its key move lands on the
             # answer.
-            m = dict(start=T["start"], q=qa, qs=[(qa + a, qa + b) for _, a, b in qs], think=T["think0"], a=aa,
-                     as_=[(aa + a, aa + b) for _, a, b in asg], end=T["end"])
             sw_, sh_ = L.get("scene_w", W), L.get("scene_h", 400)
             scn = A(f'<div style="position:relative;width:{sw_}px;height:{sh_}px;margin:0 auto">{L["scene"](m, sw_, sh_)}</div>',
                     "life", T["start"] + .2, T["end"] - T["start"] + .3, fi=.3, fo=.1, cls="nochk",
@@ -499,12 +530,13 @@ def remix(ep, voice_name):
     work = OUT / ep["slug"]
     parts = reuse(work)
     at, hook_end, lv, total = timeline(ep, parts)
+    scene(ep, parts, at, hook_end, lv, total)              # 16 Nov: fills lv[i]["m"] (word moments for films and scene foley)
     silent = OUT / (ep["slug"] + "-silent") / (ep["slug"] + "-silent.mp4")
     # 14 Nov: the old path referred to mp4 and cover before they existed whenever the hook was filmed; the films
     # are laid in again here (same numbers, so the same picture) to get their foley and the filmed picture
     mp4, _, fol = films(ep, silent, silent.with_suffix(".jpg"), at, hook_end, lv)
     voice, sfx = soundtrack(parts, at, lv, total + .6, ep)
-    sfx = add_foley(sfx, fol, total)
+    sfx = add_foley(sfx, fol + scene_foley(ep, lv), total)
     sfx = sfx * shorts_mix(ep)[1]
     mux(ep, voice_name, voice, sfx, total, mp4)
     print(f"  -> remixed {ep['slug']}.mp4")
@@ -699,6 +731,12 @@ def films(ep, mp4, cover, at, hook_end, lv, T_SW=.34):
             continue
         t0, end = lv[i]["start"] - .02, lv[i]["end"]
         marks = dict(q=at[f"q{i}"] - t0, a=at[f"a{i}"] - t0, think=lv[i]["think0"] - t0, end=end - t0)
+        # 16 Nov: the film also gets each sentence and each word in film seconds (levels.word(m, "cash"))
+        mm = lv[i].get("m")
+        if mm:
+            sh = lambda v: round(v - t0, 3)
+            marks.update(qs=[(sh(a), sh(b)) for a, b in mm["qs"]], as_=[(sh(a), sh(b)) for a, b in mm["as_"]],
+                         qw=[[(x, sh(t)) for x, t in r] for r in mm["qw"]], aw=[[(x, sh(t)) for x, t in r] for r in mm["aw"]])
         mp4, fx, rec = film_window(ep, mp4, f"filmbox{i}", t0, t0 + T_SW + .03, end, lambda d, w, h, m=marks, L=L: L["film"](d, w, h, m),
                                    f"l{i}-film", T_SW)
         recs.append(rec); fol.append((fx, L.get("foley_gain", .5)))
@@ -709,6 +747,13 @@ def films(ep, mp4, cover, at, hook_end, lv, T_SW=.34):
         cover = cov
         json.dump(recs, open(OUT / ep["slug"] / "film.json", "w"), indent=1)
     return mp4, cover, fol
+
+
+def scene_foley(ep, lv):
+    """16 Nov: action-timed sound for the drawn scenes (audio-standard 5): a level's scene_fx(m) returns foley events
+    in Reel seconds (the same moments the drawing acts on), laid on the effects track like a film's foley."""
+    return [(L["scene_fx"](lv[i]["m"]), L.get("scene_fx_gain", .3)) for i, L in enumerate(ep["levels"])
+            if L.get("scene_fx") and lv[i].get("m")]
 
 
 def add_foley(sfx, fol, total):
@@ -755,7 +800,7 @@ def make(ep, voice_name="af_heart", keep_voice=False, redo=()):
                                  check_at=check_at, fit=ep.get("fit", True) and ep.get("fit_zmax", 2.2))
     mp4, cover, fol = films(ep, mp4, cover, at, hook_end, lv)
     voice, sfx = soundtrack(parts, at, lv, total + .6, ep)
-    sfx = add_foley(sfx, fol, total)
+    sfx = add_foley(sfx, fol + scene_foley(ep, lv), total)
     sfx = sfx * shorts_mix(ep)[1]                            # 11 Nov: effects a touch lower on YouTube Shorts
     work = OUT / ep["slug"]
     work.mkdir(parents=True, exist_ok=True)

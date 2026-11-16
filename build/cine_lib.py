@@ -852,3 +852,76 @@ def monitor_ev(t_on=.2, t_cash=None, t_ans=None, cx=900, cy=600, w=560, h=340, e
         s += (f'<path d="M{xa:.1f},{axis - he:.1f} L{xb + cw:.1f},{axis - he:.1f}" stroke="{INK}" stroke-width="2.4" stroke-dasharray="8 6" '
               f'{kv(opacity=[[0, 0], [t_ans + .3, 0], [t_ans + .6, .7]])}/>')
     return s
+
+
+def monitor_loan(t_on=.2, t_drop=None, t_ans=None, cx=900, cy=600, w=560, h=340, amount=100, wobble_until=None):
+    """16 Nov (Levels #15, paying back a loan). A monitor: CASH and DEBT columns of the same height on one baseline
+    (the loan: $100 in cash, $100 owed) and a NET INCOME panel on the right. Hook mode (t_drop None): a red REPAY
+    arrow pulses from cash to debt and the panel's question mark bobs, until wobble_until. Answer mode: at t_drop
+    both columns empty together (cash and debt fall by the same amount, a -$100 tag on each); at t_ans the panel
+    reads $0 in teal with a tick and NO CHANGE. Shot seconds. Only the episode's worked numbers are drawn."""
+    x0, y0 = cx - w / 2, cy - h / 2
+    s = (f'<ellipse cx="{cx}" cy="{cy + 40}" rx="{w * .75:.0f}" ry="{h * .7:.0f}" fill="#BFE3D6" opacity=".14"/>'
+         + _r(cx - 18, y0 + h, 36, 860 - (y0 + h), "#3B3F48", sw=2.6) + _r(cx - 90, 846, 180, 16, "#3B3F48", rx=6, sw=2.6)
+         + _r(x0 - 16, y0 - 16, w + 32, h + 32, "#1E2128", rx=14, sw=3.6)
+         + f'<rect x="{x0}" y="{y0}" width="{w}" height="{h}" fill="#F4EFE6"/>')
+    s += _t(x0 + 22, y0 + 32, "THE LOAN", 20, INK, anchor="start", weight=600, family="Sans", extra='letter-spacing="2"')
+    axis, top = y0 + h - 42, y0 + 70
+    hh = axis - top
+    cw = w * .19
+    xa, xb = x0 + w * .08, x0 + w * .33
+    s += f'<path d="M{x0 + 16},{axis} L{x0 + w * .56},{axis}" stroke="{INK}" stroke-width="3"/>'
+    end = t_drop + .9 if t_drop is not None else 1e3
+    for x, fill, lab, col, dt in ((xa, "#7FB59B", "CASH", INK, 0), (xb, "#3B3F48", "DEBT", "#fff", .25)):
+        hk = [[0, 0], [t_on + dt, 0], [t_on + dt + .6, hh, "out"]]
+        yk = [[0, axis], [t_on + dt, axis], [t_on + dt + .6, top, "out"]]
+        if t_drop is not None:
+            hk += [[t_drop, hh], [t_drop + .8, 0, "inout"]]
+            yk += [[t_drop, top], [t_drop + .8, axis, "inout"]]
+        s += (f'<rect x="{x:.1f}" y="{axis:.1f}" width="{cw:.1f}" height="0" rx="6" fill="{fill}" stroke="{INK}" stroke-width="2.8" '
+              f'{kv(y=yk, height=hk)}/>')
+        s += (f'<g {kv(opacity=[[0, 0], [t_on + dt + .4, 0], [t_on + dt + .7, 1]] + ([[t_drop, 1], [t_drop + .3, 0]] if t_drop is not None else []))}>'
+              + _t(round(x + cw / 2, 1), round(top + hh / 2 + 12, 1), f"${amount}", 30, col, weight=700) + "</g>")
+        s += _t(round(x + cw / 2, 1), axis + 28, lab, 18, INK, weight=700, family="Sans")
+        if t_drop is not None:
+            s += (f'<g {kv(opacity=[[0, 0], [t_drop + .1, 0], [t_drop + .35, 1]])}>'
+                  + _t(round(x + cw / 2, 1), round(axis - 14, 1), f"&#8722;${amount}", 28, RED, weight=700) + "</g>")
+    # the NET INCOME panel
+    px, pw_, py, ph_ = x0 + w * .60, w * .36, y0 + 64, h - 118
+    s += _r(round(px, 1), round(py, 1), round(pw_, 1), round(ph_, 1), "#FFFFFF", rx=10, sw=2.8)
+    s += _t(round(px + pw_ / 2, 1), round(py + 30, 1), "NET INCOME", 18, INK, weight=700, family="Sans", extra='letter-spacing="1"')
+    mid = py + ph_ / 2 + 22
+    if t_drop is None:
+        # hook: the repay arrow pulses from cash to debt; the question bobs in the panel
+        ay = top - 18
+        arr = (f'<path d="M{xa + cw / 2:.1f},{ay + 8:.1f} Q{(xa + xb + cw) / 2:.1f},{ay - 34:.1f} {xb + cw / 2 - 6:.1f},{ay + 4:.1f}" '
+               f'fill="none" stroke="{RED}" stroke-width="5" stroke-linecap="round"/>'
+               f'<path d="M{xb + cw / 2 - 22:.1f},{ay - 6:.1f} L{xb + cw / 2 - 4:.1f},{ay + 6:.1f} L{xb + cw / 2 - 20:.1f},{ay + 20:.1f}" '
+               f'fill="none" stroke="{RED}" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>'
+               + _t(round((xa + xb + cw) / 2, 1), round(ay - 34, 1), "REPAY", 18, RED, weight=700, family="Sans"))
+        stop = wobble_until or (t_on + 5)
+        op, t, j = [[0, 0], [t_on + 1.0, 0]], t_on + 1.0, 0
+        while t < stop:
+            op += [[round(t + .2, 2), 1], [round(t + .55, 2), .45]]
+            t += .7
+        op.append([round(stop + .4, 2), 1])
+        s += f'<g {kv(opacity=op)}>{arr}</g>'
+        bob, t = [[0, 0, 0]], t_on + .8
+        while t < stop + .6:
+            bob += [[round(t, 2), 0, -7, "inout"], [round(t + .45, 2), 0, 5, "inout"]]
+            t += .9
+        s += (f'<g {kv(opacity=[[0, 0], [t_on + .8, 0], [t_on + 1.1, 1]])}><g {kv(translate=bob)}>'
+              + _t(round(px + pw_ / 2, 1), round(mid + 10, 1), "?", 64, RED, weight=700) + "</g></g>")
+        return s
+    # answer: the question waits in the panel, then $0 lands with a tick and NO CHANGE
+    s += (f'<g {kv(opacity=[[0, 0], [.3, 0], [.6, 1]] + ([[t_ans - .2, 1], [t_ans, 0]] if t_ans is not None else []))}>'
+          + _t(round(px + pw_ / 2, 1), round(mid + 10, 1), "?", 64, RED, weight=700) + "</g>")
+    if t_ans is not None:
+        s += (f'<g {kv(opacity=[[0, 0], [t_ans, 0], [t_ans + .25, 1]])}>'
+              + _t(round(px + pw_ / 2, 1), round(mid, 1), "$0", 52, TEAL, weight=700)
+              + _t(round(px + pw_ / 2, 1), round(mid + 36, 1), "NO CHANGE", 18, TEAL, weight=700, family="Sans") + "</g>")
+        tx, ty = px + pw_ - 6, py + 6
+        s += (f'<g {kv(opacity=[[0, 0], [t_ans + .45, 0], [t_ans + .65, 1]])}>'
+              f'<circle cx="{tx:.1f}" cy="{ty:.1f}" r="19" fill="{TEAL}" stroke="{INK}" stroke-width="2.8"/>'
+              f'<path d="M{tx - 9:.1f},{ty:.1f} l6,7 l12,-14" fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/></g>')
+    return s
