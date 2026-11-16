@@ -853,9 +853,7 @@
       "caption": "Does paying back a loan lower net income?\n\nA lot of people say yes. Money leaves the company, so profit must drop. It doesn't.\n\nInterest is the expense. Borrow $100 at 10% with a 25% tax rate and net income falls by $7.50 a year: $10 of interest, less $2.50 of tax saved. The $100 you hand back is the loan itself, so cash and debt both drop by $100 and the income statement never sees it. You'll find it in financing cash flow.\n\nThat split between interest and principal is what the question is testing.\n\nThere are 4 levels, each harder than the last. Keep count and drop your score in the comments.\n\nNarration: AI-generated voice; script is our original work.\n\n#investmentbanking #financeinterview #accounting #threestatements",
       "first_comment": "Bonus level: same $100 loan at 10%, 25% tax, but the interest is paid in kind (added to the loan, no cash paid). Net income still falls $7.50. What happens to cash?",
       "ai_label": true,
-      "published_id": null,
-      "last_error": "rupload (file_url) 400: {\"debug_info\":{\"retriable\":false,\"type\":\"ProcessingFailedError\",\"message\":\"Request processing failed\"}}",
-      "attempts": 2
+      "published_id": null
     }
   ],
   "reel_slots_et": {

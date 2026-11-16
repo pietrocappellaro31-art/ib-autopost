@@ -284,7 +284,10 @@ def publish_one_reel(ig_user_id, post, image_base, publish=True):
     """Upload, transcode and publish a single Reel. Entries made by build/reel_queue.py carry media_branch, video
     (a file name on that branch) and cover; an entry whose video is a full URL uses the older URL path."""
     branch = post.get("media_branch")
-    if branch and post.get("upload") == "url":
+    # 16 Nov, measured: the resumable binary upload (and its file_url variant) refused every Reel of 40 s or more
+    # tried (ProcessingFailedError), while the same 55 s file went through by video_url. So video_url is the default
+    # for branch media; post["upload"] = "resumable" forces the other path.
+    if branch and post.get("upload", "url") == "url":
         # 16 Nov: the standard (non-resumable) path, Meta fetching video_url from the branch; kept as an alternative
         # while the resumable path refused some longer Reels with ProcessingFailedError.
         params = {"media_type": "REELS", "video_url": branch_url(branch, post["video"]), "caption": post["caption"],
@@ -606,9 +609,11 @@ def reel_selftest(ig_user_id, branch, name):
     """16 Nov: prove the Reel path end to end WITHOUT publishing: fetch the file from its branch, create a REELS
     container with the AI label, upload the bytes, wait for FINISHED. Then read insights and the Audio API once.
     The container expires unpublished after 24 hours."""
-    post = dict(caption="Self-test, not published.", media_branch=branch, video=name)
+    post = dict(caption="Self-test, not published.", media_branch=branch, video=name, upload="url")
     if name.startswith("url:"):
         post.update(video=name[4:], upload="url")
+    elif name.startswith("resumable:"):
+        post.update(video=name[10:], upload="resumable")
     container = publish_one_reel(ig_user_id, post, "", publish=False)
     status = call_graph(container, {"fields": "status_code,status"})
     print(f"  container {container}: {status.get('status_code')} (nothing published)")
