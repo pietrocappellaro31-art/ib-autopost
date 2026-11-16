@@ -21,7 +21,7 @@ import sys
 import time
 import urllib.parse
 import urllib.request
-from datetime import datetime, time as clock, timezone
+from datetime import datetime, time as clock, timedelta, timezone
 from zoneinfo import ZoneInfo
 
 EASTERN = ZoneInfo("America/New_York")
@@ -38,6 +38,7 @@ DEFAULT_SLOTS_ET = (clock(8, 0), clock(12, 30), clock(17, 30))
 # daily cap and never take a carousel's place. Their video files are not in main's history: each Reel waits on
 # a temporary branch reel/<slug> (the session cannot create releases) and the branch is deleted once posted.
 MAX_REELS_PER_EASTERN_DAY = 2
+PROBE_HOURS = 6                      # while Meta blocks the app, try once every 6 hours, never more
 REPO = os.environ.get("GITHUB_REPOSITORY", "pietrocappellaro31-art/ib-autopost")
 # Errors that mean Meta is unhappy with the app or the account: stop the whole run, retry nothing.
 BLOCK_MARKERS = ("API access blocked", "2207042", "temporarily blocked", "unusual activity", "\"code\":368", "\"code\":4,",
@@ -314,6 +315,16 @@ def find_due_posts(manifest, now):
             print(f"Skipping {post['id']}: failed {post['attempts']} times ({post.get('last_error', '')[:120]})")
             continue
         scheduled = datetime.fromisoformat(post["scheduled_utc"]).replace(tzinfo=timezone.utc)
+        if is_reel(post) and post.get("slot") and (now - scheduled).total_seconds() > 6 * 3600:
+            # 16 Nov: a Reel that missed its slot by more than 6 hours (a block, an outage) moves to the next time its
+            # slot comes round, instead of going out at an odd hour.
+            hh, mm = map(int, manifest.get("reel_slots_et", {}).get(post["slot"], "12:30").split(":"))
+            nxt = datetime.combine(now.astimezone(EASTERN).date(), clock(hh, mm), EASTERN)
+            if nxt.astimezone(timezone.utc) <= now:
+                nxt += timedelta(days=1)
+            post["scheduled_utc"] = nxt.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S")
+            print(f"Reel {post['id']} missed its slot; moved to {post['scheduled_utc']} UTC")
+            continue
         if scheduled <= now:
             due.append(post)
     due.sort(key=lambda post: post["scheduled_utc"])
@@ -585,14 +596,39 @@ def main():
 
     due = apply_daily_cap(manifest, find_due_posts(manifest, now), now)
 
+    # 16 Nov: a circuit breaker. Meta blocked the app on 2 Nov and again on 16 Nov ("API access blocked", subcode
+    # 5258005). While a block is recorded, runs make no API call at all except one probe every PROBE_HOURS, so a
+    # blocked app is not hit every few minutes by cron and dispatches; the probe clears the flag when access is back.
+    block = manifest.get("api_block")
+    if due and block:
+        last = _utc(block.get("last_probe_utc") or block["since_utc"])
+        if (now - last).total_seconds() < PROBE_HOURS * 3600:
+            print(f"API BLOCKED since {block['since_utc']} ({block.get('error', '')[:120]}). "
+                  f"{len(due)} post(s) waiting; next probe after {PROBE_HOURS} h. Pietro must restore access in Meta's "
+                  "developer dashboard.", file=sys.stderr)
+            return 1
+
     if not due:
         # The cron runs every 15 minutes, so most runs end here. Nothing has
         # touched the network yet, which keeps the quiet runs genuinely free.
         print("Nothing due.")
         return 0
 
-    ig_user_id = resolve_ig_user_id()
-    quota = remaining_quota(ig_user_id)
+    try:
+        ig_user_id = resolve_ig_user_id()
+        quota = remaining_quota(ig_user_id)
+    except Exception as error:
+        if is_block_error(error):
+            manifest["api_block"] = dict(since_utc=(block or {}).get("since_utc") or now.isoformat(timespec="seconds"),
+                                         last_probe_utc=now.isoformat(timespec="seconds"), error=str(error)[:300])
+            save_manifest(manifest)
+            print(f"API BLOCKED: {error}. Recorded; no more calls for {PROBE_HOURS} h.", file=sys.stderr)
+            return 1
+        raise
+    if block:
+        manifest.pop("api_block", None)
+        save_manifest(manifest)
+        print(f"API access is back (blocked since {block['since_utc']}).")
     print(f"{len(due)} post(s) due, {quota} remaining in the 24h window")
     if quota < len(due):
         print("Quota too low for everything due; publishing what fits.")
@@ -619,6 +655,10 @@ def main():
             save_manifest(manifest)
             print(f"  FAILED: {error}", file=sys.stderr)
             if is_block_error(error):
+                if "access blocked" in str(error).lower():
+                    manifest["api_block"] = dict(since_utc=now.isoformat(timespec="seconds"),
+                                                 last_probe_utc=now.isoformat(timespec="seconds"), error=str(error)[:300])
+                    save_manifest(manifest)
                 # 16 Nov: never push on when Meta signals a block or a rate limit; everything waits for a person.
                 print("STOPPING: the error looks like a block or a rate limit. Nothing else is published this run.",
                       file=sys.stderr)
