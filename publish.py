@@ -512,7 +512,19 @@ def collect_insights(ig_user_id, limit=40):
     except Exception as error:
         problems.add("online_followers")
         first_error.append("online_followers: " + str(error)[:300])
+    granted, comments_read = None, None
+    try:                                         # which permissions the token carries, and a read-only comments check
+        granted = sorted(x["permission"] for x in call_graph("me/permissions", {}).get("data", []) if x.get("status") == "granted")
+    except Exception as error:
+        granted = f"not readable: {str(error)[:120]}"
+    if rows:
+        try:
+            call_graph(f"{rows[0]['id']}/comments", {"limit": "1"})
+            comments_read = True
+        except Exception as error:
+            comments_read = f"no: {str(error)[:160]}"
     return dict(updated_utc=datetime.now(timezone.utc).isoformat(timespec="seconds"), media=rows,
+                token_permissions=granted, comments_access=comments_read,
                 online_followers_by_hour_pacific=online, unavailable=sorted(problems), first_errors=first_error)
 
 
@@ -596,6 +608,7 @@ def main():
         perf = collect_insights(resolve_ig_user_id())
         write_performance(perf)
         print(f"performance recorded: {len(perf['media'])} posts; unavailable: {perf['unavailable'] or 'none'}")
+        print(f"token permissions: {perf.get('token_permissions')}; comments access: {perf.get('comments_access')}")
         return 0
 
     due = apply_daily_cap(manifest, find_due_posts(manifest, now), now)
