@@ -5,7 +5,7 @@ description: "Make every Instagram Reel for @investmentbankinginterviews to the 
 
 # Voiced Reels for @investmentbankinginterviews
 
-Version 2026-11-14b (cinematic upgrade; Pietro's 14 Nov notes: more animated, drawn scenes everywhere, a more natural voice, unprocessed). Authoritative copy: `docs/skill/ib-voiced-reel/SKILL.md` in the ib-autopost
+Version 2026-11-16 (black background from 17 Nov; cinematic upgrade; Pietro's 14 Nov notes: more animated, drawn scenes everywhere, a more natural voice, unprocessed). Authoritative copy: `docs/skill/ib-voiced-reel/SKILL.md` in the ib-autopost
 repo; the installed plugin is built from it (`docs/production/skill-sync.md`).
 
 **Standards (13 Nov 2026, Pietro: "Do the new standards apply to reels as well? They should."):** every Reel
@@ -15,6 +15,14 @@ gate), the formats A to F of `short-form-standard.md` and `voice-decision.md`, e
 (`build/cine_poc_newton.py`; Pietro, 13 Nov: "exactly the quality we are looking for"). These win over this file
 where they disagree, unless `docs/decisions-log.md` records a newer decision by Pietro. An older copy of this skill
 that names the G2, BELLA, EMMA rotation, "no music in any file" or the Levels quiz as the only format is out of date.
+
+## Pietro, 16 Nov: black background
+
+"From tomorrow on - same exact format and quality but black background please." Every Reel from 17 Nov sets
+`theme="black"` in its `EP` dict (`build/levels.py` THEMES): black ground, light text on the ground, answers in bright
+teal, white question cards unchanged, each level drawing on a paper panel, films unchanged. Same format, same quality
+bar and gates. Check the frames on black: nothing ink-coloured may sit directly on the ground (an ink label outside a
+panel or a card disappears). Older Reels keep the paper look; do not re-render them.
 
 ## Pietro, 14 Nov: more animated, drawn scenes everywhere, a more natural voice
 

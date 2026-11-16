@@ -30,6 +30,9 @@ by inspecting the live account. Check it on every render.
 - **Reels use the paper ground** from 3 Nov 2026, in the kinetic style in
   `docs/reel-style.md` (red for the mistake, teal `#0F766E` for the fix).
   Earlier Reels inverted the palette with teal `#5EC8B4` on ink.
+  **From 17 Nov 2026 Reels are on black again** (Pietro, 16 Nov): ink `#0A0A0A` ground, teal `#5EC8B4` for the
+  answer, red for the mistake, white question cards and paper panels behind drawings (`docs/reel-style.md`).
+  Carousels are unchanged.
 - **Fonts:** Source Serif 4 700 for headlines, IBM Plex Sans 400 to 600 for
   body, and Source Serif 4 italic (400, 600) for the tail of a Reel lockup.
   Nothing else. Adobe's own files, SIL Open Font License. The woff2 files are in `build/fonts/`.

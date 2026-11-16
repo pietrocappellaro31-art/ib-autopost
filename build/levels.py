@@ -35,6 +35,28 @@ from voice_clone import make_voice
 import sfx as sfx_lib
 
 RED, TEAL, INK = "#D93A12", "#0F766E", "#0A0A0A"
+
+# 16 Nov (Pietro, after Levels #15: "From tomorrow on - same exact format and quality but black background please."):
+# ep["theme"] = "black" puts the Reel on a black ground (motion.py's own dark page) and changes only what sits on the
+# ground: the kicker, HUD, meter, numerals, tails, answers (bright teal), THINK bar, close and brand turn light. The
+# question cards stay white with ink text, the filmed windows stay as they are, and each level drawing sits on a
+# paper panel (our drawings are ink on paper; on black their outlines and labels would vanish). "paper" (default)
+# is the look of every Reel before 17 Nov.
+THEMES = {
+    "paper": dict(page="paper", fg=INK, teal=TEAL, track="rgba(10,10,10,.09)", think="rgba(10,10,10,.08)",
+                  chip="rgba(15,118,110,.08)", hl="rgba(217,58,18,.2)", grain="multiply", grain_op=.05, panel=None,
+                  shadow="0 30px 70px rgba(10,10,10,.13),0 4px 14px rgba(10,10,10,.06)"),
+    "black": dict(page="ink", fg="#F7F5F2", teal="#5EC8B4", track="rgba(255,255,255,.14)", think="rgba(255,255,255,.12)",
+                  chip="rgba(94,200,180,.12)", hl="rgba(217,58,18,.28)", grain="screen", grain_op=.035, panel="#F7F5F2",
+                  shadow="0 24px 60px rgba(0,0,0,.55)"),
+}
+TH = dict(THEMES["paper"])
+
+
+def set_theme(ep):
+    """Select the episode's theme (ep["theme"], default "paper") for everything scene() draws."""
+    TH.clear()
+    TH.update(THEMES[ep.get("theme", "paper")])
 W = 752                                    # safe-area width
 
 
@@ -91,7 +113,7 @@ def kara(display, start, dur, cols=None, hide=False, hl=(), cls="", style="", li
             if [re.sub(r"\W", "", x).lower() for x in ws[i:i + len(p)]] == [re.sub(r"\W", "", x).lower() for x in p]:
                 mark = A("", "wipe", round(start + t[i], 3), .4,
                          style="position:absolute;left:-8px;right:-8px;bottom:.06em;height:.42em;"
-                               "background:rgba(217,58,18,.2);border-radius:8px;z-index:-1")
+                               "background:{TH['hl']};border-radius:8px;z-index:-1")
                 spans[i:i + len(p)] = [f'<span style="position:relative;display:inline-block;white-space:nowrap">{mark}'
                                        + " ".join(spans[i:i + len(p)]) + "</span>"]
                 break
@@ -179,10 +201,11 @@ def timeline(ep, parts):
 
 # --------------------------------------------------------------- scene ----
 
-def lockup(n, tail, tail_col=INK, size=200):
+def lockup(n, tail, tail_col=None, size=200):
     """The level numeral and its tail. 15 Nov: size= (a level with a drawing for the whole level gives the numeral
     150 px so the picture keeps its height)."""
     k = size / 200
+    tail_col = tail_col or TH["fg"]
     return (f'<div style="display:flex;align-items:center;gap:{30 * k:.0f}px">'
             f'<div class="num" style="font-size:{size}px;line-height:.86;color:{RED};letter-spacing:-.04em">{n}</div>'
             f'<div><div class="lbl" style="font-size:{30 * k:.0f}px;letter-spacing:.24em;opacity:.55">LEVEL</div>'
@@ -192,8 +215,8 @@ def lockup(n, tail, tail_col=INK, size=200):
 def card(inner, accent=None):
     border = f"border:4px solid {accent};" if accent else ""
     return (f'<div style="position:relative;z-index:0;margin-top:36px;width:{W}px;box-sizing:border-box;{border}'
-            f'background:#fff;border-radius:30px;padding:34px 44px 38px;'
-            f'box-shadow:0 30px 70px rgba(10,10,10,.13),0 4px 14px rgba(10,10,10,.06)">{inner}</div>')
+            f'background:#fff;color:{INK};border-radius:30px;padding:34px 44px 38px;'
+            f'box-shadow:{TH["shadow"]}">{inner}</div>')
 
 
 def ghost(n):
@@ -212,6 +235,7 @@ def group(inner, at, d, **kw):
 
 
 def scene(ep, parts, at, hook_end, lv, total):
+    set_theme(ep)
     n_lv = len(ep["levels"])
     seg = lambda k: parts[k][1]
     els = []
@@ -227,9 +251,9 @@ def scene(ep, parts, at, hook_end, lv, total):
         fills = A(fills, "life", -1, hook_end + 1 + .1, fi=.01, fo=.3, style="position:absolute;inset:0")
         cur = A(A("", "growX", lv[i]["start"] + .15, .4, style=f"position:absolute;inset:0;background:{RED};border-radius:7px"),
                 "life", lv[i]["start"], lv[i]["end"] - lv[i]["start"] + .3, fi=.01, fo=.3, style="position:absolute;inset:0")
-        done = A("", "fade", lv[i]["end"], .3, style=f"position:absolute;inset:0;background:{INK};border-radius:7px")
+        done = A("", "fade", lv[i]["end"], .3, style=f"position:absolute;inset:0;background:{TH['fg']};border-radius:7px")
         meter += (f'<div style="position:absolute;left:{x:.1f}px;top:58px;width:{sw:.1f}px;height:14px;border-radius:7px;'
-                  f'background:rgba(10,10,10,.09);overflow:hidden">{fills}{cur}{done}</div>')
+                  f'background:{TH["track"]};overflow:hidden">{fills}{cur}{done}</div>')
     hud_r = A(f"LEVEL {n_lv}/{n_lv}", "life", -1, hook_end + 1 + .1, fi=.01, fo=.2, style="position:absolute;right:0;top:0")
     for i in range(n_lv):
         hud_r += A(f"LEVEL {i + 1}/{n_lv}", "life", lv[i]["start"] + .1, lv[i]["end"] - lv[i]["start"], fi=.2, fo=.15,
@@ -284,7 +308,7 @@ def scene(ep, parts, at, hook_end, lv, total):
         qcard = card(f'<div style="font-family:\'Serif\',serif;font-weight:700;font-size:{L.get("qsize", 62)}px;line-height:1.12;'
                      f'letter-spacing:-.015em">{q_html}</div>', accent=RED if last else None)
         think = A(f'<div style="display:flex;align-items:center;gap:24px"><span class="lbl" style="font-size:30px;letter-spacing:.22em;'
-                  f'opacity:.65">THINK</span><div style="position:relative;flex:1;height:16px;border-radius:8px;background:rgba(10,10,10,.08)">'
+                  f'opacity:.65">THINK</span><div style="position:relative;flex:1;height:16px;border-radius:8px;background:{TH["think"]}">'
                   + A("", "shrinkX", T["think0"], T["think"], style=f"position:absolute;inset:0;border-radius:8px;background:{RED}")
                   + '</div></div>', "life", T["think0"] - .15, T["think"] + .45, fi=.15, fo=.3, style="margin-top:28px;height:40px")
         # The answer: first sentence big in teal, the rest as lines, then the chip.
@@ -296,12 +320,12 @@ def scene(ep, parts, at, hook_end, lv, total):
             if kind == "big":
                 ans += kara(d, aa + a, b - a, L.get("acols"), hide=True, cls="ansbig olchk olfix",
                             style=f"font-family:'Serif',serif;font-weight:700;font-size:{L.get('bigsize', 122)}px;line-height:1.02;"
-                                  f"letter-spacing:-.03em;color:{TEAL};text-wrap:balance")
+                                  f"letter-spacing:-.03em;color:{TH['teal']};text-wrap:balance")
             else:
                 ans += kara(d, aa + a, b - a, L.get("acols"), hide=True, cls="ansline olchk",
                             style="font-size:47px;font-weight:500;line-height:1.26;margin-top:14px;text-wrap:balance")
         rip = A("", "ripple", aa + .02, .9, style=f"position:absolute;left:-70px;top:-90px;width:320px;height:320px;border-radius:50%;"
-                                                   f"border:5px solid {TEAL};z-index:-1")
+                                                   f"border:5px solid {TH['teal']};z-index:-1")
         chip = ""
         if L.get("foot") and not L.get("chip"):
             # 13 Nov: a source line shows even when the level has no chip (it was silently dropped)
@@ -310,7 +334,7 @@ def scene(ep, parts, at, hook_end, lv, total):
         if L.get("chip"):
             t0 = aa + chip_time(asg, L.get("chip_at", 0))
             foot = (f'<div style="font-size:28px;font-weight:500;opacity:.6;margin-top:10px">{L["foot"]}</div>' if L.get("foot") else "")
-            chip = A(f'<div style="display:inline-block;border:3px solid {TEAL};background:rgba(15,118,110,.08);border-radius:24px;'
+            chip = A(f'<div style="display:inline-block;border:3px solid {TH["teal"]};background:{TH["chip"]};border-radius:24px;'
                      f'padding:18px 30px;font-size:44px;font-weight:600;line-height:1.3" class="olchk">{L["chip"]}</div>{foot}',
                      "pop", t0, .45, cls="anschip", style="margin-top:30px;transform-origin:left center")
         art = ""
@@ -348,12 +372,21 @@ def scene(ep, parts, at, hook_end, lv, total):
             # and acts the idea out across them: it builds as the question is asked and its key move lands on the
             # answer.
             sw_, sh_ = L.get("scene_w", W), L.get("scene_h", 400)
-            scn = A(f'<div style="position:relative;width:{sw_}px;height:{sh_}px;margin:0 auto">{L["scene"](m, sw_, sh_)}</div>',
+            # on black, the paper panel reaches 24 px above and below the drawing's box (the fit lets labels overhang it
+            # a little) and clips at its own edges, so nothing ink-coloured lands on the black ground
+            pad = 24
+            panel, clip = "", ""
+            if TH["panel"]:
+                panel = (f'<div style="position:absolute;left:0;right:0;top:-{pad}px;bottom:-{pad}px;background:{TH["panel"]};'
+                         f'border-radius:26px;z-index:-1"></div>')
+                clip = f";clip-path:inset(-{pad}px 0 -{pad}px 0 round 26px)"
+            scn = A(f'<div style="position:relative;z-index:0;width:{sw_}px;height:{sh_}px;margin:0 auto{clip}">{panel}{L["scene"](m, sw_, sh_)}</div>',
                     "life", T["start"] + .2, T["end"] - T["start"] + .3, fi=.3, fo=.1, cls="nochk",
                     style=f"margin-top:{L.get('scene_gap', 24)}px")
-        answer = (f'<div style="position:relative;margin-top:22px;min-height:{L.get("ans_min", 420 if L.get("art") else 0)}px">'
+        ans_gap = 22 + (16 if (TH["panel"] and L.get("scene")) else 0)     # 16 Nov: clear of the paper panel on black
+        answer = (f'<div style="position:relative;margin-top:{ans_gap}px;min-height:{L.get("ans_min", 420 if L.get("art") else 0)}px">'
                   f'{art}{rip}{ans}{chip}{filmbox}</div>')
-        grp = ghost(i + 1) + lockup(i + 1, L["tail"], RED if last else INK, L.get("lock", 200)) + qcard + think + scn + answer
+        grp = ghost(i + 1) + lockup(i + 1, L["tail"], RED if last else TH["fg"], L.get("lock", 200)) + qcard + think + scn + answer
         els.append(group(column(grp), T["start"] - .02, T["end"] - T["start"] + T_SW + .02))
         check_at.append(T["end"] - .2)
 
@@ -374,8 +407,8 @@ def scene(ep, parts, at, hook_end, lv, total):
               '<div style="font-size:26px;font-weight:600;letter-spacing:.24em;opacity:.7;margin-top:16px">INVESTMENT BANKING INTERVIEWS</div></div>',
               "rise", end_voice + .75, .55, style=f"position:absolute;left:0;top:470px;width:{W}px;z-index:8")
 
-    grain = A("", "grain", 0, 1, op=.05, fps=12,
-              style=f"position:absolute;left:0;top:0;width:1300px;height:2150px;background:url({noise_tile()});mix-blend-mode:multiply")
+    grain = A("", "grain", 0, 1, op=TH["grain_op"], fps=12,
+              style=f"position:absolute;left:0;top:0;width:1300px;height:2150px;background:url({noise_tile()});mix-blend-mode:{TH['grain']}")
     layer = (f'<div class="nochk" style="position:absolute;left:-84px;top:-230px;width:1080px;height:1920px;z-index:9;'
              f'pointer-events:none;overflow:hidden">{grain}</div>')
     # Colour grounds (10 Nov): each part of the Short gets its own full-bleed colour,
@@ -796,7 +829,7 @@ def make(ep, voice_name="af_heart", keep_voice=False, redo=()):
         v, parts = synth(ep, voice_name)
     at, hook_end, lv, total = timeline(ep, parts)
     sc, check_at = scene(ep, parts, at, hook_end, lv, total)
-    mp4, cover, problems = build(ep["slug"] + "-silent", [sc], theme="paper", cover_at=hook_end - .2, crf=21,
+    mp4, cover, problems = build(ep["slug"] + "-silent", [sc], theme=TH["page"], cover_at=hook_end - .2, crf=21,
                                  check_at=check_at, fit=ep.get("fit", True) and ep.get("fit_zmax", 2.2))
     mp4, cover, fol = films(ep, mp4, cover, at, hook_end, lv)
     voice, sfx = soundtrack(parts, at, lv, total + .6, ep)

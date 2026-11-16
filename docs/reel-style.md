@@ -1,5 +1,10 @@
 # Reel style
 
+> **16 Nov 2026 (Pietro): black background from 17 Nov**, same format and quality. `ep["theme"] = "black"` in
+> `build/levels.py`: black ground, light text on it, answers in bright teal `#5EC8B4`, white question cards kept, level
+> drawings on paper panels, films unchanged. Where this file says paper or light ground, read black for Reels from
+> 17 Nov (`docs/decisions-log.md`).
+
 > **13 Nov 2026 (Pietro): the cinematic standards apply to Reels.** This file stays the Reel's visual base (paper,
 > kinetic typography, the IB palette). `docs/production/cinematic-standard.md`, `audio-standard.md`,
 > `quality-gates.md` (section 9 for Reels) and the formats in `short-form-standard.md` add to it and win where they

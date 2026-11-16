@@ -18,6 +18,16 @@ What has been settled, and what is still open. Newest first.
 
 ## Settled
 
+- **Reels: black background from 17 Nov, same format and quality** (16 Nov, Pietro after Levels #15: "From tomorrow
+  on - same exact format and quality but black background please."). Every Instagram Reel renders with
+  `ep["theme"] = "black"` (`build/levels.py` THEMES): a black ground (motion.py's own dark page, `#0A0A0A`); what sits
+  on the ground turns light (kicker, HUD, level meter, numerals and tails, answers in bright teal `#5EC8B4`, THINK
+  bar, close, brand). Unchanged: the format (Levels and formats B to F), the white question cards with ink text, the
+  red accent, the filmed windows, HEART, sound, every gate. Each level drawing sits on a paper panel (`#F7F5F2`,
+  rounded like the cards), because our drawings are ink on paper and their outlines and labels would vanish on
+  black. Scope: Instagram Reels; YouTube Shorts and long videos are not changed by this note. Reels made before
+  17 Nov stay on paper. Preview: Levels #15 re-rendered black (`w2-levels-15-black`), sent the same evening.
+
 - **Shorts and every voiced video: a natural, unprocessed HEART** (14 Nov, evening, Pietro after the first cash
   machine Short: "Video looks good but from tomorrow on voice should feel more natural. Make the appropriate updates to
   the skill if and when necessary." Asked what felt least natural, he chose "Robotic / processed sound"). From 15 Nov:
