@@ -284,7 +284,18 @@ def publish_one_reel(ig_user_id, post, image_base, publish=True):
     """Upload, transcode and publish a single Reel. Entries made by build/reel_queue.py carry media_branch, video
     (a file name on that branch) and cover; an entry whose video is a full URL uses the older URL path."""
     branch = post.get("media_branch")
-    if branch:
+    if branch and post.get("upload") == "url":
+        # 16 Nov: the standard (non-resumable) path, Meta fetching video_url from the branch; kept as an alternative
+        # while the resumable path refused some longer Reels with ProcessingFailedError.
+        params = {"media_type": "REELS", "video_url": branch_url(branch, post["video"]), "caption": post["caption"],
+                  "share_to_feed": "true"}
+        if post.get("ai_label", True):
+            params["is_ai_generated"] = "true"
+        if post.get("cover"):
+            params["cover_url"] = branch_url(branch, post["cover"])
+        print(f"  reel {post['video']} from {branch} by video_url")
+        container_id = call_graph(f"{ig_user_id}/media", params, method="POST")["id"]
+    elif branch:
         data = fetch_bytes(branch_url(branch, post["video"]))
         cover = branch_url(branch, post["cover"]) if post.get("cover") else None
         print(f"  reel {post['video']} from {branch}: {len(data) / 1e6:.1f} MB")
@@ -596,6 +607,8 @@ def reel_selftest(ig_user_id, branch, name):
     container with the AI label, upload the bytes, wait for FINISHED. Then read insights and the Audio API once.
     The container expires unpublished after 24 hours."""
     post = dict(caption="Self-test, not published.", media_branch=branch, video=name)
+    if name.startswith("url:"):
+        post.update(video=name[4:], upload="url")
     container = publish_one_reel(ig_user_id, post, "", publish=False)
     status = call_graph(container, {"fields": "status_code,status"})
     print(f"  container {container}: {status.get('status_code')} (nothing published)")
