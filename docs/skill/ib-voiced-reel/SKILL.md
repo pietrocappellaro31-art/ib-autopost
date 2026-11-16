@@ -1,6 +1,6 @@
 ---
 name: "ib-voiced-reel"
-description: "Make every Instagram Reel for @investmentbankinginterviews to the same cinematic standards as the YouTube films: the HEART narrator (Kokoro af_heart, 0.9) with a natural, unprocessed delivery, a drawn scene or filmed segment in every beat (more animated, never text alone), synchronised sound effects, a clean master plus an original-scored alternative when feasible, motion and quality gates, caption, comment question and the daily quality log. The Levels quiz is one format, not the only one."
+description: "Make and queue two Instagram Reels a day for @investmentbankinginterviews, posted automatically at data-chosen times, to the same cinematic standards as the YouTube films: the HEART narrator (Kokoro af_heart, 0.9) with a natural, unprocessed delivery, a drawn scene or filmed segment in every beat (more animated, never text alone), synchronised sound effects, a clean master plus an original-scored alternative when feasible, motion and quality gates, caption, comment question and the daily quality log. The Levels quiz is one format, not the only one."
 ---
 
 # Voiced Reels for @investmentbankinginterviews
@@ -110,35 +110,62 @@ Sound effects on every Reel (`build/sfx.py`): ticks, pops, dings, thump, and for
 coins, quill, a soft mallet on numbers (`audio-standard.md` 5). Each effect belongs to something on screen.
 **Never a whoosh on the swipe between scenes.**
 
-Masters (`audio-standard.md` 3): the **clean master** (voice and effects, no music, about -16 LUFS, true peak at or
-under -1.5 dBTP) is the deliverable; Pietro adds music from Instagram's library in the app. An **original-scored
-alternative** is made when feasible (the IG Reel task's 13 Nov override asks for it):
-`python3 build/master.py scored build/out/<slug>/<slug>.mp4 -16 <mood> <mood>` writes `<slug>-scored.mp4` and
-`<slug>-scored.json` (our own `build/score.py` score, class ORIGINAL_GENERATED, ducked under the voice, mastered to
--16 LUFS, word check against the clean file). Offer it as an alternative Pietro has not heard yet; the clean file
-stays the default. Never a commercial or trending song in a file, and never a version carrying YouTube-library audio.
+Masters (`audio-standard.md` 3): every Reel gets the **clean master** (voice and effects, no music, about -16 LUFS,
+true peak at or under -1.5 dBTP) and the **scored master**
+(`python3 build/master.py scored build/out/<slug>/<slug>.mp4 -16 <mood> <mood>`: our own `build/score.py` score,
+class ORIGINAL_GENERATED, ducked under the voice, word check against the clean file). Since 16 Nov Reels post
+automatically with no in-app music, so the scored master is the one queued when it passes its checks; the clean one
+is the fallback. Never a commercial or trending song in a file, and never a version carrying YouTube-library audio.
 
 ## Compliance
 
 Run the content-compliance gate. Write `docs/rights/posts/<slug>.md`.
 
-## Deliver
+## Two Reels a day, posted automatically (Pietro, 16 Nov 2026)
 
-1. Send the MP4 and the cover with SendUserFile.
-2. Caption: PASS on ig-human, one ask, up to 4 hashtags, no promise of returns or jobs, no invented experience,
-   a title that matches the content, then just before the hashtags:
-   `Narration: AI-generated voice; script is our original work.` (and, only for an old G2 re-render,
-   `Voice model: Pocket TTS by Kyutai`).
-3. Comment question: a bonus level.
-4. Paste the description and the comment question in the reply, ready to
-   copy.
-5. Remind Pietro to turn on Instagram's AI label when he posts (realistic synthetic voiceover, Meta's rule), with
-   the reason; judge any other disclosure on the finished Reel (`quality-gates.md` section 6).
-6. Say which voice was used.
-7. Add a row to `docs/daily/ig-reels.md`, the topic to `docs/daily/topics.md`
-   and the measures plus one improvement to `docs/daily/quality-log.md`.
-8. Commit the episode file, captions, logs and `build/voices/voice_log.json`,
-   and push.
+Pietro: "We will post two each day. You won't need my approval. You will use your own intelligence to analyze the
+top performing reels and make improvements if necessary. You will decide at what time to post each day."
+
+- **Each daily run makes two Reels**, A and B, on two different topics (and, across the week, different formats),
+  each to the full standard. Make A first and queue it, then B. Never let the second be a weaker copy of the first:
+  if time runs short, queue A and deliver B's state honestly rather than ship a rushed Reel.
+- **Read the performance first**: `docs/daily/performance.md` (written by the publisher from Instagram's insights:
+  reach, views, shares, saves, likes, comments, follows, watch time per Reel, and when followers are online). Name
+  the best and worst Reels of the last two weeks, what differs (hook, format, topic, length, slot), and turn it into
+  today's choices. Write the reasoning in the quality-log row. Do not chase one outlier: a pattern needs at least
+  three Reels.
+- **Posting times**: the slots are `reel_slots_et` in `posts.json` (from 16 Nov: A 12:30, B 18:00 ET, chosen because
+  the 12:33 and 18:03 ET dispatches fire reliably while GitHub's own cron does not). Move a slot only on evidence
+  from `performance.md` (online followers, reach by slot over at least 10 Reels), only to a time a reliable dispatch
+  covers, and record the change and the reason in `docs/decisions-log.md`.
+- **Music**: nobody adds Instagram music any more, so the posted file is the scored master
+  (`python3 build/master.py scored build/out/<slug>/<slug>.mp4 -16 <mood> <mood>`), our own score, rights class
+  ORIGINAL_GENERATED. If the scored master fails its checks, the clean master is posted.
+- **Queue**: `python3 build/reel_queue.py <slug> --slot A|B --caption <caption file> --comment "<question>"` checks
+  the file (H.264/AAC, 1080 x 1920, 3 to 90 s), the caption (at most 2,200 characters, at most 5 hashtags, the
+  AI-narration line, no em dash), pushes the video and cover to a temporary branch `reel/<slug>` and adds the entry
+  to `posts.json`. Commit `posts.json` and push (`git pull --rebase` first). The publisher posts at the slot, sets
+  Instagram's AI label at creation (`is_ai_generated`), posts the comment question as the first comment, then deletes
+  the branch.
+- **No approval step** (Pietro's decision): the content-compliance gate is the gate. Any STOP item, a failed fact
+  check, a word missed by the recogniser or a failed quality gate means the Reel is not queued; say why.
+- **If the API is blocked** (`posts.json` has `api_block`, or the last publisher run says API BLOCKED): do not queue.
+  Deliver both Reels to Pietro to post by hand as before (files, caption, comment question, the AI-label reminder),
+  and say the block is still on.
+
+## Deliver (one message after both Reels)
+
+1. Caption for each: PASS on ig-human, one ask, up to 4 hashtags, no promise of returns or jobs, no invented
+   experience, a title that matches the content, then just before the hashtags:
+   `Narration: AI-generated voice; script is our original work.`
+2. Comment question for each: a bonus level or a follow-up question.
+3. Send both MP4s and covers with SendUserFile, for the record, then one SendUserMessage: for each Reel the topic,
+   format, slot and posting time, which master was queued, the caption and comment, the measures (motion, DNSMOS,
+   loudness, words heard), and what the performance data changed today. If a Reel was not queued, why.
+4. Add rows to `docs/daily/ig-reels.md` (one per Reel: voice, format, slot), the topics to `docs/daily/topics.md`,
+   and one row to `docs/daily/quality-log.md` with the measures, the performance reading, what improved and the next
+   improvement.
+5. Commit the episode files, captions, rights records, logs, `posts.json` and `build/voices/voice_log.json`, and push.
 
 ## Get better every day
 
@@ -152,4 +179,5 @@ outrank the metrics.
 - Clone any real person. Use HEART unless Pietro names another voice.
 - Put recordings, decrypted samples or keys in the repo.
 - Add a whoosh, or any music we do not hold the rights to. A scored alternative uses only our own score.
-- Post or schedule a Reel: Pietro posts by hand.
+- Queue a Reel that failed a gate, or queue anything while the API is blocked.
+- Put an MP4 on main: Reel media goes only on its temporary `reel/<slug>` branch.

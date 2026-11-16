@@ -18,6 +18,25 @@ What has been settled, and what is still open. Newest first.
 
 ## Settled
 
+- **Two Reels a day, posted automatically, no approval** (16 Nov, Pietro: "We will post two each days. You won't
+  need my approval. You will use your own intelligence to analyze the top performing reels and make improvements if
+  necessary. You will decide at what time to post each day - based on the most convenients times for our nieche.").
+  Replaces "Reels are scheduled by Pietro in the Instagram app" (2 Nov) and the hand-posted 21:30 Reel.
+  How: the daily Reel run makes Reels A and B, queues each with `build/reel_queue.py` (video and cover on a temporary
+  `reel/<slug>` branch, never on main); `publish.py` uploads them through Meta's resumable upload with the AI info
+  label set at creation (`is_ai_generated`, added to the API 22 Jun 2026), posts the comment question, deletes the
+  branch; its own cap of 2 Reels a day, separate from the 3 carousels. Music: our scored master (nobody adds in-app
+  music now). Slots: A 12:30 and B 18:00 ET (`posts.json` `reel_slots_et`): published studies disagree (finance:
+  early morning and evening; education: late morning; general: midweek afternoons and evenings), the account's own
+  data is not yet readable, and these two times are the ones a dispatch reliably covers (12:33 and 18:03 ET; GitHub's
+  cron fired about 7 times a day with gaps up to 10 hours, 1 to 16 Nov). The runs move them on evidence from
+  `docs/daily/performance.md` (insights recorded daily by the publisher) and log why here. No approval: the
+  content-compliance gate decides; a Reel that fails it is not queued.
+  **Same day: Meta blocked the app's API access again** (12:33 ET dispatch, "API access blocked", subcode 5258005;
+  the 08:06 ET carousel had published). This was before any Reel touched the API. The publisher now records the block
+  and stops calling the API except one probe every 6 hours (`api_block` in `posts.json`); while it lasts, Reels are
+  delivered for hand posting and nothing is queued. Pietro restores access in Meta's developer dashboard as on 2 Nov.
+
 - **Black background is the rule for Reels AND YouTube Shorts** (16 Nov, evening, Pietro after the black preview of
   Levels #15: "Amazing. Set this as the rule from now on for both IG reels and YouTube shorts."). Black is now the
   default of both engines: `build/levels.py` (`set_theme`, THEMES) and `build/story.py` (the Shorts engine for

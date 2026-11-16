@@ -1,7 +1,8 @@
 # ib-autopost: working rules
 
 The finance content operation for @investmentbankinginterviews (Instagram) and its YouTube channel. Independent: no
-brand, characters, files, music or schedules from any other project. Posting and uploading stay manual (Pietro).
+brand, characters, files, music or schedules from any other project. Carousels, Stories and (from 16 Nov) two Reels a
+day post automatically through `publish.py`; YouTube uploads stay manual (Pietro).
 
 ## Where the rules are
 
@@ -26,6 +27,8 @@ brand, characters, files, music or schedules from any other project. Posting and
 ## Setup and safety
 
 - `bash build/setup_voice.sh && source ~/voice-tools/env.sh` once per session.
-- Never commit MP4s, WAVs, stems, `build/out/`, voice samples, keys or tokens. `git pull --rebase` before pushing;
+- Never commit MP4s, WAVs, stems, `build/out/`, voice samples, keys or tokens to main. A queued Reel's video lives only on
+  its temporary `reel/<slug>` branch (`build/reel_queue.py`), deleted once posted. `git pull --rebase` before pushing;
   never force-push; three daily runs write the same logs.
-- Do not change scheduled tasks, publish, upload, or alter live posts without Pietro.
+- Do not change scheduled tasks, upload to YouTube, or alter live posts without Pietro. Never queue anything while
+  `posts.json` records an `api_block`.

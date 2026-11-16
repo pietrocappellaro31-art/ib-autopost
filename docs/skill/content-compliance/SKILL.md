@@ -25,6 +25,9 @@ Ship only when all six are true:
 4. Disclosures (AI, sponsorship, affiliate, unaffiliated bank) are correct.
 5. Account behaviour is authentic.
 6. Pietro has approved the **finished** post, not only the topic.
+   Exception, Pietro's decision of 16 Nov 2026: **Instagram Reels post automatically with no approval step** ("You
+   won't need my approval"). For Reels this gate is the approval: run every check, and a Reel that fails any STOP
+   item, any fact check or any quality gate is not queued. Everything else (carousels, YouTube) keeps his approval.
 
 ## Risk levels
 
@@ -170,7 +173,7 @@ Never put voice samples, the voice key or tokens in the repo.
 [ ] AI disclosure recommended per platform with the reason (section 6); audience setting stated
 [ ] Sponsorship/affiliate/unaffiliated-bank lines present where needed
 [ ] Title, cover, caption, hashtags accurate
-[ ] Pietro approved the finished post
+[ ] Pietro approved the finished post (Reels from 16 Nov: this checklist passed in full instead; any FIX left open means not queued)
 ```
 
 Each line gets PASS, FIX (with what changed) or N/A. Any STOP item ends the run for that post and is reported in one line.

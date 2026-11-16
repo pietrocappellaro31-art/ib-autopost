@@ -103,7 +103,7 @@ at children (it should not be).
 - Existing episodes still render; generated MP4s, stems and recordings never committed; no secrets in git; logs
   updated; `git pull --rebase`, never force-push; render time and file sizes logged.
 
-## 9. Instagram Reels (Pietro, 13 Nov: the new standards apply to Reels too)
+## 9. Instagram Reels (Pietro, 13 Nov: the new standards apply to Reels too; 16 Nov: posted automatically, no approval)
 
 A Reel passes sections 1, 2, 3, 5, 6 and 8 as a film does, adapted to 9:16, plus:
 
@@ -115,7 +115,7 @@ A Reel passes sections 1, 2, 3, 5, 6 and 8 as a film does, adapted to 9:16, plus
 - **Layout**: safe-area, `clear.json` and `WRAP` at zero; captions never over the action.
 - **Voice**: HEART at 0.9, every line word for word in `takes.json`.
 - **Sound and masters**: action-timed effects, no whoosh; the clean master at about -16 LUFS, true peak at or under
-  -1.5 dBTP; the scored alternative (`python3 build/master.py scored build/out/<slug>/<slug>.mp4 -16 <mood> <mood>`)
+  -1.5 dBTP; the scored master (the one posted since 16 Nov, when Reels went automatic) (`python3 build/master.py scored build/out/<slug>/<slug>.mp4 -16 <mood> <mood>`)
   when feasible, measured, never with platform-library or commercial music.
 - **Caption**: PASS on ig-human, the substance checks in content-compliance, the AI-narration line; Instagram's AI
   label recommended for the synthetic narrator.
