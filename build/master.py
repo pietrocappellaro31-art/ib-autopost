@@ -243,8 +243,8 @@ def dual(st, silent_mp4, out_dir, slug, lufs=-14.0, tp=-1.5, script=None, chain=
     return report
 
 
-def scored_alternative(clean_mp4, moods=("explain", "resolve"), out=None, lufs=-14.0, tp=-1.5, key="F", bpm=80, seed=7,
-                       music_under_db=8.0, duck_db=11.0):
+def scored_alternative(clean_mp4, moods=("explain", "resolve"), out=None, lufs=-14.0, tp=-1.5, key=None, bpm=None, seed=7,
+                       music_under_db=8.0, duck_db=11.0, style=None):
     """13 Nov (cinematic upgrade): a scored alternative for a finished CLEAN master (a Levels Short or a Reel),
     without re-rendering the picture or touching its engine. The clean soundtrack (voice + effects) is kept as it
     is; an original score.py cue in the given moods (split evenly across the film) is set by RMS under it, ducked
@@ -264,8 +264,17 @@ def scored_alternative(clean_mp4, moods=("explain", "resolve"), out=None, lufs=-
     total = len(cl) / SR
     n = len(moods)
     secs = [(total * i / n, total * (i + 1) / n, m) for i, m in enumerate(moods)]
-    stems, sco = SC.compose(secs, key=key, bpm=bpm, seed=seed)
-    music = SC.master_music(stems)
+    slug = clean_mp4.stem.replace("-clean", "")
+    pk = SC.pick(slug, 80, style=style, key=key, bpm=bpm)          # 17 Nov: a different style and key each video
+    key, bpm, style = pk["key"], pk["bpm"], pk["style"]
+    stems, sco = SC.compose(secs, key=key, bpm=bpm, seed=seed, style=style)
+    music = SC.master_music(stems, wet=SC.STYLES[style].get("wet", .22))
+    try:
+        import music_library
+        music_library.register_original(f"score-{slug}", f"Original score for {slug}", slug, "score.py + GeneralUser GS v2.0.3 (TinySoundFont)",
+                                        mood="+".join(moods), bpm=bpm, key=key, style=style)
+    except Exception as e:
+        print(f"  music library log failed: {e}")
     m = np.zeros_like(cl)
     k = min(len(m), len(music))
     m[:k] = music[:k]
@@ -282,7 +291,7 @@ def scored_alternative(clean_mp4, moods=("explain", "resolve"), out=None, lufs=-
     y, _ = read_wav(fin)
     rep = dict(file=out.name, from_clean=clean_mp4.name, engine="score.py + GeneralUser GS v2.0.3 (TinySoundFont)",
                rights="ORIGINAL_GENERATED", sections=[(round(a, 2), round(b, 2), mo) for a, b, mo in secs], notes=len(sco.events),
-               key=key, bpm=bpm, seed=seed, **meas, clipped_samples=int((np.abs(y) >= .999).sum()),
+               key=key, bpm=bpm, seed=seed, style=style, style_label=SC.STYLES[style]["label"], **meas, clipped_samples=int((np.abs(y) >= .999).sum()),
                voice_over_music_db=round(float(20 * np.log10(ref / max(rms(m[sp]), 1e-9))), 1) if sp.any() else None)
     try:
         from voice_check import transcribe, wer

@@ -279,13 +279,13 @@ def mixable(track, platform=None):
     return False
 
 
-def register_original(lib_id, title, video, engine, mood=None, bpm=None, key=None, note=""):
+def register_original(lib_id, title, video, engine, mood=None, bpm=None, key=None, note="", style=None):
     """Record a cue our code composed (class ORIGINAL_GENERATED) in library.json "originals", for provenance."""
     import datetime
     lib = load()
     lib.setdefault("originals", [])
     lib["originals"] = [o for o in lib["originals"] if o["id"] != lib_id]
-    lib["originals"].append(dict(id=lib_id, title=title, video=video, engine=engine, mood=mood, bpm=bpm, key=key,
+    lib["originals"].append(dict(id=lib_id, title=title, video=video, engine=engine, mood=mood, bpm=bpm, key=key, style=style,
                                  rights="ORIGINAL_GENERATED", added=str(datetime.date.today()), note=note))
     save(lib)
 

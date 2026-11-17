@@ -66,6 +66,11 @@ workspace has no audio playback. Pietro's ear is the final check.
 
 ## 3. Masters
 
+**17 Nov (Pietro): every YouTube video, long or Short, is delivered as ONE file with our original score.** The clean
+mix below is still made for long videos, but only as the score gate's reference inside `build/out/<slug>/`; it is not
+delivered or offered. When the gate fails the music is lowered 3 dB and remixed (up to three times), never dropped.
+The table below is kept for Reels (clean by default) and for the history.
+
 | | CLEAN | SCORED |
 |---|---|---|
 | Contains | narration, sound effects, ambience | the same plus our original score, ducked |
@@ -97,6 +102,16 @@ Never a commercial or trending song in a file. A version with YouTube-library au
 and the reverse. No pitch, speed or re-recording tricks to get past Content ID.
 
 ## 4. Original score
+
+**Styles (17 Nov, Pietro: "experiment with different kinds of music and not always use the same music").**
+`score.compose(..., style=)` plays the same written harmony on a different band: `orchestral` (strings, piano,
+woodwinds, horn, timpani: the 13 to 16 Nov sound), `noir_jazz` (Rhodes, upright bass, vibraphone, muted trumpet, alto
+sax, brushes), `solo_piano` (piano and a low cello), `ambient` (warm pads, Rhodes, kalimba, fretless bass, pan flute),
+`acoustic` (nylon and steel guitars, upright bass, flute, shaker), `mallets` (marimba, vibraphone, pads, electric bass,
+clarinet), `harp` (harp, celesta, strings, flute). Each has its own tempo factor and hall. `score.pick(slug, ...)`
+avoids every style and key of the last three scored videos (`library.json` "originals", now with `style`), so no two
+videos in a row sound alike; the delivery names the style. Measured on the same 40 s plan: spectral centroids from
+800 Hz (mallets) to 2,080 Hz (noir_jazz). Nobody here can listen: Pietro's verdict per style decides what stays.
 
 `build/score.py`: notes, not loops. Harmony with voice leading, a seeded motif that is stated and answered, one mood
 per section aligned to shots or chapters, sampled instruments from the GeneralUser GS SoundFont (free for commercial

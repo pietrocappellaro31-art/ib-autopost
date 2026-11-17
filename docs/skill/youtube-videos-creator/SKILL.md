@@ -1,12 +1,17 @@
 ---
 name: "youtube-videos-creator"
-description: "Daily YouTube run for the finance channel: research a topic that could travel, write and render one cinematic long-form 16:9 documentary (filmed scenes, original score, clean and scored masters) and one Short in the HEART narrator (natural, unprocessed), with thumbnails, titles, description, chapters and tags, checked against YouTube's AI, originality and monetisation rules. Posting stays manual."
+description: "Daily YouTube run for the finance channel: research a topic that could travel, write and render one cinematic long-form 16:9 documentary (filmed scenes, one MP4 with an original score whose style changes every video) and one Short in the HEART narrator (natural, unprocessed), with thumbnails, titles, description, chapters and tags, checked against YouTube's AI, originality and monetisation rules. Posting stays manual."
 ---
 
 # YouTube Videos Creator
 
 Version 2026-11-16 (black background for Shorts; cinematic upgrade; Pietro's 14 Nov note: a natural, unprocessed narrator). The authoritative copy is `docs/skill/youtube-videos-creator/SKILL.md` in the
 ib-autopost repo; the installed plugin is built from it (`docs/production/skill-sync.md`).
+
+**17 Nov, Pietro: ONE file per YouTube video, the one with the music, and different music every time.** Long films
+and Shorts deliver only the scored MP4 (our `score.py` score); the clean mix is never sent or offered. `score.pick()`
+rotates the style (orchestral, noir_jazz, solo_piano, ambient, acoustic, mallets, harp) and the key so no video uses a
+style or key of the last three; name the style in the delivery. Details: `docs/decisions-log.md` (17 Nov).
 
 **The standards live in the repo and win over this file where they disagree:** `docs/production/long-form-standard.md`,
 `short-form-standard.md`, `cinematic-standard.md`, `audio-standard.md`, `quality-gates.md`, `scene-library.md`,
@@ -82,12 +87,13 @@ conclusion and one takeaway.
    - Drawn beats: `build/sketch.py` scenes (`kind="sketch"` beside a line, `kind="scene"` alone) and the other kinds
      (icon, split, timeline, flow, verdict, quote, number, compare, list). At most one text-only beat per chapter;
      every chapter card has `art=`. Add a scene or a cine set when the story needs one: a good daily improvement.
-   - `score="reflective" | "suspense" | "light"`: the scored mix (`build/score.py`, one mood per chapter).
+   - `score="reflective" | "suspense" | "light"`: the scored mix (`build/score.py`, one mood per chapter); the style
+     and key come from `score.pick` (17 Nov: never one of the last three videos'); `score_style=` overrides.
    - `thumb=dict(...)`: two looks from `youtube.THUMB_LOOKS`, never one used the day before.
 3. `python3 build/yt_preview.py build/youtube_ep<NNN>.py` (variety test, must pass), then
    `python3 build/yt_timing.py build/youtube_ep<NNN>.py --takes` (length, every line heard word for word).
-4. Render `python3 build/youtube_ep<NNN>.py`. Outputs in `build/out/<slug>/`: `<slug>-clean.mp4`,
-   `<slug>-scored.mp4`, `<slug>.mp4` (the recommended one after the score gate), `thumbnail_a.jpg`, `thumbnail_b.jpg`,
+4. Render `python3 build/youtube_ep<NNN>.py`. Outputs in `build/out/<slug>/`: `<slug>.mp4` (the one deliverable, always
+   scored; the gate lowers the music and remixes if it fails), `<slug>-clean.mp4` (the gate's reference, not delivered), `thumbnail_a.jpg`, `thumbnail_b.jpg`,
    `<slug>.srt`, `transcript.txt`, `description.txt`, `metadata.json`, `sound.json`, `music.json`. Filmed beats cost
    0.5 to 1.3 s of render a frame: budget for them.
 5. `python3 build/yt_preview.py build/youtube_ep<NNN>.py --motion`: look at the motion sheets and `motion.json`, not
@@ -110,10 +116,12 @@ Pick the best for the topic and vary the week. 35 to 55 s for most; under 60 for
   at zero; two-stage master at -14 LUFS.
 - A filmed segment (a story beat, a character reacting) can come from `cine.py`: the same world is reframed for 9:16
   (`cine_poc_newton.py --vertical` is the example).
-- Music: the **clean master** is the one delivered (voice, effects, room tone; Pietro adds a sound in the YouTube
+- Music (17 Nov): deliver ONLY the scored Short (`python3 build/master.py scored ...`, style and key from
+  `score.pick`, never the last three videos'); no clean file, no "add a sound" steps. Earlier rule, history only:
+  the **clean master** was the one delivered (voice, effects, room tone; Pietro adds a sound in the YouTube
   app). A **scored alternative** is prepared when practical: `python3 build/master.py scored build/out/<slug>/<slug>.mp4
   <mood> <mood>` writes `<slug>-scored.mp4` and a report; offer it as unheard until Pietro approves a score.py cue.
-  If the scheduled task's own prompt says "no scored master unless Pietro asks", follow the prompt.
+  If the scheduled task's own prompt says "no scored master unless Pietro asks", Pietro's 17 Nov decision overrides it: make and deliver the scored Short only.
 - Set `mood=` so the render writes `music_pick.json` for the music block (music-library skill).
 
 ## 5. Compliance, metadata and disclosure
@@ -136,34 +144,18 @@ Run the content-compliance gate. Then:
 
 ## 6. Deliver
 
-Long video, with SendUserFile: the recommended MP4, the clean MP4 (and the scored one if it is not the
-recommendation), both thumbnails, the `.srt`, `description.txt`, the motion sheets and the rights record. Then one
-SendUserMessage: titles, description, chapters, tags, hashtags, pinned comment, voice, music (which master and why,
-the gate result; for clean, the credit line and the Studio steps: Content, the video, Editor, Audio, pick an Audio
-Library track, keep it low under the voice, Save), Studio settings with reasons, sources, quality results, today's
-verified improvement, what needs his review.
+Long video, with SendUserFile: `<slug>.mp4` only (the scored mix; 17 Nov: never the clean MP4 as well), both
+thumbnails, the `.srt`, `description.txt`, the motion sheets and the rights record. Then one SendUserMessage: titles,
+description, chapters, tags, hashtags, pinned comment, voice, the music (the style, key and tempo from `music.json`,
+the gate result, the credit line `Music: original score made for this video.`), Studio settings with reasons,
+sources, quality results, today's verified improvement, what needs his review.
 
-Short: the clean MP4, the scored alternative if made, the cover, the `.srt` if written, `qa.md`, then one message with
-the titles, description, hashtags, tags, pinned comment, voice, the music block below, disclosure and audience with
-the reason, measures, sources and today's improvement.
-
-```
-Music for this Short (add it in the YouTube app on your phone)
-Suggested sounds:
-  1. <library pick: song - artist> (from your music library): <why it fits, one line>; start at <calm_start>
-  2. <song - artist> (verified trending on Shorts this week): <...>   (or: none verified this week)
-Steps:
-  1. Open the YouTube app, tap +, then "Upload a video", and pick <slug>.mp4.
-  2. On the trim screen tap "Next" (not "Add details"); in the editor tap "Add sound" and search the first song.
-     If it is not there, try the next; if none is, pick any song the app offers that fits <mood>.
-  3. Start it on <calm_start or a calm, instrumental stretch>, not on a vocal chorus.
-  4. "Volume": original sound 100, the added track about 15 to 25; play the first 10 seconds; the voice must be easy
-     to follow. Library songs may be cut to a short clip (YouTube Help: 15 s on uploaded videos): place it on the hook.
-  5. Next, paste the title and description, "No, it's not made for kids", upload.
-  6. AI setting (the phone may not show it): studio.youtube.com, Content, Shorts, the Short, Show more, "Altered
-     content" (newer Studio: Attributes, "AI use"): answer as recommended. Save.
-If you upload the scored alternative instead, skip steps 2 to 4: it already has our original score.
-```
+Short: the scored MP4 only (17 Nov), the cover, the `.srt` if written, `qa.md`, then one message with the titles,
+description, hashtags, tags, pinned comment, voice, the music (style, key, the credit line), disclosure and audience
+with the reason, measures, sources and today's improvement. Upload steps: YouTube app, +, "Upload a video", pick the
+file, "Next", no added sound (the score is already in the file), title and description, "No, it's not made for
+kids", upload; then the AI setting in Studio on a computer (Content, Shorts, the Short, Show more, "Altered content"
+or Attributes, "AI use") as recommended.
 
 ## 7. Log and improve
 

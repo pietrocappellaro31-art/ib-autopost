@@ -18,9 +18,12 @@ day post automatically through `publish.py`; YouTube uploads stay manual (Pietro
 ## Current defaults (13 Nov 2026)
 
 - Narrator HEART: Kokoro v1.0 `af_heart`, speed 0.9, en-us, everywhere. Earlier voices and trials are history.
-- Long videos: clean and scored MP4 (original `build/score.py` score, gate in `audio-standard.md`); filmed beats
-  from `build/cine.py` where the story has people, places or a mechanism. Shorts and Reels: the clean master is
-  delivered; a scored alternative when feasible (`build/master.py scored`).
+- **YouTube, long films and Shorts (Pietro, 17 Nov): deliver ONE video file, the one with our original score.** Never
+  send or offer a clean MP4 as well (it stays in `build/out/` only as the score gate's reference). The score's style,
+  key and tempo change every video (`score.pick`: never a style or key of the last three; name the style in the
+  delivery). This overrides any scheduled-task prompt step that still says to deliver a clean MP4 or "music=False".
+  Filmed beats from `build/cine.py` where the story has people, places or a mechanism. Reels: unchanged (clean master
+  with Instagram music in the app, plus the scored alternative).
 - AI disclosure: a recommendation per finished video with its reason, never an automatic tick.
 - Never invent a number, quote, source or credential. Reconstructions are badged. No commercial music in any file.
 

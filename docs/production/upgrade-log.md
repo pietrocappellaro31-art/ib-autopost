@@ -144,3 +144,27 @@ samples on #10's first mix), and `sketch.receipt` fits a long total and can drop
 ### Not done or not verified
 
 - Nobody here can listen; the sound placement is measured, not heard.
+
+## 17 Nov 2026: one YouTube file with music; a different style of score every video (Pietro)
+
+Pietro: "you're always outputting two videos. I just want you to output the one with the music, and I also want you
+to experiment with different kinds of music and not always use the same music." Done the same night, before the next
+runs:
+
+- `build/score.py`: seven styles (`STYLES`: orchestral, noir_jazz, solo_piano, ambient, acoustic, mallets, harp), each
+  a swap of the instruments that play the same written harmony, an optional drum part (brushes, or a folk kick and
+  shaker on GM drum kits), a tempo factor and its own hall; `pick(slug, ...)` avoids every style and key of the last
+  three scored videos (`library.json` originals, now with `style`); `master_music` normalises by loudness (RMS 0.08)
+  instead of peak, so every style sits about as far under the voice. Measured on one 40 s plan: spectral centroid
+  800 Hz (mallets) to 2,080 Hz (noir_jazz), all at RMS 0.079 to 0.080. Until 16 Nov all six scored films were the
+  orchestral palette in F.
+- `build/youtube.py`: `pick_music` per film (style, key, tempo +-8%), logged in `music.json` and the library;
+  `<slug>.mp4` is always the scored mix; a failed score gate lowers the music 3 dB and remixes (up to three times)
+  instead of falling back to clean; `trim_loudness` tries a lower limiter when a plucked style overshoots after AAC
+  (the harp test: -0.6 dBTP at the first limit). `build/master.py scored` (Shorts) picks and logs a style the same way.
+- Tested end to end on #10's stems: harp in G (-14.1 LUFS, -1.3 dBTP, voice 21.9 dB over the music before the
+  loudness normalisation, gate passed) and noir_jazz (below in the quality notes of the next run).
+- Standards, skills (youtube-videos-creator and music-library 2.4.0), CLAUDE.md and the decisions log say: one file,
+  with music, style named in the delivery. The scheduled-task prompts still list the clean MP4: changing a scheduled
+  task needs Pietro's approval; CLAUDE.md tells the runs that his 17 Nov decision overrides those steps.
+- Nobody here can listen: Pietro's verdict per style decides which stay.

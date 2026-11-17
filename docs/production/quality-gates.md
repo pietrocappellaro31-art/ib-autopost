@@ -48,7 +48,8 @@ and agreed by Pietro. Attractive screenshots do not pass a film on their own.
   timing.json within 1 s).
 - Effects tied to their actions (same timing data as the picture); no whoosh on routine transitions.
 - **Score gate** (`audio-standard.md` section 3): voice at least 18 dB over the music, DNSMOS SIG within 0.3 of the
-  clean mix, 20 s word check within 5%. The gate cannot say whether the music is good: until Pietro has approved a
+  clean mix, 20 s word check within 5%. From 17 Nov a failure lowers the music 3 dB and remixes (up to three times);
+  the delivered file always has the score (Pietro: one file, with the music). The gate cannot say whether the music is good: until Pietro has approved a
   `score.py` cue by ear, every delivery calls the scored file a candidate for his judgement.
 - Nobody claims to have listened unless a person did. This workspace cannot play audio.
 

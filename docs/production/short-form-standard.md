@@ -20,11 +20,15 @@ panels; white cards, red accent, bright teal answers, filmed windows as before. 
   `voice_clone.YOUTUBE_PICK = "HEART"`; `voices.json` HEART speed 0.9. The daily voice trial is over,
   and `docs/daily/youtube-voice-trial.md` stays as history. Render with
   `python3 build/shorts_<slug>.py HEART`.
-- **Music:** the clean master (narration, sound effects and room tone, no music) is the one delivered; Pietro adds a
+- **Music (17 Nov, Pietro, supersedes the line below):** ONE file is delivered and it has our original score:
+  `python3 build/master.py scored build/out/<slug>/<slug>.mp4 <mood> <mood>` (the style and key rotate through
+  `score.pick`, never one of the last three videos'); deliver `<slug>-scored.mp4` only, not the clean master, and no
+  "add a sound in the app" steps. Earlier rule, kept as history: the clean master (narration, sound effects and room
+  tone, no music) is the one delivered; Pietro adds a
   sound in the YouTube app. Later the same day the cinematic-upgrade directive asked for a scored alternative "when
   practical": `python3 build/master.py scored build/out/<slug>/<slug>.mp4 <mood> <mood>` adds an original `score.py`
   cue to the finished clean file (`<slug>-scored.mp4`, measured), offered as unheard until Pietro approves a cue.
-  If the day's task prompt says "no scored master unless Pietro asks", the prompt wins. No commercial song is ever
+  If the day's task prompt says "no scored master unless Pietro asks", Pietro's 17 Nov decision overrides that line: the scored Short is made and is the only file delivered. No commercial song is ever
   in a file.
 - **Formats:** the four-level quiz stays. Five more formats are allowed (below). Pick the one that
   suits the topic best; vary it across the week.
@@ -164,7 +168,7 @@ seconds, finish the upload, the AI setting in Studio on a computer).
 
 ## 14. Deliverables
 
-With SendUserFile: the clean MP4, the cover, the subtitle file when one is written, and a QA report
+With SendUserFile: the scored MP4 only (17 Nov; not the clean one), the cover, the subtitle file when one is written, and a QA report
 (`build/out/<slug>/qa.md`: measures, checks, sources, rights). Then one message with the title and
 two alternatives, the description, hashtags, Studio tags, pinned comment, the voice, the music
 options and upload steps, the disclosure and audience settings, the measured results, a source

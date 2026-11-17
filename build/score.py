@@ -39,7 +39,48 @@ MAJOR, MINOR = [0, 2, 4, 5, 7, 9, 11], [0, 2, 3, 5, 7, 8, 10]
 INSTR = dict(harpsichord=(6, "keys"), piano=(0, "keys"), celesta=(8, "keys"), glock=(9, "keys"), marimba=(12, "keys"),
              pizz=(45, "strings"), strings=(49, "strings"), fast_strings=(48, "strings"), trem=(44, "strings"),
              cello=(42, "strings"), bass=(43, "strings"), oboe=(68, "winds"), flute=(73, "winds"), clarinet=(71, "winds"),
-             bassoon=(70, "winds"), horn=(60, "winds"), timpani=(47, "perc"))
+             bassoon=(70, "winds"), horn=(60, "winds"), timpani=(47, "perc"),
+             # 17 Nov (Pietro: "experiment with different kinds of music and not always use the same music"): the
+             # instruments of the other styles (STYLES below)
+             epiano=(4, "keys"), vibes=(11, "keys"), musicbox=(10, "keys"), harp=(46, "keys"), kalimba=(108, "keys"),
+             nylon=(24, "keys"), steel=(25, "keys"), upbass=(32, "strings"), fbass=(33, "strings"), fretless=(35, "strings"),
+             mtrumpet=(59, "winds"), trombone=(57, "winds"), asax=(65, "winds"), panflute=(75, "winds"), choir=(52, "strings"),
+             warmpad=(89, "strings"), halopad=(94, "strings"), kit=(0, "drums"), brushkit=(40, "drums"))
+
+# 17 Nov: musical styles. The moods (above) decide harmony and rhythm; a style decides what plays it, by swapping each
+# instrument for another (None drops it), plus an optional drum part, a tempo factor and how much hall. The same film
+# plan therefore sounds like a chamber orchestra one day and a jazz combo, a solo piano or an ambient synth score the
+# next. youtube.pick_style() rotates them so no style repeats within the last three films (library.json originals).
+STYLES = {
+    "orchestral": dict(label="chamber orchestra: strings, piano, woodwinds, horn, timpani", swap={}, bpm=1.0, wet=.22),
+    "noir_jazz": dict(label="late-night jazz combo: Rhodes, upright bass, vibraphone, muted trumpet, alto sax, brushes",
+                      swap=dict(strings="epiano", fast_strings="epiano", trem="epiano", cello="upbass", bass="upbass", pizz="upbass",
+                                clarinet="mtrumpet", oboe="asax", flute="asax", bassoon="trombone", horn="trombone", piano="vibes",
+                                harpsichord="vibes", marimba="vibes", celesta="vibes", glock="vibes", timpani=None),
+                      kit="brushes", bpm=.9, wet=.16),
+    "solo_piano": dict(label="solo piano with a low cello line",
+                       swap=dict(strings="piano", fast_strings="piano", trem="piano", cello="cello", bass="cello", pizz="piano",
+                                 harpsichord="piano", marimba="piano", celesta="piano", glock="piano", oboe="piano", clarinet="piano",
+                                 flute="piano", horn="cello", bassoon="cello", timpani=None),
+                       bpm=.88, wet=.26),
+    "ambient": dict(label="ambient electronic: warm pads, Rhodes, kalimba, fretless bass, pan flute",
+                    swap=dict(strings="warmpad", fast_strings="warmpad", trem="halopad", cello="fretless", bass="fretless", pizz="fretless",
+                              piano="epiano", harpsichord="kalimba", marimba="kalimba", oboe="panflute", clarinet="panflute", flute="panflute",
+                              horn="choir", bassoon="choir", celesta="musicbox", glock="musicbox", timpani=None),
+                    bpm=.85, wet=.3),
+    "acoustic": dict(label="acoustic: nylon and steel guitars, upright bass, flute, soft shaker",
+                     swap=dict(piano="nylon", harpsichord="steel", marimba="steel", cello="upbass", pizz="upbass", bass="upbass",
+                               oboe="flute", clarinet="flute", horn="cello", bassoon="cello", trem="strings", celesta="glock", timpani=None),
+                     kit="folk", bpm=1.0, wet=.18),
+    "mallets": dict(label="minimalist mallets: marimba, vibraphone, soft pads, electric bass, clarinet",
+                    swap=dict(piano="marimba", harpsichord="marimba", strings="warmpad", fast_strings="warmpad", trem="vibes", cello="fbass",
+                              pizz="fbass", bass="fbass", oboe="clarinet", flute="clarinet", celesta="vibes", glock="vibes", timpani=None),
+                    bpm=1.05, wet=.2),
+    "harp": dict(label="harp and celesta with strings and flute",
+                 swap=dict(piano="harp", harpsichord="harp", marimba="harp", oboe="flute", clarinet="flute", glock="celesta", timpani=None),
+                 bpm=.95, wet=.28),
+}
+
 
 # mood -> (mode, degree progression (one chord per bar; a tuple splits the bar), texture flags)
 MOODS = {
@@ -56,6 +97,26 @@ MOODS = {
     "reveal":   ("major", [4, 5, 1],                 dict(pad="strings", bell="glock", bass="cello", pulse=0)),
 }
 
+
+KEYS = ["C", "D", "Eb", "E", "F", "G", "A", "Bb"]
+
+
+def pick(slug, base_bpm, style=None, key=None, bpm=None, n_avoid=3):
+    """17 Nov (Pietro: "experiment with different kinds of music and not always use the same music"). The style, key and
+    tempo for one video: never a style or a key used by the last n_avoid scored videos (long films, Shorts, Reels: the
+    "originals" in build/music_library/library.json), the tempo moved up to 8% either way; seeded on the slug so a
+    re-render keeps its music. Arguments that are given win."""
+    import music_library
+    rng = random.Random(sum(map(ord, slug)) * 7 + 3)
+    past = [o for o in music_library.load().get("originals", []) if o.get("video") != slug]
+    past.sort(key=lambda o: (o.get("added", ""), o.get("id", "")))
+    recent = past[-n_avoid:]
+    used_styles = {o.get("style") or "orchestral" for o in recent}
+    used_keys = {o.get("key") for o in recent}
+    style = style or rng.choice([k for k in STYLES if k not in used_styles] or list(STYLES))
+    key = key or rng.choice([k for k in KEYS if k not in used_keys] or KEYS)
+    bpm = bpm or round(base_bpm * rng.uniform(.92, 1.08))
+    return dict(style=style, key=key, bpm=bpm, avoided=sorted(used_styles), label=STYLES[style]["label"])
 
 def midi(name):
     """'D4' -> 62."""
@@ -91,6 +152,10 @@ class Score:
             sf = syn.sfload(SF)
             chans = {}
             for i, name in enumerate(sorted({e[2] for e in self.events if INSTR[e[2]][1] == stem})):
+                if stem == "drums":                               # 17 Nov: a GM drum kit on channel 9
+                    chans[name] = 9
+                    syn.program_select(9, sf, 0, INSTR[name][0], True)
+                    continue
                 chans[name] = i if i < 9 else i + 1               # skip channel 9 (drums)
                 syn.program_select(chans[name], sf, 0, INSTR[name][0])
                 syn.control_change(chans[name], 11, 110)
@@ -162,10 +227,51 @@ def motif(rng, length=6):
     return steps
 
 
-def compose(sections, key="F", bpm=80, seed=1, level=1.0):
-    """sections: [(t0, t1, mood)] in film seconds. Returns the rendered stems and the Score (for logs)."""
+class _Styled(Score):
+    """A Score that plays every note on the style's instrument instead (None drops the note)."""
+    def __init__(self, bpm, key, seed, swap):
+        super().__init__(bpm, key, seed)
+        self.swap = swap
+
+    def note(self, instr, key, t, dur, vel=80):
+        instr = self.swap.get(instr, instr)
+        if instr:
+            super().note(instr, key, t, dur, vel)
+
+    def swell(self, instr, t0, t1, v0, v1, cc=11):
+        instr = self.swap.get(instr, instr)
+        if instr:
+            super().swell(instr, t0, t1, v0, v1, cc)
+
+
+def kit_bar(sc, kit, ta, bl, energy, rng):
+    """One bar of drums: brushes (ride, brushed snare on 2 and 4, hi-hat foot) or folk (soft kick, shaker, rim)."""
+    q = bl / 4
+    if kit == "brushes":
+        for b in range(4):
+            sc.note("brushkit", 51, ta + b * q, .2, 38 + 8 * energy + rng.randint(-4, 4))          # ride
+            sc.note("brushkit", 51, ta + b * q + q * .66, .1, 26 + 6 * energy)                    # the swung skip
+            if b % 2:
+                sc.note("brushkit", 38, ta + b * q, .2, 30 + 10 * energy)                          # brushed snare
+                sc.note("brushkit", 44, ta + b * q, .1, 34)                                        # hi-hat foot
+    elif kit == "folk":
+        sc.note("kit", 36, ta, .2, 46 + 10 * energy)
+        sc.note("kit", 36, ta + 2 * q + q * .5, .2, 34 + 8 * energy)
+        for e in range(8):
+            sc.note("kit", 70, ta + e * q / 2, .08, (30 if e % 2 else 42) + 6 * energy + rng.randint(-3, 3))   # shaker
+        if energy > 1:
+            sc.note("kit", 37, ta + q, .1, 40)
+            sc.note("kit", 37, ta + 3 * q, .1, 40)
+
+
+def compose(sections, key="F", bpm=80, seed=1, level=1.0, style="orchestral"):
+    """sections: [(t0, t1, mood)] in film seconds. Returns the rendered stems and the Score (for logs).
+    style: a STYLES name (17 Nov); "orchestral" is the 13 to 16 Nov sound."""
     rng = random.Random(seed)
-    sc = Score(bpm, key, seed)
+    sty = STYLES[style]
+    bpm = bpm * sty.get("bpm", 1.0)
+    sc = _Styled(bpm, key, seed, sty["swap"])
+    sc.style = style
     kk = NOTE[key]
     bar = sc.beat(4)
     mot = motif(rng)
@@ -179,6 +285,8 @@ def compose(sections, key="F", bpm=80, seed=1, level=1.0):
         bl = (t1 - t0) / nbars                                # stretch bars so sections meet shot cuts exactly
         b8 = bl / 8
         for b in range(nbars):
+            if sty.get("kit") and tex.get("pulse", 1) >= 1:
+                kit_bar(sc, sty["kit"], t0 + b * bl, bl, tex.get("pulse", 1), rng)
             deg = prog[b % len(prog)]
             halves = deg if isinstance(deg, tuple) else (deg,)
             for hi_, d in enumerate(halves):
@@ -271,12 +379,17 @@ def hall(x, seconds=1.9, wet=.22, seed=2, pre=.022):
     return (y + out * wet / max(np.abs(out).max(), 1e-9) * np.abs(x).max() * 1.6)[:len(x) + int(.0 * SR)]
 
 
-def master_music(stems, balance=None):
+def master_music(stems, balance=None, wet=.22):
     """Balance the stems, add the hall, return one stereo music stem (peak about -6 dBFS)."""
-    balance = balance or dict(strings=1.0, keys=.85, winds=.8, perc=.7)
+    balance = balance or dict(strings=1.0, keys=.85, winds=.8, perc=.7, drums=.6)
     n = max(len(v) for v in stems.values())
     mix = np.zeros((n, 2), np.float32)
     for k, v in stems.items():
         mix[:len(v)] += v * balance.get(k, 1.0)
-    mix = hall(mix)
-    return (mix / max(np.abs(mix).max(), 1e-9) * .5).astype(np.float32)
+    mix = hall(mix, wet=wet)
+    # 17 Nov: styles differ a lot in density (solo piano vs a soft acoustic bed), so normalise by loudness (RMS 0.08,
+    # what the orchestral palette had at a 0.5 peak) instead of by peak, keeping the peak at 0.9 at most; the music
+    # then sits about as far under the voice whatever the style.
+    rms = float(np.sqrt(np.mean(mix[np.abs(mix).mean(1) > 1e-5] ** 2))) if np.any(np.abs(mix) > 1e-5) else 1e-9
+    g = min(.08 / max(rms, 1e-9), .9 / max(np.abs(mix).max(), 1e-9))
+    return (mix * g).astype(np.float32)

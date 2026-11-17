@@ -31,6 +31,7 @@ and sound.json (voice over music, DNSMOS, loudness).
 
 import html as H
 import collections
+import random
 import json
 import math
 import pathlib
@@ -795,6 +796,14 @@ def _mux(work, slug, out, music_wav=None, mv=.2):
     return out
 
 
+def pick_music(ep, n_avoid=3):
+    """17 Nov: this film's score style, key and tempo (score.pick: never a style or key of the last three scored
+    videos; seeded on the slug; ep["score_style"], ["score_key"], ["score_bpm"] override)."""
+    import score as SC
+    base = SCORES.get(ep.get("score", "reflective"), dict(bpm=76)).get("bpm", 76)
+    return SC.pick(ep["slug"], base, style=ep.get("score_style"), key=ep.get("score_key"), bpm=ep.get("score_bpm"), n_avoid=n_avoid)
+
+
 def mix(ep, work):
     """Writes <slug>-clean.mp4 always and <slug>-scored.mp4 unless ep["score"] is "none"; <slug>.mp4 is the
     recommended one (scored, unless sound_report's gate sends it back to clean). Rerunnable on its own (remix):
@@ -829,10 +838,12 @@ def mix(ep, work):
             import score as SC
             import master as M
             secs = score_sections(mood, tm["chapters"], tm["total"])
-            stems, sco = SC.compose(secs, key=ep.get("score_key", "F"), bpm=ep.get("score_bpm", cfg.get("bpm", 76)), seed=seed)
-            M.write_wav(work / "music.wav", SC.master_music(stems))
+            pick = ep.get("_pick") or pick_music(ep)                # 17 Nov: a different style, key and tempo each film
+            stems, sco = SC.compose(secs, key=pick["key"], bpm=pick["bpm"], seed=seed, style=pick["style"])
+            M.write_wav(work / "music.wav", SC.master_music(stems, wet=SC.STYLES[pick["style"]].get("wet", .22)))
             info = dict(engine="score.py + GeneralUser GS v2.0.3 (TinySoundFont)", sections=secs, notes=len(sco.events),
-                        bpm=ep.get("score_bpm", cfg.get("bpm", 76)), key=ep.get("score_key", "F"), mode="per section")
+                        bpm=round(pick["bpm"] * SC.STYLES[pick["style"]].get("bpm", 1.0)), key=pick["key"], mode="per section",
+                        style=pick["style"], style_label=pick["label"], avoided_styles=pick["avoided"])
             # 13 Nov, measured on build/youtube_cine_test.py: level .32 put the score 21 dB under the voice but cost
             # DNSMOS SIG 0.89 (gate fails); .22 sat 24.2 dB under with SIG within 0.03 of clean (passes); .16, 27 dB.
             mv = ep.get("music_level", .22)
@@ -847,11 +858,11 @@ def mix(ep, work):
         try:
             import music_library
             music_library.register_original(f"score-{slug}", f"Original score for {slug}", slug, info["engine"], mood=mood,
-                                            bpm=info.get("bpm"), key=info.get("key"))
+                                            bpm=info.get("bpm"), key=info.get("key"), style=info.get("style", "orchestral"))
         except Exception as e:
             print(f"  music library log failed: {e}", flush=True)
     json.dump(info, open(work / "music.json", "w"))
-    print(f"  score: original {mood} score ({info['engine']}), {float(info['bpm']):.0f} BPM, {info['key']} {info['mode']}, level {mv}", flush=True)
+    print(f"  score: original {mood} score ({info['engine']}), style {info.get('style', '-')}, {float(info['bpm']):.0f} BPM, {info['key']} {info['mode']}, level {mv}", flush=True)
     scored = _mux(work, slug, work / f"{slug}-scored.mp4", work / "music.wav", mv)
     # the ducked music on its own, to measure how far the voice sits above it
     subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", str(work / "voice.wav"), "-i", str(work / "music.wav"), "-filter_complex",
@@ -879,13 +890,10 @@ def trim_loudness(final, target=-14.0, ceiling=-1.5):
     if abs(i0 - target) < .4 and tp0 <= ceiling:            # 15 Nov: on target but over the -1.5 dBTP ceiling still runs
         return i0
     tmp = final.with_name(final.stem + "-trim.mp4")
-    lim = 10 ** ((ceiling - .4) / 20)
-    for extra in (0.0, .3, .6):
-        subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", str(final), "-af",
-                        f"aresample=192000,volume={target - i0 + extra:.2f}dB,alimiter=limit={lim:.3f}:attack=2:release=60:level=false,aresample=48000",
-                        "-c:v", "copy", "-c:a", "aac", "-b:a", "192k", "-ar", "48000", "-movflags", "+faststart", str(tmp)], check=True)
-        i1, tp1 = lufs_of(tmp)
-        if i1 >= target - .3 or extra == .6:
+    for margin in (.4, 1.0, 1.6):                       # 17 Nov: plucked styles (harp) overshoot after AAC; limit lower
+        lim = 10 ** ((ceiling - margin) / 20)
+        i1, tp1 = _trim_try(final, tmp, target, i0, lim)
+        if tp1 <= -1.0:
             break
     if (abs(i1 - target) < abs(i0 - target) or (abs(i1 - target) < .4 and tp1 < tp0)) and tp1 <= -1.0:                  # -1 dBTP is the usual streaming ceiling
         tmp.replace(final)
@@ -894,6 +902,17 @@ def trim_loudness(final, target=-14.0, ceiling=-1.5):
     tmp.unlink(missing_ok=True)
     print(f"  loudness: second stage not kept ({i1} LUFS, {tp1} dBTP)", flush=True)
     return i0
+
+
+def _trim_try(final, tmp, target, i0, lim):
+    for extra in (0.0, .3, .6):
+        subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", str(final), "-af",
+                        f"aresample=192000,volume={target - i0 + extra:.2f}dB,alimiter=limit={lim:.3f}:attack=2:release=60:level=false,aresample=48000",
+                        "-c:v", "copy", "-c:a", "aac", "-b:a", "192k", "-ar", "48000", "-movflags", "+faststart", str(tmp)], check=True)
+        i1, tp1 = lufs_of(tmp)
+        if i1 >= target - .3 or extra == .6:
+            break
+    return i1, tp1
 
 
 def sound_report(work, final):
@@ -1047,7 +1066,8 @@ def describe(ep, chapters, total, voice_name, work):
                 duration_s=round(total, 1), voice=voice_name,
                 youtube_altered_or_synthetic=ep.get("ai_disclosure", AI_DISCLOSURE),
                 made_for_kids=False,
-                recommended_file=f"{ep['slug']}-{rec}.mp4",
+                recommended_file=f"{ep['slug']}.mp4",            # 17 Nov: the one file delivered, with the score
+                delivered="music only (Pietro, 17 Nov): <slug>.mp4 is the scored mix; the clean mix is not delivered",
                 music=(f"original {ep.get('score', 'reflective')} score made for this video by "
                        + (("build/score.py (our notes, played on GeneralUser GS SoundFont instruments: free for commercial music; "
                            "class ORIGINAL_GENERATED)") if "score.py" in json.load(open(work / "music.json")).get("engine", "")
@@ -1178,7 +1198,22 @@ def make(ep, voice_name=YOUTUBE_VOICE):
     json.dump(dict(total=total, chapters=[c for c, _ in chapters]), open(work / "timing.json", "w"))
     final = mix(ep, work)
     try:
-        sound_report(work, final)
+        rep = sound_report(work, final)
+        # 17 Nov (Pietro: "I just want you to output the one with the music"): one file is delivered, <slug>.mp4, and
+        # it always has the score. If the gate fails, the music goes down 3 dB and is mixed again (up to 3 times)
+        # instead of falling back to the clean mix; the clean mix stays in out/<slug>/ only as the gate's reference.
+        lvl = ep.get("music_level", .22)
+        for _ in range(3):
+            if rep.get("recommended") == "scored" or ep.get("score") == "none":
+                break
+            lvl = round(lvl * .708, 4)
+            print(f"  score gate failed ({rep.get('gate')}); music down 3 dB to level {lvl} and mixed again", flush=True)
+            ep = dict(ep, music_level=lvl, _pick=json.load(open(work / "music.json")))
+            final = mix(ep, work)
+            rep = sound_report(work, final)
+        if ep.get("score") != "none":
+            import shutil
+            shutil.copyfile(work / f"{ep['slug']}-scored.mp4", final)
     except Exception as e:                                          # a report must never cost the render
         print("  sound report failed:", e)
     thumbnail(ep, work)

@@ -18,6 +18,24 @@ What has been settled, and what is still open. Newest first.
 
 ## Settled
 
+- **YouTube: one file, with music; a different kind of music every video** (17 Nov, Pietro: "I don't know why, but
+  you're always outputting two videos. I just want you to output the one with the music, and I also want you to
+  experiment with different kinds of music and not always use the same music. Update the skill if necessary, do what
+  is necessary, but this is what is going to happen from now on."). From 17 Nov, for every YouTube video (long films
+  and Shorts; read as both because he said "YouTube video creation"):
+  (1) **one MP4 is delivered, the scored one** (`<slug>.mp4`, our original `score.py` score under the voice). The
+  clean mix may still be made inside `build/out/<slug>/` as the score gate's reference, but it is never sent, offered
+  or described as an option. If the gate fails, the music goes down 3 dB and is mixed again (up to three times,
+  `youtube.make`); the run never falls back to a file without music. Description credit: `Music: original score made
+  for this video.`
+  (2) **the music changes from video to video**: `score.py` now has seven styles (orchestral, noir_jazz, solo_piano,
+  ambient, acoustic, mallets, harp: `score.STYLES`), and `score.pick()` chooses one that none of the last three scored
+  videos used, with a key none of them used and the tempo moved up to 8%; the choice is logged with the style in
+  `build/music_library/library.json` "originals" and in `music.json`. Until 16 Nov every score was the orchestral
+  palette in F. Each delivery names the style so Pietro can say which ones he likes; a style he rejects gets removed.
+  Reels are unchanged (clean master, Instagram music in the app) unless he says otherwise. Supersedes the "clean and
+  scored MP4" delivery of 13 Nov and the "clean master is the one delivered" Shorts rule of 13 Nov.
+
 - **Reel covers are designed for the profile grid** (16 Nov, Pietro: "the cover of the reel is not perfectly readable
   or centred, or both, on the home page ... part of the thing written there is cut"). The grid shows a Reel as the
   middle 3:4 of its 9:16 cover, cutting 240 px top and bottom; the automatic Reels used a frame of the video, laid out

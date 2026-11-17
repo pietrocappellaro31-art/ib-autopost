@@ -34,6 +34,10 @@ licence is recorded in `docs/rights/ledger.md`) is not mixable. Never claim a ri
 
 ## Clean or scored master
 
+**17 Nov (Pietro): YouTube videos (long and Shorts) deliver ONE file, the scored one, and the score's style changes
+every video** (`score.STYLES`, `score.pick`: no style or key of the last three videos; each original is logged here
+with its `style`). The rest of this section is history for YouTube and still applies to Reels.
+
 The picture is rendered once; a **clean master** (voice, effects, ambience) is always made and, when the music's
 class covers the platform, a **scored master** (`docs/production/audio-standard.md` section 3): long videos through
 `youtube.mix` (the score gate picks the recommended file), filmed shorts through `build/master.py dual`, and a

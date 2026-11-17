@@ -101,6 +101,10 @@ drawing-beside-text share and the filmed-beat count in the log row; the share sh
   beat's time and adds its foley and ambience to the effects stem, so both mixes carry them. Aim: at least one
   filmed beat per two chapters, and a filmed hook when it can be. Worked example: `build/cine_poc_newton.py`.
   A filmed second costs about 0.5 to 1.3 s of render a frame, so budget for it (`animation-engine.md`).
+- **Different music every film** (Pietro, 17 Nov): `score.pick()` gives each film a style from `score.STYLES`
+  (orchestral, noir_jazz, solo_piano, ambient, acoustic, mallets, harp) and a key that none of the last three scored
+  videos used, the tempo moved up to 8%; `score_style=`, `score_key=`, `score_bpm=` in the episode override it when
+  the story asks for a particular sound. The delivery names the style.
 - **The score.** `score="reflective" | "suspense" | "light"` now writes the scored mix with `build/score.py`
   (notes per chapter in the chapter's mood from `youtube.SCORE_PLANS`, sampled instruments from the GeneralUser GS
   SoundFont), and falls back to the `music.py` bed if the SoundFont is missing; `score_engine="music"` forces the
@@ -108,7 +112,9 @@ drawing-beside-text share and the filmed-beat count in the log row; the share sh
 
 ## Deliverables
 
-Per film, in `build/out/<slug>/`: the scored MP4 (the recommendation when it passes the audio gate), the clean MP4,
+Per film, in `build/out/<slug>/`: **one MP4, `<slug>.mp4`, with our original score** (Pietro, 17 Nov: "I just want you to
+output the one with the music"; the clean mix stays in the folder only as the score gate's reference and is never
+delivered),
 thumbnails A and B, the English `.srt`, `transcript.txt`, `description.txt`, `metadata.json`, `sound.json`
 (quality figures), `music.json`, a motion-preview sheet and `motion.json` (`yt_preview.py --motion`), the rights record `docs/rights/posts/<slug>.md`, and a quality report
 (the quality-log row plus the gate results in the delivery message).
@@ -126,8 +132,8 @@ promised return. Title and description must score PASS on ig-human.
 ## Final message to Pietro
 
 The title, the full description, the chapters, the tags, the hashtags, the pinned comment, the voice, the music
-(scored or clean, and the credit line), the Studio settings, a source summary, the quality results, today's
-verified improvement, and anything that needs his review. Files go by SendUserFile: the scored MP4, the clean MP4,
+(the style, key and tempo of today's score from `music.json`, and the credit line), the Studio settings, a source summary, the quality results, today's
+verified improvement, and anything that needs his review. Files go by SendUserFile: the one MP4 with music (never a clean copy),
 both thumbnails, the SRT, description.txt, the motion-preview sheet and the rights record. Nothing is posted or
 uploaded: Pietro uploads.
 
