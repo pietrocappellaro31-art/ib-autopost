@@ -399,6 +399,19 @@
    "rights": "ORIGINAL_GENERATED",
    "added": "2026-11-17",
    "note": ""
+  },
+  {
+   "id": "score-w2-levels-16",
+   "title": "Original score for w2-levels-16",
+   "video": "w2-levels-16",
+   "engine": "score.py + GeneralUser GS v2.0.3 (TinySoundFont)",
+   "mood": "quiz+resolve",
+   "bpm": 75,
+   "key": "E",
+   "style": "solo_piano",
+   "rights": "ORIGINAL_GENERATED",
+   "added": "2026-11-17",
+   "note": ""
   }
  ]
 }

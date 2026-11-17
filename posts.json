@@ -856,6 +856,20 @@
       "published_id": "18125202100961680",
       "published_at_utc": "2026-11-16T20:46:07.568675+00:00",
       "first_comment_id": "18116204630083998"
+    },
+    {
+      "id": "reel-w2-levels-16",
+      "type": "reel",
+      "scheduled_utc": "2026-11-17T17:30:00",
+      "slot": "A",
+      "media_branch": "reel/w2-levels-16",
+      "video": "w2-levels-16.mp4",
+      "cover": "w2-levels-16.jpg",
+      "master": "scored",
+      "caption": "$60 of new debt, all paid out as a dividend. Does the share price fall?\n\nYes. By exactly the dividend.\n\nStart with the multiple. $50 of EBITDA at 8x gives an enterprise value of $400, and once you take off $100 of debt and add back $20 of cash you're left with $320 of equity, which over 40 shares is $8 a share.\n\nNow borrow $60 and pay it all out. Nothing about the business changed, so EV is still $400. But net debt is now $140, not $80. Equity drops to $260. That's $6.50 a share.\n\nLost $1.50? No. You got it in cash, so you still hold $8 in total, before tax.\n\n4 levels, each one harder. Count your score and drop it in the comments.\n\nNarration: AI-generated voice; script is our original work.\n\n#investmentbanking #financeinterview #valuation #ibinterview",
+      "first_comment": "Bonus level: same company, same $60 of new debt, but it buys back shares at $8 instead of paying a dividend. What's one share worth after?",
+      "ai_label": true,
+      "published_id": null
     }
   ],
   "reel_slots_et": {

@@ -4058,3 +4058,413 @@ def day_bars(p, upto=3, gap=5, closed="15:30", **_):
 
 
 SCENES.update({f.__name__: f for f in (day_bars,)})
+
+
+# ---- 17 Nov (Reel, Levels #16: from a multiple to a share price, then a dividend paid with new debt). One money scale
+# through the three drawn levels (0.8 px a dollar, so EV $400 = 320 px, the equity $320 = 256 px, $50 of EBITDA =
+# 40 px); generic shapes of our own (an office block, a lender's front, share tiles): no company, logo or index.
+# 17 Nov (the 16 Nov Reel's next improvement): every drawing keeps moving THROUGH the answer, not only until it.
+
+K16 = .8                      # px a dollar
+B16 = 560                     # baseline
+
+
+def _blk(x, y, w_, h_, fill=GOLD, label="", size=26, col=INK, rx=6):
+    s = f'<rect x="{x}" y="{y}" width="{w_}" height="{h_}" rx="{rx}" fill="{fill}" stroke="{INK}" stroke-width="5"/>'
+    return s + (_t(x + w_ / 2, y + h_ / 2 + size * .36, label, size, col) if label else "")
+
+
+def multiple_stack(p, m=None, ebitda=50, mult=8, **_):
+    """Level 1, EV from a multiple. The company's office on the left. On '$50' a gold EBITDA $50 block lands beside
+    it. On 'similar' three peer tags reading 8x drop in above it and keep swinging. On '8x' eight copies of the block
+    fly one by one into a stack on the right (a rising mallet each). On 'enterprise' a bracket with a bobbing ? stands
+    beside the stack. On the answer the bracket turns teal and counts to $400; on '8' a ring goes round one block and
+    a x8 tag pops. The stack's blocks keep breathing in a wave after the answer. Drawn flatter than the other levels
+    (0.6 px a dollar, the stack 240 px) so it fits its wide box without the fit step cropping it (17 Nov: the first
+    cut at 0.8 px a dollar was 1.34 times too tall for its box and ran into the answer)."""
+    base, bh = B16, ebitda * .6
+    t50 = _wt(m, f"${ebitda}", "qw", default=m["qs"][0][0] + .8)
+    tsim = _wt(m, "similar", "qw", default=m["qs"][1][0] + .1)
+    t8 = _wt(m, f"{mult}x", "qw", default=tsim + 1.0)
+    tev = _wt(m, "enterprise", "qw", default=m["qs"][-1][0] + .3)
+    a = m["a"]
+    p.parts.append(_g("fade", p.t0, .3, f'<path d="M0 {base} L800 {base}" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+                      + _office(20, base, 170, 200) + _t(105, base - 222, "COMPANY", 20, "#fff", serif=False), style=""))
+    blk = _blk(212, base - bh, 130, bh, GOLD, f"${ebitda}", 24)
+    p.parts.append(_g("fade", t50 - .05, .1, _g("slide", t50 - .05, .45, _idle("breathe", blk, .05, 2.6), style="", y0=-140, y1=0, ease="out"),
+                      style=""))
+    p.parts.append(_g("fade", t50 + .2, .3, _t(277, base - bh - 14, "EBITDA", 22, INK, serif=False), style=""))
+    for j, x in enumerate((80, 200, 320)):
+        tag = _idle("swing", _ptag(x, 290, 104, f"{mult}x", GREY, "#fff", 30), 7, 2.2, ph=j * 1.3,
+                    style=f"transform-box:view-box;transform-origin:{x - 52}px 290px")
+        p.parts.append(_g("fade", tsim + .12 * j, .12, _g("slide", tsim + .12 * j, .4, tag, style="", y0=-90, y1=0, ease="out"), style=""))
+    p.parts.append(_g("fade", tsim + .5, .3, _t(200, 240, "SIMILAR COMPANIES", 22, GREY, serif=False), style=""))
+    sx = 480
+    for k in range(mult):
+        y = base - bh * (k + 1)
+        t = t8 + .14 * k
+        inner = _idle("breathe", _blk(sx, y, 150, bh, GOLD, f"${ebitda}", 20), .04, 2.4, ph=k * .7)
+        p.parts.append(_g("fade", t, .08, _g("slide", t, .42, inner, style="", x0=212 - sx, y0=(base - bh) - y, x1=0, y1=0, ease="inout"),
+                          style=""))
+    top = base - bh * mult
+    br = (f'<path d="M{sx + 168} {top} L{sx + 188} {top} L{sx + 188} {base} L{sx + 168} {base}" fill="none" stroke="{{c}}" '
+          f'stroke-width="7" stroke-linecap="round"/>')
+    p.parts.append(_life(tev - .1, a - tev + .25, br.format(c=RED) + _idle("bob", _t(sx + 250, (top + base) / 2 + 40, "?", 110, RED), 16, 3.2,
+                                                                                style="")))
+    p.parts.append(_g("draw", a + .05, .4, br.format(c=TEAL), style=""))
+    p.parts.append(_g("fade", a + .05, .25, _t(sx + 255, (top + base) / 2 - 24, "EV", 40, TEAL, serif=False), style=""))
+    p.parts.append(_count(sx + 255, round((top + base) / 2 + 34), 0, ebitda * mult, round(a + .1, 2), .8, size=48, color=TEAL, pre="$"))
+    if len(m["as_"]) > 1:
+        tm = _wt(m, str(mult), sent=1, default=m["as_"][1][0] + .1)
+        ring = f'<rect x="{sx - 12}" y="{base - bh - 10}" width="174" height="{bh + 20}" rx="10" fill="none" stroke="{TEAL}" stroke-width="7"/>'
+        p.parts.append(_life(tm - .05, 1.2, _g("pop", tm - .05, .3, ring), fi=.08, fo=.3))
+        p.parts.append(_g("pop", tm + .2, .35, _ptag(sx - 80, base - 120, 120, f"×{mult}", TEAL, "#fff", 36)))
+
+
+def multiple_stack_fx(m, ebitda=50, mult=8):
+    t50 = _wt(m, f"${ebitda}", "qw", default=m["qs"][0][0] + .8)
+    tsim = _wt(m, "similar", "qw", default=m["qs"][1][0] + .1)
+    t8 = _wt(m, f"{mult}x", "qw", default=tsim + 1.0)
+    return ([("hit", t50 + .4, .24, -.3, dict(pitch=220))] + [("clink", tsim + .12 * j + .35, .12, -.2 + .2 * j) for j in range(3)]
+            + [("hit", t8 + .14 * k + .4, .12, .3, dict(pitch=330 + 20 * k)) for k in range(mult)] + [("hit", m["a"] + .1, .26, .3, dict(pitch=330))])
+
+
+def ev_to_equity(p, m=None, ev=400, debt=100, cash=20, **_):
+    """Level 2, EV to equity value. The $400 EV column from level 1 stands from the first frame. On 'debt' its top
+    $100 turns red and slides out towards the lenders' front on the right (it bobs there). On 'cash' a teal $20
+    block comes up from a coin pile onto the column. On 'equity' a bracket with a bobbing ? measures what is left.
+    On the answer it counts to $320 in teal; on 'debt' and 'cash' in the second answer line each piece is ringed.
+    The column, the debt slice and the cash block keep moving through the answer."""
+    base = B16
+    hev, hd, hc = ev * K16, debt * K16, cash * K16
+    x, cw = 70, 170
+    tdb = _wt(m, f"${debt}", "qw", default=m["qs"][0][0] + .8)
+    tca = _wt(m, f"${cash}", "qw", default=tdb + 1.0)
+    teq = _wt(m, "equity", "qw", default=m["qs"][-1][0] + .3)
+    a = m["a"]
+    _set(p, f'<path d="M0 {base} L800 {base}" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+            + _small_bank(570, base, "LENDERS"))
+    # the column: the part that stays, and the top $100 that leaves
+    stay = _blk(x, base - hev + hd, cw, hev - hd, GOLD) + "".join(
+        f'<path d="M{x + 12} {base - 40 * j} H{x + cw - 12}" stroke="{GOLD_D}" stroke-opacity=".35" stroke-width="4"/>' for j in range(1, 6))
+    p.parts.append(_g("fade", -1, .05, _idle("breathe", stay, .02, 3.0, style="transform-box:fill-box;transform-origin:center bottom"), style=""))
+    p.parts.append(_life(-1, tdb + .1 + 1, _blk(x, base - hev, cw, hd, GOLD), fi=.01, fo=.05))
+    p.parts.append(_life(-1, tdb + .1 + 1, _t(x + cw / 2, base - hev / 2 + 14, f"EV ${ev}", 38, INK), fi=.01, fo=.1))
+    red = _blk(x, base - hev, cw, hd, RED, f"−${debt}", 34, "#fff")
+    p.parts.append(_g("fade", tdb - .05, .1, _g("slide", tdb + .1, .8, _idle("bob", red, 10, 2.4, style=""), style="", x0=0, x1=330, y0=0, y1=0,
+                                                 ease="inout"), style=""))
+    p.parts.append(_g("fade", tdb + .7, .3, _t(x + 330 + cw / 2, base - hev - 16, "DEBT", 28, RED, serif=False), style=""))
+    p.parts.append(_g("draw", tdb + .3, .4, f'<path d="M{x} {base - hev} H{x + cw} V{base - hev + hd} H{x} Z" fill="none" stroke="{INK}" '
+                                           f'stroke-width="4" stroke-dasharray="12 9"/>', style=""))
+    # the cash: a coin pile, and a teal block that rises onto the column
+    for j in range(4):
+        p.parts.append(_g("pop", tdb + .5 + .06 * j, .25, _coin_shape(300 + 18 * (j % 2), base - 22 - 26 * j, 40, "$")))
+    cy = base - hev + hd - hc
+    blk = _blk(x, cy, cw, hc, TEAL)
+    p.parts.append(_g("fade", tca - .05, .1, _g("slide", tca, .7, _idle("breathe", blk, .06, 2.2), style="", x0=230, x1=0, y0=(base - 60) - cy,
+                                                 y1=0, ease="inout"), style=""))
+    p.parts.append(_g("pop", tca + .55, .3, _ptag(x + cw + 90, cy + 66, 140, f"+${cash}", TEAL, "#fff", 32)))
+    # the question, then the answer
+    eq_top = cy
+    br = (f'<path d="M{x - 18} {eq_top} L{x - 38} {eq_top} L{x - 38} {base} L{x - 18} {base}" fill="none" stroke="{{c}}" stroke-width="7" '
+          f'stroke-linecap="round"/>')
+    p.parts.append(_life(teq - .1, a - teq + .25, br.format(c=RED)))
+    p.parts.append(_life(teq - .1, a - teq + .25, _idle("bob", _t(x + cw / 2, base - 90, "?", 110, RED), 16, 3.2, style="")))
+    p.parts.append(_g("draw", a + .05, .4, br.format(c=TEAL), style=""))
+    p.parts.append(_count(x + cw / 2, base - 120, 0, ev - debt + cash, round(a + .1, 2), .8, size=52, color=INK, pre="$"))
+    p.parts.append(_g("fade", a + .3, .3, _t(x + cw / 2, base - 70, "EQUITY", 30, INK, serif=False), style=""))
+    if len(m["as_"]) > 1:
+        td = _wt(m, "debt", sent=1, default=m["as_"][1][0] + .3)
+        tc = _wt(m, "cash", sent=1, default=m["as_"][1][1] - .4)
+        for tt, (rx, ry, rw, rh) in ((td, (x + 318, base - hev - 12, cw + 24, hd + 24)), (tc, (x - 12, cy - 12, cw + 24, hc + 24))):
+            ring = f'<rect x="{rx}" y="{ry}" width="{rw}" height="{rh}" rx="12" fill="none" stroke="{TEAL}" stroke-width="7"/>'
+            p.parts.append(_life(tt - .05, 1.0, _g("pop", tt - .05, .3, ring), fi=.08, fo=.3))
+
+
+def ev_to_equity_fx(m, ev=400, debt=100, cash=20):
+    tdb = _wt(m, f"${debt}", "qw", default=m["qs"][0][0] + .8)
+    tca = _wt(m, f"${cash}", "qw", default=tdb + 1.0)
+    return [("hit", tdb + .85, .24, .3, dict(pitch=165)), ("clink", tdb + .55, .14, -.2), ("clink", tca + .7, .2, -.3),
+            ("hit", m["a"] + .1, .26, 0, dict(pitch=294))]
+
+
+def share_grid(p, m=None, eq=320, n=40, **_):
+    """Level 3, one share. The $320 equity column stands from the first frame. On '40' it breaks into forty share
+    tiles that fly out into a 10 x 4 grid on the right (a tick every few). On 'worth' a ? bobs where the column was
+    and the first tile wobbles. On the answer that tile flies to the left, turns teal, a 1 SHARE tag lands over it
+    and $8 counts up under it; on '$320' the grid gets = $320 beside its label, on '40' a teal frame and a ÷ 40 tag.
+    The tiles keep rippling through the answer. (17 Nov: laid out flat after the first cut ran 1.45 times too tall
+    for its wide box and over the answer.)"""
+    base = B16
+    he = eq * K16
+    x, cw = 50, 170
+    t40 = _wt(m, str(n), "qw", default=m["qs"][0][0] + .6)
+    tw = _wt(m, "worth", "qw", default=m["qs"][-1][0] + .5)
+    a = m["a"]
+    _set(p, f'<path d="M0 {base} L800 {base}" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>')
+    col = _blk(x, base - he, cw, he, GOLD, f"${eq}", 44)
+    p.parts.append(_life(-1, t40 + .6 + 1, col, fi=.01, fo=.3))
+    p.parts.append(_life(-1, t40 + .6 + 1, _t(x + cw / 2, base - he - 18, "EQUITY", 28, INK, serif=False), fi=.01, fo=.3))
+    cols_, rows_ = 10, n // 10
+    tw_, th_, gx, gy = 44, 40, 52, 50
+    gx0, gy0 = 262, base - rows_ * gy + 6
+    first = None
+    for k in range(n):
+        r, c = divmod(k, cols_)
+        tx, ty = gx0 + c * gx, gy0 + r * gy
+        sx, sy = x + cw / 2 - tw_ / 2, base - he + (k + .5) * he / n - th_ / 2
+        t = t40 + .25 + .025 * k
+        tile = _blk(tx, ty, tw_, th_, GOLD, rx=5)
+        inner = _idle("breathe", tile, .05, 2.2, ph=(r + c) * .5)
+        if k == 0:
+            first = (tx, ty)
+            inner = _life(-1, a + .05 + 1, _idle("swing", tile, 5, 3.0, style="transform-box:fill-box;transform-origin:center"), fi=.01, fo=.05)
+        p.parts.append(_g("fade", t, .08, _g("slide", t, .5, inner, style="", x0=round(sx - tx), y0=round(sy - ty), x1=0, y1=0, ease="inout"),
+                          style=""))
+    p.parts.append(_g("fade", t40 + .9, .3, _t(gx0 + 4, gy0 - 20, f"{n} SHARES", 28, INK, serif=False, anchor="start"), style=""))
+    p.parts.append(_life(tw - .1, a - tw + .2, _idle("bob", _t(x + cw / 2, base - 60, "?", 120, RED), 14, 3.2, style="")))
+    # the answer: the first tile flies to where the column stood and turns teal, a tag over it, $8 under it
+    fx_, fy_ = first
+    lx, ly = x + cw / 2 - 40, base - 220
+    lifted = _blk(fx_, fy_, tw_, th_, TEAL, rx=5)
+    p.parts.append(_g("fade", a, .1, _g("slide", a + .05, .45, _idle("bob", f'<g transform="translate({fx_} {fy_}) scale(1.8) translate({-fx_} {-fy_})">'
+                                                                     f'{lifted}</g>', 8, 2.4, style=""), style="",
+                                         x0=0, x1=lx - fx_, y0=0, y1=ly - fy_, ease="out"), style=""))
+    p.parts.append(_g("pop", a + .4, .35, _ptag(x + cw / 2 + 10, base - 292, 190, "1 SHARE", INK, "#fff", 28)))
+    p.parts.append(_life(a + .45, 99, _count(x + cw / 2, base - 40, 0, eq / n, round(a + .5, 2), .6, size=72, color=TEAL, pre="$"), fi=.05, fo=.01))
+    if len(m["as_"]) > 1:
+        te = _wt(m, f"${eq}", sent=1, default=m["as_"][1][0] + .1)
+        tn = _wt(m, str(n), sent=1, default=m["as_"][1][1] - .3)
+        frame = (f'<rect x="{gx0 - 12}" y="{gy0 - 12}" width="{cols_ * gx + 14}" height="{rows_ * gy + 12}" rx="14" fill="none" '
+                 f'stroke="{TEAL}" stroke-width="7"/>')
+        p.parts.append(_g("fade", te, .3, _t(gx0 + 230, gy0 - 20, f"= ${eq}", 28, TEAL, serif=False, anchor="start"), style=""))
+        p.parts.append(_life(tn - .05, 99, _g("pop", tn - .05, .3, frame), fi=.08, fo=.01))
+        p.parts.append(_g("pop", tn + .15, .35, _ptag(gx0 + cols_ * gx - 60, gy0 - 34, 130, f"÷ {n}", TEAL, "#fff", 32)))
+
+
+def share_grid_fx(m, eq=320, n=40):
+    t40 = _wt(m, str(n), "qw", default=m["qs"][0][0] + .6)
+    return [("tick", t40 + .3 + .25 * j, .08, -.3 + .1 * j) for j in range(5)] + [("hit", m["a"] + .4, .26, -.2, dict(pitch=392))]
+
+
+SCENES.update({f.__name__: f for f in (multiple_stack, ev_to_equity, share_grid)})
+
+
+# ---- 17 Nov (Reel B, Format C, one surprising concept: operating leverage). Sales $100, costs that move with sales
+# $40, fixed costs $50, profit $10; sales +10% gives profit $16 (+60%), sales -10% gives $4 (-60%). One money scale
+# for every column (3.2 px a dollar: $100 = 320 px), always SALES - MOVING - FIXED = PROFIT in four columns on one
+# baseline, so the eye can see that only the fixed column refuses to move. 17 Nov (the 16 Nov Short's next
+# improvement): every beat's set is on its panel at the swipe (_set), only the action animates.
+
+K17, B17 = 3.2, 580
+OL_X = (20, 215, 410, 605)                    # SALES, MOVING, FIXED, PROFIT
+OL_W = 160
+MOVE_C = "#E9A23B"
+
+
+def _ol_col(i, dollars, fill, label="", col=INK, size=40):
+    x, h_ = OL_X[i], dollars * K17
+    s = f'<rect x="{x}" y="{B17 - h_:.1f}" width="{OL_W}" height="{h_:.1f}" rx="8" fill="{fill}" stroke="{INK}" stroke-width="6"/>'
+    return s + (_t(x + OL_W / 2, B17 - h_ / 2 + size * .36, label, size, col) if label and h_ > size + 6 else "")
+
+
+def _ol_ground(names=("SALES", "MOVING", "FIXED", "PROFIT"), signs=True):
+    s = f'<path d="M0 {B17} L800 {B17}" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+    for x, n in zip(OL_X, names):
+        s += _t(x + OL_W / 2, B17 + 44, n, 28, INK, serif=False)
+    if signs:
+        for x, sg in zip(OL_X[1:], ("−", "−", "=")):
+            s += _t(x - 18, B17 - 30, sg, 50, GREY)
+    return s
+
+
+def _lock(x, y, s=1.0):
+    return (f'<g transform="translate({x} {y}) scale({s})">'
+            f'<path d="M-22 -10 V-30 A22 22 0 0 1 22 -30 V-10" fill="none" stroke="{INK}" stroke-width="8"/>'
+            f'<rect x="-34" y="-12" width="68" height="54" rx="8" fill="{GOLD}" stroke="{INK}" stroke-width="6"/>'
+            f'<circle cx="0" cy="12" r="7" fill="{INK}"/></g>')
+
+
+def _crate(x, y, s=1.0):
+    return (f'<g transform="translate({x} {y}) scale({s})">'
+            f'<rect x="-34" y="-30" width="68" height="60" rx="5" fill="#C98A4B" stroke="{INK}" stroke-width="5"/>'
+            f'<path d="M-34 -30 L34 30 M34 -30 L-34 30" stroke="{INK}" stroke-width="4"/></g>')
+
+
+def oplev_hook(p, seg=None, **_):
+    """The hook. Two tiles from frame 0: SALES $100 and PROFIT $10, each on a baseline. On 'Sales up 10%' a short
+    arrow draws up from SALES (6 px a percent) and its counter runs to $110 with a +10% tag; on 'Profit up 60%' a
+    long arrow shoots up from PROFIT (the same 6 px a percent, so six times the length) and the counter runs to $16
+    with a +60% stamp; on the question a ? bobs between them and both tiles keep breathing."""
+    s0, s1, s2 = seg[0][0], seg[1][0], seg[2][0]
+    base, k = 590, 6.0
+    xs, xp = 200, 600
+    _set(p, f'<path d="M30 {base} H770" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+            + _t(xs, base + 44, "SALES", 30, INK, serif=False) + _t(xp, base + 44, "PROFIT", 30, INK, serif=False))
+    for x, frm, to, t, fill in ((xs, 100, 110, s0 + .3, GOLD), (xp, 10, 16, s1 + .3, TEAL)):
+        tile = f'<rect x="{x - 110}" y="{base - 120}" width="220" height="110" rx="14" fill="{fill}" stroke="{INK}" stroke-width="6"/>'
+        p.parts.append(_g("fade", -1, .05, _idle("breathe", tile, .03, 2.6, ph=x / 300), style=""))
+        p.parts.append(_life(-1, t + 1.0, _t(x, base - 46, f"${frm}", 60, INK if fill == GOLD else "#fff"), fi=.01, fo=.05))
+        p.parts.append(_life(t, 99, _count(x, base - 46, frm, to, round(t, 2), .8, size=60, color=INK if fill == GOLD else "#fff", pre="$"),
+                             fi=.05, fo=.01))
+    for x, pct, t, col in ((xs, 10, s0 + .3, GOLD_D), (xp, 60, s1 + .3, TEAL)):
+        y0, y1 = base - 140, base - 140 - pct * k
+        a1, a2 = _arrow(x, y0, y1, col, 18)
+        p.parts.append(_g("draw", t, .5 + pct / 150, a1, style=""))
+        p.parts.append(_g("draw", t + .45 + pct / 150, .2, a2, style=""))
+    p.parts.append(_g("pop", s0 + .9, .35, _ptag(xs + 150, base - 230, 150, "+10%", GOLD, INK, 40)))
+    p.parts.append(f'<g class="a" data-fx="stamp" data-at="{s1 + 1.0:.2f}" data-d=".35" data-rot="-8" '
+                   f'style="transform-box:fill-box;transform-origin:center">'
+                   f'<rect x="{xp - 300}" y="40" width="210" height="110" rx="16" fill="#fff" stroke="{TEAL}" stroke-width="9"/>'
+                   + _t(xp - 195, 118, "+60%", 70, TEAL) + "</g>")
+    p.parts.append(_life(s2 - .05, 99, _idle("bob", _t(400, 330, "?", 150, RED), 16, 3.0, style=""), fi=.15, fo=.01))
+
+
+def cost_split(p, seg=None, **_):
+    """Where the $100 goes. The four labelled slots (SALES - MOVING - FIXED = PROFIT) are there at the swipe. On the
+    first sentence the SALES bar grows to $100. On '$40' the bottom $40 (amber) slides out of it into MOVING, a
+    crate bobbing on top; on '$50' the next $50 (slate) slides into FIXED and a padlock lands on it; on the last
+    sentence the top $10 (teal) slides into PROFIT and its counter runs to $10. The sales bar stays whole (sales are
+    still $100): the pieces are copies that show where it goes."""
+    s0, s1, s2, s3 = (x[0] for x in seg[:4])
+    _set(p, _ol_ground())
+    p.parts.append(_g("growY", s0 + .3, .7, _ol_col(0, 100, GOLD), style="transform-box:fill-box;transform-origin:center bottom"))
+    p.parts.append(_g("fade", s0 + .9, .3, _t(OL_X[0] + OL_W / 2, B17 - 320 - 18, "$100", 44, "#fff"), style=""))
+    # copies leave the sales bar: moving (its bottom 40), fixed (the next 50), profit (the top 10)
+    pieces = [(1, 40, 0, MOVE_C, "$40", INK, s1 + .2), (2, 50, 40, DEBT_C, "$50", "#fff", s2 + .2), (3, 10, 90, TEAL, "", "#fff", s3 + .2)]
+    for i, d, below, fill, lab, col, t in pieces:
+        h_ = d * K17
+        y_src = B17 - (below + d) * K17
+        y_dst = B17 - h_
+        x = OL_X[i]
+        blk = f'<rect x="{x}" y="{y_dst:.1f}" width="{OL_W}" height="{h_:.1f}" rx="8" fill="{fill}" stroke="{INK}" stroke-width="6"/>'
+        if lab:
+            blk += _t(x + OL_W / 2, y_dst + h_ / 2 + 15, lab, 42, col)
+        p.parts.append(_g("fade", t - .05, .1, _g("slide", t, .7, _idle("breathe", blk, .02, 2.8, ph=i,
+                                                                         style="transform-box:fill-box;transform-origin:center bottom"),
+                                                  style="", x0=OL_X[0] - x, x1=0, y0=round(y_src - y_dst, 1), y1=0, ease="inout"), style=""))
+        # the piece's place in the sales bar shows its share
+        p.parts.append(_life(t, 1.3, f'<rect x="{OL_X[0] + 6}" y="{y_src + 3:.1f}" width="{OL_W - 12}" height="{h_ - 6:.1f}" rx="6" fill="none" '
+                                     f'stroke="{fill if fill != DEBT_C else INK}" stroke-width="8"/>', fi=.1, fo=.3))
+    p.parts.append(_g("fade", s1 + .75, .2, _g("slide", s1 + .75, .4, _idle("bob", _crate(OL_X[1] + OL_W / 2, B17 - 128 - 50), 8, 2.4, style=""),
+                                                style="", y0=-80, y1=0, ease="out"), style=""))
+    p.parts.append(_g("fade", s2 + .75, .2, _g("slide", s2 + .75, .4, _idle("swing", _lock(OL_X[2] + OL_W / 2, B17 - 160 - 58), 6, 2.0,
+                                                                         style=f"transform-box:view-box;transform-origin:{OL_X[2] + OL_W / 2}px {B17 - 160 - 88}px"),
+                                                style="", y0=-80, y1=0, ease="out"), style=""))
+    p.parts.append(_life(s3 + .7, 99, _count(OL_X[3] + OL_W / 2, B17 - 32 - 24, 0, 10, round(s3 + .7, 2), .5, size=56, color=TEAL, pre="$"),
+                         fi=.05, fo=.01))
+
+
+def _ol_state(p, sales=100, move=40, fixed=50, profit=10):
+    """The four columns at their starting values, on the panel from the swipe."""
+    _set(p, _ol_ground())
+    _set(p, _ol_col(0, sales, GOLD) + _t(OL_X[0] + OL_W / 2, B17 - sales * K17 - 18, f"${sales}", 44, "#fff"))
+    _set(p, _ol_col(2, fixed, DEBT_C, f"${fixed}", "#fff", 42) + _lock(OL_X[2] + OL_W / 2, B17 - fixed * K17 - 58))
+
+
+def _ol_change(p, i, frm, to, t, fill, col=INK, size=42, d=.7, tag=None, tag_fill=None):
+    """Column i goes from frm to to dollars at t (nested scaleY from the baseline), with a counter inside."""
+    h_ = frm * K17
+    rect = f'<rect x="{OL_X[i]}" y="{B17 - h_:.1f}" width="{OL_W}" height="{h_:.1f}" rx="8" fill="{fill}" stroke="{INK}" stroke-width="6"/>'
+    p.parts.append(_g("fade", -1, .05, _g("scaleY", t, d, rect, style="transform-box:fill-box;transform-origin:center bottom", s0=1,
+                                          s1=round(to / frm, 4)), style=""))
+    y = B17 - min(frm, to) * K17 / 2 + size * .36 if min(frm, to) * K17 > size + 10 else B17 - max(frm, to) * K17 - 20
+    c = col if min(frm, to) * K17 > size + 10 else (TEAL if to > frm else RED)
+    p.parts.append(_life(-1, t + 1.05, _t(OL_X[i] + OL_W / 2, round(y), f"${frm}", size, c), fi=.01, fo=.05))
+    p.parts.append(_life(t, 99, _count(OL_X[i] + OL_W / 2, round(y), frm, to, round(t, 2), d + .1, size=size, color=c, pre="$"), fi=.05, fo=.01))
+    if tag:
+        p.parts.append(_g("pop", t + d, .35, _ptag(OL_X[i] + OL_W / 2 + 10, B17 - max(frm, to) * K17 - 90, 150, tag, tag_fill, "#fff", 36)))
+
+
+def cost_grow(p, seg=None, **_):
+    """Sales up 10%. The four columns from the last beat stand at the swipe. On the first sentence SALES grows to $110
+    (+10%); on the second MOVING grows $40 to $44 (+$4); on the third the FIXED column's padlock gives a small rattle
+    and a NO CHANGE tag lands; on the last PROFIT grows $10 to $16 and a +60% stamp lands. One scale throughout."""
+    s0, s1, s2, s3 = (x[0] for x in seg[:4])
+    _set(p, _ol_ground())
+    _ol_change(p, 0, 100, 110, s0 + .5, GOLD, "#fff" if False else INK, tag="+10%", tag_fill=GOLD_D)
+    _ol_change(p, 1, 40, 44, s1 + .5, MOVE_C, tag="+$4", tag_fill=GOLD_D)
+    _set(p, _ol_col(2, 50, DEBT_C, "$50", "#fff", 42))
+    lock = _lock(OL_X[2] + OL_W / 2, B17 - 160 - 58)
+    p.parts.append(_g("fade", -1, .05, _idle("swing", lock, 4, 1.6, style=f"transform-box:view-box;transform-origin:{OL_X[2] + OL_W / 2}px {B17 - 248}px"),
+                      style=""))
+    p.parts.append(f'<g class="a" data-fx="stamp" data-at="{s2 + .6:.2f}" data-d=".35" data-rot="-6" style="transform-box:fill-box;transform-origin:center">'
+                   + _ptag(OL_X[2] + OL_W / 2 + 10, B17 - 330, 200, "NO CHANGE", INK, "#fff", 26) + "</g>")
+    _ol_change(p, 3, 10, 16, s3 + .4, TEAL, "#fff")
+    p.parts.append(f'<g class="a" data-fx="stamp" data-at="{seg[3][0] + (seg[3][1] - seg[3][0]) * .6:.2f}" data-d=".35" data-rot="-8" '
+                   f'style="transform-box:fill-box;transform-origin:center">'
+                   f'<rect x="{OL_X[3] - 20}" y="160" width="200" height="104" rx="16" fill="#fff" stroke="{TEAL}" stroke-width="9"/>'
+                   + _t(OL_X[3] + 80, 235, "+60%", 64, TEAL) + "</g>")
+
+
+def cost_shrink(p, seg=None, **_):
+    """It cuts both ways. The four columns at $100 / $40 / $50 / $10 stand at the swipe. On the first sentence a red
+    REVERSE arrow curls over them. On the second SALES falls to $90 (-10%), MOVING to $36, FIXED holds (the padlock
+    rattles), and PROFIT falls $10 to $4 with a red -60% stamp."""
+    s0, s1, e1 = seg[0][0], seg[1][0], seg[1][1]
+    _set(p, _ol_ground())
+    _set(p, _ol_col(2, 50, DEBT_C, "$50", "#fff", 42))
+    p.parts.append(_g("fade", -1, .05, _idle("swing", _lock(OL_X[2] + OL_W / 2, B17 - 160 - 58), 4, 1.6,
+                                             style=f"transform-box:view-box;transform-origin:{OL_X[2] + OL_W / 2}px {B17 - 248}px"), style=""))
+    arc = f'<path d="M640 120 Q400 20 160 120" fill="none" stroke="{RED}" stroke-width="12" stroke-linecap="round"/>'
+    head = f'<path d="M200 80 L160 120 L214 140" fill="none" stroke="{RED}" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>'
+    p.parts.append(_g("draw", s0 + .2, .6, arc, style=""))
+    p.parts.append(_g("draw", s0 + .75, .2, head, style=""))
+    mid = s1 + (e1 - s1) * .2
+    _ol_change(p, 0, 100, 90, mid, GOLD, tag="−10%", tag_fill=RED)
+    _ol_change(p, 1, 40, 36, mid + .3, MOVE_C)
+    _ol_change(p, 3, 10, 4, s1 + (e1 - s1) * .55, TEAL, "#fff")
+    p.parts.append(f'<g class="a" data-fx="stamp" data-at="{s1 + (e1 - s1) * .72:.2f}" data-d=".35" data-rot="-8" '
+                   f'style="transform-box:fill-box;transform-origin:center">'
+                   f'<rect x="{OL_X[3] - 20}" y="250" width="200" height="104" rx="16" fill="#fff" stroke="{RED}" stroke-width="9"/>'
+                   + _t(OL_X[3] + 80, 325, "−60%", 64, RED) + "</g>")
+
+
+def lever_fixed(p, seg=None, **_):
+    """The name. A lever on a fulcrum labelled FIXED COSTS: a short SALES arm on the left, a long PROFIT arm on the
+    right. It rocks from the first sentence: the sales end dips a little, the profit end swings a lot. On 'fixed' in
+    the second sentence the fulcrum slides further left (more of the costs fixed) and the same small push now swings
+    the profit end further. Tags: +10% on the sales end, PROFIT on the long end."""
+    s0, s1, e1 = seg[0][0], seg[1][0], seg[1][1]
+    t_mv = s1 + (e1 - s1) * .3
+    y = 330
+    _set(p, f'<path d="M40 560 H760" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>')
+    p.parts.append(_g("pop", s0 + .2, .4, _t(400, 70, "OPERATING LEVERAGE", 44, INK, serif=False)))
+
+    def lever(fx_, ang, t_on, t_off):
+        rocks, t, j = [[0, 0, 0, 1, 1, 0]], t_on, 0
+        while t < t_off + 12:
+            rocks.append([round(t, 2), 0, 0, 1, 1, -ang if j % 2 == 0 else ang * .35])
+            t += .9
+            j += 1
+        beam = (f'<rect x="60" y="{y - 14}" width="680" height="28" rx="12" fill="{INK}"/>'
+                f'<rect x="64" y="{y - 92}" width="120" height="78" rx="10" fill="{GOLD}" stroke="{INK}" stroke-width="6"/>'
+                + _t(124, y - 42, "SALES", 26, INK, serif=False)
+                + f'<rect x="600" y="{y - 92}" width="136" height="78" rx="10" fill="{TEAL}" stroke="{INK}" stroke-width="6"/>'
+                + _t(668, y - 42, "PROFIT", 26, "#fff", serif=False))
+        rock = (f'<g class="a" data-fx="kf" data-at="0" data-d="1" data-kf="{H.escape(_json(rocks))}" '
+                f'style="transform-box:view-box;transform-origin:{fx_}px {y}px">{beam}</g>')
+        post = (f'<path d="M{fx_ - 70} 560 L{fx_} {y + 14} L{fx_ + 70} 560 Z" fill="{DEBT_C}" stroke="{INK}" stroke-width="6"/>'
+                + _t(fx_, 520, "FIXED", 24, "#fff", serif=False))
+        return rock + post
+
+    p.parts.append(_life(-1, t_mv + 1.2, lever(330, 6, s0 + .3, t_mv), fi=.01, fo=.2))
+    p.parts.append(_life(t_mv + .1, 99, lever(220, 9, t_mv + .3, 99), fi=.2, fo=.01))
+    p.parts.append(_g("pop", t_mv + .4, .4, _ptag(420, 210, 230, "MORE FIXED", DEBT_C, "#fff", 30)))
+    p.parts.append(_g("draw", t_mv + .3, .4, f'<path d="M320 600 L240 600" stroke="{RED}" stroke-width="8" stroke-linecap="round"/>'
+                                            f'<path d="M260 584 L236 600 L260 616" fill="none" stroke="{RED}" stroke-width="8" stroke-linecap="round"/>',
+                      style=""))
+
+
+def oplev_asks(p, **_):
+    """The close: SALES with a -20% tag and a dashed $80 outline, PROFIT as a ? that bobs."""
+    p.parts.append(f'<path d="M30 560 H770" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>')
+    p.fill(f'<rect x="80" y="{560 - 320}" width="200" height="320" rx="10" fill="{GOLD}" stroke="{INK}" stroke-width="6"/>', .05)
+    p.parts.append(_g("draw", p.at(.25), .4, f'<rect x="80" y="{560 - 256}" width="200" height="256" rx="10" fill="none" stroke="{RED}" '
+                                           f'stroke-width="7" stroke-dasharray="16 10"/>', style=""))
+    p.fill(_ptag(380, 230, 170, "−20%", RED, "#fff", 46), .35)
+    p.parts.append(_g("float", 0, 1, _g("pop", p.at(.5), .4, _t(600, 470, "?", 220, RED)), style="", amp=12, w=2.2))
+    p.parts.append(_t(600, 600, "PROFIT", 30, INK, serif=False))
+
+
+SCENES.update({f.__name__: f for f in (oplev_hook, cost_split, cost_grow, cost_shrink, lever_fixed, oplev_asks)})

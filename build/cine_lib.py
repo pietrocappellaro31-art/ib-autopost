@@ -865,7 +865,8 @@ def monitor_loan(t_on=.2, t_drop=None, t_ans=None, cx=900, cy=600, w=560, h=340,
          + _r(cx - 18, y0 + h, 36, 860 - (y0 + h), "#3B3F48", sw=2.6) + _r(cx - 90, 846, 180, 16, "#3B3F48", rx=6, sw=2.6)
          + _r(x0 - 16, y0 - 16, w + 32, h + 32, "#1E2128", rx=14, sw=3.6)
          + f'<rect x="{x0}" y="{y0}" width="{w}" height="{h}" fill="#F4EFE6"/>')
-    s += _t(x0 + 22, y0 + 32, "THE LOAN", 20, INK, anchor="start", weight=600, family="Sans", extra='letter-spacing="2"')
+    # 17 Nov: the title sits over the NET INCOME panel (right), clear of the hook's REPAY arc over the columns (left)
+    s += _t(x0 + w - 22, y0 + 32, "THE LOAN", 20, INK, anchor="end", weight=600, family="Sans", extra='letter-spacing="2"')
     axis, top = y0 + h - 42, y0 + 70
     hh = axis - top
     cw = w * .19
@@ -924,4 +925,104 @@ def monitor_loan(t_on=.2, t_drop=None, t_ans=None, cx=900, cy=600, w=560, h=340,
         s += (f'<g {kv(opacity=[[0, 0], [t_ans + .45, 0], [t_ans + .65, 1]])}>'
               f'<circle cx="{tx:.1f}" cy="{ty:.1f}" r="19" fill="{TEAL}" stroke="{INK}" stroke-width="2.8"/>'
               f'<path d="M{tx - 9:.1f},{ty:.1f} l6,7 l12,-14" fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/></g>')
+    return s
+
+
+def monitor_recap(t_on=.2, t_ans=None, t_cash=None, t_sum=None, cx=900, cy=600, w=560, h=340, price=8.0, div=1.5, debt=60,
+                  wobble_until=None):
+    """17 Nov (Levels #16, a dividend paid with new debt). A monitor: the business as an EV block that never moves
+    (SAME BUSINESS, EV $400) on the left, one share as a gold PER SHARE column ($8) in the middle, and a PAID OUT
+    slot on the right. Hook mode (t_ans None): a red NEW DEBT +$60 tag pulses over the EV block, a red arrow runs
+    to the PAID OUT slot, and a question mark bobs over the share column until wobble_until. Answer mode: at t_ans
+    the share column shrinks from $8 to $6.50 (its label swaps), at t_cash a $1.50 coin leaves the column's old top
+    and lands in PAID OUT, at t_sum the line $6.50 + $1.50 = $8 lands with a tick. Shot seconds. Only the episode's
+    worked numbers are drawn."""
+    x0, y0 = cx - w / 2, cy - h / 2
+    s = (f'<ellipse cx="{cx}" cy="{cy + 40}" rx="{w * .75:.0f}" ry="{h * .7:.0f}" fill="#BFE3D6" opacity=".14"/>'
+         + _r(cx - 18, y0 + h, 36, 860 - (y0 + h), "#3B3F48", sw=2.6) + _r(cx - 90, 846, 180, 16, "#3B3F48", rx=6, sw=2.6)
+         + _r(x0 - 16, y0 - 16, w + 32, h + 32, "#1E2128", rx=14, sw=3.6)
+         + f'<rect x="{x0}" y="{y0}" width="{w}" height="{h}" fill="#F4EFE6"/>')
+    axis, top = y0 + h - 44, y0 + 78
+    hh = axis - top
+    s += f'<path d="M{x0 + 16},{axis} L{x0 + w - 16},{axis}" stroke="{INK}" stroke-width="3"/>'
+    # the business: an EV block that stays put the whole time
+    ex, ew = x0 + w * .05, w * .24
+    s += _r(round(ex, 1), round(top + hh * .12, 1), round(ew, 1), round(hh * .88, 1), "#E8D9A8", rx=6, sw=2.6)
+    s += _t(round(ex + ew / 2, 1), round(top + hh * .5, 1), "EV", 26, INK, weight=700)
+    s += _t(round(ex + ew / 2, 1), round(top + hh * .5 + 30, 1), "$400", 24, INK, weight=700)
+    s += _t(round(ex + ew / 2, 1), axis + 26, "SAME BUSINESS", 14, INK, weight=700, family="Sans")
+    # one share: a gold column, $8 tall
+    sx, sw_ = x0 + w * .40, w * .2
+    full = hh * .92
+    lo = full * (price - div) / price
+    s += _t(round(sx + sw_ / 2, 1), axis + 26, "PER SHARE", 15, INK, weight=700, family="Sans")
+    s += _t(round(x0 + w - 18, 1), round(y0 + 30, 1), "THE DIVIDEND", 18, INK, anchor="end", weight=600, family="Sans",
+            extra='letter-spacing="2"')
+    px_, pw_ = x0 + w * .70, w * .25
+    if t_ans is None:
+        s += (f'<rect x="{sx:.1f}" y="{axis - full:.1f}" width="{sw_:.1f}" height="{full:.1f}" rx="6" fill="#F2C35B" stroke="{INK}" '
+              f'stroke-width="2.8" {kv(opacity=[[0, 0], [t_on, 0], [t_on + .4, 1]])}/>')
+        s += f'<g {kv(opacity=[[0, 0], [t_on + .3, 0], [t_on + .6, 1]])}>' + _t(round(sx + sw_ / 2, 1), round(axis - full / 2 + 12, 1), "$8", 34, INK) + "</g>"
+        stop = wobble_until or (t_on + 5)
+        tag = (_r(round(ex - 4, 1), round(top - 40, 1), round(ew + 70, 1), 32, RED, rx=8, sw=2.4)
+               + _t(round(ex + ew / 2 + 31, 1), round(top - 17, 1), f"NEW DEBT +${debt}", 17, "#fff", weight=700, family="Sans"))
+        op, t = [[0, 0], [t_on + .8, 0]], t_on + .8
+        while t < stop:
+            op += [[round(t + .2, 2), 1], [round(t + .55, 2), .5]]
+            t += .7
+        op.append([round(stop + .4, 2), 1])
+        s += f'<g {kv(opacity=op)}>{tag}</g>'
+        ay = top + 8
+        arr = (f'<path d="M{ex + ew + 74:.1f},{ay - 22:.1f} Q{(sx + px_) / 2 + 40:.1f},{ay - 52:.1f} {px_ + pw_ / 2:.1f},{ay + 30:.1f}" '
+               f'fill="none" stroke="{RED}" stroke-width="5" stroke-linecap="round" stroke-dasharray="10 8"/>')
+        s += f'<g {kv(opacity=[[0, 0], [t_on + 1.2, 0], [t_on + 1.6, 1]])}>{arr}</g>'
+        s += _r(round(px_, 1), round(top + hh * .3, 1), round(pw_, 1), round(hh * .7, 1), "#FFFFFF", rx=8, sw=2.6,
+                extra='stroke-dasharray="8 6"')
+        s += _t(round(px_ + pw_ / 2, 1), axis + 26, "PAID OUT", 15, INK, weight=700, family="Sans")
+        bob, t = [[0, 0, 0]], t_on + .8
+        while t < stop + .6:
+            bob += [[round(t, 2), 0, -7, "inout"], [round(t + .45, 2), 0, 5, "inout"]]
+            t += .9
+        s += (f'<g {kv(opacity=[[0, 0], [t_on + 1.0, 0], [t_on + 1.3, 1]])}><g {kv(translate=bob)}>'
+              + _t(round(sx + sw_ / 2, 1), round(axis - full - 16, 1), "?", 56, RED, weight=700) + "</g></g>")
+        return s
+    # answer mode: the column starts full, shrinks at t_ans
+    s += (f'<rect x="{sx:.1f}" y="{axis - full:.1f}" width="{sw_:.1f}" height="{full:.1f}" rx="6" fill="#F2C35B" stroke="{INK}" '
+          f'stroke-width="2.8" {kv(y=[[0, axis - full], [t_ans, axis - full], [t_ans + .7, axis - lo, "inout"]], height=[[0, full], [t_ans, full], [t_ans + .7, lo, "inout"]])}/>')
+    s += (f'<rect x="{sx:.1f}" y="{axis - full:.1f}" width="{sw_:.1f}" height="{full - lo:.1f}" rx="6" fill="none" stroke="{RED}" '
+          f'stroke-width="2.6" stroke-dasharray="8 6" {kv(opacity=[[0, 0], [t_ans + .5, 0], [t_ans + .8, 1]])}/>')
+    s += f'<g {kv(opacity=[[0, 1], [t_ans - .05, 1], [t_ans + .15, 0]])}>' + _t(round(sx + sw_ / 2, 1), round(axis - full / 2 + 12, 1), "$8", 34, INK) + "</g>"
+    s += f'<g {kv(opacity=[[0, 0], [t_ans + .5, 0], [t_ans + .75, 1]])}>' + _t(round(sx + sw_ / 2, 1), round(axis - lo / 2 + 12, 1), "$6.50", 30, INK) + "</g>"
+    # until the answer: the ? bobs over the share and the NEW DEBT tag pulses (the quiet 6 s of the first cut)
+    bob, t = [[0, 0, 0]], .3
+    while t < t_ans:
+        bob += [[round(t, 2), 0, -8, "inout"], [round(t + .45, 2), 0, 6, "inout"]]
+        t += .9
+    s += (f'<g {kv(opacity=[[0, 1], [t_ans - .2, 1], [t_ans, 0]])}><g {kv(translate=bob)}>'
+          + _t(round(sx + sw_ / 2, 1), round(axis - full - 14, 1), "?", 52, RED) + "</g></g>")
+    tag = (_r(round(ex - 4, 1), round(top - 40, 1), round(ew + 70, 1), 32, RED, rx=8, sw=2.4)
+           + _t(round(ex + ew / 2 + 31, 1), round(top - 17, 1), f"NEW DEBT +${debt}", 17, "#fff", weight=700, family="Sans"))
+    op, t = [[0, 0], [.4, 0]], .4
+    while t < t_ans + 1.5:
+        op += [[round(t + .2, 2), 1], [round(t + .55, 2), .5]]
+        t += .7
+    op.append([round(t_ans + 2.0, 2), 1])
+    s += f'<g {kv(opacity=op)}>{tag}</g>'
+    s += _r(round(px_, 1), round(top + hh * .3, 1), round(pw_, 1), round(hh * .7, 1), "#FFFFFF", rx=8, sw=2.6)
+    s += _t(round(px_ + pw_ / 2, 1), axis + 26, "PAID OUT", 15, INK, weight=700, family="Sans")
+    tc = t_cash if t_cash is not None else t_ans + 1.0
+    cxs, cys = sx + sw_ / 2, axis - full + (full - lo) / 2
+    cxe, cye = px_ + pw_ / 2, axis - 46
+    coin = (f'<circle cx="{cxs:.1f}" cy="{cys:.1f}" r="34" fill="#E8B04A" stroke="{INK}" stroke-width="2.8"/>'
+            + _t(round(cxs, 1), round(cys + 8, 1), "$1.50", 20, INK, weight=700))
+    s += (f'<g {kv(opacity=[[0, 0], [tc - .05, 0], [tc + .1, 1]])}><g {kv(translate=[[0, 0, 0], [tc, 0, 0], [tc + .8, round(cxe - cxs, 1), round(cye - cys, 1), "inout"]])}>'
+          + coin + "</g></g>")
+    ts = t_sum if t_sum is not None else tc + 1.2
+    s += (f'<g {kv(opacity=[[0, 0], [ts, 0], [ts + .3, 1]])}>'
+          + _r(round(x0 + w * .30, 1), round(y0 + 12, 1), round(w * .40, 1), 40, "#FFFFFF", rx=8, sw=2.4)
+          + _t(round(x0 + w * .50, 1), round(y0 + 41, 1), "$6.50 + $1.50 = $8", 22, TEAL, weight=700) + "</g>")
+    tx, ty = x0 + w * .30 - 26, y0 + 32
+    s += (f'<g {kv(opacity=[[0, 0], [ts + .45, 0], [ts + .65, 1]])}>'
+          f'<circle cx="{tx:.1f}" cy="{ty:.1f}" r="17" fill="{TEAL}" stroke="{INK}" stroke-width="2.8"/>'
+          f'<path d="M{tx - 8:.1f},{ty:.1f} l5,6 l11,-12" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></g>')
     return s

@@ -37,10 +37,12 @@ def words(text):
     canonical token ("seven and a half" and "7.5" both become "7.5", "one
     thousand two hundred and fifty" and "1,250" both become "1250")."""
     t = re.sub(r"(\d),(\d)", r"\1\2", text.lower())
+    t = re.sub(r"([a-z])\$(\d)", r"\1 $\2", t)                    # 17 Nov (Levels #16): the recogniser wrote "got$1.50"
     # 15 Nov (YouTube #9): "$2.50" and "two dollars and fifty cents" are the same words; "every hundred dollars" is
     # "every $100"; "dollars' worth" keeps no stray apostrophe; British -our spellings match the recogniser's -or
     t = re.sub(r"\$(\d+)\.(\d\d)\b", r"\1 qqstop \2 cents", t)
     t = re.sub(r"\b([a-z]+) dollars and ([a-z]+(?: [a-z]+)?) cents\b", r"\1 qqstop \2 cents", t)
+    t = re.sub(r"\ba dollar (ten|twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety)\b", r"1 qqstop \1 cents", t)   # 17 Nov: "a dollar fifty" = $1.50
     t = re.sub(r"\bevery hundred\b", "every 100", t)
     t = re.sub(r"s' ", "s ", t)
     t = re.sub(r"\bhonour", "honor", t)

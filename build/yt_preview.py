@@ -97,8 +97,13 @@ def motion_stats(mp4, fps=6, still=.5):
         run = run + 1 if s else 0
         best = max(best, run)
     cuts = int((d > 25).sum())                                 # a frame-to-frame change that big is a cut or a flash
+    # 17 Nov (the 16 Nov Reel's next improvement, "no 6-second window under 1.2"): the quietest 6 s stretch and when
+    win = [(float(np.mean(per_s[i:i + 6])), i) for i in range(0, max(len(per_s) - 5, 0))]
+    low = min(win) if win else (None, None)
     return dict(seconds=len(per_s), static_share=round(float(np.mean(static)), 3) if per_s else None, longest_static_s=best,
                 mean_motion=round(float(np.mean(per_s)), 2) if per_s else None, hard_changes=cuts,
+                lowest_6s=round(low[0], 2) if low[0] is not None else None, lowest_6s_at=low[1],
+                windows_6s_under_1_2=sum(1 for v, _ in win if v < 1.2),
                 per_second=[round(float(x), 2) for x in per_s])
 
 
