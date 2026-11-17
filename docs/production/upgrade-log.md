@@ -168,3 +168,18 @@ runs:
   with music, style named in the delivery. The scheduled-task prompts still list the clean MP4: changing a scheduled
   task needs Pietro's approval; CLAUDE.md tells the runs that his 17 Nov decision overrides those steps.
 - Nobody here can listen: Pietro's verdict per style decides which stay.
+
+## 17 Nov 2026, YouTube #11 (Herstatt): held life for finished drawings, a 1974 world
+
+- `build/sketch.py` `held_life` (on by default; `ep["held_life"] = False` re-renders #1 to #10 exactly): once a drawing
+  has drawn itself, every part boils (re-drawn up to 1.8 px off its place six times a second, independently, the way
+  hand-drawn animation keeps a held drawing alive) and the whole drawing sways up to 0.45 degrees about its base. Both
+  ease in over half a second after the drawing's last part lands; silent (sounds are read before the layer is added).
+  Runtime: `boil` and `sway` in `motion.JS`.
+- Measured by `build/held_life_check.py` on #10's own script and timings (79 s of drawn beats, rendered both ways):
+  static share 26.5% to 20.2%, mean motion 1.45 to 1.55, longest static run 4 s to 4 s. The seconds still static are
+  HTML text visuals (compare, number, list), which the layer does not reach yet: the next step.
+- `build/cine_1974.py`: a payments room with two moving wall clocks (Frankfurt and New York) and a printing telex; two
+  bank counters either side of the sea with their own clocks and window light; a New York account desk with ledger,
+  phone and safe; a settlement desk for payment versus payment; 1974 looks; `sfx.telex`. `sketch.day_bars`: two banking
+  days five hours apart on one clock, and the CLS window.

@@ -30,6 +30,17 @@ DIR = os.environ.get("KOKORO_DIR", "")
 PHONEMES = {
     # 17 Nov, the coin toss Short (Paul Samuelson, 1963)
     "samuelson": "sˈæmjuəlsən",
+    # 17 Nov, YouTube #11 (Herstatt, 1974)
+    "herstatt": "hˈɛɹʃtˌɑt",
+    "herstatt's": "hˈɛɹʃtˌɑts",
+    "bankhaus": "bˈæŋkhˌWs",
+    "deutsche": "dˈYʧə",
+    "bis": "bˌiˌIˈɛs",
+    "cls": "sˌiˌɛlˈɛs",
+    "cls's": "sˌiˌɛlˈɛsɪz",
+    "fx": "ˌɛfˈɛks",
+    "withdrew": "wɪðdɹˈu",
+    "sizeable": "sˈIzəbᵊl",
     # 15 Nov, YouTube #9 (Charles Ponzi and the reply coupon)
     "ponzi": "pˈɑnzi",
     "pulitzer": "pˈʊlɪtsəɹ",

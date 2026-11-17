@@ -420,6 +420,7 @@ def title_size(title, size=140, column=940):
 
 
 def scenes(ep, items):
+    sketch.HELD_LIFE = ep.get("held_life", True)          # 17 Nov: finished drawings boil and sway (sketch.held_life)
     sc, t, chapters, sounds = [], 0.0, [], []
     n_ch = len(ep["chapters"])
     for kind, c, b, a, segs in items:
@@ -1192,7 +1193,17 @@ def make(ep, voice_name=YOUTUBE_VOICE):
     g = min(g, .89 / max(np.abs(voice).max(), 1e-6))
     write_wav(work / "voice.wav", voice * g)
     write_wav(work / "sfx.wav", fx[:n] * g)
-    silent = render(ep["slug"], html, total, work)
+    # 17 Nov (#11): the drawn render is kept as <slug>-drawn.mp4 before the filmed beats go over it, so a crash after
+    # it (a filmed document refused a highlight on #11, an hour into the run) costs only the steps after it:
+    # ep["reuse_render"] = True (or python3 build/youtube_epNNN.py --reuse) skips the drawn render when that file exists.
+    drawn = work / f"{ep['slug']}-drawn.mp4"
+    if (ep.get("reuse_render") or "--reuse" in __import__("sys").argv) and drawn.exists():
+        silent = work / f"{ep['slug']}-silent.mp4"
+        silent.write_bytes(drawn.read_bytes())
+        print(f"  reusing the drawn render {drawn.name}", flush=True)
+    else:
+        silent = render(ep["slug"], html, total, work)
+        drawn.write_bytes(silent.read_bytes())
     if CINE:                                                        # 13 Nov: filmed beats over their placeholders
         cine_splice(ep, work, silent, total)
     json.dump(dict(total=total, chapters=[c for c, _ in chapters]), open(work / "timing.json", "w"))

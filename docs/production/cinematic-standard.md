@@ -84,6 +84,8 @@ identical cards" fails, and so does swapping one repeated template for another.
 - Stillness is allowed when it serves the story. A film that reads as a slideshow is not.
 - Fake animation (only pans, zooms and floating particles over a still) does not count as animation.
 - Several sentences may share one evolving scene (visual progression), instead of one card per sentence.
+- Held drawings live (17 Nov): a finished `sketch.py` drawing boils and sways slightly (`sketch.held_life`), so a
+  drawn beat never freezes once drawn. HTML text visuals (compare, number, list) do not have it yet.
 - Check motion in motion: motion sheets and the static-share measure (`yt_preview.py --motion`), never stills alone.
 
 ## 7. Formats and frame rates
@@ -107,6 +109,9 @@ identical cards" fails, and so does swapping one repeated template for another.
    16 Nov (YouTube #10, `cine_1963.py`): an oil tank yard by the water at dusk and at night (tanks with ladders,
    catwalks, pipes, valves, lamps; a tank whose front cuts away to show water, oil or nothing, with levels that move
    and a dip tape), a receipt's journey strip (yard, field-warehouse office, broker, bank); 1963 looks.
+   17 Nov (YouTube #11, `cine_1974.py`): a 1974 payments room with two wall clocks whose hands move and a printing telex,
+   two bank counters (Frankfurt, New York) either side of the sea with their own clocks and day or night windows, a New
+   York account desk, a settlement desk between the counters.
    Next: a modern trading floor with screens, a bank office, a city street today, a boardroom, a kitchen table.
 4. **Data in the world** (started): price paths that draw with flags; numbers that lift off documents. Next:
    balance sheet that rearranges, cash-flow waterfall, LBO structure, debt schedule (see `scene-library.md`).

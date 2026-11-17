@@ -275,8 +275,28 @@ def office_ambience(sec, seed=0, busy=1.0, phones=0):
     return (out / (np.abs(out).max() + 1e-9) * .5).astype(np.float32)
 
 
+def telex(seed=0, sec=1.5):
+    """17 Nov (YouTube #11): a teleprinter printing, a run of type-bar strikes about 10 a second with a soft motor hum
+    under it (synthesised: short filtered noise bursts)."""
+    rng = np.random.default_rng(seed)
+    n = int(sec * FSR)
+    out = np.zeros(n, np.float32)
+    t = 0.0
+    while t < sec - .05:
+        i = int(t * FSR)
+        m = int(.012 * FSR)
+        burst = rng.normal(0, 1, m).astype(np.float32) * np.exp(-np.arange(m) / (m / 4)).astype(np.float32)
+        burst = np.convolve(burst, np.ones(3, np.float32) / 3, "same")
+        out[i:i + m] += burst[: n - i] * rng.uniform(.5, 1.0)
+        t += rng.uniform(.07, .13)
+    hum = np.sin(2 * np.pi * 50 * np.arange(n) / FSR).astype(np.float32) * .04
+    env = np.minimum(1, np.minimum(np.arange(n), n - np.arange(n)) / (.05 * FSR)).astype(np.float32)
+    out = (out * .6 + hum) * env
+    return (out / (np.abs(out).max() + 1e-9) * .9).astype(np.float32)
+
+
 FOLEY = {"step": footstep, "paper": paper, "quill": quill, "clink": clink, "hit": soft_hit, "tick": clock_tick,
-         "ring": ring, "clank": clank, "flap": flap}
+         "ring": ring, "clank": clank, "flap": flap, "telex": telex}
 
 
 def foley_track(events, total, stereo=True):

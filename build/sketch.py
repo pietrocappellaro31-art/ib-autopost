@@ -613,7 +613,33 @@ def scene(name, t0, dur, seed=1, **opts):
     SCENES[name](p, **opts)
     out = p.svg()
     SOUND_LOG.append(dict(name=name, t0=t0, events=actions(out, name)))
+    if HELD_LIFE and not opts.get("still"):
+        out = held_life(p, out, seed)
     return out
+
+
+# 17 Nov (YouTube #11, the 16 Nov next improvement): a held-life layer. Once a drawing has finished drawing itself
+# it used to freeze, and the 16 Nov film had static runs of 3 to 5 s on drawn beats. Now every part of a finished
+# drawing "boils" like hand-drawn animation (each stroke and fill re-drawn a little off its place, 6 times a
+# second, independently), and the whole drawing sways about its base by a fraction of a degree. Both ease in over
+# half a second after the drawing's last part lands, so nothing moves while it is still being drawn, and both are
+# small (BOIL px in the drawing's 800 x 640 box, SWAY degrees). No sound: ambient life is silent (actions() runs on
+# the drawing before the layer is added). Off with youtube ep["held_life"] = False (an exact re-render of #1 to #10).
+HELD_LIFE = True
+BOIL, SWAY, BOIL_FPS = 1.8, .45, 6
+
+
+def held_life(p, svg, seed=1):
+    ends = [float(a) + float(d) for a, d in re.findall(r'data-at="([0-9.\-]+)" data-d="([0-9.]+)"', svg)]
+    if not ends:
+        return svg
+    end = round(max(ends) + .15, 3)
+    head, body = svg.split(">", 1)
+    body = body[: -len("</svg>")]
+    parts = "".join(f'<g class="a" data-fx="boil" data-at="{end}" data-d=".5" data-amp="{BOIL}" data-seed="{(seed * 31 + k) % 997}" '
+                    f'data-fps="{BOIL_FPS}">{part}</g>' for k, part in enumerate(p.parts)) if body == "".join(p.parts) else body
+    return (head + f'><g class="a" data-fx="sway" data-at="{end}" data-d=".6" data-amp="{SWAY}" data-w="1.3" data-ph="{seed % 7}" '
+            f'style="transform-box:fill-box;transform-origin:50% 100%">{parts}</g></svg>')
 
 
 # 16 Nov (YouTube #10): what each drawing does and when, so the drawn beats get a sound on each action instead of one
@@ -3978,3 +4004,57 @@ def toss_asks(p, **_):
 
 
 SCENES.update({f.__name__: f for f in (toss_hook, bet_average, loss_scale, lunch_bet, hundred_tosses, toss_asks)})
+
+# ---- 17 Nov, long video #11 (Herstatt, 1974): two banking days five hours apart, on one clock (German time).
+# The hours of each banking day are illustrative (labelled so); the five-hour gap and 15:30 are the sourced facts.
+
+def day_bars(p, upto=3, gap=5, closed="15:30", **_):
+    """upto 1: Frankfurt's banking day; 2: + New York's, shifted by gap hours, with the gap bracketed; 3: + marks
+    paid in the morning, the 15:30 closing line, dollars due in New York's day; 4: the cure, one window in which both
+    legs settle together."""
+    X = lambda hr: 70 + (hr - 6) * 660 / 18
+    p.line([(X(6), 520), (X(24), 520)], 0, .3, w=5)
+    for hr in range(6, 25, 3):
+        p.line([(X(hr), 508), (X(hr), 532)], .05 + hr * .004, .08, w=4)
+        p.text(X(hr), 572, f"{hr:02d}:00", .08 + hr * .004, size=24, color=GREY)
+    p.text(400, 618, "GERMAN TIME (CET) · CLS WINDOW, 2002" if upto >= 4 else "GERMAN TIME · ILLUSTRATIVE HOURS", .12, size=22, color=GREY, weight=600)
+    if upto >= 4:                                          # the CLS window of 2002: 07:00 to 12:00 CET (Galati, BIS)
+        w0, w1 = X(7), X(12)
+        p.fill(f'<rect x="{w0:.0f}" y="150" width="{w1 - w0:.0f}" height="300" rx="22" fill="{TEAL}" fill-opacity=".16" stroke="{TEAL}" stroke-width="6"/>', .1)
+        p.text((w0 + w1) / 2, 132, "07:00 TO 12:00", .15, size=28, color=TEAL, weight=700)
+        for k, (lab, y, metal) in enumerate((("DM", 230, "nickel"), ("$", 370, "gold"))):
+            coin(p, (w0 + w1) / 2, y, 44, lab, metal, .25 + .08 * k)
+        p.line([(w1 + 30, 200), (w1 + 60, 200), (w1 + 60, 400), (w1 + 30, 400)], .45, .3, color=RED, w=8)
+        p.fill(f'<g><rect x="{w1 + 80}" y="282" width="56" height="46" rx="8" fill="{RED}" stroke="{INK}" stroke-width="4"/>'
+               f'<path d="M{w1 + 92} 282 v-14 a16 16 0 0 1 32 0 v14" fill="none" stroke="{INK}" stroke-width="7"/></g>', .6)
+        p.text(w1 + 160, 260, "BOTH LEGS", .7, size=44, anchor="start", weight=700)
+        p.text(w1 + 160, 314, "TOGETHER,", .76, size=44, anchor="start", weight=700)
+        p.text(w1 + 160, 368, "OR NEITHER", .82, size=44, anchor="start", weight=700, color=RED)
+        return
+    fx0, fx1 = X(8), X(15)
+    p.text(30, 186, "FRANKFURT", 0, size=28, anchor="start", weight=700)
+    p.fill(f'<rect x="{fx0:.0f}" y="210" width="{fx1 - fx0:.0f}" height="70" rx="14" fill="{TEAL}" stroke="{INK}" stroke-width="5"/>', .1, fx="growX")
+    if upto < 3:
+        p.text(fx1 - 20, 256, "BANKS OPEN", .2, size=26, color="#fff", weight=700, anchor="end")
+    if upto >= 2:
+        nx0, nx1 = X(9 + gap), X(17 + gap)
+        p.text(30, 346, "NEW YORK", .3, size=28, anchor="start", weight=700)
+        p.fill(f'<rect x="{nx0:.0f}" y="370" width="{nx1 - nx0:.0f}" height="70" rx="14" fill="{GOLD}" stroke="{INK}" stroke-width="5"/>', .35, fx="growX")
+        if upto < 3:
+            p.text(nx1 - 20, 416, "BANKS OPEN", .45, size=26, color=INK, weight=700, anchor="end")
+        p.line([(X(9), 470), (X(9 + gap), 470)], .5, .2, color=RED, w=6)
+        p.line([(X(9), 456), (X(9), 484)], .5, .05, color=RED, w=6)
+        p.line([(X(9 + gap), 456), (X(9 + gap), 484)], .55, .05, color=RED, w=6)
+        p.text((X(9) + X(9 + gap)) / 2, 500, f"{gap} HOURS", .6, size=26, color=RED, weight=700)
+    if upto >= 3:
+        coin(p, X(9.2), 245, 28, "DM", "nickel", .62)
+        p.text(X(9.2), 316, "MARKS PAID", .66, size=22, weight=700)
+        h_, m_ = (int(x) for x in closed.split(":"))
+        xc = X(h_ + m_ / 60)
+        p.line([(xc, 150), (xc, 450)], .7, .2, color=RED, w=7, dash="16 12")
+        p.text(xc, 136, f"{closed} CLOSED", .74, size=30, color=RED, weight=700)
+        coin(p, X(18.5), 405, 28, "$", "gold", .82)
+        p.text(X(18.5), 358, "DOLLARS DUE", .86, size=22, weight=700)
+
+
+SCENES.update({f.__name__: f for f in (day_bars,)})

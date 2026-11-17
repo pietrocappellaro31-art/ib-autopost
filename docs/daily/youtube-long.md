@@ -12,3 +12,4 @@
 | 2026-11-14 | yt-008-gold-window | In 1971 the Dollar Stopped Being Gold. Most Americans Couldn't Swap It Anyway. (11 filmed beats, 4 new sets; scored recommended) | HEART | 9:53 | |
 | 2026-11-15 | yt-009-ponzi-coupon | Ponzi's Scheme Started With a Real Trade. Here's Why It Could Never Work. (14 filmed beats: 7 on 3 new 1920 sets, 7 filmed documents; scored recommended) | HEART | 8:28 | |
 | 2026-11-16 | yt-010-salad-oil | Wall Street Lent Against Tanks of Salad Oil. Most of the Oil Wasn't There. (11 filmed beats: 7 on the new 1963 tank yard and receipt sets, 4 filmed documents; action-timed sound in the drawn beats; scored recommended) | HEART | 8:42 | |
+| 2026-11-17 | yt-011-herstatt | A Bank Shut at 3:30. The Banks That Had Already Paid It Never Got Their Dollars. (7 filmed beats: 5 on the new 1974 sets, 2 filmed documents; held life on every drawing; score mallets in A, 85 BPM; one scored file delivered) | HEART | 8:23 | |
