@@ -28,6 +28,8 @@ DIR = os.environ.get("KOKORO_DIR", "")
 
 # Words outside misaki's dictionaries, with their phonemes written by hand.
 PHONEMES = {
+    # 17 Nov, the coin toss Short (Paul Samuelson, 1963)
+    "samuelson": "sˈæmjuəlsən",
     # 15 Nov, YouTube #9 (Charles Ponzi and the reply coupon)
     "ponzi": "pˈɑnzi",
     "pulitzer": "pˈʊlɪtsəɹ",

@@ -497,9 +497,11 @@ def page(scenes, theme="ink"):
     return html, t, starts
 
 
-def build(slug, scenes, theme="ink", cover_at=0.0, crf=18, check_at=(), fit=False):
+def build(slug, scenes, theme="ink", cover_at=0.0, crf=18, check_at=(), fit=False, cover_js=None):
     """Render to MP4. cover_at picks the cover frame, so a Reel can open on motion
-    and still have a fully composed cover."""
+    and still have a fully composed cover. 17 Nov: cover_js (a JS expression) runs on the page at cover_at, after
+    the frames are filmed, to dress that frame as a cover (story.py: the captions hidden and the hook question
+    alone laid over them); its return value is kept as cover.json and the cover is checked like a frame."""
     work = OUT / slug
     work.mkdir(parents=True, exist_ok=True)
     html, total, starts = page(scenes, theme)
@@ -574,8 +576,18 @@ def build(slug, scenes, theme="ink", cover_at=0.0, crf=18, check_at=(), fit=Fals
             pg.evaluate(f"seek({f / FPS})")
             shot = pg.screenshot(type="jpeg", quality=93, clip={"x": 0, "y": 0, "width": 1080, "height": 1920})
             ff.stdin.write(shot)
-            if f == int(round(cover_at * FPS)):
+            if f == int(round(cover_at * FPS)) and not cover_js:
                 cover.write_bytes(shot)
+        if cover_js:
+            pg.evaluate(f"window.NOPUSH = true; seek({cover_at})")
+            info = pg.evaluate(cover_js) or {}
+            info["problems"] = pg.evaluate("check()") + pg.evaluate("artText()")
+            cover.write_bytes(pg.screenshot(type="jpeg", quality=93, clip={"x": 0, "y": 0, "width": 1080, "height": 1920}))
+            (work / "cover.json").write_text(json.dumps(info, indent=1))
+            print(f"  cover at {cover_at:.2f} s: {info.get('title')!r}, {info.get('size')} px, "
+                  f"{len(info['problems'])} layout problems" + "".join(f"\n    CHECK cover {x}" for x in info["problems"])
+                  + "".join(f"\n    CHECK cover shows {x!r}" for x in info.get("leaks", [])))
+            problems += [f"cover {x}" for x in info["problems"]]
         browser.close()
     ff.stdin.close()
     ff.wait()

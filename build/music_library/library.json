@@ -292,6 +292,13 @@
    "kind": "short",
    "id": "txmy-ethereal-slowed",
    "mood": "curious"
+  },
+  {
+   "date": "2026-11-17",
+   "slug": "shorts-coin-toss-150-100",
+   "kind": "short",
+   "id": "flawed-mangoes-swimming",
+   "mood": "curious"
   }
  ],
  "originals": [
@@ -365,6 +372,19 @@
    "key": "F",
    "rights": "ORIGINAL_GENERATED",
    "added": "2026-11-16",
+   "note": ""
+  },
+  {
+   "id": "score-shorts-coin-toss-150-100",
+   "title": "Original score for shorts-coin-toss-150-100",
+   "video": "shorts-coin-toss-150-100",
+   "engine": "score.py + GeneralUser GS v2.0.3 (TinySoundFont)",
+   "mood": "decide+resolve",
+   "bpm": 81,
+   "key": "C",
+   "style": "acoustic",
+   "rights": "ORIGINAL_GENERATED",
+   "added": "2026-11-17",
    "note": ""
   }
  ]

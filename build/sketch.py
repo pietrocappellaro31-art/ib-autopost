@@ -3734,3 +3734,247 @@ def bs_tilt_fx(m):
 
 
 SCENES.update({f.__name__: f for f in (loan_in, interest_bite, bs_tilt)})
+
+
+# ---- 17 Nov (the coin toss Short, Format F, a choice): heads win $150, tails lose $100; the average of +$25 a toss;
+# why most people still say no (Kahneman: to risk $100 most want a chance at about $200); Samuelson's colleague, who
+# refused one toss at $200 to $100 but would take a hundred; what a hundred tosses look like (our binomial
+# arithmetic). Generic shapes of our own: no coin design of any country, no real person's likeness (Samuelson is a
+# plain stick figure in a labelled reconstruction).
+
+BET_SCALE = 1.9                           # px a dollar in the average drawing
+
+
+def _coin_shape(cx, cy, r, value="$", metal="gold"):
+    """coin()'s shaded coin as a plain SVG string (no animation of its own)."""
+    class _P:
+        parts = []
+
+        def at(self, f):
+            return 0
+
+        def fill(self, shape, *a, **k):
+            self.shape = shape
+    q = _P()
+    coin(q, cx, cy, r, value, metal)
+    return q.shape
+
+
+def _toss(cx, cy, r, t, h=240, d=.9, turns=4, value="$"):
+    """A coin tossed at t: it flies up h px and lands again over d s, spinning turns times on its axis."""
+    kf = H.escape(_json([[round(t, 2), 0, 0, 1, 1], [round(t + d * .45, 2), 0, -h, 1, 1], [round(t + d, 2), 0, 0, 1, 1]]))
+    spin = (f'<g class="a" data-fx="coinflip" data-at="{t:.2f}" data-d="{d}" data-turns="{turns}" '
+            f'style="transform-box:fill-box;transform-origin:center">{_coin_shape(cx, cy, r, value)}</g>')
+    return f'<g class="a" data-fx="kf" data-at="0" data-d="1" data-kf="{kf}">{spin}</g>'
+
+
+def _bet_tiles(heads_x=40, tails_x=500, y=60, w_=260, h_=150, size=72):
+    return (_t(heads_x + w_ / 2, y - 26, "HEADS", 30, TEAL, serif=False)
+            + _tile(heads_x, y, w_, h_, TEAL, "+$150", size)
+            + _t(tails_x + w_ / 2, y - 26, "TAILS", 30, RED, serif=False)
+            + _tile(tails_x, y, w_, h_, RED, "−$100", size))
+
+
+def toss_hook(p, seg=None, **_):
+    """The hook. From frame 0: HEADS +$150 and TAILS -$100 tiles, a gold coin on the floor, the trader beside it.
+    On 'Heads' the coin is tossed (up, spinning) and lands as the HEADS tile presses with a teal ring; on 'Tails' it
+    is tossed again and lands as the TAILS tile presses with a red ring; on 'Do you take it?' the trader turns to the
+    viewer, palms up, and YES? and NO? chips pop either side of the coin, the ? bobbing."""
+    s0, s1, s2 = seg[0][0], seg[1][0], seg[2][0]
+    _set(p, f'<path d="M20 590 L780 590" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>' + _bet_tiles())
+    cx, cy, r = 400, 510, 72
+    t1, t2, d = s0 + .05, s1 + .05, .95
+    kf = lambda t: H.escape(_json([[round(t, 2), 0, 0, 1, 1], [round(t + d * .45, 2), 0, -240, 1, 1], [round(t + d, 2), 0, 0, 1, 1]]))
+    spin = lambda t: (f'<g class="a" data-fx="coinflip" data-at="{t:.2f}" data-d="{d}" data-turns="5" '
+                      f'style="transform-box:fill-box;transform-origin:center">{_coin_shape(cx, cy, r, "$")}</g>')
+    # one coin: still on the floor from frame 0, spinning up and down on each toss (coinflip hides a coin before its
+    # start, so each toss has its own copy, handed over the moment the next one starts)
+    coin_ = (_life(-1, t1 + 1.01, _coin_shape(cx, cy, r, "$"), fi=.01, fo=.01) + _life(t1, t2 - t1 + .01, spin(t1), fi=.01, fo=.01)
+             + _life(t2, 99, spin(t2), fi=.01, fo=.01))
+    p.parts.append(f'<ellipse cx="{cx}" cy="584" rx="64" ry="10" fill="{INK}" fill-opacity=".18"/>'
+                   f'<g class="a" data-fx="kf" data-at="0" data-d="1" data-kf="{kf(t2)}">'
+                   f'<g class="a" data-fx="kf" data-at="0" data-d="1" data-kf="{kf(t1)}">{coin_}</g></g>')
+    # each landing presses its tile and rings it
+    for t, x, col in ((t1 + d, 40, TEAL), (t2 + d, 500, RED)):
+        p.parts.append(_g("draw", t, .45, f'<rect x="{x - 12}" y="48" width="284" height="174" rx="30" fill="none" stroke="{col}" '
+                                        f'stroke-width="9"/>', style=""))
+    # the question: YES? NO?
+    p.parts.append(_g("pop", s2 + .15, .35, _tile(110, 300, 150, 92, "#fff", "YES", 46, color=TEAL)))
+    p.parts.append(_g("pop", s2 + .35, .35, _tile(520, 300, 150, 92, "#fff", "NO", 46, color=RED)))
+    p.parts.append(_g("float", 0, 1, _g("pop", s2 + .55, .4, _t(cx, 300, "?", 120, RED)), style="", amp=8, w=2.6))
+    trader(p, 720, 590, .62, "shrug", (-1 - p.t0) / p.dur, look=-1, turn=[(s2 + .1, 0)])
+
+
+def bet_average(p, seg=None, **_):
+    """The average. A zero line; on 'win a hundred and fifty' a teal bar grows up to +$150, on 'lose a hundred' a red
+    bar grows down to -$100 (one scale, 1.9 px a dollar). On the second sentence both halve (x1/2 tags, counters 150
+    to 75 and 100 to 50) and the sums wipe on at the right: 1/2 of $150 = $75, 1/2 of $100 = $50, then $25 A TOSS
+    lands as a stamp on 'twenty five'."""
+    s0, e0, s1, e1 = seg[0][0], seg[0][1], seg[1][0], seg[1][1]
+    z, k = 330, BET_SCALE
+    xt, xr, w_ = 50, 200, 120
+    g_up, g_dn = s0 + .25, s0 + (e0 - s0) * .55
+    half = s1 + .1
+    p.parts.append(_g("fade", p.t0, .25, f'<path d="M30 {z} H360" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+                      + _t(30, z - 14, "$0", 26, GREY, serif=False, anchor="start"), style=""))
+    up = f'<rect x="{xt}" y="{z - 150 * k}" width="{w_}" height="{150 * k}" rx="10" fill="{TEAL}" stroke="{INK}" stroke-width="7"/>'
+    dn = f'<rect x="{xr}" y="{z - 100 * k}" width="{w_}" height="{100 * k}" rx="10" fill="{RED}" stroke="{INK}" stroke-width="7"/>'
+    grow = lambda t, inner, s1_: _g("scaleY", t, .6, _g("scaleY", half, .7, inner, style="transform-box:fill-box", s0=1, s1=.5),
+                                     style="transform-box:fill-box", s0=.001, s1=1)
+    p.parts.append(grow(g_up, up, 1))
+    p.parts.append(f'<g transform="translate(0 {2 * z}) scale(1 -1)">{grow(g_dn, dn, 1)}</g>')
+    p.parts.append(_life(g_up + .3, half - g_up - .25, _t(xt + w_ / 2, z - 30, "+$150", 40, "#fff"), fi=.2, fo=.05))
+    p.parts.append(_life(half, 99, _count(xt + w_ / 2, z - 30, 150, 75, round(half, 2), .7, size=40, color="#fff", pre="+$"), fi=.05, fo=.01))
+    p.parts.append(_life(g_dn + .3, half - g_dn - .25, _t(xr + w_ / 2, z + 55, "−$100", 40, "#fff"), fi=.2, fo=.05))
+    p.parts.append(_life(half, 99, _count(xr + w_ / 2, z + 55, 100, 50, round(half, 2), .7, size=40, color="#fff", pre="−$"), fi=.05, fo=.01))
+    for x, y in ((260, z - 180), (110, z + 110)):
+        p.parts.append(_g("pop", half + .05, .35, _ptag(x, y, 110, "½", INK, "#fff", 44)))
+    rows = [("½ of $150", "= $75", TEAL), ("½ of $100", "= $50", RED)]
+    for j, (a_, b_, col) in enumerate(rows):
+        y = 150 + 110 * j
+        txt = (f'<text x="385" y="{y}" font-family="\'Serif\',serif" font-weight="700" font-size="44" fill="{INK}">'
+               f'{H.escape(a_)} <tspan fill="{col}">{H.escape(b_)}</tspan></text>')
+        p.parts.append(_g("wipe", half + .3 + .55 * j, .5, txt, style=""))
+    p.parts.append(_g("draw", half + 1.3, .35, '<path d="M385 300 H770" stroke="#0A0A0A" stroke-width="6" stroke-linecap="round"/>', style=""))
+    land = s1 + (e1 - s1) * .55
+    p.parts.append(f'<g class="a" data-fx="stamp" data-at="{land:.2f}" data-d=".35" data-rot="-6" '
+                   f'style="transform-box:fill-box;transform-origin:center">'
+                   f'<rect x="425" y="340" width="340" height="180" rx="18" fill="#fff" stroke="{TEAL}" stroke-width="10"/>'
+                   + _t(595, 445, "+$25", 96, TEAL) + _t(595, 495, "A TOSS, ON AVERAGE", 24, TEAL, serif=False) + "</g>")
+
+
+def loss_scale(p, seg=None, **_):
+    """Most people say no. A balance: the red -$100 weight on the left pan, the teal +$150 on the right. On 'say no'
+    the beam tips the loss side down (10 degrees; the pans drop and rise 45 px) and a red NO stamp lands. On the
+    second sentence the teal weight grows to +$200 (counter 150 to 200) and on 'two hundred' the beam comes back
+    level, a teal tick on the post. The beam sways a degree whenever it is still."""
+    s0, s1, e1 = seg[0][0], seg[1][0], seg[1][1]
+    px_, py_ = 400, 170
+    tip0, tip1 = s0 + .35, s0 + 1.15
+    lev0 = s1 + (e1 - s1) * .72
+    _set(p, f'<path d="M260 600 H540" stroke="{INK}" stroke-width="8" stroke-linecap="round"/>'
+            f'<path d="M{px_} 600 V{py_}" stroke="{INK}" stroke-width="12" stroke-linecap="round"/>'
+            f'<path d="M{px_ - 40} 600 L{px_} 540 L{px_ + 40} 600 Z" fill="{INK}"/>')
+    ang = lambda a: [[0, 0, 0, 1, 1, 0], [round(tip0, 2), 0, 0, 1, 1, 0], [round(tip1, 2), 0, 0, 1, 1, a],
+                     [round(lev0, 2), 0, 0, 1, 1, a], [round(lev0 + .8, 2), 0, 0, 1, 1, 0]]
+    dy = lambda d: [[0, 0, 0], [round(tip0, 2), 0, 0], [round(tip1, 2), 0, d], [round(lev0, 2), 0, d], [round(lev0 + .8, 2), 0, 0]]
+    beam = (f'<path d="M{px_ - 270} {py_} H{px_ + 270}" stroke="{INK}" stroke-width="14" stroke-linecap="round"/>'
+            f'<circle cx="{px_}" cy="{py_}" r="16" fill="{GOLD}" stroke="{INK}" stroke-width="6"/>')
+    p.parts.append(_idle("swing", f'<g class="a" data-fx="kf" data-at="0" data-d="1" data-kf="{H.escape(_json(ang(-10)))}" '
+                                  f'style="transform-box:view-box;transform-origin:{px_}px {py_}px">{beam}</g>', 1, 1.4,
+                         style=f"transform-box:view-box;transform-origin:{px_}px {py_}px"))
+
+    def pan(x, weight):
+        return (f'<path d="M{x} {py_} L{x - 90} {py_ + 170} M{x} {py_} L{x + 90} {py_ + 170}" stroke="{GREY}" stroke-width="4"/>'
+                f'<path d="M{x - 110} {py_ + 170} Q{x} {py_ + 230} {x + 110} {py_ + 170} Z" fill="#fff" stroke="{INK}" stroke-width="7"/>'
+                + weight)
+    wl = f'<rect x="{px_ - 270 - 70}" y="{py_ + 70}" width="140" height="100" rx="12" fill="{RED}" stroke="{INK}" stroke-width="6"/>' \
+         + _t(px_ - 270, py_ + 138, "−$100", 40, "#fff")
+    grow_at = s1 + .3
+    wr_block = f'<rect x="{px_ + 270 - 70}" y="{py_ + 70}" width="140" height="100" rx="12" fill="{TEAL}" stroke="{INK}" stroke-width="6"/>'
+    wr = (_g("scaleY", grow_at, .7, wr_block, style="transform-box:fill-box", s0=1, s1=1.35)
+          + _life(-1, grow_at + 1.05, _t(px_ + 270, py_ + 138, "+$150", 40, "#fff"), fi=.01, fo=.05)
+          + _life(grow_at, 99, _count(px_ + 270, py_ + 138, 150, 200, round(grow_at, 2), .7, size=40, color="#fff", pre="+$"), fi=.05, fo=.01))
+    for x, w, d in ((px_ - 270, wl, 45), (px_ + 270, wr, -45)):
+        p.parts.append(f'<g class="a" data-fx="kf" data-at="0" data-d="1" data-kf="{H.escape(_json(dy(d)))}">{pan(x, w)}</g>')
+    p.parts.append(f'<g class="a" data-fx="stamp" data-at="{tip1 - .1:.2f}" data-d=".35" data-rot="-10" '
+                   f'style="transform-box:fill-box;transform-origin:center">'
+                   f'<rect x="40" y="10" width="200" height="110" rx="16" fill="#fff" fill-opacity=".92" stroke="{RED}" stroke-width="10"/>'
+                   + _t(140, 90, "NO", 76, RED) + "</g>")
+    p.parts.append(_g("pop", lev0 + .8, .35, f'<circle cx="{px_}" cy="470" r="34" fill="#fff" stroke="{INK}" stroke-width="5"/>'
+                                            f'<path d="M{px_ - 16} 471 l12 13 l24 -26" fill="none" stroke="{TEAL}" stroke-width="9" '
+                                            f'stroke-linecap="round" stroke-linejoin="round"/>'))
+    p.parts.append(_g("fade", lev0 + .9, .4, _t(px_, 535, "ABOUT 2 TO 1", 30, TEAL, serif=False), style=""))
+
+
+def lunch_bet(p, seg=None, **_):
+    """Samuelson's colleague (an illustrated reconstruction). A lunch table: a plain stick figure on the left (the
+    economist, labelled), the trader on the right (the colleague). On the first sentence a card slides across the
+    table: WIN $200 / LOSE $100, a coin beside it. On 'He said no' a bubble over the trader: x1 and a red NO. On the
+    last sentence the bubble swaps to x100 and a teal YES, and a stack of coins rises on the table, counting 1 to 100."""
+    s0, s1, s2, e2 = seg[0][0], seg[1][0], seg[2][0], seg[2][1]
+    _set(p, f'<path d="M150 470 H650" stroke="{INK}" stroke-width="10" stroke-linecap="round"/>'
+            f'<path d="M190 470 V600 M610 470 V600" stroke="{INK}" stroke-width="8" stroke-linecap="round"/>'
+            f'<path d="M20 600 H780" stroke="{INK}" stroke-width="5" stroke-linecap="round"/>')
+    figure(p, 110, 600, 1.75, (p.t0 + .05 - p.t0) / p.dur)
+    p.parts.append(_g("fade", p.t0 + .4, .3, _t(20, 628, "SAMUELSON, OUR ILLUSTRATION", 24, GREY, serif=False, anchor="start"), style=""))
+    trader(p, 690, 600, .72, "stand", .05, look=-1, turn=[(s1 - .2, -1)])
+    card = (f'<rect x="250" y="330" width="250" height="130" rx="12" fill="#fff" stroke="{INK}" stroke-width="6"/>'
+            + _t(375, 385, "WIN $200", 38, TEAL) + _t(375, 435, "LOSE $100", 38, RED))
+    p.parts.append(_g("slide", s0 + .4, .6, _g("fade", s0 + .4, .1, card, style=""), style="", x0=-200, x1=0, ease="out"))
+    bub = lambda inner: (f'<path d="M430 40 H760 Q790 40 790 70 V190 Q790 220 760 220 H700 L680 270 L660 220 H430 Q400 220 400 190 V70 '
+                         f'Q400 40 430 40 Z" fill="#fff" stroke="{INK}" stroke-width="6"/>' + inner)
+    no = bub(_t(510, 160, "×1", 70, INK) + _t(670, 160, "NO", 76, RED))
+    yes = bub(_t(530, 160, "×100", 70, INK) + _t(700, 160, "YES", 62, TEAL))
+    p.parts.append(_life(s1 + .05, s2 - s1 + .05, _g("pop", s1 + .05, .35, no), fi=.05, fo=.15))
+    p.parts.append(_life(s2 + .2, 99, _g("pop", s2 + .2, .35, yes), fi=.05, fo=.01))
+    # a stack of coins rising on the table while he says it
+    stack_at = s2 + .5
+    n_c = 7
+    for j in range(n_c):
+        y = 452 - 16 * j
+        p.parts.append(_g("slide", stack_at + .1 * j, .3, _g("fade", stack_at + .1 * j, .08,
+                          f'<ellipse cx="560" cy="{y}" rx="40" ry="13" fill="{GOLD}" stroke="{GOLD_D}" stroke-width="4"/>', style=""),
+                          style="", y0=-60, y1=0, ease="out"))
+    p.parts.append(_life(stack_at, 99, _count(560, 300, 1, 100, round(stack_at, 2), max(e2 - stack_at, .8), size=40, pre="×"), fi=.1, fo=.01))
+
+
+def hundred_tosses(p, seg=None, **_):
+    """A hundred tosses at $200 to $100. Top left a small coin spins through 100 tosses (counter 1 to 100) while the
+    chart grows: every possible total after 100 tosses (34 or more wins ends up, 33 or fewer ends down), each bar its
+    exact binomial chance, drawn left to right. On 'average' the middle bar ($5,000, 50 wins) is ringed with a
+    counter. On the second sentence the red zone left of $0 is shaded and labelled: ENDING DOWN, UNDER 0.1%
+    (our arithmetic: 0.044%); the teal side: OVER 99.9%."""
+    from math import comb
+    s0, e0, s1, e1 = seg[0][0], seg[0][1], seg[1][0], seg[1][1]
+    base, top = 520, 210
+    ws = list(range(28, 73))
+    pmf = {w: comb(100, w) / 2 ** 100 for w in ws}
+    peak = max(pmf.values())
+    x0, bw = 50, 15.5
+    xof = lambda w: x0 + (w - ws[0]) * bw
+    zero_x = xof(100 / 3)                                  # 300 W - 10,000 = 0 at W = 33.3
+    p.parts.append(_g("fade", p.t0, .25, f'<path d="M30 {base} H780" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>', style=""))
+    grow0, grow_d = s0 + .2, max(e0 - s0 - .4, 1.2)
+    for w in ws:
+        h_ = (base - top) * pmf[w] / peak
+        if h_ < .5:
+            continue
+        t = grow0 + grow_d * (w - ws[0]) / len(ws)
+        col = RED if w <= 33 else TEAL
+        bar = f'<rect x="{xof(w) + 1.5:.1f}" y="{base - h_:.1f}" width="{bw - 3:.1f}" height="{h_:.1f}" rx="3" fill="{col}"/>'
+        p.parts.append(_g("scaleY", t, .35, bar, style="transform-box:fill-box", s0=.001, s1=1))
+    for w, lab in ((50, "$5,000"), (72, "$11,600")):            # $0 is marked by the red line (17 Nov: a -$1,600 label crowded it)
+        p.parts.append(_g("fade", grow0 + grow_d * (w - ws[0]) / len(ws), .3,
+                          _t(xof(w) + bw / 2, base + 44, lab, 28, GREY if w != 50 else INK, serif=False), style=""))
+    # the spinning coin and the toss counter
+    p.parts.append(_g("fade", p.t0, .2, _g("coinflip", s0, max(e0 - s0, 1.2), _coin_shape(690, 110, 52, "$"), turns=40), style=""))
+    p.parts.append(_g("fade", p.t0, .2, _count(690, 210, 1, 100, round(s0, 2), max(e0 - s0, 1.2), size=34, pre="TOSS "), style=""))
+    av = s0 + (e0 - s0) * .7
+    xm = xof(50) + bw / 2
+    p.parts.append(_g("draw", av, .4, f'<path d="M{xm} {top - 20} V{base}" stroke="{INK}" stroke-width="4" stroke-dasharray="10 8"/>', style=""))
+    p.parts.append(_g("pop", av + .2, .35, f'<rect x="{xm - 150}" y="50" width="300" height="130" rx="22" fill="#fff" stroke="{INK}" '
+                                          f'stroke-width="6"/>' + _t(xm, 95, "AVERAGE", 26, GREY, serif=False)))
+    p.parts.append(_life(av + .25, 99, _count(xm, 160, 0, 5000, round(av + .3, 2), .8, size=52, color=TEAL, pre="+$").replace("data-dec", 'data-sep="1" data-dec', 1), fi=.05, fo=.01))
+    # the red zone and its share
+    z0 = s1 + .2
+    p.parts.append(_g("wipe", z0, .5, f'<rect x="30" y="{top - 40}" width="{zero_x - 30:.1f}" height="{base - top + 40}" fill="{RED}" '
+                                    f'fill-opacity=".16"/>', style=""))
+    p.parts.append(_g("draw", z0, .4, f'<path d="M{zero_x:.1f} {top - 40} V{base + 10}" stroke="{RED}" stroke-width="6" '
+                                    f'stroke-dasharray="12 9"/>', style=""))
+    p.parts.append(_g("fade", z0 + .1, .3, _t(zero_x, base + 44, "$0", 28, RED, serif=False), style=""))
+    lab_at = s1 + (e1 - s1) * .6
+    p.parts.append(_g("pop", lab_at, .4, _ptag(215, 330, 250, "< 0.1%", RED, "#fff", 46)))
+    p.parts.append(_g("fade", lab_at + .1, .3, _t(95, 250, "ENDING DOWN", 26, RED, serif=False, anchor="start"), style=""))
+
+
+def toss_asks(p, **_):
+    """The close: x1 and x100 tiles either side of a bobbing ?, the trader pointing at the viewer."""
+    p.fill(_tile(40, 120, 220, 150, TEAL, "×1", 90), .1)
+    p.fill(_tile(330, 120, 260, 150, GOLD, "×100", 84, color=INK), .25)
+    p.parts.append(_g("float", 0, 1, _g("pop", p.at(.4), .4, _t(300, 420, "?", 160, RED)), style="", amp=10, w=2.4))
+    trader(p, 690, 630, .9, "point", .05, look=-1, turn=[(p.at(.15), 0)])
+    p.parts.append(_idle("bob", _coin_shape(150, 470, 60, "$"), 10, 2.0))
+
+
+SCENES.update({f.__name__: f for f in (toss_hook, bet_average, loss_scale, lunch_bet, hundred_tosses, toss_asks)})

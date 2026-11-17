@@ -140,7 +140,10 @@ and true peak; effects in sync with their actions; originality, rights and monet
 
 ## 11. Cover and metadata
 
-- A cover that shows the actual Short: the IB brand, readable type, one strong focal point.
+- A cover that shows the actual Short: the IB brand, readable type, one strong focal point. Since 17 Nov a story-engine
+  Short sets `cover=dict(at=..., lines=[the hook question], hl=..., avoid=[the answer])`: the hook's frame with its
+  captions hidden and the question alone laid over them; the render refuses nothing silently (layout problems and any
+  answer text readable in the frame are printed as CHECK). The cover never shows the answer.
 - One recommended title under 70 characters and two alternatives.
 - Description: what the Short covers, sources with links (only URLs opened in the run), the
   not-financial-advice line, then hashtags (#Shorts plus one or two), then last:

@@ -275,14 +275,67 @@ def load_parts(work):
     return {k: (np.load(d / f"{k}.npy"), [tuple(x) for x in v]) for k, v in segs.items()}
 
 
+def cover_js(ep):
+    """17 Nov (the 16 Nov next improvement): a cover from a chosen frame plus an overlay. Until now the cover was a
+    plain frame at cover_at, so it carried whatever the captions said then (the $75 Short's cover showed the answer).
+    With ep["cover"] = dict(at=seconds, lines=[...], hl={word: colour}, avoid=[...]) the frame at `at` keeps its
+    drawing and its label, its captions are hidden (visibility, so nothing reflows) and the question alone is laid
+    over the caption zone in the hook's serif, as large as fits (start 92 px, down to 60) within the zone plus `grow`
+    px. Returns the title, the size used and any `avoid` text (the answer) still visible anywhere in the frame."""
+    c = ep["cover"]
+    cfg = dict(lines=c["lines"], hl=c.get("hl", {}), avoid=c.get("avoid", []), size=c.get("size", 92), grow=c.get("grow", 40),
+               min=c.get("min", 60))
+    return """(() => {
+  const C = %s;
+  const s = [...document.querySelectorAll('.scene')].find(x => x.style.visibility === 'visible');
+  const safe = s.querySelector('.safe'), sr = safe.getBoundingClientRect();
+  const vis = (n) => { for (let q = n; q && q !== s; q = q.parentElement) { const g = getComputedStyle(q);
+    if (g.opacity === '0' || g.visibility === 'hidden' || g.display === 'none') return false; } return true; };
+  const caps = [...s.querySelectorAll('.olchk')].filter(vis);
+  let top = 1e9, bot = 0;
+  caps.forEach(c => { const r = c.getBoundingClientRect(); top = Math.min(top, r.top); bot = Math.max(bot, r.bottom); });
+  caps.forEach(c => c.style.visibility = 'hidden');
+  const esc = t => t.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+  const paint = line => { let h = esc(line); for (const [w, col] of Object.entries(C.hl))
+    h = h.split(esc(w)).join(`<span style="color:${col}">${esc(w)}</span>`); return h; };
+  const ov = document.createElement('div');
+  ov.className = 'olchk cover-q';
+  ov.innerHTML = C.lines.map(l => `<div>${paint(l)}</div>`).join('');
+  ov.style.cssText = `position:absolute;left:0;top:${top - sr.top}px;width:${sr.width}px;z-index:7;font-family:'Serif',serif;` +
+    `font-weight:700;line-height:1.06;letter-spacing:-.02em;text-wrap:balance`;
+  safe.appendChild(ov);
+  // room: down to 16 px above the drawing's paper panel (24 px above its box) when one sits below, else zone + grow
+  const below = [...s.querySelectorAll('svg.sk')].filter(vis).map(e => e.getBoundingClientRect().top).filter(t => t >= bot - 2);
+  const room = below.length ? Math.min(...below) - 24 - 16 - top : bot - top + C.grow;
+  let size = C.size;
+  for (; size >= C.min; size -= 2) { ov.style.fontSize = size + 'px';
+    if (ov.getBoundingClientRect().height <= room) break; }
+  // what a viewer can read in the frame: visible text at an effective opacity of 0.3 or more, inside the frame
+  // (a faint edge floater at 0.14 still reads on black, so 0.1 counts; the close's tags waiting off screen do not)
+  const op = (n) => { let o = 1; for (let q = n; q && q !== document.body; q = q.parentElement) o *= +getComputedStyle(q).opacity; return o; };
+  const shown = [];
+  const walker = document.createTreeWalker(s, NodeFilter.SHOW_TEXT);
+  for (let n = walker.nextNode(); n; n = walker.nextNode()) {
+    const el = n.parentElement, r = el.getBoundingClientRect();
+    if (n.textContent.trim() && vis(el) && op(el) >= .1 && r.bottom > 0 && r.top < 1920 && r.right > 0 && r.left < 1080)
+      shown.push(n.textContent.trim()); }
+  const all = shown.join(' | ');
+  return {title: C.lines.join(' '), size, room: Math.round(room), zone: [Math.round(top), Math.round(bot)],
+          height: Math.round(ov.getBoundingClientRect().height), leaks: C.avoid.filter(a => all.includes(a)), shown: all.slice(0, 400)};
+})()""" % json.dumps(cfg)
+
+
 def make(ep, voice_name="HEART"):
     v, parts = synth(ep, voice_name)
     keep_parts(OUT / ep["slug"], parts)
     at, spans, total = timeline(ep, parts)
     print(f"  timing: {total:.1f} s, {len(ep['beats'])} beats" + ("  CHECK over 60 s" if total > 60 else ""), flush=True)
     sc, check_at = scene(ep, parts, at, spans, total)
-    mp4, cover, problems = build(ep["slug"] + "-silent", [sc], theme=L.TH["page"], cover_at=ep.get("cover_at", 1.6), crf=21,
-                                 check_at=check_at, fit=ep.get("fit", True))
+    if ep.get("cover") and isinstance(ep["cover"]["at"], tuple):     # ("e"|"s", beat, sentence, offset): on the words
+        kind, bi, j, o = ep["cover"]["at"]
+        ep["cover"]["at"] = round(cue_time((kind, j, o), bi, parts, at, spans), 2)
+    mp4, cover, problems = build(ep["slug"] + "-silent", [sc], theme=L.TH["page"], cover_at=ep["cover"]["at"] if ep.get("cover") else ep.get("cover_at", 1.6), crf=21,
+                                 check_at=check_at, fit=ep.get("fit", True), cover_js=cover_js(ep) if ep.get("cover") else None)
     voice, fx = soundtrack(ep, parts, at, spans, total + .6)
     fx = fx * L.shorts_mix(ep)[1]
     work = OUT / ep["slug"]
