@@ -18,6 +18,16 @@ What has been settled, and what is still open. Newest first.
 
 ## Settled
 
+- **Reel covers are designed for the profile grid** (16 Nov, Pietro: "the cover of the reel is not perfectly readable
+  or centred, or both, on the home page ... part of the thing written there is cut"). The grid shows a Reel as the
+  middle 3:4 of its 9:16 cover, cutting 240 px top and bottom; the automatic Reels used a frame of the video, laid out
+  for the player (header near the top, text kept left of the action rail), so the header was cut and the text sat off
+  centre. From 17 Nov `build/reel_queue.py` gives every Reel a cover from `build/reel_cover.py`: the carousel covers'
+  style (IB mark and series on top, the question large and centred in Source Serif, level chips for the quiz, handle
+  and Watch cue at the bottom), on the Reel's ground, everything inside y 240 to 1680; the render refuses a cover with
+  text outside that band and writes `cover_grid_preview.jpg`, the exact tile. The API cannot change the cover of a
+  Reel already posted, so the 16 Nov Reel keeps its frame unless Pietro swaps it in the app.
+
 - **Two Reels a day, posted automatically, no approval** (16 Nov, Pietro: "We will post two each days. You won't
   need my approval. You will use your own intelligence to analyze the top performing reels and make improvements if
   necessary. You will decide at what time to post each day - based on the most convenients times for our nieche.").

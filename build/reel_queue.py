@@ -11,9 +11,11 @@ What it does, in order, and it stops at the first failed check:
      Instagram music cannot be added by a person any more, so the scored file is the default.
   2. Checks the file Instagram will get: H.264 and AAC, 1080 x 1920, 3 to 90 seconds, under 100 MB, audio present.
   3. Checks the caption: present, at most 2,200 characters, at most 5 hashtags, the AI-narration line, no em dash.
-  4. Pushes the video and the cover to a temporary branch reel/<slug> (one commit, no history; main never holds an
+  4. Makes the cover with build/reel_cover.py (designed for the 3:4 profile-grid tile: everything inside y 240 to
+     1680, centred; a video frame is never the cover) unless --cover is given.
+  5. Pushes the video and the cover to a temporary branch reel/<slug> (one commit, no history; main never holds an
      MP4). The publisher deletes the branch once the Reel is live.
-  5. Adds the entry to posts.json at the slot's time (America/New_York) and commits it to main.
+  6. Adds the entry to posts.json at the slot's time (America/New_York) and commits it to main.
 
 The slots live in posts.json "reel_slots_et" so a run can move them from the performance data
 (docs/daily/performance.md) and record why in docs/decisions-log.md. The publisher posts at or after the slot, sets
@@ -27,6 +29,8 @@ import shutil
 import subprocess
 import sys
 import tempfile
+
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 from datetime import date, datetime, time
 from zoneinfo import ZoneInfo
 
@@ -132,6 +136,8 @@ def main():
     ap.add_argument("--master", choices=["scored", "clean"])
     ap.add_argument("--caption")
     ap.add_argument("--comment", default="")
+    ap.add_argument("--cover", help="a ready 1080 x 1920 cover; default: build/reel_cover.py makes a grid-safe one")
+    ap.add_argument("--title", help="cover title, default the Reel's hook question")
     ap.add_argument("--dry-run", action="store_true")
     a = ap.parse_args()
 
@@ -146,7 +152,14 @@ def main():
     cap_path = pathlib.Path(a.caption) if a.caption else ROOT / "build" / "captions" / f"{a.slug}.txt"
     caption = cap_path.read_text().strip() if cap_path.exists() else ""
     problems += check_caption(caption)
-    cover = next((c for c in (OUT / a.slug / "cover.jpg", OUT / a.slug / f"{a.slug}-cover.jpg") if c.exists()), None)
+    # 16 Nov (Pietro: the cover on the profile grid was cut and off centre): every queued Reel gets a cover designed
+    # for the 3:4 grid tile (build/reel_cover.py), unless --cover names another file; a video frame is never used.
+    if a.cover:
+        cover = pathlib.Path(a.cover)
+    else:
+        import reel_cover
+        cover = reel_cover.make(a.slug, title=a.title)
+    print(f"cover: {cover} (grid tile preview: {cover.with_name('cover_grid_preview.jpg')})")
     if problems:
         sys.exit("NOT QUEUED: " + "; ".join(problems))
     pid = f"reel-{a.slug}"

@@ -117,5 +117,7 @@ A Reel passes sections 1, 2, 3, 5, 6 and 8 as a film does, adapted to 9:16, plus
 - **Sound and masters**: action-timed effects, no whoosh; the clean master at about -16 LUFS, true peak at or under
   -1.5 dBTP; the scored master (the one posted since 16 Nov, when Reels went automatic) (`python3 build/master.py scored build/out/<slug>/<slug>.mp4 -16 <mood> <mood>`)
   when feasible, measured, never with platform-library or commercial music.
+- **Cover**: `build/out/<slug>/cover_grid_preview.jpg` looked at: the whole question readable and centred in the
+  3:4 tile (`build/reel_cover.py` refuses text outside it).
 - **Caption**: PASS on ig-human, the substance checks in content-compliance, the AI-narration line; Instagram's AI
   label recommended for the synthetic narrator.

@@ -142,7 +142,8 @@ top performing reels and make improvements if necessary. You will decide at what
   (`python3 build/master.py scored build/out/<slug>/<slug>.mp4 -16 <mood> <mood>`), our own score, rights class
   ORIGINAL_GENERATED. If the scored master fails its checks, the clean master is posted.
 - **Queue**: `python3 build/reel_queue.py <slug> --slot A|B --caption <caption file> --comment "<question>"` checks
-  the file (H.264/AAC, 1080 x 1920, 3 to 90 s), the caption (at most 2,200 characters, at most 5 hashtags, the
+  the file (H.264/AAC, 1080 x 1920, 3 to 90 s), makes the grid-safe cover (`build/reel_cover.py`, from the hook
+  question; look at `cover_grid_preview.jpg`, the exact profile tile, before committing), the caption (at most 2,200 characters, at most 5 hashtags, the
   AI-narration line, no em dash), pushes the video and cover to a temporary branch `reel/<slug>` and adds the entry
   to `posts.json`. Commit `posts.json` and push (`git pull --rebase` first). The publisher posts at the slot, sets
   Instagram's AI label at creation (`is_ai_generated`), posts the comment question as the first comment, then deletes

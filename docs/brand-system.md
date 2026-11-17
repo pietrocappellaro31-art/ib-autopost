@@ -55,6 +55,8 @@ by inspecting the live account. Check it on every render.
   on a technical page.
 - **Reels (1080x1920):** nothing above y=230 or below y=1440, and keep the
   right 230px clear for the action rail.
+- **Reel covers (16 Nov 2026):** not a video frame. `build/reel_cover.py`: the carousel cover style on the Reel's
+  ground, centred, everything inside the 3:4 grid tile (y 240 to 1680 of 1080x1920, 80px side margins).
 
 ## Rendering, hard-won
 
