@@ -1,0 +1,13 @@
+Sales up 10%. Profit up 60%. Same company, same year.
+
+The trick is fixed costs. Say a company sells $100: $40 goes on costs that move with sales, $50 on rent and salaries, and $10 is left as profit.
+
+Sales rise 10% to $110. The moving costs rise to $44, rent and salaries stay at $50, so profit is $16. That's 60% more. Run it the other way and a 10% drop in sales takes profit down 60%, to $4.
+
+That's operating leverage. It's why two companies with the same sales growth can report very different profit growth.
+
+Sales fall 20% from here. What happens to profit? Answer in the comments.
+
+Narration: AI-generated voice; script is our original work.
+
+#investmentbanking #financeinterview #corporatefinance #ibinterview

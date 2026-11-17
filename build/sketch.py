@@ -4329,7 +4329,7 @@ def cost_split(p, seg=None, **_):
     s0, s1, s2, s3 = (x[0] for x in seg[:4])
     _set(p, _ol_ground())
     p.parts.append(_g("growY", s0 + .3, .7, _ol_col(0, 100, GOLD), style="transform-box:fill-box;transform-origin:center bottom"))
-    p.parts.append(_g("fade", s0 + .9, .3, _t(OL_X[0] + OL_W / 2, B17 - 320 - 18, "$100", 44, "#fff"), style=""))
+    p.parts.append(_g("fade", s0 + .9, .3, _t(OL_X[0] + OL_W / 2, B17 - 320 - 18, "$100", 44, INK), style=""))
     # copies leave the sales bar: moving (its bottom 40), fixed (the next 50), profit (the top 10)
     pieces = [(1, 40, 0, MOVE_C, "$40", INK, s1 + .2), (2, 50, 40, DEBT_C, "$50", "#fff", s2 + .2), (3, 10, 90, TEAL, "", "#fff", s3 + .2)]
     for i, d, below, fill, lab, col, t in pieces:
@@ -4389,12 +4389,12 @@ def cost_grow(p, seg=None, **_):
     p.parts.append(_g("fade", -1, .05, _idle("swing", lock, 4, 1.6, style=f"transform-box:view-box;transform-origin:{OL_X[2] + OL_W / 2}px {B17 - 248}px"),
                       style=""))
     p.parts.append(f'<g class="a" data-fx="stamp" data-at="{s2 + .6:.2f}" data-d=".35" data-rot="-6" style="transform-box:fill-box;transform-origin:center">'
-                   + _ptag(OL_X[2] + OL_W / 2 + 10, B17 - 330, 200, "NO CHANGE", INK, "#fff", 26) + "</g>")
+                   + _ptag(OL_X[2] + OL_W / 2, B17 - 330, 180, "NO CHANGE", INK, "#fff", 24) + "</g>")
     _ol_change(p, 3, 10, 16, s3 + .4, TEAL, "#fff")
     p.parts.append(f'<g class="a" data-fx="stamp" data-at="{seg[3][0] + (seg[3][1] - seg[3][0]) * .6:.2f}" data-d=".35" data-rot="-8" '
                    f'style="transform-box:fill-box;transform-origin:center">'
-                   f'<rect x="{OL_X[3] - 20}" y="160" width="200" height="104" rx="16" fill="#fff" stroke="{TEAL}" stroke-width="9"/>'
-                   + _t(OL_X[3] + 80, 235, "+60%", 64, TEAL) + "</g>")
+                   f'<rect x="{OL_X[3] - 20}" y="130" width="200" height="104" rx="16" fill="#fff" stroke="{TEAL}" stroke-width="9"/>'
+                   + _t(OL_X[3] + 80, 205, "+60%", 64, TEAL) + "</g>")
 
 
 def cost_shrink(p, seg=None, **_):
@@ -4458,13 +4458,13 @@ def lever_fixed(p, seg=None, **_):
 
 def oplev_asks(p, **_):
     """The close: SALES with a -20% tag and a dashed $80 outline, PROFIT as a ? that bobs."""
-    p.parts.append(f'<path d="M30 560 H770" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>')
-    p.fill(f'<rect x="80" y="{560 - 320}" width="200" height="320" rx="10" fill="{GOLD}" stroke="{INK}" stroke-width="6"/>', .05)
+    _set(p, f'<path d="M30 560 H770" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+            f'<rect x="80" y="{560 - 320}" width="200" height="320" rx="10" fill="{GOLD}" stroke="{INK}" stroke-width="6"/>'
+            + _t(180, 600, "SALES", 30, INK, serif=False) + _t(600, 600, "PROFIT", 30, INK, serif=False))
     p.parts.append(_g("draw", p.at(.25), .4, f'<rect x="80" y="{560 - 256}" width="200" height="256" rx="10" fill="none" stroke="{RED}" '
                                            f'stroke-width="7" stroke-dasharray="16 10"/>', style=""))
     p.fill(_ptag(380, 230, 170, "−20%", RED, "#fff", 46), .35)
     p.parts.append(_g("float", 0, 1, _g("pop", p.at(.5), .4, _t(600, 470, "?", 220, RED)), style="", amp=12, w=2.2))
-    p.parts.append(_t(600, 600, "PROFIT", 30, INK, serif=False))
 
 
 SCENES.update({f.__name__: f for f in (oplev_hook, cost_split, cost_grow, cost_shrink, lever_fixed, oplev_asks)})

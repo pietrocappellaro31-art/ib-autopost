@@ -299,6 +299,13 @@
    "kind": "short",
    "id": "flawed-mangoes-swimming",
    "mood": "curious"
+  },
+  {
+   "date": "2026-11-17",
+   "slug": "w2-operating-leverage",
+   "kind": "short",
+   "id": "ludovico-einaudi-experience",
+   "mood": "curious"
   }
  ],
  "originals": [
@@ -409,6 +416,19 @@
    "bpm": 75,
    "key": "E",
    "style": "solo_piano",
+   "rights": "ORIGINAL_GENERATED",
+   "added": "2026-11-17",
+   "note": ""
+  },
+  {
+   "id": "score-w2-operating-leverage",
+   "title": "Original score for w2-operating-leverage",
+   "video": "w2-operating-leverage",
+   "engine": "score.py + GeneralUser GS v2.0.3 (TinySoundFont)",
+   "mood": "discover+resolve",
+   "bpm": 85,
+   "key": "D",
+   "style": "ambient",
    "rights": "ORIGINAL_GENERATED",
    "added": "2026-11-17",
    "note": ""
