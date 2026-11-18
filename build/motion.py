@@ -203,6 +203,9 @@ function place(el, local) {
         tf = `translate(${((r(1) - .5) * 2 * a).toFixed(2)}px,${((r(2) - .5) * 2 * a).toFixed(2)}px)`; } else tf = 'none'; }
   else if (fx === 'sway') { const g = E.inout(clamp((local - at) / d)), a = +(el.dataset.amp || .45), w = +(el.dataset.w || 1.3), ph = +(el.dataset.ph || 0);
       tf = g > 0 ? `rotate(${(Math.sin((local - at) * w + ph) - Math.sin(ph)) * a * g}deg)` : 'none'; }
+  else if (fx === 'idle') { const g = E.inout(clamp((local - at) / d)), a = +(el.dataset.amp || 3), r = +(el.dataset.rot || .2),   // 18 Nov: held life, HTML kinds
+        w = +(el.dataset.w || 1.9), ph = +(el.dataset.ph || 0), k = local - at;
+      tf = g > 0 ? `translateY(${((Math.sin(k * w + ph) - Math.sin(ph)) * a * g).toFixed(2)}px) rotate(${((Math.sin(k * w * .77 + ph * 1.3) - Math.sin(ph * 1.3)) * r * g).toFixed(3)}deg)` : 'none'; }
   else if (fx === 'spin') { tf = `rotate(${local * +(el.dataset.deg||40)}deg)`; }
   else if (fx === 'float') { const a = +(el.dataset.amp||10), w = +(el.dataset.w||1), ph = +(el.dataset.ph||0);
       tf = `translate(${Math.cos(local*w*.7+ph)*a*.6}px,${Math.sin(local*w+ph)*a}px)`; }

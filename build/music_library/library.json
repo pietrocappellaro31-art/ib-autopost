@@ -492,6 +492,19 @@
    "rights": "ORIGINAL_GENERATED",
    "added": "2026-11-18",
    "note": ""
+  },
+  {
+   "id": "score-yt-012-ltcm",
+   "title": "Original score for yt-012-ltcm",
+   "video": "yt-012-ltcm",
+   "engine": "score.py + GeneralUser GS v2.0.3 (TinySoundFont)",
+   "mood": "suspense",
+   "bpm": 86,
+   "key": "Bb",
+   "style": "harp",
+   "rights": "ORIGINAL_GENERATED",
+   "added": "2026-11-18",
+   "note": "chosen in parallel with today's Short (harp in F); both runs picked before either was logged"
   }
  ]
 }

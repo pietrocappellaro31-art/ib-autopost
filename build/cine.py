@@ -557,6 +557,23 @@ def pose(name=None, **over):
     return d
 
 
+def sit_keys(t, start="relaxed", end="seated", d=.8, **over):
+    """18 Nov (build order step 2, people): pose keys for sitting down at t, as one motion instead of a cut between
+    standing and seated poses: the weight goes back and the torso leans forward over the knees (a third of the way),
+    the hips drop into the chair, then the back straightens. Use inside pose_keys: [[0, pose("relaxed")],
+    *sit_keys(4.0), ...]. Reverse it for standing up with stand_keys()."""
+    mid = pose(end, **over)
+    mid.update(hipF=mid.get("hipF", 0) * .55, knF=mid.get("knF", 0) * .6, hipB=mid.get("hipB", 0) * .55, knB=mid.get("knB", 0) * .6,
+               rootY=mid.get("rootY", 0) * .45, lean=18, shF=30, elF=40, head=8)
+    return [[round(t, 3), pose(start, **over)], [round(t + d * .4, 3), mid, "inout"], [round(t + d, 3), pose(end, **over), "out"]]
+
+
+def stand_keys(t, start="seated", end="relaxed", d=.8, **over):
+    """Standing up from a chair at t: lean forward over the knees, push up, straighten (the reverse of sit_keys)."""
+    k = sit_keys(t, start=end, end=start, d=d, **over)
+    return [[round(t, 3), k[2][1]], [round(t + d * .5, 3), k[1][1], "inout"], [round(t + d, 3), k[0][1], "out"]]
+
+
 def actor(aid, look, pos, pose_keys=None, turn=None, scale=1.0, seed=1, stride=None, t0=0.0, amp=24, dir=1,
           walk=True, holdF="", holdB="", upright=False):
     """One rigged person in a shot. pos: [[t, x, y(ground)], ...]; pose_keys: [[t, dict], ...];

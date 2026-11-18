@@ -20,7 +20,12 @@ import sys
 import youtube as Y
 from yt_preview import motion_stats
 
-path, spans = sys.argv[1], [float(x) for x in sys.argv[2:]]
+# 18 Nov: --text measures the HTML text visuals' held life (youtube.TEXT_LIFE, ep["text_life"]) the same way, with
+# the drawings' held life on in both renders: python3 build/held_life_check.py --text build/youtube_ep012.py a b ...
+TEXT = "--text" in sys.argv
+argv = [a for a in sys.argv[1:] if a != "--text"]
+KEY = "text_life" if TEXT else "held_life"
+path, spans = argv[0], [float(x) for x in argv[1:]]
 spans = list(zip(spans[::2], spans[1::2]))
 spec = importlib.util.spec_from_file_location("ep", path)
 mod = importlib.util.module_from_spec(spec)
@@ -32,10 +37,10 @@ items = Y.synth(ep, Y.YOUTUBE_VOICE, work)
 res = {}
 for mode in (False, True):
     Y.PACING.clear(); Y.CINE.clear(); Y.BEATS.clear(); Y.CAM_USE.clear()
-    sc, chapters, sounds, total = Y.scenes(dict(ep, held_life=mode), items)
+    sc, chapters, sounds, total = Y.scenes(dict(ep, **{KEY: mode}, **({"held_life": True} if TEXT else {})), items)
     cine = [(c["t"], c["t"] + c["dur"]) for c in Y.CINE]
     html, total = Y.page(sc)
-    src = work / f"held_{int(mode)}.html"
+    src = work / f"{KEY}_{int(mode)}.html"
     src.write_text(html)
     clips = []
     with Y.sync_playwright() as p:
@@ -46,7 +51,7 @@ for mode in (False, True):
         pg.evaluate("fitSketches()")
         for k, (a, z) in enumerate(spans):
             assert not any(ca < z and cb > a for ca, cb in cine), f"span {a}-{z} touches a filmed beat"
-            clip = work / f"held_{int(mode)}_{k}.mp4"
+            clip = work / f"{KEY}_{int(mode)}_{k}.mp4"
             ff = subprocess.Popen(["ffmpeg", "-y", "-v", "error", "-f", "image2pipe", "-framerate", str(Y.FPS), "-c:v", "mjpeg", "-i", "-",
                                    "-c:v", "libx264", "-crf", "20", "-pix_fmt", "yuv420p", str(clip)], stdin=subprocess.PIPE)
             for f in range(int(a * Y.FPS), int(z * Y.FPS)):
@@ -65,7 +70,7 @@ for mode in (False, True):
         spans=[{k: v for k, v in x.items() if k != "per_second"} for x in per])
     print(("ON " if mode else "OFF"), {k: v for k, v in res["on" if mode else "off"].items() if k != "spans"}, flush=True)
 res["spans_s"] = spans
-json.dump(res, open(work / "held_life.json", "w"), indent=1)
+json.dump(res, open(work / f"{KEY}.json", "w"), indent=1)
 # a strip: 6 frames 1/6 s apart from the first span's last second, off on top, on below
 a, z = spans[0]
 tiles = []
@@ -73,12 +78,12 @@ for mode in (0, 1):
     for k in range(6):
         t = (z - a) - 1.2 + k / 6
         out = work / f"_h{mode}{k}.jpg"
-        subprocess.run(["ffmpeg", "-y", "-v", "error", "-ss", f"{t:.3f}", "-i", str(work / f"held_{mode}_0.mp4"), "-frames:v", "1",
+        subprocess.run(["ffmpeg", "-y", "-v", "error", "-ss", f"{t:.3f}", "-i", str(work / f"{KEY}_{mode}_0.mp4"), "-frames:v", "1",
                         "-vf", "scale=480:-1", str(out)], check=True)
         tiles.append(out)
 lay = "|".join(f"{'+'.join(['w0'] * c) or '0'}_{'h0' if r else '0'}" for r in (0, 1) for c in range(6))
 subprocess.run(["ffmpeg", "-y", "-v", "error", *sum((["-i", str(p)] for p in tiles), []), "-filter_complex",
-                "".join(f"[{i}:v]" for i in range(12)) + f"xstack=inputs=12:layout={lay}", str(work / "held_life_strip.jpg")], check=True)
+                "".join(f"[{i}:v]" for i in range(12)) + f"xstack=inputs=12:layout={lay}", str(work / f"{KEY}_strip.jpg")], check=True)
 for p in tiles:
     p.unlink()
-print("strip:", work / "held_life_strip.jpg")
+print("strip:", work / f"{KEY}_strip.jpg")

@@ -85,7 +85,7 @@ identical cards" fails, and so does swapping one repeated template for another.
 - Fake animation (only pans, zooms and floating particles over a still) does not count as animation.
 - Several sentences may share one evolving scene (visual progression), instead of one card per sentence.
 - Held drawings live (17 Nov): a finished `sketch.py` drawing boils and sways slightly (`sketch.held_life`), so a
-  drawn beat never freezes once drawn. HTML text visuals (compare, number, list) do not have it yet.
+  drawn beat never freezes once drawn. HTML text visuals have it too from 18 Nov (`youtube.idle`, motion.JS fx `idle`: each landed card or item bobs and tilts on its own period; `IDLE_GAIN` 2.2; measured 21.1% to 13.5% static on #12's text spans).
 - Check motion in motion: motion sheets and the static-share measure (`yt_preview.py --motion`), never stills alone.
 
 ## 7. Formats and frame rates
@@ -112,7 +112,10 @@ identical cards" fails, and so does swapping one repeated template for another.
    17 Nov (YouTube #11, `cine_1974.py`): a 1974 payments room with two wall clocks whose hands move and a printing telex,
    two bank counters (Frankfurt, New York) either side of the sea with their own clocks and day or night windows, a New
    York account desk, a settlement desk between the counters.
-   Next: a modern trading floor with screens, a bank office, a city street today, a boardroom, a kitchen table.
+   18 Nov (YouTube #12, `cine_1998.py`): a 1998 trading room with live CRT screens (greeked rows, a yield screen whose
+   gap closes and opens) and a split-flap board; a panelled meeting room at night with a moving clock, a long table and a
+   term sheet; 1998 looks. `cine.sit_keys` / `stand_keys` (people step 2: sitting down as one motion).
+   Next: a city street today, a bank office, a kitchen table.
 4. **Data in the world** (started): price paths that draw with flags; numbers that lift off documents. Next:
    balance sheet that rearranges, cash-flow waterfall, LBO structure, debt schedule (see `scene-library.md`).
    15 Nov: documents in the world: `cine_lib.document_shot` films a quote on a desk, inked as it is read and

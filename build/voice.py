@@ -30,6 +30,21 @@ DIR = os.environ.get("KOKORO_DIR", "")
 PHONEMES = {
     # 18 Nov, Reel A (accretion / dilution): "dilutive" was heard "deludive" with the default reading
     "dilutive": "daɪlˈutɪv",
+    # 18 Nov, YouTube #12 (Long-Term Capital Management, 1998)
+    "merton": "mˈɜɹtᵊn",
+    "scholes": "skˈOlz",
+    "myron": "mˈIɹən",
+    "meriwether": "mˈɛɹiwˌɛðəɹ",
+    "merrill": "mˈɛɹəl",
+    "donald": "dˈɑnᵊld",
+    "ubs": "jˌubˌiˈɛs",
+    "ltcm": "ˌɛltˌisˌiˈɛm",
+    "salomon": "sˈæləmən",
+    "mackenzie": "məkˈɛnzi",
+    "mcdonough": "məkdˈʌnə",
+    "mcdonough's": "məkdˈʌnəz",
+    "counterparty": "kˈWntəɹpˌɑɹɾi",
+    "counterparties": "kˈWntəɹpˌɑɹɾiz",
     # 17 Nov, the coin toss Short (Paul Samuelson, 1963)
     "samuelson": "sˈæmjuəlsən",
     # 17 Nov, YouTube #11 (Herstatt, 1974)

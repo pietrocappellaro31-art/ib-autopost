@@ -202,6 +202,33 @@ def _snd(*events):
     sketch.SOUND_LOG.append(dict(name="html", t0=0, events=[(e[0], round(e[1], 3), None, e[2] if len(e) > 2 else {}) for e in events]))
 
 
+# 18 Nov (YouTube #12, the 17 Nov next improvement): held life for the HTML text visuals. sketch.held_life (17 Nov)
+# keeps finished drawings moving, but the HTML kinds (number, compare, list, flow, timeline, term, icon, icons,
+# verdict, split, quote, statement) froze once their entrance ended, and those were the last static seconds of #11.
+# Now each card or item, once it has landed, gets its own small idle motion (motion.JS fx "idle": a vertical bob of a
+# few px and a fraction of a degree of tilt, eased in over .6 s, each with its own phase and period, so two compare
+# cards move out of step and list items breathe in turn). It is a wrapper around the element, so the entrance
+# transform is untouched; it is silent. Off with ep["text_life"] = False (an exact re-render of #1 to #11).
+TEXT_LIFE = True
+IDLE_N = [0]
+# Measured on #12's own text spans (held_life_check --text): at the first amplitudes (2 to 4 px, 0.1 to 0.4 degrees)
+# the idle layer lifted the quietest seconds (0.15 to 0.36 grey levels) but none crossed the 0.5 still line, so the
+# static share did not move (17.9% both ways). IDLE_GAIN scales every amplitude; 2.2 is the setting in use.
+IDLE_GAIN = 2.2
+
+
+def idle(inner, at, amp=3.0, rot=.22, style="", w=None):
+    """Wrap a landed HTML element in its held-life layer (see TEXT_LIFE)."""
+    if not TEXT_LIFE:
+        return f'<div style="{style}">{inner}</div>' if style else inner
+    IDLE_N[0] += 1
+    n = IDLE_N[0]
+    w = w or round(1.7 + .45 * ((n * 7) % 5) / 4, 2)          # periods 2.7 to 3.7 s: neighbours never in step
+    amp, rot = round(amp * IDLE_GAIN, 2), round(rot * IDLE_GAIN, 3)
+    return A(inner, "idle", round(at, 3), .6, amp=amp, rot=rot if n % 2 else -rot, w=w, ph=round((n * 2.399) % 6.283, 3),
+             style=style)
+
+
 def visual(show, t0, dur):
     k = show.get("kind", "statement")
     n_ = len(show.get("items", ()))
@@ -226,35 +253,37 @@ def visual(show, t0, dur):
     elif k == "split":
         _snd(("softpop", t0 + .3), ("hit", t0 + dur * .4 + .2), ("softpop", t0 + dur * .45 + .3))
     if k == "statement":
-        return words_kara(show["text"], t0, dur * .9, show.get("hl", ()), size=show.get("size", 112))
+        return idle(words_kara(show["text"], t0, dur * .9, show.get("hl", ()), size=show.get("size", 112)), t0 + min(dur * .9, 2.5), amp=2.2, rot=.12)
     if k == "number":
         v = show["value"]
         dec = show.get("dec", 0)
         num = A("0", "count", t0 + .2, min(1.6, dur * .6), cls="num", style=f"font-size:220px;line-height:1;color:{RED}",
                 **{"from": show.get("start", 0), "to": v, "dec": dec, "pre": show.get("pre", ""), "suf": show.get("suf", "")})
         lab = A(H.escape(show.get("label", "")), "rise", t0 + .5, .5, style="font-size:48px;font-weight:500;margin-top:24px;opacity:.85")
-        return num + lab
+        return idle(num, t0 + .2 + min(1.6, dur * .6), amp=3.5, rot=.35) + idle(lab, t0 + 1.0, amp=2.0, rot=.1)
     if k == "list":
         n = len(show["items"])
         out = ""
         for i, it in enumerate(show["items"]):
-            out += A(f'<span style="color:{RED};font-family:&quot;Serif&quot;;font-weight:700;margin-right:28px">{i + 1:02d}</span>{H.escape(it)}',
-                     "rise", pace(i, n, t0 + .1, dur, "list"), .45,
-                     style="font-family:'Serif',serif;font-weight:700;font-size:78px;line-height:1.15;margin:16px 0")
+            at = pace(i, n, t0 + .1, dur, "list")
+            out += idle(A(f'<span style="color:{RED};font-family:&quot;Serif&quot;;font-weight:700;margin-right:28px">{i + 1:02d}</span>{H.escape(it)}',
+                          "rise", at, .45,
+                          style="font-family:'Serif',serif;font-weight:700;font-size:78px;line-height:1.15;margin:16px 0"), at + .5, amp=2.6, rot=.15)
         return (A(H.escape(show.get("title", "")), "fade", t0, .4, cls="lbl", style="margin-bottom:18px") if show.get("title") else "") + out
     if k == "compare":
         (l1, v1), (l2, v2) = show["left"], show["right"]
-        col = lambda lab, val, c, d: A(f'<div class="lbl">{H.escape(lab)}</div><div class="num" style="font-size:150px;line-height:1.05;color:{c}">{H.escape(val)}</div>',
-                                       "pop", t0 + d, .5, style="flex:1;background:#fff;border-radius:28px;padding:48px 56px;box-shadow:0 24px 60px rgba(10,10,10,.1)")
+        col = lambda lab, val, c, d: idle(A(f'<div class="lbl">{H.escape(lab)}</div><div class="num" style="font-size:150px;line-height:1.05;color:{c}">{H.escape(val)}</div>',
+                                            "pop", t0 + d, .5, style="background:#fff;border-radius:28px;padding:48px 56px;box-shadow:0 24px 60px rgba(10,10,10,.1)"),
+                                          t0 + d + .55, amp=4.0, rot=.4, style="flex:1")
         return (f'<div style="display:flex;gap:56px">{col(l1, v1, INK, .2)}{col(l2, v2, TEAL, dur * .45)}</div>'
                 + (A(H.escape(show.get("note", "")), "rise", t0 + dur * .6, .5, style="font-size:52px;font-weight:500;margin-top:40px;opacity:.85")
                    if show.get("note") else ""))
     if k == "term":
-        return (A(H.escape(show["term"]), "pop", t0 + .1, .5, cls="num", style=f"font-size:200px;line-height:1;color:{RED}")
-                + A(H.escape(show["text"]), "rise", t0 + .7, .6, style="font-size:58px;font-weight:500;line-height:1.3;margin-top:30px;max-width:1450px"))
+        return (idle(A(H.escape(show["term"]), "pop", t0 + .1, .5, cls="num", style=f"font-size:200px;line-height:1;color:{RED}"), t0 + .7, amp=3.5, rot=.35)
+                + idle(A(H.escape(show["text"]), "rise", t0 + .7, .6, style="font-size:58px;font-weight:500;line-height:1.3;margin-top:30px;max-width:1450px"), t0 + 1.4, amp=2.0, rot=.08))
     if k == "icon":            # big drawn icon beside a line of text
-        side = badge(show["icon"], show.get("isize", 470), at=t0, ring=show.get("ring", RED))
-        txt = words_kara(show["text"], t0 + .3, dur * .85, show.get("hl", ()), size=int(show.get("size", 96) * 1.18))
+        side = idle(badge(show["icon"], show.get("isize", 470), at=t0, ring=show.get("ring", RED)), t0 + 1.2, amp=5.0, rot=1.2)
+        txt = idle(words_kara(show["text"], t0 + .3, dur * .85, show.get("hl", ()), size=int(show.get("size", 96) * 1.18)), t0 + .3 + min(dur * .85, 2.5), amp=2.0, rot=.1)
         return (f'<div style="display:flex;align-items:center;gap:90px">{side}<div style="flex:1">'
                 + (A(H.escape(show["label"]), "fade", t0, .4, cls="lbl", style="margin-bottom:22px") if show.get("label") else "")
                 + txt + "</div></div>")
@@ -264,7 +293,7 @@ def visual(show, t0, dur):
         for i, (ic, lab) in enumerate(show["items"]):
             at = pace(i, n, t0 + .05, dur, "icons")
             cells += (f'<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:34px">'
-                      + badge(ic, 330, at=at, ring=RED if i == show.get("hi", -1) else "rgba(10,10,10,.12)")
+                      + idle(badge(ic, 330, at=at, ring=RED if i == show.get("hi", -1) else "rgba(10,10,10,.12)"), at + 1.0, amp=4.5, rot=1.0)
                       + A(H.escape(lab), "rise", at + .3, .45, style="font-family:'Serif',serif;font-weight:700;font-size:66px;text-align:center;line-height:1.1")
                       + "</div>")
         return ((A(H.escape(show["title"]), "fade", t0, .4, cls="lbl", style="margin-bottom:46px;text-align:center") if show.get("title") else "")
@@ -278,9 +307,9 @@ def visual(show, t0, dur):
             at = pace(i, n, t0 + .2, dur, "timeline")
             hot = i == show.get("hi", n - 1)
             pts += (f'<div style="position:absolute;left:{x}%;top:0;transform:translateX(-50%);width:420px;text-align:center">'
-                    + A(H.escape(when), "rise", at, .4, cls="num", style=f"font-size:84px;color:{RED if hot else INK};height:120px")
+                    + idle(A(H.escape(when), "rise", at, .4, cls="num", style=f"font-size:84px;color:{RED if hot else INK};height:120px"), at + .5, amp=3.0, rot=.3)
                     + A("", "pop", at + .1, .4, style=f"width:44px;height:44px;border-radius:50%;margin:0 auto;background:{RED if hot else '#fff'};border:8px solid {RED if hot else INK};box-sizing:border-box")
-                    + A(H.escape(lab), "rise", at + .25, .45, style="font-size:50px;font-weight:600;margin-top:34px;line-height:1.2")
+                    + idle(A(H.escape(lab), "rise", at + .25, .45, style="font-size:50px;font-weight:600;margin-top:34px;line-height:1.2"), at + .8, amp=2.4, rot=.2)
                     + "</div>")
         return ((A(H.escape(show["title"]), "fade", t0, .4, cls="lbl", style="margin-bottom:40px") if show.get("title") else "")
                 + f'<div style="position:relative;height:420px;margin:0 140px">{line}{pts}</div>')
@@ -290,9 +319,10 @@ def visual(show, t0, dur):
         for i, (ic, lab) in enumerate(show["items"]):
             at = pace(i, n, t0, dur, "flow")
             hot = i == n - 1
-            out += A(f'<div style="display:flex;flex-direction:column;align-items:center;gap:22px">{icon(ic, 210, RED if hot else INK, at + .2, .8, 6)}'
-                     f'<div style="font-family:Sans;font-size:52px;font-weight:600;text-align:center;line-height:1.15">{H.escape(lab)}</div></div>',
-                     "pop", at, .45, style=f"width:410px;background:#fff;border-radius:34px;padding:52px 24px;box-shadow:0 24px 60px rgba(10,10,10,.09);border:4px solid {RED if hot else 'transparent'}")
+            out += idle(A(f'<div style="display:flex;flex-direction:column;align-items:center;gap:22px">{icon(ic, 210, RED if hot else INK, at + .2, .8, 6)}'
+                          f'<div style="font-family:Sans;font-size:52px;font-weight:600;text-align:center;line-height:1.15">{H.escape(lab)}</div></div>',
+                          "pop", at, .45, style=f"width:410px;background:#fff;border-radius:34px;padding:52px 24px;box-shadow:0 24px 60px rgba(10,10,10,.09);border:4px solid {RED if hot else 'transparent'}"),
+                        at + 1.0, amp=4.0, rot=.5)
             if i < n - 1:
                 out += A('<svg width="110" height="60" viewBox="0 0 110 60"><path d="M6 30 H96 M76 12 L98 30 L76 48" fill="none" stroke="#D93A12" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/></svg>',
                          "draw", at + .35, .5)
@@ -303,22 +333,22 @@ def visual(show, t0, dur):
         col = TEAL if st in ("TRUE", "FACT") else RED
         return (f'<div style="position:relative;display:inline-block">'
                 + (icon(show["icon"], 300, INK, t0, 1.0) if show.get("icon") else "")
-                + words_kara(show["text"], t0 + .2, dur * .5, (), size=show.get("size", 104))
+                + idle(words_kara(show["text"], t0 + .2, dur * .5, (), size=show.get("size", 104)), t0 + .2 + min(dur * .5, 2.0), amp=2.2, rot=.12)
                 + A(st, "stamp", t0 + dur * .55, .35, rot=-9,
                     style=f"position:absolute;right:-30px;bottom:-190px;white-space:nowrap;font-family:'Serif',serif;font-weight:700;font-size:120px;color:{col};"
                           f"border:12px solid {col};border-radius:20px;padding:6px 40px;letter-spacing:.06em;background:rgba(247,245,242,.85)")
                 + "</div>")
     if k == "quote":           # a sourced quote, attributed
-        return (A("“", "pop", t0, .4, cls="num", style=f"font-size:340px;line-height:.6;color:{RED};height:150px")
-                + words_kara(show["text"], t0 + .25, dur * .7, show.get("hl", ()), size=show.get("size", 92))
+        return (idle(A("“", "pop", t0, .4, cls="num", style=f"font-size:340px;line-height:.6;color:{RED};height:150px"), t0 + .5, amp=4.0, rot=1.0)
+                + idle(words_kara(show["text"], t0 + .25, dur * .7, show.get("hl", ()), size=show.get("size", 92)), t0 + .25 + min(dur * .7, 2.5), amp=2.0, rot=.08)
                 + A(f'<span style="display:inline-block;width:70px;height:6px;background:{RED};vertical-align:middle;margin-right:24px"></span>'
                     + H.escape(show["who"]), "rise", t0 + dur * .55, .5, style="font-size:46px;font-weight:600;margin-top:44px"))
     if k == "split":           # two sides, each with an icon: before and after, legend and archive
         (i1, l1, s1), (i2, l2, s2) = show["left"], show["right"]
-        side = lambda ic, lab, sub, c, at, ring: A(
+        side = lambda ic, lab, sub, c, at, ring: idle(A(
             f'<div style="display:flex;flex-direction:column;align-items:center;gap:30px;text-align:center">{badge(ic, 360, c, ring, at + .1)}'
             f'<div class="lbl">{H.escape(lab)}</div><div style="font-family:\'Serif\',serif;font-weight:700;font-size:88px;line-height:1.1;color:{c}">{H.escape(sub)}</div></div>',
-            "rise", at, .5, style="flex:1")
+            "rise", at, .5), at + 1.1, amp=4.0, rot=.4, style="flex:1")
         mid = A(H.escape(show.get("mid", "vs")), "pop", t0 + dur * .4, .4, cls="num", style=f"font-size:90px;color:{RED};align-self:center")
         return f'<div style="display:flex;gap:40px;align-items:flex-start">{side(i1, l1, s1, INK, t0, "rgba(10,10,10,.12)")}{mid}{side(i2, l2, s2, TEAL, t0 + dur * .45, TEAL)}</div>'
     if k == "sketch":          # a hand-drawn scene that draws itself on, beside the line it illustrates
@@ -421,6 +451,9 @@ def title_size(title, size=140, column=940):
 
 def scenes(ep, items):
     sketch.HELD_LIFE = ep.get("held_life", True)          # 17 Nov: finished drawings boil and sway (sketch.held_life)
+    global TEXT_LIFE
+    TEXT_LIFE = ep.get("text_life", True)                 # 18 Nov: the HTML text visuals too (idle)
+    IDLE_N[0] = 0
     sc, t, chapters, sounds = [], 0.0, [], []
     n_ch = len(ep["chapters"])
     for kind, c, b, a, segs in items:
@@ -1006,7 +1039,13 @@ def cine_splice(ep, work, silent, total):
         built = it["show"]["shot"](W, Hh, it["dur"], dict(say=it["say"], segs=it["segs"], chapter=it["chapter"]))
         caps = cine.captions([(x, a, b + .15, None) for x, a, b in it["segs"]], W, Hh)
         html, dur = cine.film_html(built["shots"], W, Hh, caps=caps)
-        mp4, secs = cine.render(html, dur, cdir, f"beat{k}", W, Hh, fps=FPS)
+        # 18 Nov (#12): a beat whose page is unchanged since the last render is reused (a foley or sound fix, or a
+        # crash late in the splice, no longer re-renders every filmed beat: 9 beats were about 14 minutes)
+        old, old_mp4 = cdir / f"beat{k}.html", cdir / f"beat{k}-silent.mp4"
+        if old.exists() and old_mp4.exists() and old.read_text() == html:
+            mp4, secs = old_mp4, 0.0
+        else:
+            mp4, secs = cine.render(html, dur, cdir, f"beat{k}", W, Hh, fps=FPS)
         clips.append((mp4, it["t"], it["t"] + dur))
         foley += [(e[0], e[1] + it["t"], *e[2:]) for e in built.get("foley", [])]
         if built.get("amb") is not None:
