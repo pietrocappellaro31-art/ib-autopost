@@ -28,6 +28,8 @@ DIR = os.environ.get("KOKORO_DIR", "")
 
 # Words outside misaki's dictionaries, with their phonemes written by hand.
 PHONEMES = {
+    # 18 Nov, Reel A (accretion / dilution): "dilutive" was heard "deludive" with the default reading
+    "dilutive": "daɪlˈutɪv",
     # 17 Nov, the coin toss Short (Paul Samuelson, 1963)
     "samuelson": "sˈæmjuəlsən",
     # 17 Nov, YouTube #11 (Herstatt, 1974)

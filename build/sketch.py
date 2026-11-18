@@ -4774,3 +4774,462 @@ def tb_asks(p, **_):
 
 
 SCENES.update({f.__name__: f for f in (tb_hook, tb_myth, tb_layers, tb_raise, tb_total, tb_rule, tb_asks)})
+
+
+# ---- 18 Nov Reel A: accretion / dilution in an all-stock deal (build/reels_accretion-dilution.py) ----
+# 18 Nov (the 17 Nov Reel next improvement): every scene's set is on the panel at the swipe and the first action
+# starts on the first spoken word of every sentence (_fr(seg, j, .05)), with a second action on its second number.
+
+AD_BASE, AD_K = 590, 3.0                  # earnings column: 3 px a dollar
+AD_GX, AD_TW, AD_GAP = 320, 32, 40        # share grid: left edge, tile, pitch (10 x 10 = 100 shares)
+
+
+def _ad_tile_xy(k):
+    r, c = divmod(k, 10)
+    return AD_GX + c * AD_GAP, AD_BASE - (r + 1) * AD_GAP
+
+
+def _ad_grid(p, n_old=100, new=None, t_old=None):
+    """The buyer's shares: n_old gold tiles (on the panel from the swipe, or filling row by row from t_old), plus
+    new=(n, colour, t) tiles that fly in from the right one by one, each with a tick."""
+    for k in range(n_old):
+        x, y = _ad_tile_xy(k)
+        tile = _blk(x, y, AD_TW, AD_TW, GOLD, rx=4)
+        r, c = divmod(k, 10)
+        inner = _idle("breathe", tile, .04, 2.4, ph=(r + c) * .4)
+        if t_old is None:
+            p.parts.append(_g("fade", -1, .05, inner, style=""))
+        else:
+            p.parts.append(_g("pop", t_old + .07 * r + .01 * c, .25, inner))
+    if new:
+        n, fill, t = new
+        for j in range(n):
+            x, y = _ad_tile_xy(n_old + j)
+            inner = _idle("bob", _blk(x, y, AD_TW, AD_TW, fill, rx=4), 3, 2.0, ph=j * .7)
+            tj = t + .08 * j
+            p.parts.append(_g("fade", tj, .08, _g("slide", tj, .45, inner, style="", x0=round(780 - x), y0=-60, x1=0, y1=0, ease="out"),
+                              style=""))
+
+
+def _ad_col(p, earn=100, t_grow=None, add=None):
+    """The earnings column (gold), from the swipe or growing at t_grow; add=(dollars, colour, t, label) drops a block
+    on top of it. The label above counts to the new total."""
+    x, w_ = 50, 170
+    h_ = earn * AD_K
+    col = f'<rect x="{x}" y="{AD_BASE - h_:.0f}" width="{w_}" height="{h_:.0f}" rx="8" fill="{GOLD}" stroke="{INK}" stroke-width="6"/>'
+    lab = _t(x + w_ / 2, AD_BASE + 40, "EARNINGS", 26, INK, serif=False)
+    _set(p, lab)
+    grow = "transform-box:fill-box;transform-origin:center bottom"
+    if t_grow is None:
+        p.parts.append(_g("fade", -1, .05, _idle("breathe", col, .01, 3.0, style=grow), style=""))
+    else:
+        p.parts.append(_g("growY", t_grow, .7, col, style=grow))
+    top = AD_BASE - h_
+    if add:
+        d, fill, t, tot = add
+        hb = d * AD_K
+        blk = (f'<rect x="{x}" y="{top - hb:.0f}" width="{w_}" height="{hb:.0f}" rx="6" fill="{fill}" stroke="{INK}" stroke-width="6"/>')
+        p.parts.append(_g("fade", t, .08, _g("slide", t, .5, blk, style="", y0=-200, y1=0, ease="out"), style=""))
+        p.parts.append(_life(-1 if t_grow is None else t_grow + .6, t + .5 - (-1 if t_grow is None else t_grow + .6),
+                             _t(x + w_ / 2, top - 22, f"${earn}", 44, INK), fi=.05, fo=.05))
+        p.parts.append(_life(t + .45, 99, _count(x + w_ / 2, round(top - hb - 22), earn, tot, round(t + .45, 2), .4, size=44, color=INK,
+                                                 pre="$"), fi=.05, fo=.01))
+    elif t_grow is None:
+        _set(p, _t(x + w_ / 2, top - 22, f"${earn}", 44, INK))
+    else:
+        p.parts.append(_g("fade", t_grow + .6, .3, _t(x + w_ / 2, top - 22, f"${earn}", 44, INK), style=""))
+
+
+def _ad_eps(p, frm, to, t, x=520, y=60, col=INK, d=.8):
+    """The EPS readout at the top right of the grid: a white plate, EPS, and a counter in dollars and cents."""
+    _set(p, f'<rect x="{x - 210}" y="{y - 56}" width="420" height="92" rx="16" fill="#fff" stroke="{INK}" stroke-width="6"/>'
+            + _t(x - 120, y + 14, "EPS", 40, GREY, serif=False))
+    p.parts.append(_life(-1, t + .05 - (-1), _t(x + 70, y + 18, f"${frm:.2f}", 56, INK), fi=.01, fo=.05))
+    p.parts.append(_life(t, 99, _count(x + 70, y + 18, frm, to, round(t, 2), d, size=56, color=col, pre="$", dec=2), fi=.05, fo=.01))
+
+
+def _stamp(x, y, w_, h_, label, col, t, size=60, rot=-8):
+    return (f'<g class="a" data-fx="stamp" data-at="{t:.2f}" data-d=".35" data-rot="{rot}" style="transform-box:fill-box;transform-origin:center">'
+            f'<rect x="{x}" y="{y}" width="{w_}" height="{h_}" rx="16" fill="#fff" stroke="{col}" stroke-width="9"/>'
+            + _t(x + w_ / 2, y + h_ / 2 + size * .36, label, size, col) + "</g>")
+
+
+def ad_hook(p, seg=None, **_):
+    """The hook. From the swipe: the buyer (a big office) and the target (a small one) on one street. On the first
+    sentence a gold 20x tag drops onto the buyer; on the second a teal 10x tag onto the target, then five share
+    tiles fly from the buyer to the target (paying in shares) and the target slides toward the buyer. On the question
+    an EPS plate pops between them with a ? that bobs, a teal up arrow and a red down arrow drawn either side."""
+    base = 600
+    _set(p, f'<path d="M20 {base} H780" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+            + _t(190, base + 34, "YOUR COMPANY", 24, INK, serif=False) + _t(640, base + 34, "TARGET", 24, INK, serif=False))
+    p.parts.append(_g("fade", -1, .05, _idle("breathe", _office(60, base, 260, 300), .01, 3.2,
+                                             style="transform-box:fill-box;transform-origin:center bottom"), style=""))
+    t_slide = _fr(seg, 1, .75)
+    tgt = _idle("breathe", _office(560, base, 160, 190), .015, 2.6, style="transform-box:fill-box;transform-origin:center bottom")
+    p.parts.append(_life(-1, t_slide + .1 + 1, tgt, fi=.01, fo=.05))
+    p.parts.append(_life(t_slide + .1, 99, _g("slide", t_slide + .1, .6, tgt, style="", x0=0, x1=-150, y0=0, y1=0, ease="inout"),
+                         fi=.01, fo=.01))
+    t20 = _fr(seg, 0, .05)
+    p.parts.append(_g("fade", t20, .08, _g("slide", t20, .45, _idle("swing", _ptag(190, 230, 170, "20x", GOLD, INK, 56), 4, 2.6,
+                                                                    style="transform-box:fill-box;transform-origin:center top"),
+                                           style="", y0=-160, y1=0, ease="out"), style=""))
+    t10 = _fr(seg, 1, .05)
+    p.parts.append(_life(t10, t_slide + .1 - t10, _g("slide", t10, .45, _ptag(640, 360, 150, "10x", TEAL, "#fff", 50),
+                                                     style="", y0=-160, y1=0, ease="out"), fi=.08, fo=.05))
+    p.parts.append(_life(t_slide + .1, 99, _g("slide", t_slide + .1, .6, _ptag(640, 360, 150, "10x", TEAL, "#fff", 50),
+                                              style="", x0=0, x1=-150, y0=0, y1=0, ease="inout"), fi=.01, fo=.01))
+    t_pay = _fr(seg, 1, .45)
+    for j in range(5):
+        tj = t_pay + .07 * j
+        tile = _blk(270 + 30 * j, 330, 34, 34, GOLD, rx=4)
+        p.parts.append(_life(tj, t_slide - tj + .1, _g("slide", tj, .5, tile, style="", x0=-60, y0=40, x1=300 - 30 * j, y1=60, ease="inout"),
+                             fi=.05, fo=.15))
+    s2 = seg[2][0] + .05
+    p.parts.append(_g("pop", s2, .35, f'<rect x="250" y="60" width="300" height="110" rx="18" fill="#fff" stroke="{INK}" stroke-width="7"/>'
+                                       + _t(360, 136, "EPS", 52, INK, serif=False)))
+    p.parts.append(_life(s2 + .2, 99, _idle("bob", _t(490, 140, "?", 90, RED), 10, 2.6, style=""), fi=.1, fo=.01))
+    for x, y0, y1, col, t in ((190, 170, 70, TEAL, s2 + .25), (610, 70, 170, RED, s2 + .45)):
+        a1, a2 = _arrow(x, y0, y1, col, 14)
+        p.parts.append(_g("draw", t, .3, a1, style=""))
+        p.parts.append(_g("draw", t + .25, .15, a2, style=""))
+
+
+def ad_buyer(p, seg=None, **_):
+    """The buyer. From the swipe: the faint outline of a 10 x 10 share grid and an empty dashed earnings column, the
+    EPS plate at $0.00. On '$100' the gold earnings column grows to $100; on '100 shares' the grid fills row by row;
+    on '$1 a share' EPS counts to $1.00. On '20x' a 20x tag pops and one share tile lifts out, swings, and a $20
+    price lands on it (20 x $1)."""
+    _set(p, f'<path d="M20 {AD_BASE} H780" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+            f'<rect x="50" y="{AD_BASE - 300}" width="170" height="300" rx="8" fill="none" stroke="{GREY}" '
+            f'stroke-width="5" stroke-dasharray="14 10"/>'
+            + "".join(f'<rect x="{_ad_tile_xy(k)[0]}" y="{_ad_tile_xy(k)[1]}" width="{AD_TW}" height="{AD_TW}" rx="4" fill="none" '
+                      f'stroke="{GREY}" stroke-width="3"/>' for k in range(100)))
+    _ad_col(p, 100, t_grow=_fr(seg, 0, .05))
+    _ad_grid(p, 100, t_old=_fr(seg, 0, .42))
+    p.parts.append(_g("fade", _fr(seg, 0, .5), .3, _t(AD_GX + 2, AD_BASE + 40, "100 SHARES", 26, INK, serif=False, anchor="start"), style=""))
+    _ad_eps(p, 0, 1.0, _fr(seg, 0, .82))
+    t20 = _fr(seg, 1, .05)
+    p.parts.append(_g("pop", t20, .35, _ptag(135, 170, 150, "20x", GOLD, INK, 50)))
+    x, y = _ad_tile_xy(99)
+    big = (f'<g transform="translate({x + 18} {y + 18}) scale(2.6) translate({-x - 18} {-y - 18})">'
+           + _blk(x, y, AD_TW, AD_TW, GOLD, rx=4) + "</g>")
+    t_up = _fr(seg, 1, .4)
+    p.parts.append(_g("fade", t_up, .1, _g("slide", t_up, .45, _idle("swing", big, 5, 2.4), style="", x0=0, y0=0, x1=-180, y1=170, ease="out"),
+                      style=""))
+    p.parts.append(_g("pop", _fr(seg, 1, .8), .35, _t(x + 16 - 180, y + 170 + 30, "$20", 40, INK)))
+
+
+def ad_target(p, seg=None, **_):
+    """The target. From the swipe: the small target office on the left, an empty price tray on the right. On '$10' a
+    teal $10 earnings block drops beside the office; on '10x' a price tag swings in and counts $0 to $100 (10 x
+    $10); on '5 new shares' five teal share tiles fly into the tray one by one, each marked $20, and a 5 x $20 =
+    $100 line wipes on under them."""
+    base = 600
+    _set(p, f'<path d="M20 {base} H780" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+            + _t(150, base + 34, "TARGET", 24, INK, serif=False)
+            + f'<rect x="300" y="420" width="470" height="150" rx="14" fill="none" stroke="{GREY}" stroke-width="5" '
+              f'stroke-dasharray="14 10"/>' + _t(535, 604 + 30, "NEW SHARES", 24, INK, serif=False))
+    p.parts.append(_g("fade", -1, .05, _idle("breathe", _office(60, base, 180, 210), .015, 2.8,
+                                             style="transform-box:fill-box;transform-origin:center bottom"), style=""))
+    t0 = _fr(seg, 0, .05)
+    blk = (f'<rect x="250" y="{base - 90}" width="120" height="90" rx="8" fill="{TEAL}" stroke="{INK}" stroke-width="6"/>'
+           + _t(310, base - 32, "$10", 40, "#fff"))
+    p.parts.append(_g("fade", t0, .08, _g("slide", t0, .45, _idle("bob", blk, 3, 2.4), style="", y0=-220, y1=0, ease="out"), style=""))
+    t1 = _fr(seg, 0, .45)
+    tag = (f'<rect x="330" y="100" width="300" height="130" rx="18" fill="#fff" stroke="{INK}" stroke-width="7"/>'
+           + _t(400, 180, "PRICE", 28, GREY, serif=False))
+    p.parts.append(_g("fade", t1, .08, _g("slide", t1, .4, _idle("swing", tag, 3, 2.6, style="transform-box:fill-box;transform-origin:center top"),
+                                          style="", y0=-200, y1=0, ease="out"), style=""))
+    t_cnt = _fr(seg, 0, .72)
+    p.parts.append(_life(t_cnt, 99, _count(540, 190, 0, 100, round(t_cnt, 2), .6, size=64, color=INK, pre="$"), fi=.05, fo=.01))
+    p.parts.append(_g("pop", _fr(seg, 0, .68), .3, _ptag(700, 250, 120, "10x", TEAL, "#fff", 40)))
+    t2 = _fr(seg, 1, .05)
+    for j in range(5):
+        tj = t2 + .22 * j
+        x = 322 + 90 * j
+        tile = _blk(x, 446, 76, 76, GOLD, "$20", 26, rx=6)
+        p.parts.append(_g("fade", tj, .08, _g("slide", tj, .4, _idle("bob", tile, 3, 2.2, ph=j), style="", x0=-260 - 90 * j + 322, y0=-300,
+                                              x1=0, y1=0, ease="out"), style=""))
+    p.parts.append(_g("wipe", _fr(seg, 1, .75), .5, _t(535, 556, "5 x $20 = $100", 34, INK), style=""))
+
+
+def _ad_rings(p, t_col, t_grid, n_rows, col=RED):
+    """18 Nov (the lowest motion window was the division sentence): a ring pulses round the earnings column as its
+    dollars are said, then round the whole share grid as its share count is said."""
+    top = AD_BASE - n_rows * AD_GAP
+    p.parts.append(_life(t_col, 1.3, _g("pop", t_col, .3, f'<rect x="38" y="{AD_BASE - 352}" width="194" height="364" rx="14" fill="none" '
+                                                      f'stroke="{col}" stroke-width="8"/>'), fi=.05, fo=.3))
+    p.parts.append(_life(t_grid, 1.5, _g("pop", t_grid, .3, f'<rect x="{AD_GX - 12}" y="{top - 8}" width="{10 * AD_GAP + 16}" '
+                                                        f'height="{AD_BASE - top + 16}" rx="14" fill="none" stroke="{col}" stroke-width="8"/>'),
+                         fi=.05, fo=.3))
+
+
+def ad_accrete(p, seg=None, **_):
+    """The answer at 10x. From the swipe: the buyer's $100 column, the 100 gold tiles, EPS $1.00. On '$110' the
+    target's teal $10 drops on the column and its label counts to $110; on '105 shares' five teal tiles fly into the
+    grid; on 'about $1.05' EPS counts $1.00 to $1.05 in teal; on 'Accretive' a teal up arrow and an ACCRETIVE stamp."""
+    _set(p, f'<path d="M20 {AD_BASE} H780" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>')
+    _ad_col(p, 100, add=(10, TEAL, _fr(seg, 0, .1), 110))
+    _ad_grid(p, 100, new=(5, TEAL, _fr(seg, 0, .55)))
+    p.parts.append(_life(-1, _fr(seg, 0, .6) + 1, _t(AD_GX + 2, AD_BASE + 40, "100 SHARES", 26, INK, serif=False, anchor="start"), fi=.01, fo=.1))
+    p.parts.append(_life(_fr(seg, 0, .6), 99, _t(AD_GX + 2, AD_BASE + 40, "105 SHARES", 26, TEAL, serif=False, anchor="start"), fi=.1, fo=.01))
+    _ad_rings(p, _fr(seg, 0, .2), _fr(seg, 0, .62), 11, TEAL)
+    _ad_eps(p, 1.0, 1.05, _fr(seg, 1, .2), col=TEAL)
+    t2 = seg[2][0] + .05
+    a1, a2 = _arrow(745, 160, 60, TEAL, 14)
+    p.parts.append(_g("draw", t2, .3, a1, style=""))
+    p.parts.append(_g("draw", t2 + .25, .15, a2, style=""))
+    p.parts.append(_stamp(370, 200, 330, 100, "ACCRETIVE", TEAL, _fr(seg, 2, .5), size=54))
+
+
+def ad_dilute(p, seg=None, **_):
+    """The answer at 30x. From the swipe: the $110 column, the 100 gold tiles, EPS $1.00. On '30x' a red 30x tag
+    swings in over the grid; on '15 shares' fifteen red tiles fly into the grid (a row and a half); on 'about 96
+    cents' EPS counts $1.00 down to $0.96 in red; on 'Dilutive' a red down arrow and a DILUTIVE stamp."""
+    _set(p, f'<path d="M20 {AD_BASE} H780" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>')
+    x, w_ = 50, 170
+    _set(p, f'<rect x="{x}" y="{AD_BASE - 330}" width="{w_}" height="300" rx="8" fill="{GOLD}" stroke="{INK}" stroke-width="6"/>'
+            f'<rect x="{x}" y="{AD_BASE - 330}" width="{w_}" height="30" rx="6" fill="{TEAL}" stroke="{INK}" stroke-width="6"/>'
+            + _t(x + w_ / 2, AD_BASE - 352, "$110", 44, INK) + _t(x + w_ / 2, AD_BASE + 40, "EARNINGS", 26, INK, serif=False))
+    _ad_grid(p, 100, new=(15, RED, _fr(seg, 0, .55)))
+    p.parts.append(_life(-1, _fr(seg, 0, .7) + 1, _t(AD_GX + 2, AD_BASE + 40, "100 SHARES", 26, INK, serif=False, anchor="start"), fi=.01, fo=.1))
+    p.parts.append(_life(_fr(seg, 0, .7), 99, _t(AD_GX + 2, AD_BASE + 40, "115 SHARES", 26, RED, serif=False, anchor="start"), fi=.1, fo=.01))
+    t0 = _fr(seg, 0, .05)
+    p.parts.append(_g("fade", t0, .08, _g("slide", t0, .4, _idle("swing", _ptag(135, 150, 150, "30x", RED, "#fff", 50), 4, 2.4,
+                                                                 style="transform-box:fill-box;transform-origin:center top"),
+                                          style="", y0=-160, y1=0, ease="out"), style=""))
+    _ad_rings(p, _fr(seg, 1, .05), _fr(seg, 1, .4), 12)
+    _ad_eps(p, 1.0, .96, _fr(seg, 1, .7), x=520, col=RED)
+    t2 = seg[2][0] + .05
+    a1, a2 = _arrow(745, 200, 300, RED, 14)
+    p.parts.append(_g("draw", t2, .3, a1, style=""))
+    p.parts.append(_g("draw", t2 + .25, .15, a2, style=""))
+    p.parts.append(_stamp(380, 210, 310, 100, "DILUTIVE", RED, _fr(seg, 2, .5), size=58))
+
+
+def ad_rule(p, seg=None, **_):
+    """The rule. From the swipe: a price-to-earnings scale from 0x to 40x with YOUR 20x marked, the caveat line. On the
+    first sentence a pointer drops onto 20x; on 'lower multiple' it slides to 10x, the left half fills teal and EPS UP
+    pops; on 'higher one' it slides to 30x, the right half fills red and EPS DOWN pops. The pointer keeps bobbing."""
+    y, x0, x1 = 360, 60, 740
+    xv = lambda m: x0 + (x1 - x0) * m / 40
+    s = f'<path d="M{x0} {y} H{x1}" stroke="{INK}" stroke-width="8" stroke-linecap="round"/>'
+    for m in (0, 10, 20, 30, 40):
+        s += f'<path d="M{xv(m)} {y - 16} V{y + 16}" stroke="{INK}" stroke-width="6"/>' + _t(xv(m), y + 60, f"{m}x", 34, INK, serif=False)
+    s += (f'<rect x="{xv(20) - 90}" y="{y + 84}" width="180" height="56" rx="12" fill="{GOLD}" stroke="{INK}" stroke-width="5"/>'
+          + _t(xv(20), y + 124, "YOU: 20x", 28, INK, serif=False)
+          + _t(400, 620, "ALL-STOCK DEAL, BEFORE SYNERGIES AND FEES", 22, GREY, serif=False)
+          + _t(400, 60, "PRICE PAID, TIMES EARNINGS", 26, GREY, serif=False))
+    _set(p, s)
+    t1, t2 = _fr(seg, 0, .4), _fr(seg, 1, .3)
+    for a, b, fill, t, lab, lx in ((0, 20, TEAL, t1, "EPS UP", 10), (20, 40, RED, t2, "EPS DOWN", 30)):
+        zone = f'<rect x="{xv(a)}" y="{y - 12}" width="{xv(b) - xv(a)}" height="24" rx="10" fill="{fill}"/>'
+        p.parts.append(_g("growX", t, .5, zone, style="transform-box:fill-box;transform-origin:left center" if a == 0 else
+                          "transform-box:fill-box;transform-origin:left center"))
+        p.parts.append(_g("pop", t + .4, .35, _ptag(xv(lx), 160, 210, lab, fill, "#fff", 34)))
+    ptr = (f'<path d="M-34 -70 L34 -70 L0 -20 Z" fill="{GOLD}" stroke="{INK}" stroke-width="5"/>')
+    kf = [[0, 0, 0, 1, 1, 0], [round(t1, 2), 0, 0, 1, 1, 0], [round(t1 + .5, 2), xv(10) - xv(20), 0, 1, 1, 0],
+          [round(t2, 2), xv(10) - xv(20), 0, 1, 1, 0], [round(t2 + .6, 2), xv(30) - xv(20), 0, 1, 1, 0]]
+    mover = (f'<g class="a" data-fx="kf" data-at="0" data-d="1" data-kf="{H.escape(_json(kf))}" style="transform-box:view-box">'
+             f'<g transform="translate({xv(20)} {y})">{_idle("bob", ptr, 8, 2.2, style="")}</g></g>')
+    p.parts.append(_g("fade", _fr(seg, 0, .05), .1, _g("slide", _fr(seg, 0, .05), .45, mover, style="", y0=-200, y1=0, ease="out"), style=""))
+
+
+def ad_asks(p, **_):
+    """The close: a price tag with $? swinging, an equals sign, and EPS $1.00 on a plate."""
+    _set(p, f'<rect x="440" y="250" width="320" height="130" rx="18" fill="#fff" stroke="{INK}" stroke-width="7"/>'
+            + _t(530, 334, "EPS", 40, GREY, serif=False) + _t(660, 338, "$1.00", 54, INK) + _t(380, 340, "=", 80, INK))
+    p.parts.append(_g("pop", p.at(.15), .4, _idle("swing", _ptag(180, 300, 240, "PAY $?", RED, "#fff", 54), 6, 2.4,
+                                                     style="transform-box:fill-box;transform-origin:center top")))
+    p.parts.append(_g("float", 0, 1, _g("pop", p.at(.45), .4, _t(400, 190, "?", 160, RED)), style="", amp=12, w=2.2))
+
+
+TEAL_L = "#5EC8B4"
+SCENES.update({f.__name__: f for f in (ad_hook, ad_buyer, ad_target, ad_accrete, ad_dilute, ad_rule, ad_asks)})
+
+
+# ---- 18 Nov Reel B: FIFO or LIFO with rising prices (build/reels_fifo-lifo.py) ----
+# The same rule as Reel A: the set is on the panel at the swipe; an action on the first word of every sentence.
+
+FL_BASE = 560                              # the shelf
+FL_X, FL_W, FL_H = 90, 240, 160           # the stack: left edge, unit width and height
+
+
+def _unit(x, y, price, fill, label=None):
+    """One unit of stock: a crate with a price tag on its front."""
+    s = (f'<rect x="{x}" y="{y}" width="{FL_W}" height="{FL_H}" rx="8" fill="#C98A4B" stroke="{INK}" stroke-width="6"/>'
+         f'<path d="M{x} {y + 30} H{x + FL_W} M{x} {y + FL_H - 30} H{x + FL_W}" stroke="{INK}" stroke-width="4"/>'
+         + _ptag(x + FL_W / 2, y + FL_H / 2, 150, price, fill, INK if fill == GOLD else "#fff", 54))
+    if label:
+        s += _t(x - 16, y + FL_H / 2 + 10, label, 22, GREY, serif=False, anchor="end")
+    return s
+
+
+def _fl_shelf(p, register=True):
+    _set(p, f'<path d="M30 {FL_BASE} H770" stroke="{INK}" stroke-width="8" stroke-linecap="round"/>'
+            f'<path d="M60 {FL_BASE} V{FL_BASE + 50} M360 {FL_BASE} V{FL_BASE + 50}" stroke="{INK}" stroke-width="7"/>'
+            + _t(210, FL_BASE + 50, "INVENTORY", 24, INK, serif=False))
+    if register:
+        _set(p, f'<rect x="500" y="{FL_BASE - 170}" width="260" height="170" rx="14" fill="{DEBT_C}" stroke="{INK}" stroke-width="6"/>'
+                f'<rect x="525" y="{FL_BASE - 150}" width="210" height="76" rx="8" fill="#DCEFEA" stroke="{INK}" stroke-width="4"/>'
+                + _t(630, FL_BASE - 92, "$20", 56, INK) + _t(630, FL_BASE + 50, "SOLD FOR", 24, INK, serif=False))
+
+
+Y_LO, Y_HI = FL_BASE - FL_H, FL_BASE - 2 * FL_H - 6       # bottom unit (first in), top unit (last in)
+
+
+def _drop(p, t, inner, dy=-260):
+    p.parts.append(_g("fade", t, .08, _g("slide", t, .45, inner, style="", y0=dy, y1=0, ease="out"), style=""))
+
+
+def fl_hook(p, seg=None, **_):
+    """The hook. From the swipe: the empty shelf with two dashed slots and the till. On '$10' the first unit drops
+    into the bottom slot; on '$12' (same sentence) the second lands on top of it. On 'sell one for $20' the till
+    flashes $20 and a unit outline marked ? hovers over it. On the question two tags swing in, $8? and $10?."""
+    _fl_shelf(p, register=False)
+    _set(p, "".join(f'<rect x="{FL_X}" y="{y}" width="{FL_W}" height="{FL_H}" rx="8" fill="none" stroke="{GREY}" stroke-width="5" '
+                    f'stroke-dasharray="14 10"/>' for y in (Y_LO, Y_HI)))
+    _drop(p, _fr(seg, 0, .1), _idle("breathe", _unit(FL_X, Y_LO, "$10", TEAL, "1ST"), .01, 3.0))
+    _drop(p, _fr(seg, 0, .62), _idle("breathe", _unit(FL_X, Y_HI, "$12", GOLD, "2ND"), .01, 2.6, ph=1))
+    t1 = _fr(seg, 1, .05)
+    till = (f'<rect x="500" y="{FL_BASE - 170}" width="260" height="170" rx="14" fill="{DEBT_C}" stroke="{INK}" stroke-width="6"/>'
+            f'<rect x="525" y="{FL_BASE - 150}" width="210" height="76" rx="8" fill="#DCEFEA" stroke="{INK}" stroke-width="4"/>')
+    _set(p, till + _t(630, FL_BASE + 50, "SALE", 24, INK, serif=False))
+    p.parts.append(_g("pop", _fr(seg, 1, .6), .35, _t(630, FL_BASE - 92, "$20", 56, INK)))
+    ghost = (f'<rect x="510" y="{FL_BASE - 190 - FL_H}" width="{FL_W}" height="{FL_H}" rx="8" fill="#fff" fill-opacity=".6" stroke="{INK}" '
+             f'stroke-width="5" stroke-dasharray="12 8"/>' + _t(510 + FL_W / 2, FL_BASE - 190 - FL_H / 2 + 30, "?", 90, RED))
+    p.parts.append(_g("fade", t1, .2, _idle("bob", ghost, 8, 2.4, style=""), style=""))
+    t2 = _fr(seg, 2, .3)
+    for x, lab, fill, dt in ((470, "$8?", RED, 0), (660, "$10?", TEAL, .5)):
+        p.parts.append(_g("fade", t2 + dt, .08, _g("slide", t2 + dt, .4, _idle("swing", _ptag(x, 70, 150, lab, fill, "#fff", 44), 6, 2.2,
+                                                                               style="transform-box:fill-box;transform-origin:center top"),
+                                                   style="", y0=-120, y1=0, ease="out"), style=""))
+
+
+def fl_both(p, seg=None, **_):
+    """The answer is 'both'. From the swipe: the two units stacked, the till at $20. On 'Both' a BOTH stamp lands; on
+    'which unit' a red ring pulses round the top unit, then the bottom one, back and forth. On 'inventory method' a
+    tag drops between them with two arrows, FIFO pointing at the bottom and LIFO at the top."""
+    _fl_shelf(p)
+    p.parts.append(_g("fade", -1, .05, _idle("breathe", _unit(FL_X, Y_LO, "$10", TEAL, "1ST"), .01, 3.0), style=""))
+    p.parts.append(_g("fade", -1, .05, _idle("breathe", _unit(FL_X, Y_HI, "$12", GOLD, "2ND"), .01, 2.6, ph=1), style=""))
+    p.parts.append(_stamp(470, 70, 260, 110, "BOTH", TEAL, _fr(seg, 0, .03), size=70))
+    t = _fr(seg, 0, .4)
+    k = 0
+    while t < seg[-1][1] + 3:
+        y = Y_HI if k % 2 == 0 else Y_LO
+        ring = f'<rect x="{FL_X - 12}" y="{y - 12}" width="{FL_W + 24}" height="{FL_H + 24}" rx="14" fill="none" stroke="{RED}" stroke-width="8"/>'
+        p.parts.append(_life(t, .7, ring, fi=.12, fo=.15))
+        t += .8
+        k += 1
+    t1 = _fr(seg, 1, .2)
+    p.parts.append(_g("pop", t1, .35, _ptag(560, 250, 400, "INVENTORY METHOD", INK, "#fff", 28)))
+
+
+def _fl_sale(p, seg, out_y, out_price, out_fill, stay_y, stay_price, stay_fill, method, rule, profit, pfill):
+    """One method worked. From the swipe: both units, the till at $20, the method's name and rule over the stack. On
+    the first word the unit that goes first gets an arrow, then slides across into the till; on the second sentence
+    the sum $20 - cost = profit wipes on under the till and the profit counts up; on the third the unit that stays
+    settles onto the shelf (if it was on top) and a STAYS IN INVENTORY tag lands on it."""
+    _fl_shelf(p)
+    _set(p, _t(210, 44, method, 50, INK) + _t(210, 86, rule, 28, GREY, serif=False))
+    t0 = _fr(seg, 0, .05)
+    a1, a2 = (f'<path d="M{FL_X - 70} {out_y + FL_H / 2} H{FL_X - 18}" stroke="{RED}" stroke-width="10" stroke-linecap="round"/>',
+              f'<path d="M{FL_X - 44} {out_y + FL_H / 2 - 22} L{FL_X - 18} {out_y + FL_H / 2} L{FL_X - 44} {out_y + FL_H / 2 + 22}" fill="none" '
+              f'stroke="{RED}" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>')
+    p.parts.append(_life(t0, 2.0, _g("draw", t0, .3, a1 + a2, style=""), fi=.05, fo=.3))
+    t_go = _fr(seg, 0, .55)
+    unit_out = _unit(FL_X, out_y, out_price, out_fill)
+    # 18 Nov (contact sheet): the sold unit slides into the till and fades there; the one left on top settles at once
+    p.parts.append(_life(-1, t_go + .7 + .5 + 1, _g("slide", t_go, .7, unit_out, style="", x0=0, y0=0, x1=510 - FL_X,
+                                                     y1=FL_BASE - 130 - FL_H - out_y, ease="inout"), fi=.01, fo=.5))
+    t_set = t_go + .6
+    t_tag = _fr(seg, 2, .2)
+    unit_stay = _idle("breathe", _unit(FL_X, stay_y, stay_price, stay_fill), .01, 2.6)
+    if stay_y == Y_HI:
+        p.parts.append(_g("fade", -1, .05, _g("slide", t_set, .45, unit_stay, style="", y0=0, y1=Y_LO - Y_HI, x0=0, x1=0, ease="out"), style=""))
+    else:
+        p.parts.append(_g("fade", -1, .05, unit_stay, style=""))
+    t1 = _fr(seg, 1, .1)
+    p.parts.append(_g("wipe", t1, .5, _t(640, 150, f"$20 − {out_price}", 50, INK), style=""))
+    p.parts.append(_g("draw", t1 + .4, .2, f'<path d="M520 180 H760" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>', style=""))
+    t_p = _fr(seg, 1, .7)
+    p.parts.append(_g("pop", t_p, .3, _t(560, 240, "=", 50, INK)))
+    p.parts.append(_life(t_p, 99, _count(670, 244, 0, profit, round(t_p, 2), .5, size=62, color=pfill, pre="$"), fi=.05, fo=.01))
+    p.parts.append(_g("pop", t_p + .4, .3, _t(640, 290, "PROFIT", 26, pfill, serif=False)))
+    p.parts.append(_g("pop", t_tag, .35, _ptag(FL_X + FL_W / 2 + 60, Y_LO - 50, 380, "STAYS IN INVENTORY", INK, "#fff", 26)))
+
+
+def fl_fifo(p, seg=None, **_):
+    """First in, first out: the $10 unit (bottom) goes to the till, profit $10, the $12 unit settles and stays."""
+    _fl_sale(p, seg, Y_LO, "$10", TEAL, Y_HI, "$12", GOLD, "FIFO", "FIRST IN, FIRST OUT", 10, TEAL)
+
+
+def fl_lifo(p, seg=None, **_):
+    """Last in, first out: the $12 unit (top) goes to the till, profit $8, the $10 unit stays."""
+    _fl_sale(p, seg, Y_HI, "$12", GOLD, Y_LO, "$10", TEAL, "LIFO", "LAST IN, FIRST OUT", 8, RED)
+
+
+def fl_tax(p, seg=None, **_):
+    """Rising prices: less profit, less tax. From the swipe: two profit columns to scale (30 px a dollar), FIFO $10 and
+    LIFO $8. On the first sentence a red 25% tax cap grows on top of each ($2.50 and $2.00 by the second sentence's
+    numbers) and LESS TAX lands on LIFO; on '50 cents' a gold coin marked 50c rises out of the gap between the caps and
+    lands beside LIFO with a KEPT tag, and keeps bobbing."""
+    base, k = 560, 30
+    cols = ((150, 10, "FIFO", TEAL), (470, 8, "LIFO", RED))
+    s = f'<path d="M40 {base} H760" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+    for x, v, n, c in cols:
+        s += (f'<rect x="{x}" y="{base - v * k}" width="180" height="{v * k}" rx="8" fill="{GOLD}" stroke="{INK}" stroke-width="6"/>'
+              + _t(x + 90, base + 40, n, 30, INK, serif=False) + _t(x + 90, base - v * k / 2 + 40, f"${v}", 48, INK))
+    _set(p, s + _t(400, 620, "PROFIT BEFORE TAX, ONE SALE, 25% TAX", 22, GREY, serif=False))
+    t0 = _fr(seg, 0, .05)
+    for j, (x, v, n, c) in enumerate(cols):
+        cap = f'<rect x="{x + 10}" y="{base - v * k + 6}" width="160" height="{v * k * .25:.0f}" rx="6" fill="{RED}" fill-opacity=".85"/>'
+        p.parts.append(_g("growYdown", t0 + .3 * j, .6, cap, style="transform-box:fill-box;transform-origin:center top"))
+    t1 = _fr(seg, 1, .05)
+    for x, v, lab in ((150, 10, "$2.50"), (470, 8, "$2.00")):
+        p.parts.append(_g("pop", t1 + (.0 if v == 10 else .35), .3, _t(x + 90, base - v * k + 6 + v * k * .125 + 14, lab, 36, "#fff")))
+    p.parts.append(_g("pop", _fr(seg, 0, .6), .35, _ptag(560, 150, 200, "LESS TAX", RED, "#fff", 32)))
+    t_c = _fr(seg, 1, .6)
+    coin = (f'<circle cx="0" cy="0" r="48" fill="{GOLD}" stroke="{INK}" stroke-width="6"/>' + _t(0, 14, "50¢", 36, INK))
+    p.parts.append(_g("fade", t_c, .1, _g("slide", t_c, .55, f'<g transform="translate(720 300)">{_idle("bob", coin, 8, 2.2, style="")}</g>',
+                                          style="", x0=-330, y0=120, x1=0, y1=0, ease="out"), style=""))
+    p.parts.append(_g("pop", t_c + .5, .3, _ptag(720, 380, 120, "KEPT", TEAL, "#fff", 28)))
+
+
+def fl_rules(p, seg=None, **_):
+    """Who allows it. From the swipe: two rule books standing on the shelf, US GAAP and IFRS, each with a LIFO tag. On
+    the first sentence a teal tick stamps onto US GAAP; on the second a red cross stamps onto IFRS. Both books keep
+    breathing."""
+    base = 560
+    _set(p, f'<path d="M40 {base} H760" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>')
+    for x, name, col in ((90, "US GAAP", "#1D4E89"), (450, "IFRS", "#5B3A7A")):
+        book = (f'<rect x="{x}" y="{base - 360}" width="260" height="360" rx="12" fill="{col}" stroke="{INK}" stroke-width="7"/>'
+                f'<rect x="{x + 20}" y="{base - 340}" width="18" height="320" fill="#fff" fill-opacity=".35"/>'
+                + _t(x + 140, base - 260, name, 44, "#fff", serif=False) + _ptag(x + 140, base - 160, 150, "LIFO", GOLD, INK, 40))
+        p.parts.append(_g("fade", -1, .05, _idle("breathe", book, .012, 2.8 + x / 400, style="transform-box:fill-box;transform-origin:center bottom"),
+                          style=""))
+    tick = f'<path d="M150 470 L205 520 L300 400" fill="none" stroke="{TEAL}" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/>'
+    cross = f'<path d="M520 400 L640 520 M640 400 L520 520" fill="none" stroke="{RED}" stroke-width="22" stroke-linecap="round"/>'
+    # 18 Nov: said as one sentence ("American rules allow it, but international rules don't."): the tick on its first
+    # word, the cross on "international"
+    ta, tb = (_fr(seg, 0, .05), _fr(seg, 0, .52)) if len(seg) == 1 else (_fr(seg, 0, .1), _fr(seg, 1, .1))
+    p.parts.append(_g("draw", ta, .4, f'<circle cx="220" cy="460" r="95" fill="#fff" stroke="{TEAL}" stroke-width="10"/>' + tick, style=""))
+    p.parts.append(_g("draw", tb, .4, f'<circle cx="580" cy="460" r="95" fill="#fff" stroke="{RED}" stroke-width="10"/>' + cross, style=""))
+    p.parts.append(_g("pop", ta + .1, .3, _t(220, 600, "ALLOWED", 26, TEAL, serif=False)))
+    p.parts.append(_g("pop", tb + .1, .3, _t(580, 600, "NOT ALLOWED", 26, RED, serif=False)))
+
+
+def fl_asks(p, **_):
+    """The close: prices falling. A $10 unit with an $8 unit on top, a red down arrow beside them, FIFO or LIFO? over
+    the till and a ? that bobs."""
+    _set(p, f'<path d="M30 {FL_BASE} H770" stroke="{INK}" stroke-width="8" stroke-linecap="round"/>'
+            + _unit(FL_X, Y_LO, "$10", TEAL) + _unit(FL_X, Y_HI, "$8", RED))
+    a1, a2 = _arrow(395, 200, 500, RED, 16)
+    p.parts.append(_g("draw", p.at(.1), .4, a1, style=""))
+    p.parts.append(_g("draw", p.at(.2), .2, a2, style=""))
+    p.fill(_ptag(580, 230, 400, "FIFO OR LIFO?", INK, "#fff", 36), .35)
+    p.parts.append(_g("float", 0, 1, _g("pop", p.at(.5), .4, _t(600, 470, "?", 200, RED)), style="", amp=12, w=2.2))
+
+
+SCENES.update({f.__name__: f for f in (fl_hook, fl_both, fl_fifo, fl_lifo, fl_tax, fl_rules, fl_asks)})

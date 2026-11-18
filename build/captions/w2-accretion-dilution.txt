@@ -1,0 +1,15 @@
+Your company trades at 20x earnings. You buy one at 10x and pay in shares. Does your EPS go up?
+
+Yes. Say you earn $100 on 100 shares, so $1 a share, and at 20x each share is worth $20. The target earns $10, so at 10x it costs $100, which is 5 of your new shares.
+
+Now you earn $110 on 105 shares. That's about $1.05 a share, so the deal is accretive.
+
+Pay 30x instead and it costs $300, or 15 shares. $110 over 115 shares is about 96 cents. Dilutive.
+
+The rule for an all-stock deal: pay a lower multiple than your own and EPS rises, pay a higher one and it falls. That's before synergies, fees and financing costs, which is where the real interview follow-ups start.
+
+What price makes this deal break even? Answer in the comments.
+
+Narration: AI-generated voice; script is our original work.
+
+#investmentbanking #ibinterview #mergersandacquisitions #financeinterview
