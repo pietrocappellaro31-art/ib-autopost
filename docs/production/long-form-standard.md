@@ -19,6 +19,23 @@ Make original, accurate, educational finance documentaries for a general adult a
 animated film, not a slideshow. The channel is independent. It uses the IB editorial identity
 (`docs/brand-system.md`) and nothing from any other channel, brand or fictional universe.
 
+## The opening minute and the thumbnail (Pietro, from 19 Nov)
+
+Daily films continue; the extra effort goes here, before the quality log's "next improvement" (`decisions-log.md`,
+18 Nov):
+
+- **Open on the hook.** The film starts on the filmed hook with the puzzle or the surprising number on screen within 5 s.
+  No chapter card, title or context comes before it; chapter 1's card follows the hook (an engine option if the
+  engine cannot do it yet: build it). The question the film answers is said by 0:15.
+- **First 60 s written and checked first**: no static second in them (`motion.json`), every shot looked at frame by
+  frame, the words as short as the shots.
+- **A number puzzle in every film** that can stand alone as a Short (the Short run cuts it; see
+  `short-form-standard.md`), with maths that holds in any country.
+- **Title and thumbnails agree**: the same number or question in both. A thumbnail has at most five words and one large
+  number, is checked at 168 x 94 px (search-result size) as well as full size, and both A and B are offered for Studio's
+  thumbnail **Test & compare** (Pietro uploads them there).
+- The delivery says which of these were met and shows the 168 x 94 check.
+
 ## Every run, in order
 
 1. Read `docs/brand-system.md`, `docs/decisions-log.md`, the four `docs/production/` files,

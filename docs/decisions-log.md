@@ -18,6 +18,29 @@ What has been settled, and what is still open. Newest first.
 
 ## Settled
 
+- **YouTube from 19 Nov: number-puzzle Shorts cut from the films; daily films with the effort on the opening minute and
+  the thumbnail** (18 Nov, Pietro: "Make this changes starting tomorrow - November 19", on the analytics reading in
+  `docs/daily/youtube-analytics.md`; asked how many films a week, he answered "1 a day"). From the 19 Nov runs:
+  (1) **Shorts are number puzzles** (Format C or D) for at least the week of 19 to 25 Nov, modelled on the two Shorts
+  that travelled (50% down then 50% up: 627 views; the $2.04bn jackpot paid $997.6m: 99): a counter-intuitive result of
+  arithmetic, asked as a question in the title and shown as the first frame (no setup before the question), whose maths
+  holds in any country (90% of views came from outside the US; no answer that depends on one country's tax, prices or
+  lottery). Stories, myths, choices and topical quizzes wait until the week's numbers are read again.
+  (2) **Every Short is cut from a long film and points to it.** The Short run takes the newest long film that has no
+  Short yet (normally the previous day's) and turns its sharpest number puzzle into the Short, with that film's sources;
+  this replaces the rule that the Short's topic differs from the films'. The delivery names the film and tells Pietro to
+  set it as the Short's **Related video** in Studio (the Short, Details, Related video), and the pinned comment points
+  to it. Every long film is written with at least one such puzzle in it.
+  (3) **The long film stays daily**, and the run spends its extra effort on the opening minute and the thumbnail: the
+  film opens on the filmed hook with the puzzle or the surprising number on screen within 5 s (no chapter card, title
+  or context before it; chapter 1's card comes after the hook); the question the film answers is said by 0:15; the title
+  and both thumbnails carry the same number or question; a thumbnail has at most five words and one large number, is
+  checked at 168 x 94 px (the size of a search result) and both are offered for Studio's thumbnail Test & compare. The
+  first 60 s are written and checked before the rest (opening shots looked at frame by frame, no static second in them).
+  These items come before the quality log's "next improvement" on 19 Nov. Changed in the same session: the two scheduled
+  task prompts (YouTube Short daily, YouTube long video daily), `short-form-standard.md`, `long-form-standard.md`,
+  CLAUDE.md.
+
 - **YouTube: one file, with music; a different kind of music every video** (17 Nov, Pietro: "I don't know why, but
   you're always outputting two videos. I just want you to output the one with the music, and I also want you to
   experiment with different kinds of music and not always use the same music. Update the skill if necessary, do what

@@ -24,6 +24,9 @@ day post automatically through `publish.py`; YouTube uploads stay manual (Pietro
   delivery). This overrides any scheduled-task prompt step that still says to deliver a clean MP4 or "music=False".
   Filmed beats from `build/cine.py` where the story has people, places or a mechanism. Reels: unchanged (clean master
   with Instagram music in the app, plus the scored alternative).
+- **YouTube from 19 Nov (Pietro, 18 Nov):** Shorts are number puzzles cut from the newest long film without a Short,
+  linked to it as Related video; films stay daily, opening on the hook (puzzle or number on screen within 5 s, no card
+  first) with title and thumbnail carrying the same number. `docs/decisions-log.md` 18 Nov.
 - AI disclosure: a recommendation per finished video with its reason, never an automatic tick.
 - Never invent a number, quote, source or credential. Reconstructions are badged. No commercial music in any file.
 

@@ -13,6 +13,13 @@ and Shorts deliver only the scored MP4 (our `score.py` score); the clean mix is 
 rotates the style (orchestral, noir_jazz, solo_piano, ambient, acoustic, mallets, harp) and the key so no video uses a
 style or key of the last three; name the style in the delivery. Details: `docs/decisions-log.md` (17 Nov).
 
+**From 19 Nov (Pietro, 18 Nov): Shorts are number puzzles cut from the films; films stay daily with the effort on
+the opening minute and the thumbnail.** Each Short is the sharpest universal number puzzle of the newest long film
+without a Short, asked in the title and on the first frame, set as the film's Related video in Studio. Each film opens
+on its hook (puzzle or number on screen within 5 s, no chapter card first), says its question by 0:15, and carries the
+same number in title and thumbnails (five words at most, checked at 168 x 94, both offered for Test & compare).
+Details: `docs/decisions-log.md` (18 Nov), `short-form-standard.md`, `long-form-standard.md`.
+
 **The standards live in the repo and win over this file where they disagree:** `docs/production/long-form-standard.md`,
 `short-form-standard.md`, `cinematic-standard.md`, `audio-standard.md`, `quality-gates.md`, `scene-library.md`,
 `animation-engine.md`, `voice-decision.md`. A newer decision by Pietro in `docs/decisions-log.md` wins over all of

@@ -8,6 +8,18 @@ disagrees, this file wins, unless Pietro has since recorded a newer decision in
 The Shorts are for the finance channel's IB identity. They are separate from any other project:
 no other channel's characters, branding or data. Posting stays manual: Pietro uploads.
 
+## Number puzzles cut from the films (Pietro, from 19 Nov)
+
+Overrides sections 2 and 3 where they disagree (`decisions-log.md`, 18 Nov). Every Short is a **number puzzle**
+(Format C, one surprising concept, or D, an animated calculation): a counter-intuitive result of arithmetic, asked as a
+question in the title and on the first frame, before anything else; the maths holds in any country. It is **cut from the
+newest long film that has no Short yet** (normally the previous day's): that film's sharpest number puzzle, its sources,
+and if useful a filmed shot from its world re-staged at 9:16 (`cine.stage`). The delivery names the film and the Studio
+step (the Short, Details, **Related video**: the film); the pinned comment points to the film. Topic rule: the film's
+topic is allowed (it is the point); the Short's puzzle must not repeat a Short in topics.md "Used" within 60 days. If no
+film has a usable universal puzzle, the run makes a standalone number puzzle and says why. The 50% Short
+(`build/shorts_down-50-up-50.py`, 627 views in its first two days) is the model.
+
 ## Black background (16 Nov, Pietro)
 
 "Set this as the rule from now on for both IG reels and YouTube shorts." Every Short and every Reel renders on black
