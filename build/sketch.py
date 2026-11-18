@@ -4468,3 +4468,309 @@ def oplev_asks(p, **_):
 
 
 SCENES.update({f.__name__: f for f in (oplev_hook, cost_split, cost_grow, cost_shrink, lever_fixed, oplev_asks)})
+
+
+# ---- 18 Nov (the tax bracket Short, Format E, a myth): a $1,000 raise that crosses into the 22% bracket. US federal
+# income tax, single filer, 2026 brackets (IRS, Rev. Proc. 2025-32): 10% to $12,400, 12% to $50,400, 22% above.
+# Generic shapes of our own: no agency seal, form or logo, no real person. Every beat's set is on the panel at the
+# swipe (the 17 Nov next improvement), drawn with _set or a pre-drawn trader, so only the action animates, and every
+# beat starts an action on its first spoken word.
+
+TB_BASE = 600
+TB_K = 440 / 51400                       # pixels a dollar in the to-scale column ($51,400 = 440 px)
+L10_C, L12_C, L22_C = CASH_C, GOLD, RED
+
+
+def _pre(p):
+    """A Pen fraction that puts a pen-drawn piece (a stroke, the trader) fully on the panel before the swipe."""
+    return (-2 - p.t0) / p.dur
+
+
+def _trader_poses(p, x, y, s, poses, look=1, end=99):
+    """15 Nov's trader in a sequence of poses: poses=[(t, pose), ...], the first from the swipe. Each pose is a
+    whole drawn trader shown for its window and cross-faded (0.12 s) into the next, so he reacts on the words."""
+    for j, (t, pose) in enumerate(poses):
+        q = Pen(p.t0, p.dur, p.seed if hasattr(p, "seed") else 1)
+        trader(q, x, y, s, pose, _pre(q), look=look)
+        t_on = -1 if j == 0 else t
+        t_off = poses[j + 1][0] + .12 if j + 1 < len(poses) else end
+        p.parts.append(_life(t_on, t_off - t_on, "".join(q.parts), fi=.01 if j == 0 else .12, fo=.12))
+
+
+def _cnt(x, y, frm, to, at, d, size=48, color=INK, pre="$", suf="", dec=0, anchor="middle"):
+    """_count with thousands separators from 1,000 (motion.py data-sep)."""
+    return _count(x, y, frm, to, round(at, 2), d, size=size, color=color, pre=pre, suf=suf, dec=dec,
+                  anchor=anchor).replace('data-fx="count"', 'data-fx="count" data-sep="1"', 1)
+
+
+def _fr(seg, j, f):
+    """A moment a fraction f of the way through sentence j (the captions light by characters the same way)."""
+    a, b = seg[j]
+    return a + f * (b - a)
+
+
+def _stripes(x, y0, y1, w_, col=GOLD_D, gap=46):
+    return "".join(f'<path d="M{x + 14} {y} H{x + w_ - 14}" stroke="{col}" stroke-opacity=".3" stroke-width="5"/>'
+                   for y in range(int(y1) - 40, int(y0) + 20, -gap))
+
+
+def _pay_col(x, top, w_=180, label="$50,400", fill=GOLD):
+    return (f'<rect x="{x}" y="{top}" width="{w_}" height="{TB_BASE - top}" rx="10" fill="{fill}" stroke="{INK}" stroke-width="7"/>'
+            + _stripes(x, top, TB_BASE, w_) + _t(x + w_ / 2, TB_BASE - 26, label, 36, INK))
+
+
+def _wallet(cx, cy, s=1.0):
+    S = lambda v: v * s
+    return (f'<rect x="{cx - S(70)}" y="{cy - S(48)}" width="{S(140)}" height="{S(96)}" rx="{S(14)}" fill="#8A5F12" stroke="{INK}" stroke-width="6"/>'
+            f'<rect x="{cx + S(18)}" y="{cy - S(20)}" width="{S(56)}" height="{S(40)}" rx="{S(10)}" fill="#B8862B" stroke="{INK}" stroke-width="5"/>'
+            f'<circle cx="{cx + S(40)}" cy="{cy}" r="{S(7)}" fill="{INK}"/>')
+
+
+def tb_hook(p, seg=None, **_):
+    """The hook. From the swipe: a gold pay column ($50,400) standing just under a dashed 22% line, the trader beside
+    it. On 'raise' a teal +$1,000 block drops onto the column and lands above the line; the line turns solid red and a
+    22% tag pops on '22%'. On the question the trader puts his hands on his head, a ? bobs over him and a wallet with
+    a red LESS? tag drops in on the right. Not to scale (the +$1,000 is drawn big; beat 3 shows it to scale)."""
+    s0, s1 = seg[0][0], seg[1][0]
+    x, w_, top, line = 300, 180, 300, 300
+    _set(p, f'<path d="M20 {TB_BASE} H780" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+            + _t(30, 632, "NOT TO SCALE", 20, GREY, serif=False, anchor="start"))
+    p.parts.append(_g("fade", -1, .05, _idle("breathe", _pay_col(x, top), .015, 2.8,
+                                             style="transform-box:fill-box;transform-origin:center bottom"), style=""))
+    dash = f'<path d="M230 {line} H560" stroke="{RED}" stroke-width="6" stroke-dasharray="18 12" stroke-linecap="round"/>'
+    _set(p, dash + _t(570, line + 10, "22% LINE", 28, RED, serif=False, anchor="start"))
+    t_drop = _fr(seg, 0, .1)
+    blk = (f'<rect x="{x}" y="{line - 70}" width="{w_}" height="70" rx="10" fill="{TEAL}" stroke="{INK}" stroke-width="7"/>'
+           + _t(x + w_ / 2, line - 22, "+$1,000", 40, "#fff"))
+    p.parts.append(_g("fade", t_drop, .08, _g("slide", t_drop, .55, _idle("bob", blk, 3, 2.2), style="", y0=-260, y1=0, ease="out"),
+                      style=""))
+    t22 = _fr(seg, 0, .62)
+    p.parts.append(_g("draw", t_drop + .55, .35, f'<path d="M230 {line} H560" stroke="{RED}" stroke-width="9" stroke-linecap="round"/>',
+                      style=""))
+    p.parts.append(_g("pop", t22, .35, _ptag(650, 200, 150, "22%", RED, "#fff", 48)))
+    p.parts.append(_life(t22 + .1, 1.0, _g("pop", t22 + .1, .3, f'<rect x="{x - 12}" y="{line - 82}" width="{w_ + 24}" height="94" rx="14" '
+                                                             f'fill="none" stroke="{RED}" stroke-width="7"/>'), fi=.05, fo=.3))
+    _trader_poses(p, 130, TB_BASE, .72, [(0, "stand"), (s1 + .05, "worry")], look=1)
+    p.parts.append(_life(s1 + .1, 99, _idle("bob", _t(130, 300, "?", 120, RED), 14, 2.8, style=""), fi=.15, fo=.01))
+    t_w = s1 + .35
+    p.parts.append(_g("fade", t_w, .1, _g("slide", t_w, .45, _idle("swing", _wallet(660, 470, .9) + _ptag(660, 380, 150, "LESS?", RED, "#fff", 36),
+                                                                   5, 2.4, style="transform-box:view-box;transform-origin:660px 360px"),
+                                          style="", y0=-120, y1=0, ease="out"), style=""))
+
+
+def tb_myth(p, seg=None, **_):
+    """The myth. From the swipe: the column with its +$1,000 on top ($51,400), the dashed 22% line, the trader. On the
+    first sentence a red wash rises through the whole column and a 22% ON ALL OF IT? tag hangs over it; on 'It
+    doesn't.' a MYTH stamp lands, the wash drains away and only the +$1,000 above the line stays red."""
+    s0, s1 = seg[0][0], seg[1][0]
+    x, w_, line = 300, 180, 300
+    _set(p, f'<path d="M20 {TB_BASE} H780" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>')
+    p.parts.append(_g("fade", -1, .05, _idle("breathe", _pay_col(x, line, label="$51,400")
+                                             + f'<rect x="{x}" y="{line - 70}" width="{w_}" height="70" rx="10" fill="{TEAL}" stroke="{INK}" stroke-width="7"/>'
+                                             + _t(x + w_ / 2, line - 22, "+$1,000", 40, "#fff"), .012, 2.8,
+                                             style="transform-box:fill-box;transform-origin:center bottom"), style=""))
+    _set(p, f'<path d="M230 {line} H560" stroke="{RED}" stroke-width="6" stroke-dasharray="18 12" stroke-linecap="round"/>'
+            + _t(570, line + 10, "22% LINE", 28, RED, serif=False, anchor="start"))
+    _trader_poses(p, 130, TB_BASE, .72, [(0, "read"), (s1 + .05, "shrug")], look=1)
+    t_w = _fr(seg, 0, .25)
+    wash = f'<rect x="{x + 4}" y="{line - 66}" width="{w_ - 8}" height="{TB_BASE - line + 62}" rx="8" fill="{RED}" fill-opacity=".72"/>'
+    p.parts.append(_life(t_w, s1 + .5 - t_w, _g("growY", t_w, 1.1, wash, style="transform-box:fill-box;transform-origin:center bottom"),
+                         fi=.01, fo=.35))
+    p.parts.append(_life(t_w + .6, s1 + .4 - t_w - .6, _g("pop", t_w + .6, .35, _ptag(400, 150, 420, "22% ON ALL OF IT?", RED, "#fff", 36)),
+                         fi=.05, fo=.25))
+    p.parts.append(_life(s1 + .3, 99, f'<rect x="{x + 4}" y="{line - 66}" width="{w_ - 8}" height="62" rx="8" fill="{RED}" fill-opacity=".8"/>'
+                         + _t(x + w_ / 2, line - 22, "22%", 40, "#fff"), fi=.3, fo=.01))
+    p.parts.append(f'<g class="a" data-fx="stamp" data-at="{s1 + .05:.2f}" data-d=".35" data-rot="-10" '
+                   f'style="transform-box:fill-box;transform-origin:center">'
+                   f'<rect x="520" y="380" width="240" height="120" rx="16" fill="#fff" stroke="{RED}" stroke-width="10"/>'
+                   + _t(640, 465, "MYTH", 76, RED) + "</g>")
+
+
+def tb_layers(p, seg=None, **_):
+    """The layers, to scale ($51,400 = 440 px). From the swipe: the empty column outline, $0 at its foot, the source
+    line. On 'layers' its two dividers draw in. On '10%' the bottom layer ($12,400) fills light green with 10% and its
+    $12,400 mark; on '12%' (same sentence) the middle layer (to $50,400) fills gold; on '22%' the thin red top ($1,000, 8.6 px) fills
+    and a magnifier pops out of it with 22% ON THIS $1,000; the $51,400 total lands on top."""
+    x, w_ = 250, 200
+    h10, h12, h22 = 12400 * TB_K, 38000 * TB_K, 1000 * TB_K
+    y10, y12, y22 = TB_BASE - h10, TB_BASE - h10 - h12, TB_BASE - h10 - h12 - h22
+    _set(p, f'<path d="M20 {TB_BASE} H780" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+            f'<rect x="{x}" y="{y22:.1f}" width="{w_}" height="{TB_BASE - y22:.1f}" rx="6" fill="none" stroke="{INK}" stroke-width="5" '
+            f'stroke-dasharray="16 12"/>'
+            + _t(x - 14, TB_BASE - 4, "$0", 28, GREY, serif=False, anchor="end")
+            + _t(24, 34, "TAXABLE INCOME, TO SCALE", 24, GREY, serif=False, anchor="start")
+            + _t(400, 634, "US FEDERAL, SINGLE FILER, 2026 (IRS)", 22, GREY, serif=False))
+    # 18 Nov: the set at the swipe is the column already marked in its three layers, faintly tinted, so the panel
+    # opens on the thing being explained; each layer then fills solid on its own words
+    _set(p, "".join(f'<rect x="{x}" y="{y:.1f}" width="{w_}" height="{h_:.1f}" fill="{c}" fill-opacity=".28"/>'
+                    for y, h_, c in ((y10, h10, L10_C), (y12, h12, L12_C), (y22, h22, L22_C)))
+            + _t(x + w_ + 18, y10 + h10 / 2 + 10, "?", 34, GREY, anchor="start")
+            + _t(x + w_ + 18, y12 + h12 / 2 + 10, "?", 34, GREY, anchor="start"))
+    t_lay = _fr(seg, 0, .55)
+    for j, y in enumerate((y10, y12)):
+        p.parts.append(_g("draw", t_lay + .12 * j, .4, f'<path d="M{x - 30} {y:.1f} H{x + w_ + 30}" stroke="{INK}" stroke-width="5" '
+                                                       f'stroke-dasharray="10 8"/>', style=""))
+    layer = lambda y, h_, fill: f'<rect x="{x}" y="{y:.1f}" width="{w_}" height="{h_:.1f}" fill="{fill}" stroke="{INK}" stroke-width="5"/>'
+    grow = "transform-box:fill-box;transform-origin:center bottom"
+    t10 = _fr(seg, 1, .04)
+    p.parts.append(_g("growY", t10, .6, layer(y10, h10, L10_C), style=grow))
+    p.parts.append(_g("pop", t10 + .4, .3, _t(x + w_ / 2, y10 + h10 / 2 + 18, "10%", 50, INK)))
+    p.parts.append(_g("fade", t10 + .6, .3, _t(x - 14, y10 + 10, "$12,400", 30, INK, serif=False, anchor="end"), style=""))
+    t12 = _fr(seg, 1, .5)
+    p.parts.append(_g("growY", t12, .8, _idle("breathe", layer(y12, h12, L12_C) + _stripes(x, y12, y10, w_), .01, 3.0, style=grow),
+                      style=grow))
+    p.parts.append(_g("pop", t12 + .6, .3, _t(x + w_ / 2, y12 + h12 / 2 + 18, "12%", 50, INK)))
+    p.parts.append(_g("fade", _fr(seg, 1, .85), .3, _t(x - 14, y12 + 10, "$50,400", 30, INK, serif=False, anchor="end"), style=""))
+    t22 = _fr(seg, 2, .05)
+    p.parts.append(_g("fade", t22, .2, layer(y22, h22, L22_C), style=""))
+    # the magnifier: a ring on the sliver, a leader, and the zoomed $1,000 in red
+    mx, my, r = 640, 240, 105
+    mag = (f'<circle cx="{x + w_ - 24}" cy="{y22 + h22 / 2:.1f}" r="22" fill="none" stroke="{RED}" stroke-width="6"/>'
+           f'<path d="M{x + w_ - 4} {y22 + h22 / 2 - 8:.1f} L{mx - r + 8} {my - 20}" stroke="{RED}" stroke-width="6" stroke-linecap="round"/>'
+           f'<circle cx="{mx}" cy="{my}" r="{r}" fill="#fff" stroke="{INK}" stroke-width="7"/>'
+           f'<rect x="{mx - 78}" y="{my - 56}" width="156" height="60" fill="{L22_C}" stroke="{INK}" stroke-width="5"/>'
+           f'<rect x="{mx - 78}" y="{my + 4}" width="156" height="44" fill="{L12_C}" stroke="{INK}" stroke-width="5"/>'
+           + _t(mx, my - 12, "22%", 42, "#fff") + _t(mx, my + r + 34, "ONLY THIS $1,000", 24, RED, serif=False))
+    p.parts.append(_g("pop", t22 + .2, .4, _idle("bob", mag, 4, 2.6, style="")))
+    p.parts.append(_g("fade", t22 + .5, .3, _t(x + w_ / 2, y22 - 16, "$51,400", 34, INK), style=""))
+
+
+def tb_raise(p, seg=None, **_):
+    """The raise, worked (magnified: the top of the column). From the swipe: the gold slab below $50,400, the dashed
+    red 22% line on its top edge, an empty TAX tray on the right, the income counter at $50,400. On the first
+    sentence a teal +$1,000 block drops onto the slab above the line and the counter runs to $51,400. On '22%' the
+    top 22% of the block turns red and counts $220, then slides into the tray; on 'You keep' what is left is $780
+    in teal with a YOU KEEP tag, and three coins drop on it."""
+    s0, s1, s2 = seg[0][0], seg[1][0], seg[2][0]
+    x, w_, line, bh = 90, 300, 420, 160
+    sl = bh * .22
+    _set(p, f'<path d="M20 {TB_BASE} H780" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+            f'<rect x="{x}" y="{line}" width="{w_}" height="{TB_BASE - line}" rx="8" fill="{GOLD}" stroke="{INK}" stroke-width="7"/>'
+            + _stripes(x, line, TB_BASE, w_) + _t(x + w_ / 2, 530, "THE FIRST $50,400", 30, INK, serif=False)
+            + f'<path d="M40 {line} H440" stroke="{RED}" stroke-width="6" stroke-dasharray="18 12" stroke-linecap="round"/>'
+            + _t(240, line + 40, "SAME TAX AS BEFORE", 22, INK, serif=False)
+            + f'<rect x="470" y="380" width="300" height="220" rx="16" fill="#fff" stroke="{INK}" stroke-width="7"/>'
+            + _t(620, 430, "TAX", 40, INK, serif=False)
+            + _t(240, 50, "INCOME", 26, GREY, serif=False))
+    t_c = _fr(seg, 0, .55)
+    p.parts.append(_life(-1, t_c + 1.01, _t(240, 110, "$50,400", 60, INK), fi=.01, fo=.01))
+    p.parts.append(_life(t_c, 99, _cnt(240, 110, 50400, 51400, t_c, .9, size=60), fi=.01, fo=.01))
+    t_drop = _fr(seg, 0, .08)
+    top = line - bh
+    t22 = _fr(seg, 1, .55)
+    t_go = _fr(seg, 1, .9)
+    body = f'<rect x="{x}" y="{top}" width="{w_}" height="{bh}" rx="8" fill="{TEAL}" stroke="{INK}" stroke-width="7"/>'
+    p.parts.append(_g("fade", t_drop, .08, _g("slide", t_drop, .55, body + _life(-1, t22 + .2 + 1, _t(x + w_ / 2, top + bh / 2 + 18, "+$1,000", 52, "#fff"),
+                                                                                 fi=.01, fo=.15),
+                                              style="", y0=-300, y1=0, ease="out"), style=""))
+    p.parts.append(_life(_fr(seg, 1, .05), t22 - _fr(seg, 1, .05) + .2,
+                         f'<rect x="{x - 10}" y="{top - 10}" width="{w_ + 20}" height="{bh + 20}" rx="14" fill="none" stroke="{RED}" stroke-width="7"/>',
+                         fi=.15, fo=.2))
+    # the 22% slice: red on the block, counting $220, then into the tray (same size: x +390, y down to the tray floor)
+    dx, dy = 475 - x, (TB_BASE - 14 - sl) - top
+    slice_ = (f'<rect x="{x}" y="{top}" width="{w_}" height="{sl:.1f}" rx="8" fill="{RED}" stroke="{INK}" stroke-width="6"/>'
+              + _cnt(x + w_ / 2, top + sl / 2 + 13, 0, 220, t22 + .1, .6, size=36, color="#fff"))
+    p.parts.append(_life(t22, 99, _g("slide", t_go, .7, slice_, style="", x0=0, y0=0, x1=dx - 0, y1=round(dy, 1), ease="inout"), fi=.1, fo=.01))
+    p.parts.append(_g("pop", t_go + .75, .3, _t(620, 500, "+$220", 40, RED)))
+    p.parts.append(_life(t_go + .3, 99, f'<rect x="{x}" y="{top}" width="{w_}" height="{sl:.1f}" rx="8" fill="#fff" fill-opacity=".85" '
+                                        f'stroke="{INK}" stroke-width="4" stroke-dasharray="10 8"/>', fi=.3, fo=.01))
+    tk = s2 + .15
+    p.parts.append(_life(tk, 99, _t(x + w_ / 2, top + sl + (bh - sl) / 2 + 20, "$780", 60, "#fff"), fi=.15, fo=.01))
+    p.parts.append(_g("pop", tk + .2, .35, _ptag(x + w_ / 2, top - 50, 200, "YOU KEEP", TEAL, "#fff", 34)))
+    for j in range(3):
+        p.parts.append(_g("fade", tk + .45 + .15 * j, .05, _g("slide", tk + .45 + .15 * j, .3,
+                          f'<ellipse cx="{x + w_ + 40}" cy="{line - 12 - 16 * j}" rx="34" ry="11" fill="{GOLD}" stroke="{GOLD_D}" stroke-width="4"/>',
+                          style="", y0=-80, y1=0, ease="out"), style=""))
+
+
+def _receipt(x, y, w_, h_, head, inc):
+    return (f'<path d="M{x} {y} H{x + w_} V{y + h_} ' + " ".join(f"L{x + w_ - (k + .5) * w_ / 10:.1f} {y + h_ - (14 if k % 2 == 0 else 0)}"
+                                                                  for k in range(10))
+            + f' L{x} {y + h_} Z" fill="#fff" stroke="{INK}" stroke-width="6" stroke-linejoin="round"/>'
+            + _t(x + w_ / 2, y + 44, head, 30, GREY, serif=False) + _t(x + w_ / 2, y + 90, inc, 36, INK))
+
+
+def tb_total(p, seg=None, **_):
+    """The whole bill. From the swipe: two receipts, BEFORE ($50,400) and AFTER ($51,400), and an empty rate dial
+    (0 to 25%, marks at 12% and 22%). On the first sentence both receipts print the same two rows (10% $1,240, 12%
+    $4,560) together, the AFTER one adds 22% $220, then the totals count: $5,800 and $5,800 to $6,020 with a +$220
+    tag. On the last sentence the needle sweeps to 11.7% and the reading counts with it, under the 12% mark."""
+    s0, s1 = seg[0][0], seg[1][0]
+    _set(p, _receipt(40, 20, 330, 330, "BEFORE", "$50,400") + _receipt(430, 20, 330, 330, "AFTER", "$51,400"))
+    cx, cy, R = 400, 600, 190
+    ang = lambda pct: math.pi * (1 - pct / 25)
+    pt = lambda pct, r: (cx + r * math.cos(ang(pct)), cy - r * math.sin(ang(pct)))
+    arc = f'<path d="M{cx - R} {cy} A{R} {R} 0 0 1 {cx + R} {cy}" fill="none" stroke="{INK}" stroke-width="8"/>'
+    ticks = ""
+    for pct, lab, col in ((0, "0%", GREY), (12, "12%", INK), (22, "22%", RED), (25, "25%", GREY)):
+        (ax, ay), (bx, by), (tx, ty) = pt(pct, R - 16), pt(pct, R + 16), pt(pct, R + 44)
+        ticks += (f'<path d="M{ax:.1f} {ay:.1f} L{bx:.1f} {by:.1f}" stroke="{col}" stroke-width="7" stroke-linecap="round"/>'
+                  + _t(tx, ty + 10, lab, 24, col, serif=False))
+    _set(p, arc + ticks + f'<circle cx="{cx}" cy="{cy}" r="14" fill="{INK}"/>')
+    rows = [("10%", "$1,240"), ("12%", "$4,560")]
+    t_r = _fr(seg, 0, .12)
+    for k, (x, _) in enumerate(((40, 0), (430, 0))):
+        for j, (rate, amt) in enumerate(rows):
+            y = 150 + 40 * j
+            p.parts.append(_g("fade", t_r + .25 * j, .25, _t(x + 30, y, rate, 28, INK, serif=False, anchor="start")
+                              + _t(x + 300, y, amt, 28, INK, serif=False, anchor="end"), style=""))
+    p.parts.append(_g("fade", t_r + .6, .25, _t(460, 230, "22%", 28, RED, serif=False, anchor="start")
+                      + _t(730, 230, "$220", 28, RED, serif=False, anchor="end"), style=""))
+    for x in (40, 430):
+        p.parts.append(_g("draw", t_r + .8, .3, f'<path d="M{x + 30} 250 H{x + 300}" stroke="{INK}" stroke-width="4"/>', style=""))
+    t_a = _fr(seg, 0, .55)
+    p.parts.append(_life(t_a, 99, _cnt(205, 300, 0, 5800, t_a, .6, size=44), fi=.01, fo=.01))
+    t_b = _fr(seg, 0, .82)
+    p.parts.append(_life(t_a, t_b - t_a + .01, _cnt(595, 300, 0, 5800, t_a, .6, size=44), fi=.01, fo=.01))
+    p.parts.append(_life(t_b, 99, _cnt(595, 300, 5800, 6020, t_b, .6, size=44, color=RED), fi=.01, fo=.01))
+    p.parts.append(_g("pop", t_b + .6, .3, _ptag(680, 380, 130, "+$220", RED, "#fff", 30)))
+    # the needle: 0 to 11.7% on the last sentence (rotate about the hub; 25% = 180 degrees)
+    t_n = s1 + .1
+    deg = 11.712 / 25 * 180
+    kf = H.escape(_json([[0, 0, 0, 1, 1, 0], [round(t_n, 2), 0, 0, 1, 1, 0], [round(t_n + 1.1, 2), 0, 0, 1, 1, round(deg, 2)]]))
+    needle = f'<path d="M{cx} {cy} L{cx - R + 34} {cy}" stroke="{TEAL}" stroke-width="10" stroke-linecap="round"/>'
+    p.parts.append(f'<g class="a" data-fx="kf" data-at="0" data-d="1" data-kf="{kf}" style="transform-box:view-box;'
+                   f'transform-origin:{cx}px {cy}px">{needle}</g>')
+    p.parts.append(_life(t_n, 99, _cnt(cx - 105, cy - 45, 0, 11.7, t_n, 1.1, size=50, color=TEAL, pre="", suf="%", dec=1), fi=.05, fo=.01))
+    p.parts.append(_g("fade", t_n + .9, .3, _t(cx - 105, cy - 12, "OF YOUR INCOME", 18, INK, serif=False), style=""))
+
+
+def tb_rule(p, seg=None, **_):
+    """The reading. From the swipe: two pay bars to scale ($50,400 and $51,400, 0.0078 px a dollar), the trader
+    reading beside them. On 'So' each bar's tax drops off its top in red (to scale: $5,800 and $6,020) and on
+    'brackets' the dashed $50,400 line draws across; on 'raise' what is left counts as take-home ($44,600 and
+    $45,380), a +$780 tag pops on the taller one and the trader cheers. One sentence."""
+    k = 400 / 51400
+    bars = [(110, 50400, 5800, "BEFORE"), (330, 51400, 6020, "AFTER")]
+    _set(p, f'<path d="M20 {TB_BASE} H780" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>')
+    for x, pay, tax, lab in bars:
+        top = TB_BASE - pay * k
+        _set(p, f'<rect x="{x}" y="{top:.1f}" width="170" height="{pay * k:.1f}" rx="8" fill="{GOLD}" stroke="{INK}" stroke-width="7"/>'
+                + _stripes(x, top, TB_BASE, 170) + _t(x + 85, TB_BASE + 30, lab, 24, GREY, serif=False))
+    t_line = _fr(seg, 0, .3)
+    y50 = TB_BASE - 50400 * k
+    p.parts.append(_g("draw", t_line, .5, f'<path d="M80 {y50:.1f} H540" stroke="{RED}" stroke-width="6" stroke-dasharray="18 12"/>', style=""))
+    t_tax = _fr(seg, 0, .1)
+    for j, (x, pay, tax, lab) in enumerate(bars):
+        top = TB_BASE - pay * k
+        red = f'<rect x="{x}" y="{top:.1f}" width="170" height="{tax * k:.1f}" rx="8" fill="{RED}" stroke="{INK}" stroke-width="6"/>'
+        p.parts.append(_g("growYdown", t_tax + .2 * j, .5, red, style="transform-box:fill-box;transform-origin:center top"))
+        p.parts.append(_g("fade", t_tax + .3 + .2 * j, .3, _t(x + 85, top - 14, f"TAX ${tax:,}", 26, RED, serif=False), style=""))
+    t_keep = _fr(seg, 0, .55)
+    for j, (x, pay, tax, lab) in enumerate(bars):
+        p.parts.append(_life(t_keep + .2 * j, 99, _cnt(x + 85, TB_BASE - 60, 0, pay - tax, t_keep + .2 * j, .7, size=36), fi=.05, fo=.01))
+    p.parts.append(_g("fade", t_keep, .3, _t(280, TB_BASE - 110, "TAKE-HOME", 22, INK, serif=False), style=""))
+    p.parts.append(_g("pop", t_keep + 1.0, .35, _ptag(415, 70, 160, "+$780", TEAL, "#fff", 40)))
+    _trader_poses(p, 650, TB_BASE, .72, [(0, "read"), (t_keep + 1.0, "cheer")], look=-1)
+
+
+def tb_asks(p, **_):
+    """The close, all on the panel from frame 0: a 22% tile and an 11.7% tile either side of a bobbing ?, the trader
+    pointing at the viewer."""
+    _set(p, _tile(30, 110, 200, 140, RED, "22%", 80) + _tile(270, 110, 230, 140, TEAL, "11.7%", 70))
+    p.parts.append(_g("float", 0, 1, _t(260, 420, "?", 160, RED), style="", amp=10, w=2.4))
+    _trader_poses(p, 690, 630, .9, [(0, "point")], look=-1)
+    p.parts.append(_idle("bob", _wallet(130, 500, .9), 8, 2.2))
+
+
+SCENES.update({f.__name__: f for f in (tb_hook, tb_myth, tb_layers, tb_raise, tb_total, tb_rule, tb_asks)})

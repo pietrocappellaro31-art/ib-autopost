@@ -306,6 +306,13 @@
    "kind": "short",
    "id": "ludovico-einaudi-experience",
    "mood": "curious"
+  },
+  {
+   "date": "2026-11-18",
+   "slug": "shorts-raise-tax-bracket",
+   "kind": "short",
+   "id": "sparky-deathcap-september-instrumental",
+   "mood": "curious"
   }
  ],
  "originals": [
@@ -431,6 +438,19 @@
    "style": "ambient",
    "rights": "ORIGINAL_GENERATED",
    "added": "2026-11-17",
+   "note": ""
+  },
+  {
+   "id": "score-shorts-raise-tax-bracket",
+   "title": "Original score for shorts-raise-tax-bracket",
+   "video": "shorts-raise-tax-bracket",
+   "engine": "score.py + GeneralUser GS v2.0.3 (TinySoundFont)",
+   "mood": "explain+resolve",
+   "bpm": 85,
+   "key": "F",
+   "style": "harp",
+   "rights": "ORIGINAL_GENERATED",
+   "added": "2026-11-18",
    "note": ""
   }
  ]

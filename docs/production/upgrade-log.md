@@ -183,3 +183,11 @@ runs:
   bank counters either side of the sea with their own clocks and window light; a New York account desk with ledger,
   phone and safe; a settlement desk for payment versus payment; 1974 looks; `sfx.telex`. `sketch.day_bars`: two banking
   days five hours apart on one clock, and the CLS window.
+
+## 18 Nov 2026 (YouTube Short, the raise and the 22% bracket)
+
+- `build/entry_check.py`: the beat-entry gate. For each story beat and the close it finds the paper panel in the beat's
+  last frame and compares the panel's ink in the first 0.3 s after the beat lands with the finished drawing; under 20%
+  is an empty entry. 17 Nov coin toss Short: 15/24 empty; today's: 0/28. Run it after every story-engine render.
+- `sketch.py`: `_pre` (pen-drawn pieces and the trader fully drawn before the swipe), `_trader_poses` (the trader
+  changes pose on the words), `_cnt` (counters with separators from 1,000), `_fr`; scenes `tb_*`.

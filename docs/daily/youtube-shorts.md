@@ -12,3 +12,4 @@
 | 2026-11-15 | shorts-jackpot-two-billion | The $2.04 Billion Jackpot Paid $997.6 Million. Here's Why (Format D, animated calculation) | HEART | 53.9 s | |
 | 2026-11-16 | shorts-down-50-up-50 | A Stock Falls 50% and Rises 50%. Are You Back to Even? (Format C, one surprising concept) | HEART | 53.7 s | |
 | 2026-11-17 | shorts-coin-toss-150-100 | Win $150 or Lose $100 on a Coin Toss. Would You Take It? (Format F, choice; one scored file, acoustic score in C) | HEART | 47.7 s | |
+| 2026-11-18 | shorts-raise-tax-bracket | A $1,000 Raise Into the 22% Bracket. Do You Take Home Less? (Format E, myth; one scored file, harp score in F) | HEART | 51.3 s | |
