@@ -5065,6 +5065,14 @@ def _unit(x, y, price, fill, label=None):
     return s
 
 
+def _pill(x, y, label, fill=INK, color="#fff", size=28):
+    """A rounded label sized to its text (18 Nov: long labels on a price tag ran under its hole)."""
+    w_ = len(label) * size * .66 + 44
+    h_ = size * 1.7
+    return (f'<rect x="{x - w_ / 2:.0f}" y="{y - h_ / 2:.0f}" width="{w_:.0f}" height="{h_:.0f}" rx="{h_ / 2:.0f}" fill="{fill}" '
+            f'stroke="{INK}" stroke-width="5"/>' + _t(x, y + size * .36, label, size, color, serif=False))
+
+
 def _fl_shelf(p, register=True):
     _set(p, f'<path d="M30 {FL_BASE} H770" stroke="{INK}" stroke-width="8" stroke-linecap="round"/>'
             f'<path d="M60 {FL_BASE} V{FL_BASE + 50} M360 {FL_BASE} V{FL_BASE + 50}" stroke="{INK}" stroke-width="7"/>'
@@ -5113,7 +5121,7 @@ def fl_both(p, seg=None, **_):
     _fl_shelf(p)
     p.parts.append(_g("fade", -1, .05, _idle("breathe", _unit(FL_X, Y_LO, "$10", TEAL, "1ST"), .01, 3.0), style=""))
     p.parts.append(_g("fade", -1, .05, _idle("breathe", _unit(FL_X, Y_HI, "$12", GOLD, "2ND"), .01, 2.6, ph=1), style=""))
-    p.parts.append(_stamp(470, 70, 260, 110, "BOTH", TEAL, _fr(seg, 0, .03), size=70))
+    p.parts.append(_stamp(450, 40, 260, 110, "BOTH", TEAL, _fr(seg, 0, .03), size=70))
     t = _fr(seg, 0, .4)
     k = 0
     while t < seg[-1][1] + 3:
@@ -5123,7 +5131,7 @@ def fl_both(p, seg=None, **_):
         t += .8
         k += 1
     t1 = _fr(seg, 1, .2)
-    p.parts.append(_g("pop", t1, .35, _ptag(560, 250, 400, "INVENTORY METHOD", INK, "#fff", 28)))
+    p.parts.append(_g("pop", t1, .35, _pill(560, 280, "INVENTORY METHOD", INK, "#fff", 30)))
 
 
 def _fl_sale(p, seg, out_y, out_price, out_fill, stay_y, stay_price, stay_fill, method, rule, profit, pfill):
@@ -5157,7 +5165,7 @@ def _fl_sale(p, seg, out_y, out_price, out_fill, stay_y, stay_price, stay_fill, 
     p.parts.append(_g("pop", t_p, .3, _t(560, 240, "=", 50, INK)))
     p.parts.append(_life(t_p, 99, _count(670, 244, 0, profit, round(t_p, 2), .5, size=62, color=pfill, pre="$"), fi=.05, fo=.01))
     p.parts.append(_g("pop", t_p + .4, .3, _t(640, 290, "PROFIT", 26, pfill, serif=False)))
-    p.parts.append(_g("pop", t_tag, .35, _ptag(FL_X + FL_W / 2 + 60, Y_LO - 50, 380, "STAYS IN INVENTORY", INK, "#fff", 26)))
+    p.parts.append(_g("pop", t_tag, .35, _pill(FL_X + FL_W / 2 + 90, Y_LO - 40, "STAYS IN INVENTORY", INK, "#fff", 26)))
 
 
 def fl_fifo(p, seg=None, **_):
@@ -5185,11 +5193,20 @@ def fl_tax(p, seg=None, **_):
     t0 = _fr(seg, 0, .05)
     for j, (x, v, n, c) in enumerate(cols):
         cap = f'<rect x="{x + 10}" y="{base - v * k + 6}" width="160" height="{v * k * .25:.0f}" rx="6" fill="{RED}" fill-opacity=".85"/>'
-        p.parts.append(_g("growYdown", t0 + .3 * j, .6, cap, style="transform-box:fill-box;transform-origin:center top"))
+        p.parts.append(_g("growYdown", t0 + .3 * j, .6, _idle("breathe", cap, .03, 2.0, ph=j), style="transform-box:fill-box;transform-origin:center top"))
+    # 18 Nov (the lowest 6 s window of the first cut, 0.74, was this beat's long first sentence): on "less profit" the
+    # $2 that LIFO lacks draws in as a dashed outline over its column with a -$2 pill, and the FIFO column gives a nod
+    t_gap = _fr(seg, 0, .55)
+    p.parts.append(_g("draw", t_gap, .5, f'<rect x="470" y="{base - 10 * k}" width="180" height="{2 * k}" rx="8" fill="none" stroke="{RED}" '
+                                         f'stroke-width="6" stroke-dasharray="14 9"/>', style=""))
+    p.parts.append(_g("pop", t_gap + .35, .3, _idle("bob", _pill(560, base - 10 * k - 40, "−$2 PROFIT", RED, "#fff", 26), 5, 2.2, style="")))
+    p.parts.append(_life(_fr(seg, 0, .3), 1.1, _g("press", _fr(seg, 0, .3), .5, f'<rect x="140" y="{base - 10 * k - 10}" width="200" '
+                                                                         f'height="{10 * k + 10}" rx="10" fill="none" stroke="{TEAL}" stroke-width="8"/>'),
+                         fi=.1, fo=.3))
     t1 = _fr(seg, 1, .05)
     for x, v, lab in ((150, 10, "$2.50"), (470, 8, "$2.00")):
         p.parts.append(_g("pop", t1 + (.0 if v == 10 else .35), .3, _t(x + 90, base - v * k + 6 + v * k * .125 + 14, lab, 36, "#fff")))
-    p.parts.append(_g("pop", _fr(seg, 0, .6), .35, _ptag(560, 150, 200, "LESS TAX", RED, "#fff", 32)))
+    p.parts.append(_g("pop", _fr(seg, 0, .85), .35, _ptag(560, 120, 200, "LESS TAX", RED, "#fff", 32)))
     t_c = _fr(seg, 1, .6)
     coin = (f'<circle cx="0" cy="0" r="48" fill="{GOLD}" stroke="{INK}" stroke-width="6"/>' + _t(0, 14, "50¢", 36, INK))
     p.parts.append(_g("fade", t_c, .1, _g("slide", t_c, .55, f'<g transform="translate(720 300)">{_idle("bob", coin, 8, 2.2, style="")}</g>',
@@ -5228,7 +5245,7 @@ def fl_asks(p, **_):
     a1, a2 = _arrow(395, 200, 500, RED, 16)
     p.parts.append(_g("draw", p.at(.1), .4, a1, style=""))
     p.parts.append(_g("draw", p.at(.2), .2, a2, style=""))
-    p.fill(_ptag(580, 230, 400, "FIFO OR LIFO?", INK, "#fff", 36), .35)
+    p.fill(_pill(590, 230, "FIFO OR LIFO?", INK, "#fff", 36), .35)
     p.parts.append(_g("float", 0, 1, _g("pop", p.at(.5), .4, _t(600, 470, "?", 200, RED)), style="", amp=12, w=2.2))
 
 

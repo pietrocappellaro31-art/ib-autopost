@@ -316,17 +316,17 @@
   },
   {
    "date": "2026-11-18",
-   "slug": "w2-fifo-lifo",
-   "kind": "short",
-   "id": "flawed-mangoes-missing-pieces",
-   "mood": "tense"
-  },
-  {
-   "date": "2026-11-18",
    "slug": "w2-accretion-dilution",
    "kind": "short",
    "id": "joel-sunny-luminary",
    "mood": "curious"
+  },
+  {
+   "date": "2026-11-18",
+   "slug": "w2-fifo-lifo",
+   "kind": "short",
+   "id": "flawed-mangoes-missing-pieces",
+   "mood": "tense"
   }
  ],
  "originals": [
@@ -476,6 +476,19 @@
    "bpm": 75,
    "key": "G",
    "style": "orchestral",
+   "rights": "ORIGINAL_GENERATED",
+   "added": "2026-11-18",
+   "note": ""
+  },
+  {
+   "id": "score-w2-fifo-lifo",
+   "title": "Original score for w2-fifo-lifo",
+   "video": "w2-fifo-lifo",
+   "engine": "score.py + GeneralUser GS v2.0.3 (TinySoundFont)",
+   "mood": "decide+decide",
+   "bpm": 86,
+   "key": "C",
+   "style": "solo_piano",
    "rights": "ORIGINAL_GENERATED",
    "added": "2026-11-18",
    "note": ""

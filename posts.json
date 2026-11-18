@@ -902,6 +902,20 @@
       "first_comment": "Bonus: keep the $300 price (15 new shares), but say the target earns $15 instead of $10. Accretive, dilutive, or neither?",
       "ai_label": true,
       "published_id": null
+    },
+    {
+      "id": "reel-w2-fifo-lifo",
+      "type": "reel",
+      "scheduled_utc": "2026-11-18T23:00:00",
+      "slot": "B",
+      "media_branch": "reel/w2-fifo-lifo",
+      "video": "w2-fifo-lifo.mp4",
+      "cover": "w2-fifo-lifo.jpg",
+      "master": "scored",
+      "caption": "You buy one unit for $10, then one for $12. You sell one for $20. Is your profit $8 or $10?\n\nBoth. It depends which unit you say you sold, and that's your inventory method.\n\nFirst in, first out (FIFO): the $10 unit goes first, so profit is $10 and the $12 unit stays in inventory.\n\nLast in, first out (LIFO): the $12 unit goes first, so profit is $8 and the $10 unit stays.\n\nWhen prices are rising, LIFO shows less profit and so less tax. At a 25% rate that's 50 cents less on this one sale. US GAAP allows LIFO. IFRS doesn't.\n\nNow flip it: prices fall, $10 then $8. Which method shows more profit? Tell me in the comments.\n\nNarration: AI-generated voice; script is our original work.\n\n#investmentbanking #accounting #financeinterview #ibinterview",
+      "first_comment": "Bonus: a third method, weighted average cost. Same $10 and $12 units, one sold for $20. What's the profit?",
+      "ai_label": true,
+      "published_id": null
     }
   ],
   "reel_slots_et": {
