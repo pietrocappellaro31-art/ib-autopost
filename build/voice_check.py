@@ -42,6 +42,7 @@ def words(text):
     # "every $100"; "dollars' worth" keeps no stray apostrophe; British -our spellings match the recogniser's -or
     t = re.sub(r"\$(\d+)\.(\d\d)\b", r"\1 qqstop \2 cents", t)
     t = re.sub(r"\b([a-z]+) dollars and ([a-z]+(?: [a-z]+)?) cents\b", r"\1 qqstop \2 cents", t)
+    t = re.sub(r"\b(?:a|one) dollar and ([a-z]+) cents?\b", r"1 qqstop \1 cents", t)     # 19 Nov: "one dollar and three cents" = $1.03
     t = re.sub(r"\ba dollar (ten|twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety)\b", r"1 qqstop \1 cents", t)   # 17 Nov: "a dollar fifty" = $1.50
     t = re.sub(r"\bevery hundred\b", "every 100", t)
     t = re.sub(r"s' ", "s ", t)
@@ -58,6 +59,8 @@ def words(text):
     _o = "zero one two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen sixteen seventeen eighteen nineteen".split()
     t = re.sub(r"\b(" + "|".join(_o) + r") point oh (" + "|".join(_o[:10]) + r")\b",    # 15 Nov: "two point oh four" is 2.04
                lambda m: f"{_o.index(m.group(1))}.0{_o.index(m.group(2))}", t)
+    t = re.sub(r"\b(" + "|".join(_o) + r") point (" + "|".join(_o[:10]) + r") (" + "|".join(_o[:10]) + r")\b",   # 19 Nov: "three point seven five" is 3.75
+               lambda m: f"{_o.index(m.group(1))}.{_o.index(m.group(2))}{_o.index(m.group(3))}", t)
     t = re.sub(r"\b(" + "|".join(_o) + r") point (" + "|".join(_o[:10]) + r")\b",       # 11 Nov: "eight point four" is 8.4
                lambda m: f"{_o.index(m.group(1))}.{_o.index(m.group(2))}", t)
     # 11 Nov: dates. "November the eleventh" is said, a recogniser writes "November 11th": ordinals become

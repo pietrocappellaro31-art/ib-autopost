@@ -1,0 +1,17 @@
+Buy back 10% of your shares and EPS goes up 10%. Nope.
+
+Say a company earns $100 on 100 shares, so EPS is $1, and at 20x earnings each share costs you $20.
+
+It spends $200 of cash to buy back 10 shares. Now it's $100 over 90 shares, about $1.11, which is up 11% and not 10%, because you're dividing by a smaller number.
+
+Then there's the catch you'll get asked about. That cash was earning 5%, which is $10 a year, and after a 25% tax you've lost $7.50 of earnings. So it's really $92.50 over 90 shares. About $1.03.
+
+Up about 3%. That's it.
+
+Why does it still work? At 20x a share earns 5% of its price, and the cash only earned 3.75% after tax, so buying back wins.
+
+Now the shares trade at 40x. Does the same buyback lift EPS or cut it? Tell me in the comments.
+
+Narration: AI-generated voice; script is our original work.
+
+#investmentbanking #ibinterview #financeinterview #valuation
