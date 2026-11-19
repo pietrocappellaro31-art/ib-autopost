@@ -1,0 +1,11 @@
+A $100 convertible bond converts into 5 shares. Is it debt or equity?
+
+Either one. Never both.
+
+Conversion price: $100 / 5 = $20. Share at $25? It's in the money, so add the 5 shares to the diluted count and take the bond out of debt. Share at $15? Nobody converts, so it stays as $100 of debt in the EV bridge.
+
+For diluted EPS it's the if-converted method. Add the shares, and add back the after-tax interest too, because a converted bond stops paying it.
+
+Counting it as shares and as debt is the mistake they're listening for.
+
+#investmentbanking #ibinterview #valuation #convertiblebonds

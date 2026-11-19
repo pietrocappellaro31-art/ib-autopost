@@ -1382,6 +1382,222 @@
       "caption": "",
       "published_id": null,
       "published_at_utc": null
+    },
+    {
+      "id": "n3-01-writedown",
+      "series": "Technical of the Day",
+      "scheduled_utc": "2026-11-26T13:00:00",
+      "caption": "Inventory gets written down by $10. It walks exactly like depreciation, right up until they ask about tax.\n\nAssume it's deductible. Pre-tax income falls $10, tax falls $2.50 at a 25% rate, and net income falls $7.50. On the cash flow statement you add the 10 back. No cash left. Cash is up $2.50.\n\nBalance sheet: inventory -10, cash +2.5, retained earnings -7.5. Done.\n\nHere's the follow-up that catches people, though: what if the tax rules only let you take the deduction later, when the stock is actually sold?\n\nThen you haven't saved any tax yet. Cash doesn't move at all, and that $2.50 sits in a deferred tax asset.\n\nSave it next to your depreciation walk.\n\n#investmentbanking #ibinterview #accounting #threestatements",
+      "published_id": null,
+      "published_at_utc": null,
+      "images": [
+        "n3-01-writedown-01.jpg",
+        "n3-01-writedown-02.jpg",
+        "n3-01-writedown-03.jpg",
+        "n3-01-writedown-04.jpg",
+        "n3-01-writedown-05.jpg",
+        "n3-01-writedown-06.jpg",
+        "n3-01-writedown-07.jpg",
+        "n3-01-writedown-08.jpg"
+      ]
+    },
+    {
+      "id": "n3-02-asset-sale",
+      "series": "Technical of the Day",
+      "scheduled_utc": "2026-11-26T17:30:00",
+      "caption": "You sell equipment with a book value of $50 for $60. The trap here is counting the cash twice.\n\nThe $10 gain is profit. At 25% tax, net income rises $7.50.\n\nOn the cash flow statement you take the gain back out of operations, because it isn't operating cash. Operations ends at -2.5, which is just the tax you paid. The full $60 goes into investing. Cash is up $57.50.\n\nBalance sheet: cash +57.5, PP&E -50 (book value, not the price), retained earnings +7.5. Balances.\n\nSave it for your accounting round.\n\n#investmentbanking #ibinterview #accounting #cashflow",
+      "published_id": null,
+      "published_at_utc": null,
+      "images": [
+        "n3-02-asset-sale-01.jpg",
+        "n3-02-asset-sale-02.jpg",
+        "n3-02-asset-sale-03.jpg",
+        "n3-02-asset-sale-04.jpg",
+        "n3-02-asset-sale-05.jpg",
+        "n3-02-asset-sale-06.jpg",
+        "n3-02-asset-sale-07.jpg",
+        "n3-02-asset-sale-08.jpg"
+      ]
+    },
+    {
+      "id": "n3-03-teamwork",
+      "series": "Recruiting Playbook",
+      "scheduled_utc": "2026-11-26T22:30:00",
+      "caption": "\"Tell me about a time you worked in a team.\" Say \"we\" the whole way through and they learn nothing about you.\n\nPick a team with real stakes. A deadline that could actually be missed, a client or a professor who'd notice.\n\nThen it's \"I\" for your part. The goal, your role, what you did. Keep \"we\" for the outcome.\n\nPut the friction in.\n\nA missed handoff, a disagreement on the approach, someone falling 2 days behind, and how you dealt with it without turning anyone into the villain. Finish on what happened and 1 thing you'd repeat.\n\nDeal teams are small. They're picturing you on theirs.\n\n#investmentbanking #ibrecruiting #superday #behavioralinterview",
+      "published_id": null,
+      "published_at_utc": null,
+      "images": [
+        "n3-03-teamwork-01.jpg",
+        "n3-03-teamwork-02.jpg",
+        "n3-03-teamwork-03.jpg",
+        "n3-03-teamwork-04.jpg",
+        "n3-03-teamwork-05.jpg",
+        "n3-03-teamwork-06.jpg",
+        "n3-03-teamwork-07.jpg",
+        "n3-03-teamwork-08.jpg"
+      ]
+    },
+    {
+      "id": "n3-04-capitalise",
+      "series": "Technical of the Day",
+      "scheduled_utc": "2026-11-27T13:00:00",
+      "caption": "You spend $100. Capitalise it or expense it? Same cash out the door, very different-looking numbers.\n\nTake it pre-tax, year 1, with a 5-year life.\n\nExpense it and EBITDA drops 100. So does operating cash flow.\n\nCapitalise it and EBITDA doesn't move. You book 20 of depreciation, add it back, and operating cash flow ends at 0, while the $100 shows up in investing as capex.\n\nThat's why analysts always check the policy. It flatters EBITDA.\n\nFree cash flow (CFO - capex) is -100 either way. If 2 companies treat it differently, you'd compare FCF, not EBITDA.\n\n#investmentbanking #ibinterview #accounting #EBITDA",
+      "published_id": null,
+      "published_at_utc": null,
+      "images": [
+        "n3-04-capitalise-01.jpg",
+        "n3-04-capitalise-02.jpg",
+        "n3-04-capitalise-03.jpg",
+        "n3-04-capitalise-04.jpg",
+        "n3-04-capitalise-05.jpg",
+        "n3-04-capitalise-06.jpg",
+        "n3-04-capitalise-07.jpg",
+        "n3-04-capitalise-08.jpg"
+      ]
+    },
+    {
+      "id": "n3-05-convertible",
+      "series": "Technical of the Day",
+      "scheduled_utc": "2026-11-27T17:30:00",
+      "caption": "A $100 convertible bond converts into 5 shares. Is it debt or equity?\n\nEither one. Never both.\n\nConversion price: $100 / 5 = $20. Share at $25? It's in the money, so add the 5 shares to the diluted count and take the bond out of debt. Share at $15? Nobody converts, so it stays as $100 of debt in the EV bridge.\n\nFor diluted EPS it's the if-converted method. Add the shares, and add back the after-tax interest too, because a converted bond stops paying it.\n\nCounting it as shares and as debt is the mistake they're listening for.\n\n#investmentbanking #ibinterview #valuation #convertiblebonds",
+      "published_id": null,
+      "published_at_utc": null,
+      "images": [
+        "n3-05-convertible-01.jpg",
+        "n3-05-convertible-02.jpg",
+        "n3-05-convertible-03.jpg",
+        "n3-05-convertible-04.jpg",
+        "n3-05-convertible-05.jpg",
+        "n3-05-convertible-06.jpg",
+        "n3-05-convertible-07.jpg",
+        "n3-05-convertible-08.jpg"
+      ]
+    },
+    {
+      "id": "n3-06-five-years",
+      "series": "Recruiting Playbook",
+      "scheduled_utc": "2026-11-27T22:30:00",
+      "caption": "\"Where do you see yourself in 5 years?\" Say \"private equity\" and they hear that you're leaving in 2.\n\nThey're checking 1 thing.\n\nWill you stay long enough, and work hard enough, to be worth the time it takes to train you? So start with the analyst years: learning the modelling, getting on live deals, being trusted with a bit more each quarter.\n\nThen talk skills, not titles. Judgement on deals beats \"MD by 30.\"\n\nKeep it to 3 sentences. It's a quick check, not a life plan.\n\nWhat would you say if they asked you tomorrow?\n\n#investmentbanking #ibrecruiting #superday #interviewprep",
+      "published_id": null,
+      "published_at_utc": null,
+      "images": [
+        "n3-06-five-years-01.jpg",
+        "n3-06-five-years-02.jpg",
+        "n3-06-five-years-03.jpg",
+        "n3-06-five-years-04.jpg",
+        "n3-06-five-years-05.jpg",
+        "n3-06-five-years-06.jpg",
+        "n3-06-five-years-07.jpg",
+        "n3-06-five-years-08.jpg"
+      ]
+    },
+    {
+      "id": "n3-07-no-profit",
+      "series": "Technical of the Day",
+      "scheduled_utc": "2026-11-28T13:00:00",
+      "caption": "How do you value a company that loses money? P/E is a price divided by a loss. It means nothing.\n\nSo you move up the income statement: EV/EBITDA if EBITDA's positive, EV/Revenue if it isn't.\n\nIf it's expected to turn a profit in 2 or 3 years, use forward numbers.\n\nStretch the DCF too.\n\nA 5-year forecast that ends while the company's still losing money won't tell you much, so you keep forecasting until margins settle and only then do the terminal value.\n\nAnd check the funding. If it's burning cash it may need to raise more, which dilutes today's owners.\n\n#investmentbanking #ibinterview #valuation #DCF",
+      "published_id": null,
+      "published_at_utc": null,
+      "images": [
+        "n3-07-no-profit-01.jpg",
+        "n3-07-no-profit-02.jpg",
+        "n3-07-no-profit-03.jpg",
+        "n3-07-no-profit-04.jpg",
+        "n3-07-no-profit-05.jpg",
+        "n3-07-no-profit-06.jpg",
+        "n3-07-no-profit-07.jpg",
+        "n3-07-no-profit-08.jpg"
+      ]
+    },
+    {
+      "id": "n3-08-lbo-candidate",
+      "series": "Technical of the Day",
+      "scheduled_utc": "2026-11-28T17:30:00",
+      "caption": "What makes a good LBO candidate? Every answer comes back to 1 thing: can it pay down the debt?\n\nStable, predictable cash flow. Lenders lend against cash they can count on, so a cyclical business with lumpy years is a risk.\n\nLow capex. Picture 2 companies with $100 of EBITDA, one spending $10 on capex and one spending $60. The first has $90 to put towards the debt. The second has $40.\n\nThen room to improve, because hoping the exit multiple goes up isn't a plan: costs to cut, assets to sell, margins to raise.\n\nAnd a clear way out. A strategic buyer, another sponsor, an IPO. You don't have a return until you've sold it.\n\n#investmentbanking #ibinterview #LBO #privateequity",
+      "published_id": null,
+      "published_at_utc": null,
+      "images": [
+        "n3-08-lbo-candidate-01.jpg",
+        "n3-08-lbo-candidate-02.jpg",
+        "n3-08-lbo-candidate-03.jpg",
+        "n3-08-lbo-candidate-04.jpg",
+        "n3-08-lbo-candidate-05.jpg",
+        "n3-08-lbo-candidate-06.jpg",
+        "n3-08-lbo-candidate-07.jpg",
+        "n3-08-lbo-candidate-08.jpg"
+      ]
+    },
+    {
+      "id": "n3-09-why-hire",
+      "series": "Recruiting Playbook",
+      "scheduled_utc": "2026-11-28T22:30:00",
+      "caption": "\"Why should we hire you?\" Everyone dreads it, but it's the easiest question to prepare.\n\n\"Hard-working and detail-oriented\" is what every candidate says. Evidence is what they remember.\n\nPick 3 traits the analyst job actually needs: work ethic for the hours, accuracy for models that have to be right, curiosity to learn fast. Back each with 1 short example from your own experience.\n\nMore than 3 and none of them stick.\n\nClose with 1 line on why this team, right now.\n\nWhich 3 would you pick?\n\n#investmentbanking #ibrecruiting #superday #financecareers",
+      "published_id": null,
+      "published_at_utc": null,
+      "images": [
+        "n3-09-why-hire-01.jpg",
+        "n3-09-why-hire-02.jpg",
+        "n3-09-why-hire-03.jpg",
+        "n3-09-why-hire-04.jpg",
+        "n3-09-why-hire-05.jpg",
+        "n3-09-why-hire-06.jpg",
+        "n3-09-why-hire-07.jpg",
+        "n3-09-why-hire-08.jpg"
+      ]
+    },
+    {
+      "id": "n3-10-asset-stock",
+      "series": "Technical of the Day",
+      "scheduled_utc": "2026-11-29T13:00:00",
+      "caption": "Asset deal or stock deal. Same company, same price, very different tax bill.\n\nIn a stock deal you're buying the whole entity, and every liability comes with it. Lawsuits too. The tax basis just carries over.\n\nIn an asset deal you pick what you take, and the tax basis steps up to the price you paid. Pay $500 for assets with a $200 tax basis and you've got $300 more to depreciate for tax, so you pay less cash tax for years.\n\nSo buyers usually want assets. At a 25% tax rate, that extra $300 of deductions is worth up to $75 in tax saved over the years it's written off.\n\nSellers usually want stock. In the US, a C-corp that sells its assets can get taxed twice: once on the gain, again when the cash goes out to shareholders.\n\nSave it for your M&A round.\n\n#investmentbanking #ibinterview #mergersandacquisitions #tax",
+      "published_id": null,
+      "published_at_utc": null,
+      "images": [
+        "n3-10-asset-stock-01.jpg",
+        "n3-10-asset-stock-02.jpg",
+        "n3-10-asset-stock-03.jpg",
+        "n3-10-asset-stock-04.jpg",
+        "n3-10-asset-stock-05.jpg",
+        "n3-10-asset-stock-06.jpg",
+        "n3-10-asset-stock-07.jpg",
+        "n3-10-asset-stock-08.jpg"
+      ]
+    },
+    {
+      "id": "n3-11-cash-or-stock",
+      "series": "Technical of the Day",
+      "scheduled_utc": "2026-11-29T17:30:00",
+      "caption": "Should the buyer pay in cash or stock? There's no single right answer. There's a right way to reason, and it takes about 4 steps.\n\n1. Cash makes sense when the buyer has it, or can borrow cheaply, and it's confident in the target. Its own shareholders keep all the upside.\n\n2. Stock makes sense when the buyer's shares look rich, the deal's too big for cash, or there's doubt about the target. The seller becomes an owner and shares the risk. You pay for that in dilution.\n\n3. Ask what the seller wants. Cash is certain. Stock is a slice of what comes next.\n\n4. Weigh the cost first, then who should carry the risk.\n\n#investmentbanking #ibinterview #mergersandacquisitions #dealstructure",
+      "published_id": null,
+      "published_at_utc": null,
+      "images": [
+        "n3-11-cash-or-stock-01.jpg",
+        "n3-11-cash-or-stock-02.jpg",
+        "n3-11-cash-or-stock-03.jpg",
+        "n3-11-cash-or-stock-04.jpg",
+        "n3-11-cash-or-stock-05.jpg",
+        "n3-11-cash-or-stock-06.jpg",
+        "n3-11-cash-or-stock-07.jpg",
+        "n3-11-cash-or-stock-08.jpg"
+      ]
+    },
+    {
+      "id": "n3-12-earnout",
+      "series": "Technical of the Day",
+      "scheduled_utc": "2026-11-29T22:30:00",
+      "caption": "What's an earn-out? Part of the price, paid later, only if the business hits its targets.\n\nIt exists because the 2 sides disagree. The seller believes the forecast. The buyer doubts it. The earn-out pays only if it comes true.\n\nYou tie it to 1 clear metric, like revenue or EBITDA over 2 or 3 years. Vague targets end in disputes.\n\nUnder ASC 805 and IFRS 3 it's contingent consideration, booked at fair value at closing and usually remeasured through profit and loss.\n\nHere's the catch. The seller doesn't run the business anymore, but gets paid on its results, so an earn-out often just delays the argument.\n\n#investmentbanking #ibinterview #mergersandacquisitions #dealstructure",
+      "published_id": null,
+      "published_at_utc": null,
+      "images": [
+        "n3-12-earnout-01.jpg",
+        "n3-12-earnout-02.jpg",
+        "n3-12-earnout-03.jpg",
+        "n3-12-earnout-04.jpg",
+        "n3-12-earnout-05.jpg",
+        "n3-12-earnout-06.jpg",
+        "n3-12-earnout-07.jpg",
+        "n3-12-earnout-08.jpg"
+      ]
     }
   ],
   "reel_slots_et": {

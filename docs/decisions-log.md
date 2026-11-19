@@ -27,7 +27,8 @@ What has been settled, and what is still open. Newest first.
   (Mondays 15:23 ET) that builds and queues every day without a carousel through today + 10 days, so the queue always
   has at least 3 days in hand. Creating it from the 19 Nov session was denied (permission), as on 10 Nov; its full
   prompt is in `docs/daily/carousel-weekly-task-prompt.md` for Pietro to create it, or to approve it in a live session.
-  Until then the queue ends on 25 Nov.
+  Until then nothing refills the queue. A second session answered the same request in parallel; its decks that do
+  not repeat a nov2 topic were queued as `build/nov3.py`, 12 carousels for 26 to 29 Nov, so the queue now ends on 29 Nov.
 
 - **YouTube from 19 Nov: number-puzzle Shorts cut from the films; daily films with the effort on the opening minute and
   the thumbnail** (18 Nov, Pietro: "Make this changes starting tomorrow - November 19", on the analytics reading in

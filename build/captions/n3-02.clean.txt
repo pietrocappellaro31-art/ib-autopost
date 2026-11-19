@@ -1,0 +1,11 @@
+You sell equipment with a book value of $50 for $60. The trap here is counting the cash twice.
+
+The $10 gain is profit. At 25% tax, net income rises $7.50.
+
+On the cash flow statement you take the gain back out of operations, because it isn't operating cash. Operations ends at -2.5, which is just the tax you paid. The full $60 goes into investing. Cash is up $57.50.
+
+Balance sheet: cash +57.5, PP&E -50 (book value, not the price), retained earnings +7.5. Balances.
+
+Save it for your accounting round.
+
+#investmentbanking #ibinterview #accounting #cashflow

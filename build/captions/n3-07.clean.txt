@@ -1,0 +1,13 @@
+How do you value a company that loses money? P/E is a price divided by a loss. It means nothing.
+
+So you move up the income statement: EV/EBITDA if EBITDA's positive, EV/Revenue if it isn't.
+
+If it's expected to turn a profit in 2 or 3 years, use forward numbers.
+
+Stretch the DCF too.
+
+A 5-year forecast that ends while the company's still losing money won't tell you much, so you keep forecasting until margins settle and only then do the terminal value.
+
+And check the funding. If it's burning cash it may need to raise more, which dilutes today's owners.
+
+#investmentbanking #ibinterview #valuation #DCF

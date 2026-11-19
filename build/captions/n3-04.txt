@@ -1,0 +1,13 @@
+You spend $100. Capitalise it or expense it? Same cash out the door, very different-looking numbers.
+
+Take it pre-tax, year 1, with a 5-year life.
+
+Expense it and EBITDA drops 100. So does operating cash flow.
+
+Capitalise it and EBITDA doesn't move. You book 20 of depreciation, add it back, and operating cash flow ends at 0, while the $100 shows up in investing as capex.
+
+That's why analysts always check the policy. It flatters EBITDA.
+
+Free cash flow (CFO - capex) is -100 either way. If 2 companies treat it differently, you'd compare FCF, not EBITDA.
+
+#investmentbanking #ibinterview #accounting #EBITDA

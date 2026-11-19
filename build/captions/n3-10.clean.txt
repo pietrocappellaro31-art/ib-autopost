@@ -1,0 +1,13 @@
+Asset deal or stock deal. Same company, same price, very different tax bill.
+
+In a stock deal you're buying the whole entity, and every liability comes with it. Lawsuits too. The tax basis just carries over.
+
+In an asset deal you pick what you take, and the tax basis steps up to the price you paid. Pay $500 for assets with a $200 tax basis and you've got $300 more to depreciate for tax, so you pay less cash tax for years.
+
+So buyers usually want assets. At a 25% tax rate, that extra $300 of deductions is worth up to $75 in tax saved over the years it's written off.
+
+Sellers usually want stock. In the US, a C-corp that sells its assets can get taxed twice: once on the gain, again when the cash goes out to shareholders.
+
+Save it for your M&A round.
+
+#investmentbanking #ibinterview #mergersandacquisitions #tax

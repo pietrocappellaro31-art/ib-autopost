@@ -1,0 +1,11 @@
+What's an earn-out? Part of the price, paid later, only if the business hits its targets.
+
+It exists because the 2 sides disagree. The seller believes the forecast. The buyer doubts it. The earn-out pays only if it comes true.
+
+You tie it to 1 clear metric, like revenue or EBITDA over 2 or 3 years. Vague targets end in disputes.
+
+Under ASC 805 and IFRS 3 it's contingent consideration, booked at fair value at closing and usually remeasured through profit and loss.
+
+Here's the catch. The seller doesn't run the business anymore, but gets paid on its results, so an earn-out often just delays the argument.
+
+#investmentbanking #ibinterview #mergersandacquisitions #dealstructure

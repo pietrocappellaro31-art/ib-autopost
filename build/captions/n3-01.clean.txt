@@ -1,0 +1,13 @@
+Inventory gets written down by $10. It walks exactly like depreciation, right up until they ask about tax.
+
+Assume it's deductible. Pre-tax income falls $10, tax falls $2.50 at a 25% rate, and net income falls $7.50. On the cash flow statement you add the 10 back. No cash left. Cash is up $2.50.
+
+Balance sheet: inventory -10, cash +2.5, retained earnings -7.5. Done.
+
+Here's the follow-up that catches people, though: what if the tax rules only let you take the deduction later, when the stock is actually sold?
+
+Then you haven't saved any tax yet. Cash doesn't move at all, and that $2.50 sits in a deferred tax asset.
+
+Save it next to your depreciation walk.
+
+#investmentbanking #ibinterview #accounting #threestatements
