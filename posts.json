@@ -962,8 +962,8 @@
       "series": "Recruiting Playbook",
       "scheduled_utc": "2026-11-19T22:30:00",
       "caption": "\"What's your greatest weakness?\" The perfectionist answer doesn't sound safe. It sounds like you'd hide a mistake.\n\nPick something real.\n\nIt shouldn't be core to the job, though. Speaking up in a room of 12 people works. Being sloppy with numbers, for an analyst role, doesn't.\n\nThen 3 beats: the weakness in 1 sentence, 1 time it cost you, and what you changed.\n\nSpend most of your 2 minutes on that last part, because they're listening for self-awareness and action.\n\nAnd don't say it's gone. Say what habit you use now.\n\nWhich weakness would you pick?\n\n#investmentbanking #ibrecruiting #behavioralinterview #superday",
-      "published_id": null,
-      "published_at_utc": null,
+      "published_id": "18094004249226610",
+      "published_at_utc": "2026-11-19T23:05:07.731021+00:00",
       "images": [
         "n2-03-weakness-01.jpg",
         "n2-03-weakness-02.jpg",
@@ -984,8 +984,8 @@
         "story-2026-11-19.jpg"
       ],
       "caption": "",
-      "published_id": null,
-      "published_at_utc": null
+      "published_id": "18115338197272136",
+      "published_at_utc": "2026-11-19T23:06:20.769951+00:00"
     },
     {
       "id": "n2-04-tsm",
@@ -1611,7 +1611,9 @@
       "caption": "Buy back 10% of your shares and EPS goes up 10%. Nope.\n\nSay a company earns $100 on 100 shares, so EPS is $1, and at 20x earnings each share costs you $20.\n\nIt spends $200 of cash to buy back 10 shares. Now it's $100 over 90 shares, about $1.11, which is up 11% and not 10%, because you're dividing by a smaller number.\n\nThen there's the catch you'll get asked about. That cash was earning 5%, which is $10 a year, and after a 25% tax you've lost $7.50 of earnings. So it's really $92.50 over 90 shares. About $1.03.\n\nUp about 3%. That's it.\n\nWhy does it still work? At 20x a share earns 5% of its price, and the cash only earned 3.75% after tax, so buying back wins.\n\nNow the shares trade at 40x. Does the same buyback lift EPS or cut it? Tell me in the comments.\n\nNarration: AI-generated voice; script is our original work.\n\n#investmentbanking #ibinterview #financeinterview #valuation",
       "first_comment": "Bonus: still at 20x, the company spends $300 instead. How many shares does it buy back, and what's EPS if the cash earned nothing?",
       "ai_label": true,
-      "published_id": null
+      "published_id": "18128539012910466",
+      "published_at_utc": "2026-11-19T23:06:00.643010+00:00",
+      "first_comment_id": "18177642790393295"
     },
     {
       "id": "reel-w2-debt-paydown",
