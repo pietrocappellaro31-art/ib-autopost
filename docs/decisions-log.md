@@ -29,6 +29,8 @@ What has been settled, and what is still open. Newest first.
   prompt is in `docs/daily/carousel-weekly-task-prompt.md` for Pietro to create it, or to approve it in a live session.
   Until then nothing refills the queue. A second session answered the same request in parallel; its decks that do
   not repeat a nov2 topic were queued as `build/nov3.py`, 12 carousels for 26 to 29 Nov, so the queue now ends on 29 Nov.
+  **Created 19 Nov** at Pietro's go-ahead ("Do it now."): scheduled task "IB carousel weekly build", Mondays 15:23 ET,
+  automatic approval, push notifications; first run 23 Nov. Prompt as in `docs/daily/carousel-weekly-task-prompt.md`.
 
 - **YouTube from 19 Nov: number-puzzle Shorts cut from the films; daily films with the effort on the opening minute and
   the thumbnail** (18 Nov, Pietro: "Make this changes starting tomorrow - November 19", on the analytics reading in
