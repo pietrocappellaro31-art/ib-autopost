@@ -334,6 +334,13 @@
    "kind": "short",
    "id": "joel-sunny-luminary",
    "mood": "tense"
+  },
+  {
+   "date": "2026-11-19",
+   "slug": "w2-debt-paydown",
+   "kind": "short",
+   "id": "sparky-deathcap-september-instrumental",
+   "mood": "calm"
   }
  ],
  "originals": [
@@ -548,6 +555,19 @@
    "bpm": 78,
    "key": "A",
    "style": "orchestral",
+   "rights": "ORIGINAL_GENERATED",
+   "added": "2026-11-19",
+   "note": ""
+  },
+  {
+   "id": "score-w2-debt-paydown",
+   "title": "Original score for w2-debt-paydown",
+   "video": "w2-debt-paydown",
+   "engine": "score.py + GeneralUser GS v2.0.3 (TinySoundFont)",
+   "mood": "explain+resolve",
+   "bpm": 86,
+   "key": "G",
+   "style": "acoustic",
    "rights": "ORIGINAL_GENERATED",
    "added": "2026-11-19",
    "note": ""

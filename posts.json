@@ -1612,6 +1612,20 @@
       "first_comment": "Bonus: still at 20x, the company spends $300 instead. How many shares does it buy back, and what's EPS if the cash earned nothing?",
       "ai_label": true,
       "published_id": null
+    },
+    {
+      "id": "reel-w2-debt-paydown",
+      "type": "reel",
+      "scheduled_utc": "2026-11-19T17:30:00",
+      "slot": "A",
+      "media_branch": "reel/w2-debt-paydown",
+      "video": "w2-debt-paydown.mp4",
+      "cover": "w2-debt-paydown.jpg",
+      "master": "scored",
+      "caption": "Bought for $100. Sold five years later for $100. The owners still doubled their money, and nobody grew anything.\n\nHere's how. They put in $40 of their own and borrowed the other $60, and the loan sits on the company, not on them.\n\nEach year the company's cash pays down $8 of that debt, so after five years the $60 is down to $20.\n\nThen they sell for $100. Same price.\n\nThe lender takes its $20 back and $80 is left for the owners. $40 in, $80 out, so that's 2x, or about 15% a year with zero growth.\n\nThat's debt paydown. It's one of the three classic buyout levers you'll hear about in PE interviews, next to growth and a higher exit multiple.\n\nYour turn: same deal, but it sells for $120. What's the multiple on their money? Drop it in the comments.\n\nNarration: AI-generated voice; script is our original work.\n\n#investmentbanking #privateequity #lbo #ibinterview",
+      "first_comment": "Bonus: same $100 sale, but the company never repaid a dollar of the $60 loan. What's the owners' multiple now?",
+      "ai_label": true,
+      "published_id": null
     }
   ],
   "reel_slots_et": {
