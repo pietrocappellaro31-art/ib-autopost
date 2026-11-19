@@ -525,6 +525,19 @@
    "rights": "ORIGINAL_GENERATED",
    "added": "2026-11-19",
    "note": ""
+  },
+  {
+   "id": "score-yt-013-gamestop-109",
+   "title": "Original score for yt-013-gamestop-109",
+   "video": "yt-013-gamestop-109",
+   "engine": "score.py + GeneralUser GS v2.0.3 (TinySoundFont)",
+   "mood": "suspense",
+   "bpm": 72,
+   "key": "D",
+   "style": "noir_jazz",
+   "rights": "ORIGINAL_GENERATED",
+   "added": "2026-11-19",
+   "note": ""
   }
  ]
 }

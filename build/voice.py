@@ -28,6 +28,17 @@ DIR = os.environ.get("KOKORO_DIR", "")
 
 # Words outside misaki's dictionaries, with their phonemes written by hand.
 PHONEMES = {
+    # 19 Nov (YouTube #13, GameStop 2021)
+    "gamestop": "ɡˈAmstˌɑp",
+    "reddit": "ɹˈɛdɪt",
+    "gensler": "ɡˈɛnzləɹ",
+    "nscc": "ˌɛnˌɛsˌsisˈi",
+    "tenev": "tˈɛnəv",
+    "robinhood": "ɹˈɑbɪnhˌʊd",
+    "robinhood's": "ɹˈɑbɪnhˌʊdz",
+    "wallstreetbets": "wˈɔlstɹˌitbˌɛts",
+    "vlad": "vlˈæd",
+    "melvin": "mˈɛlvɪn",
     # 18 Nov, Reel A (accretion / dilution): "dilutive" was heard "deludive" with the default reading
     "dilutive": "daɪlˈutɪv",
     # 18 Nov, YouTube #12 (Long-Term Capital Management, 1998)

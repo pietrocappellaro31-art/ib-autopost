@@ -257,10 +257,13 @@ def visual(show, t0, dur):
     if k == "number":
         v = show["value"]
         dec = show.get("dec", 0)
-        num = A("0", "count", t0 + .2, min(1.6, dur * .6), cls="num", style=f"font-size:220px;line-height:1;color:{RED}",
+        # 19 Nov (#13): count_d="sentence" counts across the whole sentence instead of 1.6 s (a number that travels,
+        # from start to value, keeps the opening minute moving: #13's $483 card held still 3 s in its first cut)
+        cd = dur * .9 if show.get("count_d") == "sentence" else min(1.6, dur * .6)
+        num = A("0", "count", t0 + .2, cd, cls="num", style=f"font-size:220px;line-height:1;color:{RED}",
                 **{"from": show.get("start", 0), "to": v, "dec": dec, "pre": show.get("pre", ""), "suf": show.get("suf", "")})
         lab = A(H.escape(show.get("label", "")), "rise", t0 + .5, .5, style="font-size:48px;font-weight:500;margin-top:24px;opacity:.85")
-        return idle(num, t0 + .2 + min(1.6, dur * .6), amp=3.5, rot=.35) + idle(lab, t0 + 1.0, amp=2.0, rot=.1)
+        return idle(num, t0 + .2 + cd, amp=3.5, rot=.35) + idle(lab, t0 + 1.0, amp=2.0, rot=.1)
     if k == "list":
         n = len(show["items"])
         out = ""
@@ -409,6 +412,10 @@ def synth(ep, voice_name, work=None):
     finally:                                    # 12 Nov: keep the lines already said even if one fails (a missing word)
         if cache:
             pickle.dump(store, open(cache, "wb"))
+    if ep.get("hook_first") and len(out) > 1 and out[1][0] == "beat":
+        # 19 Nov (Pietro, 18 Nov: "open on the hook"): the film starts on chapter 1's first beat, the filmed hook, with
+        # its number on screen from the first frame; chapter 1's card follows it. YouTube's first chapter stays at 0:00.
+        out[0], out[1] = out[1], out[0]
     print(f"  voice: {hits} of {len(out)} lines reused from synth.pkl", flush=True)
     return out
 
@@ -460,7 +467,7 @@ def scenes(ep, items):
         dur = len(a) / SR
         ch = ep["chapters"][c]
         if kind == "title":
-            chapters.append((t, ch["title"]))
+            chapters.append((0.0 if (c == 0 and ep.get("hook_first")) else t, ch["title"]))
             html = (f'<div class="lbl" style="margin-bottom:26px;color:#fff;opacity:.85">Part {c + 1} of {n_ch}</div>'
                     + words_kara(H.escape(ch["title"]), .25, dur, size=title_size(ch["title"]), hide=True, color="#fff"))
             mark = len(sketch.SOUND_LOG)
@@ -880,7 +887,8 @@ def mix(ep, work):
                         style=pick["style"], style_label=pick["label"], avoided_styles=pick["avoided"])
             # 13 Nov, measured on build/youtube_cine_test.py: level .32 put the score 21 dB under the voice but cost
             # DNSMOS SIG 0.89 (gate fails); .22 sat 24.2 dB under with SIG within 0.03 of clean (passes); .16, 27 dB.
-            mv = ep.get("music_level", .22)
+            # 19 Nov (#13): the level is now solved per film for VOM_TARGET dB of voice over the music (see vom_level).
+            mv = ep.get("music_level") or vom_level(work, SC.level(pick["style"]), info)
         except Exception as e:                     # never lose a render over the score: fall back to music.py
             print(f"  score.py failed ({e}); falling back to music.py", flush=True)
             engine = "music"
@@ -905,6 +913,42 @@ def mix(ep, work):
                     "-map", "[md]", "-ac", "1", str(work / "music_ducked.wav")], check=True)
     shutil.copyfile(scored, final)
     return final
+
+
+VOM_TARGET = 24.0
+
+
+def _vom(work, level):
+    """Voice over the ducked music while speaking, in dB, at a music level (the sound_report measure: the same voice
+    chain, the same sidechain ducking, the same speech mask). Writes music_ducked.wav."""
+    import quality
+    subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", str(work / "voice.wav"), "-i", str(work / "music.wav"), "-filter_complex",
+                    f"[0:a]{MASTER},aresample=48000[key];[1:a]aresample=48000,volume={level}[m];"
+                    f"[m][key]sidechaincompress=threshold=0.02:ratio=5:attack=30:release=350:makeup=1[md]",
+                    "-map", "[md]", "-ac", "1", str(work / "music_ducked.wav")], check=True)
+    v, m = quality.load16(work / "voice.wav"), quality.load16(work / "music_ducked.wav")
+    k = min(len(v), len(m))
+    v, m = v[:k], m[:k]
+    rv = np.sqrt(np.convolve(v ** 2, np.ones(1600) / 1600, "same"))
+    on = rv > .25 * np.percentile(rv[rv > 1e-4], 90)
+    return float(20 * np.log10(np.sqrt(np.mean(v[on] ** 2)) / max(np.sqrt(np.mean(m[on] ** 2)), 1e-9)))
+
+
+def vom_level(work, probe=.22, info=None, target=None):
+    """19 Nov (#13, the 18 Nov next improvement: "the voice has sat only 18.8 to 19.3 dB over the score"). The music
+    level that puts the voice `target` dB over the ducked score, solved on this film's own voice.wav and music.wav.
+    Why per film and not per style: build/score_levels.py measured all seven styles on one narration at .22 and found
+    them within 0.6 dB of each other (23.4 to 24.4 dB), so the style was not the cause; the voice's own level is. Since
+    16 Nov (#10) voice.wav is levelled to RMS .12 but capped at a .89 peak, so one loud sample lowers the whole voice:
+    on #13's lines the cap costs 4.5 dB, and it moves from film to film with the loudest sample. The sidechain gain
+    depends only on the voice, so the ducked music scales linearly with the level: one probe solves it."""
+    target = VOM_TARGET if target is None else target
+    d0 = _vom(work, probe)
+    lvl = float(np.clip(probe * 10 ** ((d0 - target) / 20), .05, .45))
+    if info is not None:
+        info.update(vom_probe=dict(level=probe, voice_over_music_db=round(d0, 1)), vom_target_db=target, level_solved=round(lvl, 4))
+    print(f"  score level: voice {d0:.1f} dB over the music at {probe}; level {lvl:.4f} for {target:.0f} dB", flush=True)
+    return round(lvl, 4)
 
 
 def lufs_of(path):
@@ -1252,7 +1296,7 @@ def make(ep, voice_name=YOUTUBE_VOICE):
         # 17 Nov (Pietro: "I just want you to output the one with the music"): one file is delivered, <slug>.mp4, and
         # it always has the score. If the gate fails, the music goes down 3 dB and is mixed again (up to 3 times)
         # instead of falling back to the clean mix; the clean mix stays in out/<slug>/ only as the gate's reference.
-        lvl = ep.get("music_level", .22)
+        lvl = ep.get("music_level") or json.load(open(work / "music.json")).get("music_level", .22)
         for _ in range(3):
             if rep.get("recommended") == "scored" or ep.get("score") == "none":
                 break

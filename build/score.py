@@ -101,22 +101,86 @@ MOODS = {
 KEYS = ["C", "D", "Eb", "E", "F", "G", "A", "Bb"]
 
 
-def pick(slug, base_bpm, style=None, key=None, bpm=None, n_avoid=3):
+# 19 Nov (YouTube #13): each format owns a slot in a daily rotation of the seven styles, so the runs that pick in
+# parallel on the same day (the long film, the Short, Reels A and B: separate sessions that only see each other's
+# library.json after a push) can never draw the same style. Day d, slot k -> STYLE_ORDER[(4 d + k) % 7]: four
+# different styles a day, and each format's style moves on four places a day. The last-three rule still applies on
+# top (a slot style used by one of the last three logged videos is skipped to the next free one in the order).
+STYLE_ORDER = ["orchestral", "noir_jazz", "solo_piano", "ambient", "acoustic", "mallets", "harp"]
+SLOTS = dict(long=0, short=1, reel_a=2, reel_b=3)
+
+
+def slot_of(slug, kind=None):
+    """The format slot of a video from its slug: yt-* long, shorts-* Short, w2-* Reel (A unless kind says B)."""
+    if kind in SLOTS:
+        return SLOTS[kind]
+    if slug.startswith("yt-"):
+        return SLOTS["long"]
+    if slug.startswith("shorts-"):
+        return SLOTS["short"]
+    return SLOTS["reel_a"]
+
+
+def pick(slug, base_bpm, style=None, key=None, bpm=None, n_avoid=3, kind=None, day=None, reserve=True):
     """17 Nov (Pietro: "experiment with different kinds of music and not always use the same music"). The style, key and
     tempo for one video: never a style or a key used by the last n_avoid scored videos (long films, Shorts, Reels: the
     "originals" in build/music_library/library.json), the tempo moved up to 8% either way; seeded on the slug so a
-    re-render keeps its music. Arguments that are given win."""
+    re-render keeps its music. Arguments that are given win.
+
+    19 Nov (#13): (1) a video already in library.json keeps the music it was logged with (a re-render, a remix);
+    (2) the first choice comes from the format's daily slot (STYLE_ORDER, SLOTS above), so the long film, the Short and
+    the two Reels of one day never collide even when they pick at the same time in different sessions (18 Nov: #12
+    and the Short both drew harp); (3) the choice is written to library.json at pick time (reserved=True), before
+    the render, so a second run in the same workspace sees it at once; register_original replaces it after the mix."""
+    import datetime
     import music_library
     rng = random.Random(sum(map(ord, slug)) * 7 + 3)
-    past = [o for o in music_library.load().get("originals", []) if o.get("video") != slug]
+    lib = music_library.load()
+    mine = [o for o in lib.get("originals", []) if o.get("video") == slug and o.get("style")]
+    if mine and not (style or key or bpm):
+        o = mine[-1]
+        return dict(style=o["style"], key=o.get("key") or "F", bpm=int(o.get("bpm") or base_bpm), avoided=o.get("avoided") or [],
+                    label=STYLES[o["style"]]["label"], slot=o.get("slot"), reused=True)
+    past = [o for o in lib.get("originals", []) if o.get("video") != slug]
     past.sort(key=lambda o: (o.get("added", ""), o.get("id", "")))
     recent = past[-n_avoid:]
     used_styles = {o.get("style") or "orchestral" for o in recent}
     used_keys = {o.get("key") for o in recent}
-    style = style or rng.choice([k for k in STYLES if k not in used_styles] or list(STYLES))
-    key = key or rng.choice([k for k in KEYS if k not in used_keys] or KEYS)
+    d = (day or datetime.date.today()).toordinal()
+    k = slot_of(slug, kind)
+    # purely by day and slot, so parallel runs agree without seeing each other: four styles a day, and since the day
+    # moves the order on four places, yesterday's four (the last three videos before any run today among them) are
+    # never today's; keys take the day's half of the eight (4 d .. 4 d + 3: yesterday had the other half) with the
+    # slots rotated inside it so every format meets all eight keys in eight days
+    if not style:
+        style = STYLE_ORDER[(4 * d + k) % len(STYLE_ORDER)]
+    if not key:
+        key = KEYS[(4 * d + (k + d) % 4) % len(KEYS)]
     bpm = bpm or round(base_bpm * rng.uniform(.92, 1.08))
-    return dict(style=style, key=key, bpm=bpm, avoided=sorted(used_styles), label=STYLES[style]["label"])
+    clash = sorted(({style} & used_styles) | ({key} & used_keys))
+    out = dict(style=style, key=key, bpm=bpm, avoided=sorted(used_styles), label=STYLES[style]["label"], slot=k, clash_with_last3=clash)
+    if reserve and not slug.startswith("test-"):
+        try:
+            music_library.register_original(f"score-{slug}", f"Original score for {slug} (reserved at pick time)", slug,
+                                            "score.py (reserved)", bpm=bpm, key=key, style=style, note="reserved at pick time")
+        except Exception as e:
+            print(f"  score.pick: reservation not written ({e})", flush=True)
+    return out
+
+
+# 19 Nov (#13): voice over music by style. The voice sat only 18.8 to 19.3 dB over the mallets and harp scores (#11,
+# #12) against 26 to 29 dB for the orchestral ones (#7 to #10), all at level .22, so the styles were suspected.
+# build/score_levels.py measured all seven on #13's narration with the film's own ducking: 23.4 to 24.4 dB at .22,
+# within 0.6 dB of each other. The style was not the cause (the voice's level is: youtube.vom_level). The measured
+# levels below are kept as the probe each film starts from; youtube.vom_level then solves the film's own level.
+LEVEL_TARGET_DB = 24.0
+STYLE_LEVEL = {"orchestral": 0.2178, "noir_jazz": 0.2058, "solo_piano": 0.2295, "ambient": 0.2272, "acoustic": 0.2167, "mallets": 0.2136, "harp": 0.2195}
+
+
+def level(style, default=.22):
+    """The music level for youtube.mix: measured per style (STYLE_LEVEL) or the 13 Nov default."""
+    return STYLE_LEVEL.get(style, default)
+
 
 def midi(name):
     """'D4' -> 62."""

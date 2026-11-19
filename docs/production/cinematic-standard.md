@@ -115,9 +115,18 @@ identical cards" fails, and so does swapping one repeated template for another.
    18 Nov (YouTube #12, `cine_1998.py`): a 1998 trading room with live CRT screens (greeked rows, a yield screen whose
    gap closes and opens) and a split-flap board; a panelled meeting room at night with a moving clock, a long table and a
    term sheet; 1998 looks. `cine.sit_keys` / `stand_keys` (people step 2: sitting down as one motion).
-   Next: a city street today, a bank office, a kitchen table.
+   19 Nov (YouTube #13, `cine_2021.py`): the first present-day sets: a city street today by night and by day (glass and
+   brick towers with lit windows, shopfronts, modern lamps, a bus shelter, a traffic light that changes, a digital
+   billboard that takes content), a kitchen (window on the city, pendant lamp, laptop whose screen takes content), an
+   operations room before dawn (window from night to dawn, moving wall clock, monitor, ringing phone); props: a phone's
+   face, a big hand holding a phone, a laptop, an automated notice that types in; 2021 looks (hoodie, T-shirt, jacket,
+   coat). A scene can now run across two beats, the second opening on the first's end state (`cine_2021._fold`).
+   Next: a bank office, a boardroom today, a trading floor today.
 4. **Data in the world** (started): price paths that draw with flags; numbers that lift off documents. Next:
    balance sheet that rearranges, cash-flow waterfall, LBO structure, debt schedule (see `scene-library.md`).
+   19 Nov: a billboard that counts the same 100 shares sold twice (SOLD SHORT 0, 100, 200; COUNTED AS OWNED 100, 200,
+   300) as a bundle is handed along the street; sourced price prints on a laptop on a true time axis, dashed where
+   nothing is sourced (`cine_2021.prints_chart`).
    15 Nov: documents in the world: `cine_lib.document_shot` films a quote on a desk, inked as it is read and
    highlighted on its key words (replaces the `quote` card; measured static share 50% to 0% on the same line).
 5. **Transitions** (started): push into an object and match on it, cut on action, dissolve. Next: object wipes

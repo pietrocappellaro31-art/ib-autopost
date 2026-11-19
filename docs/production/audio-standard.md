@@ -88,6 +88,11 @@ reported, not gated: the model counts any music under a voice as background nois
 clean and 2.46 scored with the music 24.6 dB under the voice; the 20 s proof of concept, OVRL 2.44 clean and 2.06
 scored while the recogniser heard every word of both). `score="none"` makes the clean mix only.
 
+**The music level is solved per film** (19 Nov, #13: `youtube.vom_level`): the score is set so the voice sits 24 dB
+(`youtube.VOM_TARGET`) over the ducked music, measured on the film's own voice.wav and music.wav, instead of a fixed
+level .22. Measured cause: the styles differ by under 0.6 dB (`build/score_levels.py`); the voice's own level moves
+with its loudest sample (voice.wav's .89 peak cap). An episode's `music_level=` still overrides it.
+
 **Description line.** Scored: `Music: original score made for this video.` Clean with Pietro's track: `Music: [song
 title] by [artist], from the YouTube Audio Library` (fill in, paste the library's own attribution text if the track
 page shows one, or delete it if none is needed). Any added track must be licensed for monetised YouTube.

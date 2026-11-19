@@ -191,3 +191,27 @@ runs:
   is an empty entry. 17 Nov coin toss Short: 15/24 empty; today's: 0/28. Run it after every story-engine render.
 - `sketch.py`: `_pre` (pen-drawn pieces and the trader fully drawn before the swipe), `_trader_poses` (the trader
   changes pose on the words), `_cnt` (counters with separators from 1,000), `_fr`; scenes `tb_*`.
+
+## 19 Nov 2026, YouTube #13 (GameStop 2021): score separation found and fixed, the first present-day sets
+
+- The 18 Nov next improvement said the voice sat only 18.8 to 19.3 dB over the mallets and harp scores (#11, #12)
+  against 26 to 29 dB for the orchestral ones, and asked for a measured level per style. `build/score_levels.py`
+  measured all seven styles on #13's narration with the film's own voice chain and ducking: 23.4 to 24.4 dB at level
+  .22, within 0.6 dB. **The style was not the cause.** The voice's own level is: since 16 Nov voice.wav is levelled to
+  RMS .12 but capped at a .89 peak, so the loudest sample sets the whole voice's level (on #13 the cap costs 4.5 dB) and
+  it moves from film to film. Fix: `youtube.vom_level` solves each film's music level on its own voice.wav and
+  music.wav for `VOM_TARGET` = 24 dB (one probe: the sidechain gain depends only on the voice, so the ducked music
+  scales linearly). #13: 22.6 dB at the probe level, level 0.1757, **24.0 dB measured by the score gate**.
+  `score.STYLE_LEVEL` keeps the measured per-style probe levels.
+- `score.pick` (the other half): the style and key come from a daily rotation by format slot (long 0, Short 1, Reel
+  A 2, Reel B 3): `STYLE_ORDER[(4 d + k) % 7]` and `KEYS[(4 d + (k + d) % 4) % 8]`, so the four videos of a day never
+  share a style or key even when picked in parallel in different sessions, and none repeats one of yesterday's four;
+  the pick is written to library.json at pick time (reserved), and a video already logged keeps its music on a
+  re-render. 19 Nov is the transition day (yesterday's picks were random), so #13 sets noir jazz in D by hand.
+- `youtube.make` `hook_first=True`: the film opens on chapter 1's first beat (the filmed hook) and chapter 1's card
+  follows; YouTube's first chapter stays at 0:00. Number kind `count_d="sentence"`: the count runs across the sentence.
+- `build/cine_2021.py`: the first present-day sets (build order step 3): `street_today` (night and day, a billboard
+  that takes content, a traffic light that changes), `kitchen_2021`, `ops_room_dawn`; props `phone_screen`,
+  `hand_phone`, `laptop`, `notice_screen`, `prints_chart` (sourced prints on a true time axis, dashed where nothing
+  is sourced); 2021 looks; a scene across two beats with the second opening on the first's end state (`_fold`).
+  `sfx.city_ambience`, `tap`, `buzz`. Filmed render 0.21 to 0.40 s a frame with 2 workers.

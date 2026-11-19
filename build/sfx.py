@@ -433,3 +433,64 @@ def pump(sec=2.0, seed=0):
 
 
 FOLEY.update({"pump": pump, "stamp": stamp_hit, "marker": marker})
+
+
+# ------------------------------------------------------------------------------------------------------------------
+# 19 Nov (YouTube #13, GameStop 2021): the first present-day sounds. A city street of today (traffic hum, tyres on
+# wet tarmac passing, a far siren-free horn, footsteps' murmur), a finger tap on glass, a phone's short buzz.
+def city_ambience(sec, seed=0, night=False, traffic=1.0):
+    """A modern street: a low traffic bed, cars passing left to right or back (filtered noise swelling with a
+    slight Doppler tilt), a murmur of people, at night quieter and further away. Stereo, peak about .5."""
+    rng = np.random.default_rng(seed)
+    n = int(sec * FSR)
+    t = np.arange(n) / FSR
+    out = np.zeros((n, 2), np.float32)
+    for c in range(2):
+        out[:, c] = _band(rng.standard_normal(n), 40, 260) * (.55 if not night else .35)
+        mur = np.zeros(n)
+        for v in range(4):
+            f0 = rng.uniform(300, 800)
+            mod = np.clip(.5 + .5 * np.sin(2 * np.pi * rng.uniform(.3, 1.4) * t + rng.uniform(0, 6)), 0, 1) ** 2
+            mur += _band(rng.standard_normal(n), f0 * .8, f0 * 1.3) * mod
+        out[:, c] += mur * (.25 if not night else .12)
+    every = 2.6 if not night else 4.5
+    for _ in range(max(1, int(sec / every * traffic))):
+        at = rng.uniform(-1, max(sec - 1, .1))
+        ln = int(rng.uniform(2.2, 3.4) * FSR)
+        tt = np.linspace(0, 1, ln)
+        sw = np.sin(np.pi * tt) ** 3
+        lo, hi = rng.uniform(200, 400), rng.uniform(1800, 3200)
+        car = _band(rng.standard_normal(ln), lo, hi) * sw
+        car += _band(rng.standard_normal(ln), 50, 160) * sw * .8
+        d = rng.choice([-1, 1])
+        pan = (tt - .5) * 1.6 * d
+        i0 = int(at * FSR)
+        a, b = max(0, i0), min(n, i0 + ln)
+        if b <= a:
+            continue
+        seg = slice(a - i0, b - i0)
+        g = rng.uniform(.35, .7) * (.6 if night else 1.0)
+        out[a:b, 0] += car[seg] * g * np.sqrt(np.clip((1 - pan[seg]) / 2, 0, 1))
+        out[a:b, 1] += car[seg] * g * np.sqrt(np.clip((1 + pan[seg]) / 2, 0, 1))
+    return (out / (np.abs(out).max() + 1e-9) * .5).astype(np.float32)
+
+
+def tap(seed=0, sec=.08):
+    """A fingertip on a phone's glass: a short, dull click."""
+    rng = np.random.default_rng(seed)
+    n = int(sec * FSR)
+    env = np.exp(-np.arange(n) / (FSR * .008))
+    return (_band(rng.standard_normal(n), 900, 4200) * env * .8).astype(np.float32)
+
+
+def buzz(seed=0, sec=.42):
+    """A phone's vibration on a table: two short buzzes of a low rattle."""
+    rng = np.random.default_rng(seed)
+    n = int(sec * FSR)
+    tt = np.arange(n) / FSR
+    gate = ((tt % .21) < .15).astype(float)
+    tone = np.sign(np.sin(2 * np.pi * 170 * tt)) * .5 + _band(rng.standard_normal(n), 120, 900) * .5
+    return (_band(tone, 100, 1400) * gate * np.minimum(1, tt / .01) * .6).astype(np.float32)
+
+
+FOLEY.update({"tap": tap, "buzz": buzz})
