@@ -327,6 +327,13 @@
    "kind": "short",
    "id": "flawed-mangoes-missing-pieces",
    "mood": "tense"
+  },
+  {
+   "date": "2026-11-19",
+   "slug": "shorts-four-percent-wipeout",
+   "kind": "short",
+   "id": "joel-sunny-luminary",
+   "mood": "tense"
   }
  ],
  "originals": [
@@ -505,6 +512,19 @@
    "rights": "ORIGINAL_GENERATED",
    "added": "2026-11-18",
    "note": "chosen in parallel with today's Short (harp in F); both runs picked before either was logged"
+  },
+  {
+   "id": "score-shorts-four-percent-wipeout",
+   "title": "Original score for shorts-four-percent-wipeout",
+   "video": "shorts-four-percent-wipeout",
+   "engine": "score.py + GeneralUser GS v2.0.3 (TinySoundFont)",
+   "mood": "decide+resolve",
+   "bpm": 81,
+   "key": "E",
+   "style": "acoustic",
+   "rights": "ORIGINAL_GENERATED",
+   "added": "2026-11-19",
+   "note": ""
   }
  ]
 }

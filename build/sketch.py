@@ -5250,3 +5250,303 @@ def fl_asks(p, **_):
 
 
 SCENES.update({f.__name__: f for f in (fl_hook, fl_both, fl_fifo, fl_lifo, fl_tax, fl_rules, fl_asks)})
+
+
+# ---- 19 Nov (the leverage Short, Format D, an animated calculation, cut from YouTube #12, LTCM 1998): $100 of bonds
+# bought with $4 of your own and $96 borrowed (25 to 1); a 4% fall takes all $4, a 1% fall takes a quarter. Then
+# LTCM's own figures (PWG 1999, Federal Reserve History). Generic shapes of our own: no fund logo, no real person.
+# Every beat's set is on the panel at the swipe (entry_check), and every sentence longer than about 2.5 s carries a
+# second action on its second number or its last words (the 18 Nov next improvement: no quiet 6 s window).
+
+LV_BASE, LV_K = 590, 4.2                  # ground line; pixels a dollar ($100 = 420 px) in the to-scale columns
+BOND_C, BOND_D = "#A9C2DF", "#2E4F7A"
+LV_BX, LV_RX, LV_W = 90, 410, 210         # the bonds column and the paid-for-by column (debt under yours)
+
+
+def _lv_ground():
+    return f'<path d="M30 {LV_BASE} H770" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+
+
+def _lv_bonds(x, top, w_=LV_W, label=True):
+    h_ = LV_BASE - top
+    s = (f'<rect x="{x}" y="{top:.1f}" width="{w_}" height="{h_:.1f}" rx="8" fill="{BOND_C}" stroke="{INK}" stroke-width="7"/>'
+         + "".join(f'<path d="M{x + 22} {y:.1f} H{x + w_ - 22}" stroke="{BOND_D}" stroke-opacity=".35" stroke-width="5"/>'
+                   for y in [top + 34 + 40 * k for k in range(int((h_ - 60) // 40))]))
+    return s + (_t(x + w_ / 2, LV_BASE - 26, "BONDS", 30, BOND_D, serif=False) if label else "")
+
+
+def _lv_debt(x, top, w_=LV_W):
+    return (f'<rect x="{x}" y="{top:.1f}" width="{w_}" height="{LV_BASE - top:.1f}" rx="8" fill="{DEBT_C}" stroke="{INK}" stroke-width="7"/>'
+            + _t(x + w_ / 2, LV_BASE - 26, "BORROWED", 28, "#fff", serif=False))
+
+
+def _lv_yours(x, top, h_, w_=LV_W):
+    return f'<rect x="{x}" y="{top:.1f}" width="{w_}" height="{h_:.1f}" rx="4" fill="{GOLD}" stroke="{INK}" stroke-width="5"/>'
+
+
+def _lv_swap(p, t, x, y, a, b, size=60, color=INK, pre="$", suf="", d=.6, dec=0):
+    """A label that reads a until t, then counts to b."""
+    p.parts.append(_life(-1, t + 1.01, _t(x, y, f"{pre}{a}{suf}", size, color), fi=.01, fo=.01))
+    p.parts.append(_life(t, 99, _cnt(x, y, a, b, t, d, size=size, color=color, pre=pre, suf=suf, dec=dec), fi=.01, fo=.01))
+
+
+def _push(p, at, d, s1=1.04, ox=400, oy=400):
+    """19 Nov: a slow push-in on the whole drawing over a long stretch (the hook, a long first sentence), so the
+    panel is never still while the voice explains; the actions still land on their words."""
+    p.parts.insert(0, f'<g class="a" data-fx="scale" data-at="{at:.2f}" data-d="{d:.2f}" data-s0="1" data-s1="{s1}" '
+                      f'style="transform-box:view-box;transform-origin:{ox}px {oy}px">')
+    p.parts.append("</g>")
+
+
+def lv_hook(p, seg=None, **_):
+    """The puzzle, to scale ($100 = 420 px). From the swipe: the ground, two dashed column outlines (WHAT YOU OWN,
+    PAID FOR BY) and TO SCALE. On 'buy' the bonds column grows and counts to $100; on 'own' a thin gold $4 sliver
+    lands on top of the right column with a $4 YOURS tag. On 'borrow' the dark BORROWED block grows under it and
+    counts to $96. On 'fall' the bonds' top 4% turns red and drops away (the column counts to $96) with a -4% tag;
+    on 'What's left' a red ring closes on the sliver and a ? bobs over it."""
+    top, ytop = LV_BASE - 100 * LV_K, LV_BASE - 100 * LV_K
+    ydeb = LV_BASE - 96 * LV_K
+    _set(p, _lv_ground()
+            + f'<rect x="{LV_BX}" y="{top}" width="{LV_W}" height="{100 * LV_K}" rx="8" fill="none" stroke="{GREY}" stroke-width="5" stroke-dasharray="16 12"/>'
+            + f'<rect x="{LV_RX}" y="{top}" width="{LV_W}" height="{100 * LV_K}" rx="8" fill="none" stroke="{GREY}" stroke-width="5" stroke-dasharray="16 12"/>'
+            + _t(LV_BX + LV_W / 2, top - 22, "WHAT YOU OWN", 26, GREY, serif=False)
+            + _t(LV_RX + LV_W / 2, top - 22, "PAID FOR BY", 26, GREY, serif=False)
+            + _t(30, 630, "TO SCALE", 20, GREY, serif=False, anchor="start")
+            # 19 Nov: the three blocks faintly tinted from the first frame, so the hook opens on the thing explained
+            + f'<rect x="{LV_BX}" y="{top}" width="{LV_W}" height="{100 * LV_K}" rx="8" fill="{BOND_C}" fill-opacity=".3"/>'
+            + f'<rect x="{LV_RX}" y="{ydeb}" width="{LV_W}" height="{96 * LV_K}" rx="8" fill="{DEBT_C}" fill-opacity=".22"/>'
+            + f'<rect x="{LV_RX}" y="{ytop}" width="{LV_W}" height="{4 * LV_K}" rx="4" fill="{GOLD}" fill-opacity=".5"/>'
+            + _t(LV_BX + LV_W / 2, 330, "?", 60, GREY) + _t(LV_RX + LV_W / 2, 330, "?", 60, GREY))
+    grow = "transform-box:fill-box;transform-origin:center bottom"
+    tb = _fr(seg, 0, .06)
+    p.parts.append(_g("ripple", tb + 1.0, .7, f'<circle cx="{LV_BX + LV_W / 2}" cy="{LV_BASE}" r="45" fill="none" stroke="{BOND_D}" stroke-width="6"/>'))
+    p.parts.append(_g("growY", tb, 1.1, _idle("breathe", _lv_bonds(LV_BX, top), .008, 3.1, style=grow), style=grow))
+    t_fall = _fr(seg, 2, .3)
+    p.parts.append(_life(tb + .2, t_fall + .35 - tb - .2 + .01, _cnt(LV_BX + LV_W / 2, 330, 0, 100, tb + .2, 1.4, size=60), fi=.05, fo=.01))
+    p.parts.append(_life(t_fall + .35, 99, _cnt(LV_BX + LV_W / 2, 330, 100, 96, t_fall + .35, .5, size=60), fi=.01, fo=.01))
+    ty = _fr(seg, 0, .62)
+    p.parts.append(_g("fade", ty, .08, _g("slide", ty, .45, _lv_yours(LV_RX, ytop, 4 * LV_K), style="", y0=-140, y1=0, ease="out"), style=""))
+    p.parts.append(_g("pop", ty + .35, .35, _idle("swing", _ptag(665, 110, 190, "$4 YOURS", GOLD, INK, 30), 6, 2.2,
+                                                  style="transform-box:view-box;transform-origin:575px 110px")))
+    p.parts.append(_g("draw", ty + .5, .4, f'<path d="M585 140 Q585 {ytop:.0f} {LV_RX + LV_W - 10} {ytop + 4:.0f}" fill="none" stroke="{GOLD_D}" '
+                                           f'stroke-width="4" stroke-dasharray="8 7"/>', style=""))
+    td = _fr(seg, 1, .08)
+    p.parts.append(_g("growY", td, 1.0, _lv_debt(LV_RX, ydeb), style=grow))
+    p.parts.append(_g("ripple", td + 1.0, .7, f'<circle cx="{LV_RX + LV_W / 2}" cy="{LV_BASE}" r="45" fill="none" stroke="{INK}" stroke-width="6"/>'))
+    p.parts.append(_life(td + .4, 99, _cnt(LV_RX + LV_W / 2, 330, 0, 96, td + .4, .7, size=60, color="#fff"), fi=.05, fo=.01))
+    # the fall: the top 4% ($4, 16.8 px) of the bonds turns red, then drops off to the left and fades
+    sl = (f'<rect x="{LV_BX}" y="{top:.1f}" width="{LV_W}" height="{4 * LV_K:.1f}" rx="4" fill="{RED}" stroke="{INK}" stroke-width="5"/>')
+    p.parts.append(_life(t_fall, 1.6, _g("slide", t_fall + .4, 1.0, sl, style="", x0=0, y0=0, x1=-60, y1=120, ease="inout"), fi=.08, fo=.4))
+    p.parts.append(_life(t_fall + .5, 99, f'<rect x="{LV_BX}" y="{top:.1f}" width="{LV_W}" height="{4 * LV_K:.1f}" rx="4" fill="none" '
+                                          f'stroke="{RED}" stroke-width="4" stroke-dasharray="10 8"/>', fi=.3, fo=.01))
+    p.parts.append(_g("pop", t_fall + .1, .35, _idle("bob", _ptag(LV_BX + LV_W / 2, 88, 130, "−4%", RED, "#fff", 36), 4, 2.2, style="")))
+    tq = _fr(seg, 3, .1)
+    p.parts.append(_g("pop", tq, .35, f'<rect x="{LV_RX - 12}" y="{ytop - 14}" width="{LV_W + 24}" height="{4 * LV_K + 28}" rx="10" fill="none" '
+                                      f'stroke="{RED}" stroke-width="7"/>'))
+    p.parts.append(_life(tq + .15, 99, _idle("bob", _t(LV_RX + LV_W / 2, ytop - 50, "?", 110, RED), 12, 2.6, style=""), fi=.15, fo=.01))
+    _push(p, 0, seg[3][1] + .5, 1.045, 400, 420)
+
+
+def lv_zero(p, seg=None, **_):
+    """The answer. From the swipe: the state after the fall, to scale: bonds at $96 with the lost $4 dashed in red
+    above them, BORROWED $96, the gold $4 sliver still on top. On 'Nothing.' the sliver squashes flat, a YOURS $0 tag
+    replaces it and a WIPED OUT stamp lands over the right column. On the second sentence the lost slice glows, a
+    4% x $100 = $4 tag pops over it and the bonds' figure counts $100 to $96 on '$4'. On the third a teal ring
+    closes on BORROWED with an OWED tag, then an = lands between the columns (what you own pays what you owe)."""
+    top, y96 = LV_BASE - 100 * LV_K, LV_BASE - 96 * LV_K
+    _set(p, _lv_ground() + _lv_bonds(LV_BX, y96) + _lv_debt(LV_RX, y96)
+            + f'<rect x="{LV_BX}" y="{top:.1f}" width="{LV_W}" height="{4 * LV_K:.1f}" rx="4" fill="none" stroke="{RED}" stroke-width="4" stroke-dasharray="10 8"/>'
+            + _t(LV_RX + LV_W / 2, 330, "$96", 60, "#fff")
+            + _t(30, 630, "TO SCALE", 20, GREY, serif=False, anchor="start"))
+    t0 = _fr(seg, 0, .1)
+    p.parts.append(f'<g class="a" data-fx="scaleY" data-at="{t0:.2f}" data-d="0.45" data-s0="1" data-s1="0.05" '
+                   f'style="transform-box:fill-box;transform-origin:center bottom">{_lv_yours(LV_RX, top, 4 * LV_K)}</g>')
+    p.parts.append(_life(-1, t0 + 1.01, _ptag(665, 250, 190, "$4 YOURS", GOLD, INK, 30), fi=.01, fo=.2))
+    p.parts.append(_g("pop", t0 + .3, .35, _idle("bob", _ptag(665, 250, 190, "$0 YOURS", RED, "#fff", 30), 4, 2.4, style="")))
+    p.parts.append(f'<g class="a" data-fx="stamp" data-at="{t0 + .2:.2f}" data-d=".35" data-rot="-8" '
+                   f'style="transform-box:fill-box;transform-origin:center">'
+                   f'<rect x="{LV_RX - 10}" y="40" width="{LV_W + 120}" height="92" rx="14" fill="#fff" stroke="{RED}" stroke-width="9"/>'
+                   + _t(LV_RX + LV_W / 2 + 50, 104, "WIPED OUT", 50, RED) + "</g>")
+    t1 = _fr(seg, 1, .08)
+    p.parts.append(_life(t1, 99, _g("pop", t1, .3, f'<rect x="{LV_BX}" y="{top:.1f}" width="{LV_W}" height="{4 * LV_K:.1f}" rx="4" fill="{RED}" '
+                                                   f'fill-opacity=".85"/>'), fi=.05, fo=.01))
+    p.parts.append(_g("pop", _fr(seg, 1, .3), .35, _idle("bob", _ptag(LV_BX + LV_W / 2 + 10, 92, 280, "4% × $100", RED, "#fff", 40), 4, 2.3, style="")))
+    _lv_swap(p, _fr(seg, 1, .78), LV_BX + LV_W / 2, 330, 100, 96, size=60)
+    p.parts.append(_g("pop", _fr(seg, 1, .8), .3, _t(LV_BX + LV_W / 2, top - 6, "= $4", 30, RED, serif=False)))
+    t2 = _fr(seg, 2, .12)
+    p.parts.append(_g("pop", t2, .35, f'<rect x="{LV_RX - 12}" y="{y96 - 12:.1f}" width="{LV_W + 24}" height="{LV_BASE - y96 + 24:.1f}" rx="14" '
+                                      f'fill="none" stroke="{TEAL}" stroke-width="8"/>'))
+    p.parts.append(_g("pop", _fr(seg, 2, .4), .35, _idle("bob", _ptag(LV_RX + LV_W / 2, 440, 190, "OWED", TEAL, "#fff", 34), 4, 2.5, style="")))
+    p.parts.append(_g("pop", _fr(seg, 2, .75), .4, _t((LV_BX + LV_W + LV_RX) / 2, 400, "=", 100, TEAL)))
+
+
+def lv_one(p, seg=None, **_):
+    """One percent. From the swipe: the $100 bonds column on the left, your $4 as four gold $1 coins stacked on the
+    right under YOURS $4. On '1%' a -1% tag pops over the bonds and their figure counts to $99; on 'quarter' the
+    top coin turns red and slides off the stack to the ground with a -25% tag, the stack's figure counting $4 to $3
+    on the second sentence while a 1/4 tag lands by the fallen coin."""
+    top = LV_BASE - 100 * LV_K
+    _set(p, _lv_ground() + _lv_bonds(80, top, 220) + _t(500, 250, "YOURS", 30, GREY, serif=False))
+    p.parts.append(_g("fade", -1, .05, _idle("breathe", _lv_bonds(80, top, 220), .006, 3.0,
+                                             style="transform-box:fill-box;transform-origin:center bottom"), style=""))
+    coin = lambda cx, cy, fill=GOLD, lab="$1", col=INK: (
+        f'<ellipse cx="{cx}" cy="{cy + 14}" rx="80" ry="24" fill="{GOLD_D if fill == GOLD else "#8E2408"}" stroke="{INK}" stroke-width="5"/>'
+        f'<rect x="{cx - 80}" y="{cy - 6}" width="160" height="20" fill="{GOLD_D if fill == GOLD else "#8E2408"}"/>'
+        f'<ellipse cx="{cx}" cy="{cy - 6}" rx="80" ry="24" fill="{fill}" stroke="{INK}" stroke-width="5"/>' + _t(cx, cy + 6, lab, 30, col))
+    ys = [LV_BASE - 40 - 52 * k for k in range(4)]
+    for y in ys[:3]:
+        _set(p, coin(500, y))
+    t1 = _fr(seg, 0, .22)
+    _lv_swap(p, t1 + .2, 190, 330, 100, 99, size=60)
+    p.parts.append(_g("pop", t1, .35, _idle("bob", _ptag(190, top - 70, 150, "−1%", RED, "#fff", 40), 4, 2.2, style="")))
+    tq = _fr(seg, 0, .62)
+    p.parts.append(_life(-1, tq + 1.01, coin(500, ys[3]), fi=.01, fo=.01))
+    p.parts.append(_life(tq, 99, _g("slide", tq + .25, .75, coin(500, ys[3], RED, "$1", "#fff"), style="", x0=0, y0=0, x1=200,
+                                    y1=ys[0] - ys[3], ease="inout"), fi=.08, fo=.01))
+    p.parts.append(_g("pop", tq + .95, .35, _idle("bob", _ptag(700, 380, 150, "−25%", RED, "#fff", 40), 4, 2.4, style="")))
+    t2 = _fr(seg, 1, .15)
+    _lv_swap(p, t2, 500, 330, 4, 3, size=64)
+    p.parts.append(_g("pop", _fr(seg, 1, .6), .35, _t(700, 470, "1 OF 4", 30, RED, serif=False)))
+
+
+def lv_ratio(p, seg=None, **_):
+    """The ratio. From the swipe: one gold $1 coin (YOURS) on the left and an empty 5 x 5 grid of bond tiles on the
+    right. On '25 to 1' a 25 TO 1 tag pops at the top. On the second sentence the 25 tiles fill one after another
+    and a counter beside the coin runs $0 to $25 of bonds with them. On the third a -1% chip pops on the grid and,
+    on '25 times', a -25% tag lands on the coin with a red ring."""
+    gx, gy, ts, gap = 350, 198, 72, 8
+    grid = "".join(f'<rect x="{gx + c * (ts + gap)}" y="{gy + r * (ts + gap)}" width="{ts}" height="{ts}" rx="8" fill="{BOND_C}" fill-opacity=".3" stroke="{GREY}" '
+                   f'stroke-width="4" stroke-dasharray="10 8"/>' for r in range(5) for c in range(5))
+    cx, cy = 140, 480
+    coin = (f'<circle cx="{cx}" cy="{cy}" r="82" fill="{GOLD}" stroke="{INK}" stroke-width="7"/>'
+            f'<circle cx="{cx}" cy="{cy}" r="62" fill="none" stroke="{GOLD_D}" stroke-width="4"/>' + _t(cx, cy + 18, "$1", 52, INK))
+    _set(p, grid + _t(cx, 610, "YOURS", 26, GREY, serif=False) + _t(546, 620, "BONDS", 26, GREY, serif=False))
+    p.parts.append(_g("fade", -1, .05, _idle("bob", coin, 5, 2.4, style=""), style=""))
+    p.parts.append(_g("pop", _fr(seg, 0, .2), .4, _idle("bob", _ptag(400, 100, 340, "25 TO 1", INK, "#fff", 56), 4, 2.6, style="")))
+    a, b = _fr(seg, 1, .25), _fr(seg, 1, .85)
+    for k in range(25):
+        r, c = divmod(k, 5)
+        x, y = gx + c * (ts + gap), gy + (4 - r) * (ts + gap)
+        tile = (f'<rect x="{x}" y="{y}" width="{ts}" height="{ts}" rx="8" fill="{BOND_C}" stroke="{INK}" stroke-width="4"/>'
+                f'<path d="M{x + 14} {y + 28} H{x + ts - 14} M{x + 14} {y + 46} H{x + ts - 24}" stroke="{BOND_D}" stroke-opacity=".45" stroke-width="4"/>')
+        p.parts.append(_g("pop", a + (b - a) * k / 24, .25, tile))
+    p.parts.append(_life(a, 99, _cnt(cx, 300, 0, 25, a, b - a + .1, size=60, color=BOND_D), fi=.1, fo=.01))
+    p.parts.append(_g("fade", a + .2, .3, _t(cx, 345, "OF BONDS", 24, BOND_D, serif=False), style=""))
+    t3 = _fr(seg, 2, .2)
+    p.parts.append(_g("pop", t3, .35, _idle("bob", _ptag(700, 175, 140, "−1%", RED, "#fff", 38), 4, 2.2, style="")))
+    t4 = _fr(seg, 2, .6)
+    p.parts.append(_g("pop", t4, .35, f'<circle cx="{cx}" cy="{cy}" r="98" fill="none" stroke="{RED}" stroke-width="8"/>'))
+    p.parts.append(_g("pop", t4 + .15, .35, _idle("bob", _ptag(cx + 105, 405, 150, "−25%", RED, "#fff", 40), 4, 2.4, style="")))
+
+
+def _mini_bank(x, y, s=1.0):
+    S = lambda v: v * s
+    return (f'<path d="M{x - S(26)} {y - S(30)} L{x} {y - S(48)} L{x + S(26)} {y - S(30)} Z" fill="{INK}"/>'
+            f'<rect x="{x - S(22)}" y="{y - S(30)}" width="{S(44)}" height="{S(34)}" fill="#E8E4DE" stroke="{INK}" stroke-width="3"/>'
+            + "".join(f'<rect x="{x - S(16) + S(12) * k}" y="{y - S(26)}" width="{S(7)}" height="{S(26)}" fill="{GREY}"/>' for k in range(3))
+            + f'<rect x="{x - S(28)}" y="{y + S(4)}" width="{S(56)}" height="{S(7)}" fill="{INK}"/>')
+
+
+def lv_ltcm(p, seg=None, **_):
+    """It happened: LTCM, 1998 (PWG 1999; Federal Reserve History). From the swipe: a 1998 LTCM card, an empty CAPITAL
+    outline sized to $4.1bn (31 July 1998) on the left, and on the right two dashed outlines, ASSETS and FUNDING, to
+    one scale ($125bn = 360 px). On the first sentence the ASSETS column grows (over $125bn), then the FUNDING column
+    grows dark (borrowed) with a 14 px gold sliver on top ($4.8bn of capital), and on '25 to 1' a MORE THAN 25 TO 1
+    tag pops. On the second an AUGUST ribbon lands under the card, the capital bar fills gold, its top 44% turns red
+    and lifts away while the figure counts $4.1bn to $2.3bn, and a -44% tag pops."""
+    k = 80                          # px a billion, the capital bar
+    x, w_ = 90, 220
+    top, y23 = LV_BASE - 4.1 * k, LV_BASE - 2.3 * k
+    ka = 360 / 125                  # px a billion, the balance sheet
+    ax, fx_, cw = 430, 615, 160
+    atop = LV_BASE - 125 * ka
+    cap = 4.8 * ka
+    _set(p, _lv_ground()
+            + f'<rect x="{x}" y="{top:.1f}" width="{w_}" height="{4.1 * k:.1f}" rx="8" fill="none" stroke="{GREY}" stroke-width="5" stroke-dasharray="16 12"/>'
+            + f'<rect x="{x}" y="40" width="{w_}" height="110" rx="14" fill="#fff" stroke="{INK}" stroke-width="6"/>'
+            + f'<rect x="{x}" y="40" width="{w_}" height="34" rx="8" fill="{RED}"/>' + _t(x + w_ / 2, 66, "LTCM", 26, "#fff", serif=False)
+            + _t(x + w_ / 2, 138, "1998", 56, INK)
+            + f'<rect x="{x}" y="{top:.1f}" width="{w_}" height="{4.1 * k:.1f}" rx="8" fill="{GOLD}" fill-opacity=".3"/>'
+            + "".join(f'<rect x="{xx}" y="{atop:.1f}" width="{cw}" height="{125 * ka:.1f}" rx="8" fill="{fc}" fill-opacity=".25" stroke="{GREY}" stroke-width="4" '
+                      f'stroke-dasharray="14 10"/>' for xx, fc in ((ax, BOND_C), (fx_, DEBT_C)))
+            + _t(ax + cw / 2, LV_BASE + 32, "ASSETS", 22, GREY, serif=False) + _t(fx_ + cw / 2, LV_BASE + 32, "FUNDING", 22, GREY, serif=False)
+            + _t(400, 636, "SOURCES: PWG REPORT 1999, FEDERAL RESERVE HISTORY", 17, GREY, serif=False))
+    grow = "transform-box:fill-box;transform-origin:center bottom"
+    t_a = _fr(seg, 0, .12)
+    p.parts.append(_g("growY", t_a, .8, _idle("breathe", _lv_bonds(ax, atop, cw, label=False), .006, 3.2, style=grow), style=grow))
+    p.parts.append(_g("fade", t_a + .6, .3, _t(ax + cw / 2, 330, "OVER", 26, BOND_D, serif=False) + _t(ax + cw / 2, 372, "$125BN", 38, BOND_D),
+                      style=""))
+    t_f = _fr(seg, 0, .45)
+    p.parts.append(_g("growY", t_f, .7, f'<rect x="{fx_}" y="{atop + cap:.1f}" width="{cw}" height="{125 * ka - cap:.1f}" rx="8" fill="{DEBT_C}" '
+                                       f'stroke="{INK}" stroke-width="6"/>' + _t(fx_ + cw / 2, 372, "BORROWED", 24, "#fff", serif=False), style=grow))
+    p.parts.append(_g("fade", t_f + .6, .08, _g("slide", t_f + .6, .4, f'<rect x="{fx_}" y="{atop:.1f}" width="{cw}" height="{cap:.1f}" rx="3" '
+                                                                       f'fill="{GOLD}" stroke="{INK}" stroke-width="4"/>', style="", y0=-90, y1=0,
+                                                ease="out"), style=""))
+    p.parts.append(_g("fade", t_f + .9, .3, _t(fx_ + cw / 2, atop - 14, "$4.8BN CAPITAL", 20, INK, serif=False), style=""))
+    p.parts.append(_g("pop", _fr(seg, 0, .8), .4, _idle("bob", _ptag(560, 112, 300, "OVER 25 TO 1", INK, "#fff", 32), 4, 2.6, style="")))
+    t_g = _fr(seg, 1, .05)
+    p.parts.append(_g("growY", t_g, .5, f'<rect x="{x}" y="{y23:.1f}" width="{w_}" height="{2.3 * k:.1f}" rx="8" fill="{GOLD}" stroke="{INK}" stroke-width="7"/>',
+                      style=grow))
+    t_l = _fr(seg, 1, .45)
+    gtop = (f'<rect x="{x}" y="{top:.1f}" width="{w_}" height="{1.8 * k:.1f}" rx="8" fill="{GOLD}" stroke="{INK}" stroke-width="7"/>')
+    p.parts.append(_life(t_g + .1, t_l - t_g - .1 + .01, _g("growY", t_g + .1, .5, gtop, style=grow), fi=.01, fo=.01))
+    red = f'<rect x="{x}" y="{top:.1f}" width="{w_}" height="{1.8 * k:.1f}" rx="8" fill="{RED}" stroke="{INK}" stroke-width="7"/>'
+    p.parts.append(_life(t_l, 2.0, _g("slide", t_l + .3, 1.0, red, style="", x0=0, y0=0, x1=0, y1=-50, ease="inout"), fi=.01, fo=.6))
+    p.parts.append(_life(t_l + .6, 99, f'<rect x="{x}" y="{top:.1f}" width="{w_}" height="{1.8 * k:.1f}" rx="8" fill="none" stroke="{RED}" '
+                                       f'stroke-width="4" stroke-dasharray="10 8"/>', fi=.3, fo=.01))
+    p.parts.append(_g("fade", t_g + .3, .3, _t(x + w_ / 2, LV_BASE - 26, "CAPITAL", 28, INK, serif=False), style=""))
+    p.parts.append(_life(t_g + .3, t_l + .3 - t_g - .3, _t(x + w_ / 2, LV_BASE - 90, "$4.1BN", 46, INK), fi=.2, fo=.01))
+    p.parts.append(_life(t_l + .3, 99, _cnt(x + w_ / 2, LV_BASE - 90, 4.1, 2.3, t_l + .3, .9, size=46, pre="$", suf="BN", dec=1), fi=.01, fo=.01))
+    p.parts.append(_g("pop", _fr(seg, 1, .1), .35, _ptag(x + w_ / 2 + 20, 196, 210, "AUGUST", RED, "#fff", 34)))
+    p.parts.append(_g("pop", t_l + 1.1, .35, _idle("bob", _ptag(x + w_ / 2 + 30, top + 60, 150, "−44%", RED, "#fff", 40), 4, 2.3, style="")))
+
+
+def lv_rule(p, seg=None, **_):
+    """The rule. From the swipe: two lanes, NO DEBT and 25 TO 1, each with the same trade ticket, and two empty
+    ROOM TO FALL gauges on the ground. On the first sentence the same teal tick draws onto both tickets and a SAME
+    TRADE tag pops between them. On the second the left gauge grows to 100% ('far'), then the right one shows only 4%
+    in red, with a ring and a 4% tag ('gone')."""
+    _set(p, _lv_ground())
+    for cx, head in ((210, "NO DEBT"), (590, "25 TO 1")):
+        tk = (f'<rect x="{cx - 130}" y="40" width="260" height="140" rx="14" fill="#fff" stroke="{INK}" stroke-width="6"/>'
+              + _t(cx - 110, 80, "THE TRADE", 22, GREY, serif=False, anchor="start")
+              + f'<path d="M{cx - 110} 110 H{cx - 10} M{cx - 110} 140 H{cx - 40}" stroke="{GREY}" stroke-width="6" stroke-linecap="round"/>')
+        p.parts.append(_g("fade", -1, .05, _idle("bob", tk, 3, 2.6 + cx / 900, style=""), style=""))
+        _set(p, _t(cx, 236, head, 34, INK, serif=False)
+                + f'<rect x="{cx - 60}" y="{LV_BASE - 300}" width="120" height="300" rx="8" fill="none" stroke="{GREY}" stroke-width="4" stroke-dasharray="12 9"/>')
+    _set(p, _t(400, 628, "HOW FAR PRICES CAN FALL BEFORE YOUR MONEY IS GONE", 19, GREY, serif=False))
+    t0 = _fr(seg, 0, .25)
+    for j, cx in enumerate((210, 590)):
+        p.parts.append(_g("draw", t0 + .25 * j, .4, f'<path d="M{cx + 20} 120 L{cx + 50} 150 L{cx + 105} 75" fill="none" stroke="{TEAL}" '
+                                                    f'stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>', style=""))
+    for j, cx in enumerate((210, 590)):
+        p.parts.append(_g("press", _fr(seg, 0, .02) + .15 * j, .5, f'<rect x="{cx - 136}" y="34" width="272" height="152" rx="18" fill="none" '
+                                                                 f'stroke="{TEAL}" stroke-width="6"/>'))
+    p.parts.append(_g("draw", _fr(seg, 0, .55), .5, f'<path d="M352 200 H448 M362 190 L350 200 L362 210 M438 190 L450 200 L438 210" fill="none" '
+                                                    f'stroke="{TEAL}" stroke-width="6" stroke-linecap="round"/>', style=""))
+    p.parts.append(_g("pop", _fr(seg, 0, .7), .35, _ptag(400, 112, 130, "SAME", TEAL, "#fff", 30)))
+    grow = "transform-box:fill-box;transform-origin:center bottom"
+    t1 = _fr(seg, 1, .3)
+    p.parts.append(_g("growY", t1, .8, f'<rect x="150" y="{LV_BASE - 300}" width="120" height="300" rx="8" fill="{TEAL}" stroke="{INK}" stroke-width="6"/>',
+                      style=grow))
+    p.parts.append(_g("pop", t1 + .6, .3, _t(210, LV_BASE - 140, "100%", 44, "#fff")))
+    t2 = _fr(seg, 1, .7)
+    p.parts.append(_g("growY", t2, .4, f'<rect x="530" y="{LV_BASE - 12}" width="120" height="12" rx="3" fill="{RED}" stroke="{INK}" stroke-width="4"/>',
+                      style=grow))
+    p.parts.append(_g("pop", t2 + .25, .35, f'<rect x="516" y="{LV_BASE - 30}" width="148" height="44" rx="12" fill="none" stroke="{RED}" stroke-width="7"/>'))
+    p.parts.append(_g("pop", t2 + .35, .35, _idle("bob", _ptag(600, LV_BASE - 90, 150, "4%", RED, "#fff", 44), 4, 2.3, style="")))
+    _push(p, seg[0][0], seg[1][1] - seg[0][0], 1.04, 400, 420)
+
+
+def lv_asks(p, **_):
+    """The close, all on the panel from frame 0: a 10 TO 1 tag over a bonds column with a dashed line across it, a
+    bobbing ? beside the line, the trader pointing at the viewer. The answer (10%) is not shown."""
+    top = LV_BASE - 100 * LV_K
+    _set(p, _lv_ground() + _lv_bonds(90, top, 220)
+            + f'<path d="M60 {top + 60} H340" stroke="{RED}" stroke-width="6" stroke-dasharray="16 12"/>')
+    p.parts.append(_g("fade", -1, .05, _idle("bob", _ptag(200, top - 60, 230, "10 TO 1", INK, "#fff", 44), 4, 2.4, style=""), style=""))
+    p.parts.append(_g("float", 0, 1, _t(420, top + 110, "?", 160, RED), style="", amp=10, w=2.4))
+    _trader_poses(p, 650, LV_BASE + 30, .9, [(0, "point")], look=-1)
+
+
+SCENES.update({f.__name__: f for f in (lv_hook, lv_zero, lv_one, lv_ratio, lv_ltcm, lv_rule, lv_asks)})

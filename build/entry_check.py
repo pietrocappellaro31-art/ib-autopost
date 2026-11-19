@@ -10,6 +10,12 @@ under 20% of the reference ink. The aim is 0 empty entry frames.
 
     python3 build/entry_check.py shorts-raise-tax-bracket [shorts-coin-toss-150-100 ...]
 
+19 Nov (the 18 Nov Short's next improvement): the same report also measures the quietest stretches, so a beat that
+lands in its first second and then holds still through a long sentence is gated with the empty entries. The motion
+measure is the films' own (yt_preview.motion_stats: 6 frames a second at 160 x 90 grey, the mean change per second),
+over a sliding 6 s window; the aim is no window under 1.0 (QUIET_6S). Each quiet window is named by the beat and
+sentence it starts in, so the fix (a second action in that sentence) is easy to place.
+
 Writes build/out/<slug>/entry.json and prints one line per beat.
 """
 
@@ -23,6 +29,8 @@ import numpy as np
 OUT = pathlib.Path(__file__).resolve().parent / "out"
 PAPER = np.array([247, 245, 242], np.float32)
 T_SW = .34
+QUIET_6S = 1.0
+SAFE_BOTTOM = 1440
 
 
 def frame(mp4, t):
@@ -66,6 +74,16 @@ def ink(img, box):
     return float(1 - paper_mask(reg).mean())
 
 
+def ink_bottom(img, box):
+    """19 Nov: the lowest row of the drawing that carries ink (a row with over 1% of the panel's width off-paper).
+    The paper panel is 'nochk' for the render's safe-area check, so a drawing's labels could sit under YouTube's
+    bottom bar unseen; this gates them (nothing below y=1440)."""
+    y0, y1, x0, x1 = box
+    reg = img[y0 + 6:y1 - 6, x0 + 30:x1 - 30]
+    rows = np.where((~paper_mask(reg)).mean(axis=1) > .01)[0]
+    return int(y0 + 6 + rows[-1]) if len(rows) else int(y0)
+
+
 def check(slug):
     work = OUT / slug
     t = json.load(open(work / "timeline.json"))
@@ -74,7 +92,7 @@ def check(slug):
     close_end = t["at"]["close"] + t["segments"]["close"][-1][2]
     beats = [(f"b{i}", (0.0 if i == 0 else s0 + T_SW), s1) for i, (s0, s1) in enumerate(spans)]
     beats.append(("close", t["at"]["close"] - .35 + T_SW + .1, close_end))
-    rows, empty, n = [], 0, 0
+    rows, empty, n, unsafe = [], 0, 0, 0
     for k, e0, s1 in beats:
         ref = frame(mp4, s1 - .25)
         box = panel_box(ref)
@@ -83,18 +101,46 @@ def check(slug):
             print(f"  {slug} {k:6s} no panel found")
             continue
         full = ink(ref, box)
+        low = ink_bottom(ref, box)
+        under = low > SAFE_BOTTOM
+        unsafe += under
         ent = [ink(frame(mp4, e0 + d), box) for d in (0, .1, .2, .3)]
         share = [round(x / full, 3) if full > 0 else None for x in ent]
         bad = sum(1 for s in share if s is not None and s < .2)
         empty += bad
         n += len(share)
-        rows.append(dict(beat=k, panel=box, ref_ink=round(full, 4), entry_ink=[round(x, 4) for x in ent], share=share, empty=bad))
+        rows.append(dict(beat=k, panel=box, ink_bottom=low, under_1440=bool(under), ref_ink=round(full, 4), entry_ink=[round(x, 4) for x in ent], share=share, empty=bad))
         print(f"  {slug} {k:6s} panel y{box[0]}-{box[1]}  ink at end {full:.3f}  entry {min(share):.2f}-{max(share):.2f} of it"
-              + (f"  CHECK {bad} empty" if bad else ""))
-    res = dict(slug=slug, frames=n, empty=empty, empty_share=round(empty / max(n, 1), 3), beats=rows)
+              + (f"  CHECK {bad} empty" if bad else "") + f"  lowest ink y{low}" + ("  CHECK under the 1440 line" if under else ""))
+    print(f"  {slug}: {unsafe} drawings with ink under the 1440 line")
+    res = dict(slug=slug, frames=n, empty=empty, ink_under_1440=unsafe, empty_share=round(empty / max(n, 1), 3), beats=rows)
+    res.update(quiet(t, mp4))
     json.dump(res, open(work / "entry.json", "w"), indent=1)
     print(f"  {slug}: {empty}/{n} beat-entry frames with the panel under 20% of its final ink")
     return res
+
+
+def where(t, sec):
+    """The beat and sentence a second of the Short falls in (b2 s1, close s0)."""
+    for k, at in sorted(t["at"].items(), key=lambda kv: kv[1], reverse=True):
+        if sec >= at - .35:
+            j = max([i for i, (_, a, b) in enumerate(t["segments"][k]) if at + a <= sec + .5] or [0])
+            return f"{k} s{j}"
+    return "b0 s0"
+
+
+def quiet(t, mp4):
+    """The sliding 6 s motion windows (19 Nov): the lowest, and every window under QUIET_6S with where it starts."""
+    from yt_preview import motion_stats
+    per = motion_stats(mp4)["per_second"]
+    win = [(round(float(np.mean(per[i:i + 6])), 2), i) for i in range(max(len(per) - 5, 0))]
+    low = min(win) if win else (None, None)
+    under = [dict(at=i, mean=v, where=where(t, i)) for v, i in win if v < QUIET_6S]
+    print(f"  6 s windows: lowest {low[0]} at {low[1]} s ({where(t, low[1] or 0)}); {len(under)} under {QUIET_6S}"
+          + (f"  CHECK quiet from {', '.join(sorted({u['where'] for u in under}))}" if under else "")
+          + f"; under 1.2: {sum(1 for v, _ in win if v < 1.2)}")
+    return dict(lowest_6s=low[0], lowest_6s_at=low[1], windows_6s=len(win), quiet_6s=under, quiet_limit=QUIET_6S,
+                windows_6s_under_1_2=sum(1 for v, _ in win if v < 1.2), mean_motion=round(float(np.mean(per)), 2) if per else None)
 
 
 if __name__ == "__main__":
