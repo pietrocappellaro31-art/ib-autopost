@@ -1,0 +1,13 @@
+"Walk me through a merger model." 5 steps, in order, and the follow-ups get easier.
+
+1. Price: the target's share price plus a premium, times its diluted shares.
+2. Funding: cash, new debt or new stock. Each has a cost: interest you give up, interest you pay, or more shares.
+3. Combine: buyer net income plus target net income, plus synergies, less funding costs and new D&A from write-ups. All after tax.
+4. New share count.
+5. Pro forma EPS against the buyer's standalone EPS. Up is accretive, down is dilutive.
+
+Then say what it means for value, not just EPS.
+
+Save it for the M&A round.
+
+#investmentbanking #mergersandacquisitions #ibinterview #mergermodel

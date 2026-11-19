@@ -812,6 +812,22 @@
       ]
     },
     {
+      "id": "reel-w2-levels-15-black",
+      "type": "reel",
+      "scheduled_utc": "2026-11-16T17:30:00",
+      "slot": "A",
+      "media_branch": "reel/w2-levels-15-black",
+      "video": "w2-levels-15-black.mp4",
+      "cover": "w2-levels-15-black.jpg",
+      "master": "scored",
+      "caption": "Does paying back a loan lower net income?\n\nA lot of people say yes. Money leaves the company, so profit must drop. It doesn't.\n\nInterest is the expense. Borrow $100 at 10% with a 25% tax rate and net income falls by $7.50 a year: $10 of interest, less $2.50 of tax saved. The $100 you hand back is the loan itself, so cash and debt both drop by $100 and the income statement never sees it. You'll find it in financing cash flow.\n\nThat split between interest and principal is what the question is testing.\n\nThere are 4 levels, each harder than the last. Keep count and drop your score in the comments.\n\nNarration: AI-generated voice; script is our original work.\n\n#investmentbanking #financeinterview #accounting #threestatements",
+      "first_comment": "Bonus level: same $100 loan at 10%, 25% tax, but the interest is paid in kind (added to the loan, no cash paid). Net income still falls $7.50. What happens to cash?",
+      "ai_label": true,
+      "published_id": "18125202100961680",
+      "published_at_utc": "2026-11-16T20:46:07.568675+00:00",
+      "first_comment_id": "18116204630083998"
+    },
+    {
       "id": "n1-21-mid-year",
       "series": "Technical of the Day",
       "scheduled_utc": "2026-11-16T22:30:00",
@@ -840,22 +856,6 @@
       "caption": "",
       "published_id": "18414153784088840",
       "published_at_utc": "2026-11-16T23:05:52.655982+00:00"
-    },
-    {
-      "id": "reel-w2-levels-15-black",
-      "type": "reel",
-      "scheduled_utc": "2026-11-16T17:30:00",
-      "slot": "A",
-      "media_branch": "reel/w2-levels-15-black",
-      "video": "w2-levels-15-black.mp4",
-      "cover": "w2-levels-15-black.jpg",
-      "master": "scored",
-      "caption": "Does paying back a loan lower net income?\n\nA lot of people say yes. Money leaves the company, so profit must drop. It doesn't.\n\nInterest is the expense. Borrow $100 at 10% with a 25% tax rate and net income falls by $7.50 a year: $10 of interest, less $2.50 of tax saved. The $100 you hand back is the loan itself, so cash and debt both drop by $100 and the income statement never sees it. You'll find it in financing cash flow.\n\nThat split between interest and principal is what the question is testing.\n\nThere are 4 levels, each harder than the last. Keep count and drop your score in the comments.\n\nNarration: AI-generated voice; script is our original work.\n\n#investmentbanking #financeinterview #accounting #threestatements",
-      "first_comment": "Bonus level: same $100 loan at 10%, 25% tax, but the interest is paid in kind (added to the loan, no cash paid). Net income still falls $7.50. What happens to cash?",
-      "ai_label": true,
-      "published_id": "18125202100961680",
-      "published_at_utc": "2026-11-16T20:46:07.568675+00:00",
-      "first_comment_id": "18116204630083998"
     },
     {
       "id": "reel-w2-levels-16",
@@ -920,6 +920,468 @@
       "published_id": "18053766476818772",
       "published_at_utc": "2026-11-18T23:05:17.681238+00:00",
       "first_comment_id": "17890414161622212"
+    },
+    {
+      "id": "n2-01-accrued-bonus",
+      "series": "Technical of the Day",
+      "scheduled_utc": "2026-11-19T13:00:00",
+      "caption": "A $10 bonus is accrued but not paid yet. Most people get the income statement right, then move cash by $10. Don't.\n\nIncome statement first. The bonus is this year's expense, so pre-tax income drops $10, tax drops $2.50 at 25%, and you're left with net income down $7.50.\n\nCash flow. You start at -7.50 and add back the $10 rise in accrued liabilities. Cash is up $2.50.\n\nThat's the tax you saved.\n\nBalance sheet: cash +2.50 on the left; accrued liabilities +10 and retained earnings -7.50 on the right. It balances.\n\nNext year you pay it. Cash -10, accrued -10, and the income statement doesn't move again.\n\nSave it for your accounting round.\n\n#investmentbanking #ibinterview #accounting #threestatements",
+      "published_id": null,
+      "published_at_utc": null,
+      "images": [
+        "n2-01-accrued-bonus-01.jpg",
+        "n2-01-accrued-bonus-02.jpg",
+        "n2-01-accrued-bonus-03.jpg",
+        "n2-01-accrued-bonus-04.jpg",
+        "n2-01-accrued-bonus-05.jpg",
+        "n2-01-accrued-bonus-06.jpg",
+        "n2-01-accrued-bonus-07.jpg",
+        "n2-01-accrued-bonus-08.jpg"
+      ]
+    },
+    {
+      "id": "n2-02-ufcf-lfcf",
+      "series": "Technical of the Day",
+      "scheduled_utc": "2026-11-19T17:30:00",
+      "caption": "Unlevered or levered free cash flow? It comes down to 1 line: interest.\n\nUnlevered is before interest. EBIT of 100 taxed at 25% is 75, plus D&A of 20, less capex of 30, less a $10 rise in working capital. That's 55, and it belongs to lenders and shareholders.\n\nLevered is after interest. Take off 20 of interest after tax, which is 15, and you're at 40. That's what's left for shareholders.\n\nThen match the rate. Unlevered at WACC gives you enterprise value. Levered at the cost of equity gives you equity value.\n\nThe classic slip is discounting levered FCF at WACC.\n\nSave it with your DCF notes.\n\n#investmentbanking #ibinterview #dcf #valuation",
+      "published_id": null,
+      "published_at_utc": null,
+      "images": [
+        "n2-02-ufcf-lfcf-01.jpg",
+        "n2-02-ufcf-lfcf-02.jpg",
+        "n2-02-ufcf-lfcf-03.jpg",
+        "n2-02-ufcf-lfcf-04.jpg",
+        "n2-02-ufcf-lfcf-05.jpg",
+        "n2-02-ufcf-lfcf-06.jpg",
+        "n2-02-ufcf-lfcf-07.jpg",
+        "n2-02-ufcf-lfcf-08.jpg"
+      ]
+    },
+    {
+      "id": "n2-03-weakness",
+      "series": "Recruiting Playbook",
+      "scheduled_utc": "2026-11-19T22:30:00",
+      "caption": "\"What's your greatest weakness?\" The perfectionist answer doesn't sound safe. It sounds like you'd hide a mistake.\n\nPick something real.\n\nIt shouldn't be core to the job, though. Speaking up in a room of 12 people works. Being sloppy with numbers, for an analyst role, doesn't.\n\nThen 3 beats: the weakness in 1 sentence, 1 time it cost you, and what you changed.\n\nSpend most of your 2 minutes on that last part, because they're listening for self-awareness and action.\n\nAnd don't say it's gone. Say what habit you use now.\n\nWhich weakness would you pick?\n\n#investmentbanking #ibrecruiting #behavioralinterview #superday",
+      "published_id": null,
+      "published_at_utc": null,
+      "images": [
+        "n2-03-weakness-01.jpg",
+        "n2-03-weakness-02.jpg",
+        "n2-03-weakness-03.jpg",
+        "n2-03-weakness-04.jpg",
+        "n2-03-weakness-05.jpg",
+        "n2-03-weakness-06.jpg",
+        "n2-03-weakness-07.jpg",
+        "n2-03-weakness-08.jpg"
+      ]
+    },
+    {
+      "id": "story-2026-11-19",
+      "type": "story",
+      "series": "Question of the day",
+      "scheduled_utc": "2026-11-19T23:00:00",
+      "images": [
+        "story-2026-11-19.jpg"
+      ],
+      "caption": "",
+      "published_id": null,
+      "published_at_utc": null
+    },
+    {
+      "id": "n2-04-tsm",
+      "series": "Technical of the Day",
+      "scheduled_utc": "2026-11-20T13:00:00",
+      "caption": "You calculate equity value per share and use basic shares. The interviewer's next question is about options.\n\nThe treasury stock method. Only count options in the money, with a strike below today's share price.\n\nSay 10 options at a $10 strike, share price $20. Exercising them brings in $100. The method assumes the company uses that $100 to buy back shares at $20, so 5 come back.\n\nNet new shares: 5. Basic 100 becomes 105 diluted.\n\nWhen you're solving for an implied price, the share count moves with it, which is why models iterate.\n\nSave it before your next valuation round.\n\n#investmentbanking #ibinterview #valuation #equityvalue",
+      "published_id": null,
+      "published_at_utc": null,
+      "images": [
+        "n2-04-tsm-01.jpg",
+        "n2-04-tsm-02.jpg",
+        "n2-04-tsm-03.jpg",
+        "n2-04-tsm-04.jpg",
+        "n2-04-tsm-05.jpg",
+        "n2-04-tsm-06.jpg",
+        "n2-04-tsm-07.jpg",
+        "n2-04-tsm-08.jpg"
+      ]
+    },
+    {
+      "id": "n2-05-waterfall",
+      "series": "Technical of the Day",
+      "scheduled_utc": "2026-11-20T17:30:00",
+      "caption": "A company is sold in bankruptcy for $500. It owes $400 of senior debt and $200 of subordinated debt. Who gets what?\n\nClaims are paid in order. Senior first, then junior, then equity, and each class waits until the one above is paid in full.\n\nSenior gets all 400. That's a 100% recovery.\n\nThe $100 left goes to subordinated lenders. 100 out of 200 is a 50% recovery.\n\nShareholders get 0.\n\nThat's also why junior debt pays a higher interest rate. It loses first when value falls.\n\nSave it if you're interviewing for restructuring or credit.\n\n#investmentbanking #restructuring #leveragedfinance #ibinterview",
+      "published_id": null,
+      "published_at_utc": null,
+      "images": [
+        "n2-05-waterfall-01.jpg",
+        "n2-05-waterfall-02.jpg",
+        "n2-05-waterfall-03.jpg",
+        "n2-05-waterfall-04.jpg",
+        "n2-05-waterfall-05.jpg",
+        "n2-05-waterfall-06.jpg",
+        "n2-05-waterfall-07.jpg",
+        "n2-05-waterfall-08.jpg"
+      ]
+    },
+    {
+      "id": "n2-06-roic-growth",
+      "series": "Technical of the Day",
+      "scheduled_utc": "2026-11-20T22:30:00",
+      "caption": "Does growth always add value? Most people say yes. The answer depends on 2 rates.\n\nROIC is what the business earns on the capital it puts in. WACC is what that capital costs.\n\nInvest 100 at a 12% return when capital costs 10%: you earn 12, pay 10, and keep 2 a year. As a perpetuity at 10%, that's about 20 of value.\n\nInvest the same 100 at 8%: revenue and profit grow, and the company's worth less.\n\nAt exactly the cost of capital, growth adds nothing.\n\nSo in a DCF, if you raise growth, raise reinvestment too.\n\nSave it for the valuation round.\n\n#investmentbanking #valuation #dcf #ibinterview",
+      "published_id": null,
+      "published_at_utc": null,
+      "images": [
+        "n2-06-roic-growth-01.jpg",
+        "n2-06-roic-growth-02.jpg",
+        "n2-06-roic-growth-03.jpg",
+        "n2-06-roic-growth-04.jpg",
+        "n2-06-roic-growth-05.jpg",
+        "n2-06-roic-growth-06.jpg",
+        "n2-06-roic-growth-07.jpg",
+        "n2-06-roic-growth-08.jpg"
+      ]
+    },
+    {
+      "id": "story-2026-11-20",
+      "type": "story",
+      "series": "Question of the day",
+      "scheduled_utc": "2026-11-20T23:00:00",
+      "images": [
+        "story-2026-11-20.jpg"
+      ],
+      "caption": "",
+      "published_id": null,
+      "published_at_utc": null
+    },
+    {
+      "id": "n2-07-deferred-revenue",
+      "series": "Technical of the Day",
+      "scheduled_utc": "2026-11-21T13:00:00",
+      "caption": "A customer pays you $120 upfront for a year. Is that $120 of revenue? Not on day 1.\n\nYour cash goes up $120 and so does deferred revenue, which is a liability. You owe them 12 months of service.\n\nEach month you deliver, $10 moves from deferred revenue to revenue. The cash came in once.\n\nOn the cash flow statement, you add the increase in deferred revenue back in operations, since the cash arrived before the revenue did.\n\nIs it debt? Usually not. It's settled by delivering the service, so it sits in working capital and stays out of your EV bridge.\n\nSave it for the accounting questions.\n\n#investmentbanking #ibinterview #accounting #saas",
+      "published_id": null,
+      "published_at_utc": null,
+      "images": [
+        "n2-07-deferred-revenue-01.jpg",
+        "n2-07-deferred-revenue-02.jpg",
+        "n2-07-deferred-revenue-03.jpg",
+        "n2-07-deferred-revenue-04.jpg",
+        "n2-07-deferred-revenue-05.jpg",
+        "n2-07-deferred-revenue-06.jpg",
+        "n2-07-deferred-revenue-07.jpg",
+        "n2-07-deferred-revenue-08.jpg"
+      ]
+    },
+    {
+      "id": "n2-08-matching-rule",
+      "series": "Technical of the Day",
+      "scheduled_utc": "2026-11-21T17:30:00",
+      "caption": "Why is EV / net income the wrong multiple? 1 rule answers this one and every question like it.\n\nEV is what you'd pay for the whole business, so it belongs to everyone who funded it. Lenders too.\n\nThat's why it pairs with numbers before interest: revenue, EBITDA, EBIT. Equity value is the shareholders' slice, and it pairs with numbers after interest, like net income, book value and levered FCF.\n\nMix them and you'll get nonsense. Take 2 companies with the same EV of 1,000 and EBITDA of 100. One has no debt, the other pays 30 of interest a year. At 25% tax (and ignoring D&A), net income is 75 against 52.5, so you get 13.3 times against about 19 times. Same business, different multiple.\n\nHere's my quick test. If interest is already out of the denominator, you need equity value.\n\nSave it before your next comps question.\n\n#investmentbanking #valuation #ibinterview #comps",
+      "published_id": null,
+      "published_at_utc": null,
+      "images": [
+        "n2-08-matching-rule-01.jpg",
+        "n2-08-matching-rule-02.jpg",
+        "n2-08-matching-rule-03.jpg",
+        "n2-08-matching-rule-04.jpg",
+        "n2-08-matching-rule-05.jpg",
+        "n2-08-matching-rule-06.jpg",
+        "n2-08-matching-rule-07.jpg",
+        "n2-08-matching-rule-08.jpg"
+      ]
+    },
+    {
+      "id": "n2-09-dont-know",
+      "series": "Recruiting Playbook",
+      "scheduled_utc": "2026-11-21T22:30:00",
+      "caption": "You'll get a technical you can't answer. What they grade is the next 30 seconds.\n\nDon't bluff.\n\nThey ask follow-ups, and a made-up answer falls apart on the 2nd one.\n\nSay what you do know: restate the question, name the concept it touches, and work from there. Most technicals tie back to the 3 statements, a DCF or an LBO, so start from whichever 1 it touches.\n\nThink out loud. \"My instinct is X, because Y\" lets them steer you, and a corrected path still counts.\n\nThen look it up that night and mention it in your thank-you email within 24 hours.\n\nWhat's the technical that caught you out?\n\n#investmentbanking #ibrecruiting #ibinterview #superday",
+      "published_id": null,
+      "published_at_utc": null,
+      "images": [
+        "n2-09-dont-know-01.jpg",
+        "n2-09-dont-know-02.jpg",
+        "n2-09-dont-know-03.jpg",
+        "n2-09-dont-know-04.jpg",
+        "n2-09-dont-know-05.jpg",
+        "n2-09-dont-know-06.jpg",
+        "n2-09-dont-know-07.jpg",
+        "n2-09-dont-know-08.jpg"
+      ]
+    },
+    {
+      "id": "story-2026-11-21",
+      "type": "story",
+      "series": "Question of the day",
+      "scheduled_utc": "2026-11-21T23:00:00",
+      "images": [
+        "story-2026-11-21.jpg"
+      ],
+      "caption": "",
+      "published_id": null,
+      "published_at_utc": null
+    },
+    {
+      "id": "n2-10-paper-lbo",
+      "series": "Technical of the Day",
+      "scheduled_utc": "2026-11-22T13:00:00",
+      "caption": "Paper LBO. No Excel, just a pen. What's the return?\n\nEntry: EBITDA of 100 at 10 times is 1,000. Debt funds 600, the sponsor puts in 400.\n\nExit in year 5: EBITDA of 150 at the same 10 times is 1,500. Debt's been paid down to 300, so equity is 1,200.\n\n1,200 over 400 is 3.0 times. Tripling in 5 years is an IRR of about 25%.\n\nWhere the 800 came from: 500 from EBITDA growth (50 at 10 times) and 300 from paying down debt. The multiple added 0.\n\nDon't divide 800 by 5 and call it 40% a year. Returns compound.\n\nSave it for your PE prep.\n\n#privateequity #lbo #investmentbanking #ibinterview",
+      "published_id": null,
+      "published_at_utc": null,
+      "images": [
+        "n2-10-paper-lbo-01.jpg",
+        "n2-10-paper-lbo-02.jpg",
+        "n2-10-paper-lbo-03.jpg",
+        "n2-10-paper-lbo-04.jpg",
+        "n2-10-paper-lbo-05.jpg",
+        "n2-10-paper-lbo-06.jpg",
+        "n2-10-paper-lbo-07.jpg",
+        "n2-10-paper-lbo-08.jpg"
+      ]
+    },
+    {
+      "id": "n2-11-cost-of-debt",
+      "series": "Technical of the Day",
+      "scheduled_utc": "2026-11-22T17:30:00",
+      "caption": "What's the cost of debt in WACC? If you said the coupon, that's usually wrong.\n\nThe coupon was set when the bond was issued. WACC needs what lenders want today.\n\nA 5% bond trading at 90 has a current yield of 5.6%, and its yield to maturity is higher still, because it's repaid at 100.\n\nThen take tax off. Interest is deductible, so a 6% pre-tax cost at 25% tax is 4.5%.\n\nNo traded bonds? Use yields on debt with a similar credit rating, or add a spread to the risk-free rate.\n\nAnd skip interest expense over book debt. That's history, not the market.\n\nSave it for your WACC questions.\n\n#investmentbanking #wacc #valuation #ibinterview",
+      "published_id": null,
+      "published_at_utc": null,
+      "images": [
+        "n2-11-cost-of-debt-01.jpg",
+        "n2-11-cost-of-debt-02.jpg",
+        "n2-11-cost-of-debt-03.jpg",
+        "n2-11-cost-of-debt-04.jpg",
+        "n2-11-cost-of-debt-05.jpg",
+        "n2-11-cost-of-debt-06.jpg",
+        "n2-11-cost-of-debt-07.jpg",
+        "n2-11-cost-of-debt-08.jpg"
+      ]
+    },
+    {
+      "id": "n2-12-deal-discussion",
+      "series": "Recruiting Playbook",
+      "scheduled_utc": "2026-11-22T22:30:00",
+      "caption": "\"Tell me about a deal you've followed.\" Most candidates recite the headline. Interviewers want your view.\n\nPick 1 deal you can talk about for 10 minutes, ideally in the group you're interviewing for.\n\nKnow the buyer, the target, the price and how it was paid, from the announcement or the filing.\n\nExplain why the buyer wanted it, why the seller sold, and why now. Most people only cover the buyer.\n\nHave the multiple paid and how it compares with peers.\n\nThen say whether it's a good deal and name the biggest risk.\n\nWhich deal would you use?\n\n#investmentbanking #ibrecruiting #mergersandacquisitions #superday",
+      "published_id": null,
+      "published_at_utc": null,
+      "images": [
+        "n2-12-deal-discussion-01.jpg",
+        "n2-12-deal-discussion-02.jpg",
+        "n2-12-deal-discussion-03.jpg",
+        "n2-12-deal-discussion-04.jpg",
+        "n2-12-deal-discussion-05.jpg",
+        "n2-12-deal-discussion-06.jpg",
+        "n2-12-deal-discussion-07.jpg",
+        "n2-12-deal-discussion-08.jpg"
+      ]
+    },
+    {
+      "id": "story-2026-11-22",
+      "type": "story",
+      "series": "Question of the day",
+      "scheduled_utc": "2026-11-22T23:00:00",
+      "images": [
+        "story-2026-11-22.jpg"
+      ],
+      "caption": "",
+      "published_id": null,
+      "published_at_utc": null
+    },
+    {
+      "id": "n2-13-goodwill-impairment",
+      "series": "Technical of the Day",
+      "scheduled_utc": "2026-11-23T13:00:00",
+      "caption": "Goodwill is impaired by $50. Before you answer, say your tax assumption out loud.\n\nIf it isn't deductible, net income falls by the full $50. You add the 50 back on the cash flow statement, so cash doesn't move at all, and goodwill and retained earnings both drop 50.\n\nBalanced.\n\nNow say it is deductible at 25%. It works like depreciation: tax falls $12.50, net income falls $37.50, and you end up with $12.50 more cash.\n\nUnder IFRS and US GAAP for public companies, goodwill isn't amortised. It's tested for impairment.\n\nSave it for the accounting round.\n\n#investmentbanking #ibinterview #accounting #goodwill",
+      "published_id": null,
+      "published_at_utc": null,
+      "images": [
+        "n2-13-goodwill-impairment-01.jpg",
+        "n2-13-goodwill-impairment-02.jpg",
+        "n2-13-goodwill-impairment-03.jpg",
+        "n2-13-goodwill-impairment-04.jpg",
+        "n2-13-goodwill-impairment-05.jpg",
+        "n2-13-goodwill-impairment-06.jpg",
+        "n2-13-goodwill-impairment-07.jpg",
+        "n2-13-goodwill-impairment-08.jpg"
+      ]
+    },
+    {
+      "id": "n2-14-sotp",
+      "series": "Technical of the Day",
+      "scheduled_utc": "2026-11-23T17:30:00",
+      "caption": "How do you value a company with 2 very different businesses? You don't use 1 multiple.\n\nYou do a sum of the parts, valuing each division against its own peers.\n\nDivision A: EBITDA of 50 at 8 times is 400. Division B: EBITDA of 30 at 12 times is 360. That's an enterprise value of 760.\n\nDebt and cash usually sit at group level, so you take net debt of 200 off once, at the end. Equity value: 560.\n\nHead office costs don't belong to either division. Value them and subtract them.\n\nIf the market values the group below the sum, that's the conglomerate discount, and it's why spin-offs happen.\n\nSave it for your valuation prep.\n\n#investmentbanking #valuation #ibinterview #mergersandacquisitions",
+      "published_id": null,
+      "published_at_utc": null,
+      "images": [
+        "n2-14-sotp-01.jpg",
+        "n2-14-sotp-02.jpg",
+        "n2-14-sotp-03.jpg",
+        "n2-14-sotp-04.jpg",
+        "n2-14-sotp-05.jpg",
+        "n2-14-sotp-06.jpg",
+        "n2-14-sotp-07.jpg",
+        "n2-14-sotp-08.jpg"
+      ]
+    },
+    {
+      "id": "n2-15-bank-valuation",
+      "series": "Technical of the Day",
+      "scheduled_utc": "2026-11-23T22:30:00",
+      "caption": "Why can't you value a bank on EV / EBITDA? Because for a bank, debt isn't financing. It's inventory.\n\nDeposits and borrowing are what it lends out, and interest is its cost of sales. You can't split operations from financing, so EV and EBITDA stop meaning anything.\n\nUse equity multiples.\n\nP/E, price to book, price to tangible book. If you want the intrinsic version, it's a dividend discount model.\n\nP/B comes down to ROE against the cost of equity: P/B = (ROE - g) / (COE - g). Plug in an ROE of 12%, a cost of equity of 10% and 4% growth and you get about 1.33.\n\nROE equal to COE? P/B is 1.0.\n\nSave it if FIG is on your list.\n\n#investmentbanking #fig #banking #valuation",
+      "published_id": null,
+      "published_at_utc": null,
+      "images": [
+        "n2-15-bank-valuation-01.jpg",
+        "n2-15-bank-valuation-02.jpg",
+        "n2-15-bank-valuation-03.jpg",
+        "n2-15-bank-valuation-04.jpg",
+        "n2-15-bank-valuation-05.jpg",
+        "n2-15-bank-valuation-06.jpg",
+        "n2-15-bank-valuation-07.jpg",
+        "n2-15-bank-valuation-08.jpg"
+      ]
+    },
+    {
+      "id": "story-2026-11-23",
+      "type": "story",
+      "series": "Question of the day",
+      "scheduled_utc": "2026-11-23T23:00:00",
+      "images": [
+        "story-2026-11-23.jpg"
+      ],
+      "caption": "",
+      "published_id": null,
+      "published_at_utc": null
+    },
+    {
+      "id": "n2-16-equity-investments",
+      "series": "Technical of the Day",
+      "scheduled_utc": "2026-11-24T13:00:00",
+      "caption": "A company owns 30% of another. Do you add that stake in the EV bridge or subtract it?\n\nSubtract it.\n\nUnder the equity method, the company books its 30% share of profit as 1 line below operating profit. If the associate earns 100, that's 30 of equity income, and none of it's in EBITDA, which means your EV has to leave the stake out too or the multiple won't line up.\n\nEquity value 1,000. Plus debt 300, less cash 100, less the stake worth 150. EV: 1,050.\n\nIt's the mirror of minority interest. Own 80% and consolidate 100%? Add NCI. Own 30% and consolidate 0%? Subtract the stake.\n\nSave it with your EV bridge notes.\n\n#investmentbanking #ibinterview #valuation #enterprisevalue",
+      "published_id": null,
+      "published_at_utc": null,
+      "images": [
+        "n2-16-equity-investments-01.jpg",
+        "n2-16-equity-investments-02.jpg",
+        "n2-16-equity-investments-03.jpg",
+        "n2-16-equity-investments-04.jpg",
+        "n2-16-equity-investments-05.jpg",
+        "n2-16-equity-investments-06.jpg",
+        "n2-16-equity-investments-07.jpg",
+        "n2-16-equity-investments-08.jpg"
+      ]
+    },
+    {
+      "id": "n2-17-nols",
+      "series": "Technical of the Day",
+      "scheduled_utc": "2026-11-24T17:30:00",
+      "caption": "Why would a buyer pay for a target's past losses? Because they can cut future tax.\n\nNet operating losses offset taxable income later. 100 of NOLs at a 25% rate is worth up to 25 of tax saved.\n\nUp to. The company has to earn taxable income to use them, so value them year by year and discount what's saved.\n\nIn the US, federal losses from 2018 on don't expire, but each year they can offset at most 80% of taxable income.\n\nAfter an acquisition, Section 382 caps how much can be used each year: the old company's value times a long-term tax-exempt rate.\n\nSave it for your M&A prep.\n\n#investmentbanking #mergersandacquisitions #tax #ibinterview",
+      "published_id": null,
+      "published_at_utc": null,
+      "images": [
+        "n2-17-nols-01.jpg",
+        "n2-17-nols-02.jpg",
+        "n2-17-nols-03.jpg",
+        "n2-17-nols-04.jpg",
+        "n2-17-nols-05.jpg",
+        "n2-17-nols-06.jpg",
+        "n2-17-nols-07.jpg",
+        "n2-17-nols-08.jpg"
+      ]
+    },
+    {
+      "id": "n2-18-cold-email",
+      "series": "Recruiting Playbook",
+      "scheduled_utc": "2026-11-24T22:30:00",
+      "caption": "Bankers read cold emails on their phones between calls. Write for that.\n\nSubject line: a real connection plus the ask. Your shared university gets it opened. \"Quick question\" doesn't.\n\nBody: 4 sentences. Who you are, why them specifically, 1 ask for a 15 minute call, and when you're free.\n\nKeep the ask small. A short call is an easy yes. A referral comes later, after a real conversation.\n\nNo reply in a week? 1 short nudge in the same thread. Then move on.\n\nWhat's the subject line you'd use?\n\n#investmentbanking #ibrecruiting #networking #finance",
+      "published_id": null,
+      "published_at_utc": null,
+      "images": [
+        "n2-18-cold-email-01.jpg",
+        "n2-18-cold-email-02.jpg",
+        "n2-18-cold-email-03.jpg",
+        "n2-18-cold-email-04.jpg",
+        "n2-18-cold-email-05.jpg",
+        "n2-18-cold-email-06.jpg",
+        "n2-18-cold-email-07.jpg",
+        "n2-18-cold-email-08.jpg"
+      ]
+    },
+    {
+      "id": "story-2026-11-24",
+      "type": "story",
+      "series": "Question of the day",
+      "scheduled_utc": "2026-11-24T23:00:00",
+      "images": [
+        "story-2026-11-24.jpg"
+      ],
+      "caption": "",
+      "published_id": null,
+      "published_at_utc": null
+    },
+    {
+      "id": "n2-19-merger-model",
+      "series": "Technical of the Day",
+      "scheduled_utc": "2026-11-25T13:00:00",
+      "caption": "\"Walk me through a merger model.\" 5 steps, in order, and the follow-ups get easier.\n\n1. Price: the target's share price plus a premium, times its diluted shares.\n2. Funding: cash, new debt or new stock. Each has a cost: interest you give up, interest you pay, or more shares.\n3. Combine: buyer net income plus target net income, plus synergies, less funding costs and new D&A from write-ups. All after tax.\n4. New share count.\n5. Pro forma EPS against the buyer's standalone EPS. Up is accretive, down is dilutive.\n\nThen say what it means for value, not just EPS.\n\nSave it for the M&A round.\n\n#investmentbanking #mergersandacquisitions #ibinterview #mergermodel",
+      "published_id": null,
+      "published_at_utc": null,
+      "images": [
+        "n2-19-merger-model-01.jpg",
+        "n2-19-merger-model-02.jpg",
+        "n2-19-merger-model-03.jpg",
+        "n2-19-merger-model-04.jpg",
+        "n2-19-merger-model-05.jpg",
+        "n2-19-merger-model-06.jpg",
+        "n2-19-merger-model-07.jpg",
+        "n2-19-merger-model-08.jpg"
+      ]
+    },
+    {
+      "id": "n2-20-covenants",
+      "series": "Technical of the Day",
+      "scheduled_utc": "2026-11-25T17:30:00",
+      "caption": "Maintenance or incurrence covenant? It's about when the test runs.\n\nMaintenance covenants get tested every period, often every 3 months. Say the limit is 4 times debt / EBITDA, with 350 of debt. EBITDA falls from 100 to 75, use goes from 3.5 to about 4.7 times, and you've breached it without doing a thing. You'll see these in bank loans.\n\nIncurrence covenants only run when you want to act, like raising more debt or paying a dividend. They're common in high-yield bonds.\n\nA breach usually ends in a waiver or an amendment, for a fee or a higher rate. Not bankruptcy.\n\nCovenant-lite loans drop the maintenance tests and keep the incurrence ones.\n\nSave it for LevFin interviews.\n\n#investmentbanking #leveragedfinance #credit #ibinterview",
+      "published_id": null,
+      "published_at_utc": null,
+      "images": [
+        "n2-20-covenants-01.jpg",
+        "n2-20-covenants-02.jpg",
+        "n2-20-covenants-03.jpg",
+        "n2-20-covenants-04.jpg",
+        "n2-20-covenants-05.jpg",
+        "n2-20-covenants-06.jpg",
+        "n2-20-covenants-07.jpg",
+        "n2-20-covenants-08.jpg"
+      ]
+    },
+    {
+      "id": "n2-21-thank-you",
+      "series": "Recruiting Playbook",
+      "scheduled_utc": "2026-11-25T22:30:00",
+      "caption": "Your interview thank-you note is the last thing they read from you. Most are generic.\n\nSend it the same day, within 24 hours, by email.\n\n1 note per interviewer. A group email reads like a template.\n\n3 sentences: thanks for their time, 1 specific thing you discussed, and why it confirmed your interest. Leave the full pitch out.\n\nThen check the name and the bank twice. A wrong bank name from your last template undoes a good interview.\n\nSave it for after your next superday.\n\n#investmentbanking #ibrecruiting #superday #interviewtips",
+      "published_id": null,
+      "published_at_utc": null,
+      "images": [
+        "n2-21-thank-you-01.jpg",
+        "n2-21-thank-you-02.jpg",
+        "n2-21-thank-you-03.jpg",
+        "n2-21-thank-you-04.jpg",
+        "n2-21-thank-you-05.jpg",
+        "n2-21-thank-you-06.jpg",
+        "n2-21-thank-you-07.jpg",
+        "n2-21-thank-you-08.jpg"
+      ]
+    },
+    {
+      "id": "story-2026-11-25",
+      "type": "story",
+      "series": "Question of the day",
+      "scheduled_utc": "2026-11-25T23:00:00",
+      "images": [
+        "story-2026-11-25.jpg"
+      ],
+      "caption": "",
+      "published_id": null,
+      "published_at_utc": null
     }
   ],
   "reel_slots_et": {

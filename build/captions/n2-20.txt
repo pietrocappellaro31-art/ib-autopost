@@ -1,0 +1,13 @@
+Maintenance or incurrence covenant? It's about when the test runs.
+
+Maintenance covenants get tested every period, often every 3 months. Say the limit is 4 times debt / EBITDA, with 350 of debt. EBITDA falls from 100 to 75, leverage goes from 3.5 to about 4.7 times, and you've breached it without doing a thing. You'll see these in bank loans.
+
+Incurrence covenants only run when you want to act, like raising more debt or paying a dividend. They're common in high-yield bonds.
+
+A breach usually ends in a waiver or an amendment, for a fee or a higher rate. Not bankruptcy.
+
+Covenant-lite loans drop the maintenance tests and keep the incurrence ones.
+
+Save it for LevFin interviews.
+
+#investmentbanking #leveragedfinance #credit #ibinterview

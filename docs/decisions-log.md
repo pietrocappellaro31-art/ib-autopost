@@ -18,6 +18,15 @@ What has been settled, and what is still open. Newest first.
 
 ## Settled
 
+- **Carousels never run dry: a weekly scheduled task builds the next batch** (19 Nov, Pietro: "Why this carousel is
+  not publishing anymore since 2 days? Make sure this carousel is published each day."). Cause: the 10 to 16 Nov batch
+  (`build/nov1.py`) was the last one queued, so 17 and 18 Nov had no carousel and no Story; the publisher and the
+  dispatch tasks were working and found nothing due. Same failure as 9 Nov; the weekly builder proposed on 10 Nov was
+  never created. Fix: (1) `build/nov2.py` queued 21 carousels for 19 to 25 Nov (3 a day, 08:00, 12:30 and 17:30 ET,
+  rotation continued by calendar day) and Stories for the same days; (2) a scheduled task "IB carousel weekly build"
+  (Mondays 15:23 ET) builds and queues every day without a carousel from the last queued day through today + 10 days,
+  so the queue always has at least 3 days in hand, and messages Pietro only if it could not queue.
+
 - **YouTube from 19 Nov: number-puzzle Shorts cut from the films; daily films with the effort on the opening minute and
   the thumbnail** (18 Nov, Pietro: "Make this changes starting tomorrow - November 19", on the analytics reading in
   `docs/daily/youtube-analytics.md`; asked how many films a week, he answered "1 a day"). From the 19 Nov runs:

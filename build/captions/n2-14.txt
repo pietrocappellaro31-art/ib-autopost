@@ -1,0 +1,15 @@
+How do you value a company with 2 very different businesses? You don't use 1 multiple.
+
+You do a sum of the parts, valuing each division against its own peers.
+
+Division A: EBITDA of 50 at 8 times is 400. Division B: EBITDA of 30 at 12 times is 360. That's an enterprise value of 760.
+
+Debt and cash usually sit at group level, so you take net debt of 200 off once, at the end. Equity value: 560.
+
+Head office costs don't belong to either division. Value them and subtract them.
+
+If the market values the group below the sum, that's the conglomerate discount, and it's why spin-offs happen.
+
+Save it for your valuation prep.
+
+#investmentbanking #valuation #ibinterview #mergersandacquisitions

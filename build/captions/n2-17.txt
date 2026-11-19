@@ -1,0 +1,13 @@
+Why would a buyer pay for a target's past losses? Because they can cut future tax.
+
+Net operating losses offset taxable income later. 100 of NOLs at a 25% rate is worth up to 25 of tax saved.
+
+Up to. The company has to earn taxable income to use them, so value them year by year and discount what's saved.
+
+In the US, federal losses from 2018 on don't expire, but each year they can offset at most 80% of taxable income.
+
+After an acquisition, Section 382 caps how much can be used each year: the old company's value times a long-term tax-exempt rate.
+
+Save it for your M&A prep.
+
+#investmentbanking #mergersandacquisitions #tax #ibinterview

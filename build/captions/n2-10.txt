@@ -1,0 +1,15 @@
+Paper LBO. No Excel, just a pen. What's the return?
+
+Entry: EBITDA of 100 at 10 times is 1,000. Debt funds 600, the sponsor puts in 400.
+
+Exit in year 5: EBITDA of 150 at the same 10 times is 1,500. Debt's been paid down to 300, so equity is 1,200.
+
+1,200 over 400 is 3.0 times. Tripling in 5 years is an IRR of about 25%.
+
+Where the 800 came from: 500 from EBITDA growth (50 at 10 times) and 300 from paying down debt. The multiple added 0.
+
+Don't divide 800 by 5 and call it 40% a year. Returns compound.
+
+Save it for your PE prep.
+
+#privateequity #lbo #investmentbanking #ibinterview

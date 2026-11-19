@@ -1,0 +1,15 @@
+What's the cost of debt in WACC? If you said the coupon, that's usually wrong.
+
+The coupon was set when the bond was issued. WACC needs what lenders want today.
+
+A 5% bond trading at 90 has a current yield of 5.6%, and its yield to maturity is higher still, because it's repaid at 100.
+
+Then take tax off. Interest is deductible, so a 6% pre-tax cost at 25% tax is 4.5%.
+
+No traded bonds? Use yields on debt with a similar credit rating, or add a spread to the risk-free rate.
+
+And skip interest expense over book debt. That's history, not the market.
+
+Save it for your WACC questions.
+
+#investmentbanking #wacc #valuation #ibinterview

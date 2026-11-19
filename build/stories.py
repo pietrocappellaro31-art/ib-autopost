@@ -55,6 +55,20 @@ STORIES = {
                    "Book equity reflects history. Market value reflects what investors would need to be paid today."),
     "2026-11-16": ("Accounts receivable goes up by $20. What happens to cash?",
                    "Cash from operations falls by $20. The sale was booked, but the customer hasn't paid yet."),
+    "2026-11-19": ("A company prepays $12 for a year of insurance. Is that an expense today?",
+                   "No. It's a prepaid asset, expensed at $1 a month as the cover is used."),
+    "2026-11-20": ("Can a profitable company run out of cash?",
+                   "Yes. Profit is booked when sales are made, but cash arrives when customers pay, and capex and inventory use cash too."),
+    "2026-11-21": ("Who carries more risk: a senior secured lender or a subordinated lender?",
+                   "The subordinated lender. It's repaid only after senior lenders are paid in full, so it charges a higher rate."),
+    "2026-11-22": ("A company's share price doubles. What happens to its enterprise value?",
+                   "It rises by the same dollar amount as equity value. Debt and cash don't change."),
+    "2026-11-23": ("Why isn't EBITDA the same as cash flow?",
+                   "It leaves out tax, interest, capex and changes in working capital, and all of them use real cash."),
+    "2026-11-24": ("What is a 'turn' of leverage?",
+                   "Debt equal to 1 times EBITDA. With $100 of EBITDA and $400 of debt, a company is levered 4 turns."),
+    "2026-11-25": ("What does a P/E of 20 tell you?",
+                   "Investors pay $20 for each $1 of annual earnings. Flip it and the earnings yield is 5%."),
 }
 
 PAGE = """<!doctype html><html><head><meta charset="utf-8"><style>{css}

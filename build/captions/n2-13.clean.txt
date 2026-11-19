@@ -1,0 +1,13 @@
+Goodwill is impaired by $50. Before you answer, say your tax assumption out loud.
+
+If it isn't deductible, net income falls by the full $50. You add the 50 back on the cash flow statement, so cash doesn't move at all, and goodwill and retained earnings both drop 50.
+
+Balanced.
+
+Now say it is deductible at 25%. It works like depreciation: tax falls $12.50, net income falls $37.50, and you end up with $12.50 more cash.
+
+Under IFRS and US GAAP for public companies, goodwill isn't amortised. It's tested for impairment.
+
+Save it for the accounting round.
+
+#investmentbanking #ibinterview #accounting #goodwill

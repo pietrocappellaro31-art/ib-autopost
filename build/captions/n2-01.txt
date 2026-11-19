@@ -1,0 +1,15 @@
+A $10 bonus is accrued but not paid yet. Most people get the income statement right, then move cash by $10. Don't.
+
+Income statement first. The bonus is this year's expense, so pre-tax income drops $10, tax drops $2.50 at 25%, and you're left with net income down $7.50.
+
+Cash flow. You start at -7.50 and add back the $10 rise in accrued liabilities. Cash is up $2.50.
+
+That's the tax you saved.
+
+Balance sheet: cash +2.50 on the left; accrued liabilities +10 and retained earnings -7.50 on the right. It balances.
+
+Next year you pay it. Cash -10, accrued -10, and the income statement doesn't move again.
+
+Save it for your accounting round.
+
+#investmentbanking #ibinterview #accounting #threestatements

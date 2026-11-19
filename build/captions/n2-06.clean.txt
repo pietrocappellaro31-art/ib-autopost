@@ -1,0 +1,15 @@
+Does growth always add value? Most people say yes. The answer depends on 2 rates.
+
+ROIC is what the business earns on the capital it puts in. WACC is what that capital costs.
+
+Invest 100 at a 12% return when capital costs 10%: you earn 12, pay 10, and keep 2 a year. As a perpetuity at 10%, that's about 20 of value.
+
+Invest the same 100 at 8%: revenue and profit grow, and the company's worth less.
+
+At exactly the cost of capital, growth adds nothing.
+
+So in a DCF, if you raise growth, raise reinvestment too.
+
+Save it for the valuation round.
+
+#investmentbanking #valuation #dcf #ibinterview

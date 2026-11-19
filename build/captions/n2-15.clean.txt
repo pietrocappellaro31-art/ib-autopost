@@ -1,0 +1,15 @@
+Why can't you value a bank on EV / EBITDA? Because for a bank, debt isn't financing. It's inventory.
+
+Deposits and borrowing are what it lends out, and interest is its cost of sales. You can't split operations from financing, so EV and EBITDA stop meaning anything.
+
+Use equity multiples.
+
+P/E, price to book, price to tangible book. If you want the intrinsic version, it's a dividend discount model.
+
+P/B comes down to ROE against the cost of equity: P/B = (ROE - g) / (COE - g). Plug in an ROE of 12%, a cost of equity of 10% and 4% growth and you get about 1.33.
+
+ROE equal to COE? P/B is 1.0.
+
+Save it if FIG is on your list.
+
+#investmentbanking #fig #banking #valuation

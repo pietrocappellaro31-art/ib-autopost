@@ -1,0 +1,13 @@
+Unlevered or levered free cash flow? It comes down to 1 line: interest.
+
+Unlevered is before interest. EBIT of 100 taxed at 25% is 75, plus D&A of 20, less capex of 30, less a $10 rise in working capital. That's 55, and it belongs to lenders and shareholders.
+
+Levered is after interest. Take off 20 of interest after tax, which is 15, and you're at 40. That's what's left for shareholders.
+
+Then match the rate. Unlevered at WACC gives you enterprise value. Levered at the cost of equity gives you equity value.
+
+The classic slip is discounting levered FCF at WACC.
+
+Save it with your DCF notes.
+
+#investmentbanking #ibinterview #dcf #valuation

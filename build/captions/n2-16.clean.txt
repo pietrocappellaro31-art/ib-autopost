@@ -1,0 +1,13 @@
+A company owns 30% of another. Do you add that stake in the EV bridge or subtract it?
+
+Subtract it.
+
+Under the equity method, the company books its 30% share of profit as 1 line below operating profit. If the associate earns 100, that's 30 of equity income, and none of it's in EBITDA, which means your EV has to leave the stake out too or the multiple won't line up.
+
+Equity value 1,000. Plus debt 300, less cash 100, less the stake worth 150. EV: 1,050.
+
+It's the mirror of minority interest. Own 80% and consolidate 100%? Add NCI. Own 30% and consolidate 0%? Subtract the stake.
+
+Save it with your EV bridge notes.
+
+#investmentbanking #ibinterview #valuation #enterprisevalue

@@ -1,0 +1,13 @@
+A customer pays you $120 upfront for a year. Is that $120 of revenue? Not on day 1.
+
+Your cash goes up $120 and so does deferred revenue, which is a liability. You owe them 12 months of service.
+
+Each month you deliver, $10 moves from deferred revenue to revenue. The cash came in once.
+
+On the cash flow statement, you add the increase in deferred revenue back in operations, since the cash arrived before the revenue did.
+
+Is it debt? Usually not. It's settled by delivering the service, so it sits in working capital and stays out of your EV bridge.
+
+Save it for the accounting questions.
+
+#investmentbanking #ibinterview #accounting #saas

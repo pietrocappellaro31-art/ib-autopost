@@ -1,0 +1,15 @@
+A company is sold in bankruptcy for $500. It owes $400 of senior debt and $200 of subordinated debt. Who gets what?
+
+Claims are paid in order. Senior first, then junior, then equity, and each class waits until the one above is paid in full.
+
+Senior gets all 400. That's a 100% recovery.
+
+The $100 left goes to subordinated lenders. 100 out of 200 is a 50% recovery.
+
+Shareholders get 0.
+
+That's also why junior debt pays a higher interest rate. It loses first when value falls.
+
+Save it if you're interviewing for restructuring or credit.
+
+#investmentbanking #restructuring #leveragedfinance #ibinterview
