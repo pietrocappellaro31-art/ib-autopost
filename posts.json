@@ -944,8 +944,8 @@
       "series": "Technical of the Day",
       "scheduled_utc": "2026-11-19T17:30:00",
       "caption": "Unlevered or levered free cash flow? It comes down to 1 line: interest.\n\nUnlevered is before interest. EBIT of 100 taxed at 25% is 75, plus D&A of 20, less capex of 30, less a $10 rise in working capital. That's 55, and it belongs to lenders and shareholders.\n\nLevered is after interest. Take off 20 of interest after tax, which is 15, and you're at 40. That's what's left for shareholders.\n\nThen match the rate. Unlevered at WACC gives you enterprise value. Levered at the cost of equity gives you equity value.\n\nThe classic slip is discounting levered FCF at WACC.\n\nSave it with your DCF notes.\n\n#investmentbanking #ibinterview #dcf #valuation",
-      "published_id": null,
-      "published_at_utc": null,
+      "published_id": "18114716618337677",
+      "published_at_utc": "2026-11-19T17:35:10.404523+00:00",
       "images": [
         "n2-02-ufcf-lfcf-01.jpg",
         "n2-02-ufcf-lfcf-02.jpg",
@@ -1625,7 +1625,9 @@
       "caption": "Bought for $100. Sold five years later for $100. The owners still doubled their money, and nobody grew anything.\n\nHere's how. They put in $40 of their own and borrowed the other $60, and the loan sits on the company, not on them.\n\nEach year the company's cash pays down $8 of that debt, so after five years the $60 is down to $20.\n\nThen they sell for $100. Same price.\n\nThe lender takes its $20 back and $80 is left for the owners. $40 in, $80 out, so that's 2x, or about 15% a year with zero growth.\n\nThat's debt paydown. It's one of the three classic buyout levers you'll hear about in PE interviews, next to growth and a higher exit multiple.\n\nYour turn: same deal, but it sells for $120. What's the multiple on their money? Drop it in the comments.\n\nNarration: AI-generated voice; script is our original work.\n\n#investmentbanking #privateequity #lbo #ibinterview",
       "first_comment": "Bonus: same $100 sale, but the company never repaid a dollar of the $60 loan. What's the owners' multiple now?",
       "ai_label": true,
-      "published_id": null
+      "published_id": "18081193106733871",
+      "published_at_utc": "2026-11-19T17:36:17.093065+00:00",
+      "first_comment_id": "18342933247279421"
     }
   ],
   "reel_slots_et": {
