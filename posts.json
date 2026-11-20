@@ -1010,8 +1010,8 @@
       "series": "Technical of the Day",
       "scheduled_utc": "2026-11-20T17:30:00",
       "caption": "A company is sold in bankruptcy for $500. It owes $400 of senior debt and $200 of subordinated debt. Who gets what?\n\nClaims are paid in order. Senior first, then junior, then equity, and each class waits until the one above is paid in full.\n\nSenior gets all 400. That's a 100% recovery.\n\nThe $100 left goes to subordinated lenders. 100 out of 200 is a 50% recovery.\n\nShareholders get 0.\n\nThat's also why junior debt pays a higher interest rate. It loses first when value falls.\n\nSave it if you're interviewing for restructuring or credit.\n\n#investmentbanking #restructuring #leveragedfinance #ibinterview",
-      "published_id": null,
-      "published_at_utc": null,
+      "published_id": "18112179656264022",
+      "published_at_utc": "2026-11-20T17:35:00.063155+00:00",
       "images": [
         "n2-05-waterfall-01.jpg",
         "n2-05-waterfall-02.jpg",
@@ -1657,7 +1657,9 @@
       "caption": "She spends $100 on an oven. Does her profit fall by $100? No, and you'd be surprised how often this one comes up in accounting interviews.\n\nHer bakery sells $150 of bread a year. Flour, wages and rent cost $100, so a normal year makes her $50.\n\nIf you count the whole oven in year 1, profit looks like -$50. But she'll use that oven for five years, so it goes on the balance sheet and you spread it out: $20 a year of depreciation. Year 1 profit is $30.\n\nCash is a different story. The $100 left her account on day one, so her cash is down $50 this year.\n\nAdd up all five years and both come to $150. Same money, different timing. That's why you'll always want the income statement and the cash flow statement side by side.\n\nYour turn: same oven, but it lasts 10 years. What's her profit in year 1? Tell me in the comments.\n\nRound numbers, before tax, straight line, no scrap value.\n\nNarration: AI-generated voice; script is our original work.\n\n#investmentbanking #accounting #ibinterview #finance",
       "first_comment": "Bonus level: after two years of $20 depreciation, what is the oven worth on her balance sheet?",
       "ai_label": true,
-      "published_id": null
+      "published_id": "18383293978241454",
+      "published_at_utc": "2026-11-20T17:36:08.771369+00:00",
+      "first_comment_id": "18155247721552081"
     }
   ],
   "reel_slots_et": {
