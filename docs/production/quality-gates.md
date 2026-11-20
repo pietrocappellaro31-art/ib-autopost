@@ -29,6 +29,9 @@ and agreed by Pietro. Attractive screenshots do not pass a film on their own.
   chapter (frames 0.25 s apart) and `motion.json` (share of static seconds, longest static run, mean motion, hard
   changes). Look at the hook, one mechanism scene and one later chapter in motion. A filmed beat that does not move
   is a failure even if every still is pretty.
+- **Opening minute** (20 Nov): `yt_preview.py --motion` (and `--clip`) fails with exit 2 on any static second in the
+  first 60 s (`opening_static_s` in motion.json), and the variety test fails a `hook_first` film whose first beat is
+  not filmed. Fix and re-render before delivery.
 - Reject: missing or black frames, broken geometry, empty compositions, clipped or overlapping text, captions on top
   of the action, things popping in after their sentence ends, dead frames between beats, abrupt jumps, frozen
   characters, limbs bending the wrong way, feet skating, loops that read as loops, fake animation (pans and zooms

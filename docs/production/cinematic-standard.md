@@ -121,7 +121,12 @@ identical cards" fails, and so does swapping one repeated template for another.
    operations room before dawn (window from night to dawn, moving wall clock, monitor, ringing phone); props: a phone's
    face, a big hand holding a phone, a laptop, an automated notice that types in; 2021 looks (hoodie, T-shirt, jacket,
    coat). A scene can now run across two beats, the second opening on the first's end state (`cine_2021._fold`).
-   Next: a bank office, a boardroom today, a trading floor today.
+   20 Nov (YouTube #14, `cine_2023.py`): a bank office today (open plan, window on the city, a wall screen that takes
+   content, a glass meeting room, a back row of live monitors, a front desk with a monitor and a paper) and a bank
+   branch front today (a fascia that says only BANK, glass doors with a notice slot, a cash machine); office looks
+   office_2023, office_2023b, office_2023c; wall-screen bars on a true dollar scale (`wall_bars`), rows that type and
+   count (`rows_screen`).
+   Next: a boardroom today, a trading floor today.
 4. **Data in the world** (started): price paths that draw with flags; numbers that lift off documents. Next:
    balance sheet that rearranges, cash-flow waterfall, LBO structure, debt schedule (see `scene-library.md`).
    19 Nov: a billboard that counts the same 100 shares sold twice (SOLD SHORT 0, 100, 200; COUNTED AS OWNED 100, 200,

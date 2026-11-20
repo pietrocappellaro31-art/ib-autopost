@@ -58,6 +58,13 @@ PHONEMES = {
     "donald": "dˈɑnᵊld",
     "ubs": "jˌubˌiˈɛs",
     "ltcm": "ˌɛltˌisˌiˈɛm",
+    # 20 Nov (YouTube #14, Silicon Valley Bank 2023)
+    "svb": "ˈɛs vˈi bˈi",
+    "svb's": "ˈɛs vˈi bˈiz",
+    "fdic": "ˈɛf dˈi ˈI sˈi",
+    "barr": "bˈɑɹ",
+    "debtholders": "dˈɛthˌOldəɹz",
+    "wachovia": "wˌɑʧəvˈiə",
     "salomon": "sˈæləmən",
     "mackenzie": "məkˈɛnzi",
     "mcdonough": "məkdˈʌnə",

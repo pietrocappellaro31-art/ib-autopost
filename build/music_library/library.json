@@ -591,6 +591,19 @@
    "rights": "ORIGINAL_GENERATED",
    "added": "2026-11-20",
    "note": ""
+  },
+  {
+   "id": "score-yt-014-svb-40-billion",
+   "title": "Original score for yt-014-svb-40-billion",
+   "video": "yt-014-svb-40-billion",
+   "engine": "score.py + GeneralUser GS v2.0.3 (TinySoundFont)",
+   "mood": "suspense",
+   "bpm": 71,
+   "key": "C",
+   "style": "harp",
+   "rights": "ORIGINAL_GENERATED",
+   "added": "2026-11-20",
+   "note": ""
   }
  ]
 }

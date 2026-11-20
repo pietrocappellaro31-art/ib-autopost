@@ -14,6 +14,9 @@ Variety test (fails with a non-zero exit, so a run cannot skip it):
   - every chapter card has a drawing (art=);
   - at least one filmed beat (kind="cine") or one beat with a figure in action, per two chapters (warning).
 
+Opening minute (20 Nov): --motion and --clip fail (exit 2) on any static second in the first 60 s, listed by
+second as opening_static_s in motion.json; the variety test fails a hook_first film whose first beat is not filmed.
+
 Motion measures (a picture can be beautiful and still be a slideshow, so stills are not proof):
   frames are sampled at 6 per second, shrunk to 160 x 90 grey, and compared with the frame before. A second in
   which nothing moved by more than 0.5 grey levels on average is "static". Reported: the share of static seconds,
@@ -67,6 +70,10 @@ def variety(ep):
                 filmed += k == "cine" or (k.split(":")[-1] in ("figures", "crowd_rush", "queue"))
         if text_only > 1:
             problems.append(f"chapter {c + 1} '{ch['title']}': {text_only} text-only beats (at most 1)")
+    if ep.get("hook_first"):                                    # 20 Nov: the film opens on the filmed hook
+        b0 = ep["chapters"][0]["beats"][0]
+        if (b0.get("shows") or [b0.get("show", {})])[0].get("kind") != "cine":
+            problems.append("hook_first: the first beat is not filmed (kind='cine')")
     total = sum(kinds.values())
     top = max(kinds.items(), key=lambda kv: kv[1])
     if top[1] / total > .4:
@@ -100,7 +107,11 @@ def motion_stats(mp4, fps=6, still=.5):
     # 17 Nov (the 16 Nov Reel's next improvement, "no 6-second window under 1.2"): the quietest 6 s stretch and when
     win = [(float(np.mean(per_s[i:i + 6])), i) for i in range(0, max(len(per_s) - 5, 0))]
     low = min(win) if win else (None, None)
-    return dict(seconds=len(per_s), static_share=round(float(np.mean(static)), 3) if per_s else None, longest_static_s=best,
+    # 20 Nov (the 19 Nov next improvement; Pietro, 18 Nov: "no static second in the first 60 s"): every static second
+    # of the opening minute, by its index. A non-empty list fails --motion and --clip (exit 2).
+    opening = [i for i, x in enumerate(per_s[:60]) if x < still]
+    return dict(seconds=len(per_s), opening_static_s=opening, opening_min=round(float(min(per_s[:60])), 2) if per_s else None,
+                static_share=round(float(np.mean(static)), 3) if per_s else None, longest_static_s=best,
                 mean_motion=round(float(np.mean(per_s)), 2) if per_s else None, hard_changes=cuts,
                 lowest_6s=round(low[0], 2) if low[0] is not None else None, lowest_6s_at=low[1],
                 windows_6s_under_1_2=sum(1 for v, _ in win if v < 1.2),
@@ -132,8 +143,11 @@ def motion_sheets(ep, work, mp4):
 
 if __name__ == "__main__":
     if sys.argv[1] == "--clip":
-        print(json.dumps({k: v for k, v in motion_stats(sys.argv[2]).items() if k != "per_second"}, indent=1))
-        sys.exit(0)
+        st = motion_stats(sys.argv[2])
+        print(json.dumps({k: v for k, v in st.items() if k != "per_second"}, indent=1))
+        if st["opening_static_s"]:
+            print("  PROBLEM: static seconds in the first 60 s:", st["opening_static_s"])
+        sys.exit(2 if st["opening_static_s"] else 0)
     ep = load_ep(sys.argv[1])
     v = variety(ep)
     print(f"variety: {v['visuals']} visuals, {v['distinct']} distinct, drawing-beside-text share {v['beside_text_share']:.0%}, "
@@ -150,4 +164,7 @@ if __name__ == "__main__":
         print("motion:", {k: v for k, v in stats.items() if k != "per_second"})
         for s in motion_sheets(ep, work, mp4):
             print("  sheet:", s)
+        if stats["opening_static_s"]:
+            print("  PROBLEM: static seconds in the first 60 s:", stats["opening_static_s"], "(no static second allowed there)")
+            sys.exit(2)
     sys.exit(1 if v["problems"] else 0)
