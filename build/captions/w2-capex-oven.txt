@@ -1,0 +1,17 @@
+She spends $100 on an oven. Does her profit fall by $100? No, and you'd be surprised how often this one comes up in accounting interviews.
+
+Her bakery sells $150 of bread a year. Flour, wages and rent cost $100, so a normal year makes her $50.
+
+If you count the whole oven in year 1, profit looks like -$50. But she'll use that oven for five years, so it goes on the balance sheet and you spread it out: $20 a year of depreciation. Year 1 profit is $30.
+
+Cash is a different story. The $100 left her account on day one, so her cash is down $50 this year.
+
+Add up all five years and both come to $150. Same money, different timing. That's why you'll always want the income statement and the cash flow statement side by side.
+
+Your turn: same oven, but it lasts 10 years. What's her profit in year 1? Tell me in the comments.
+
+Round numbers, before tax, straight line, no scrap value.
+
+Narration: AI-generated voice; script is our original work.
+
+#investmentbanking #accounting #ibinterview #finance

@@ -1644,6 +1644,20 @@
       "first_comment": "Bonus level: same 5% bond, but two years left and rates at 10%. It pays $5 next year, then $105. What's it worth today?",
       "ai_label": true,
       "published_id": null
+    },
+    {
+      "id": "reel-w2-capex-oven",
+      "type": "reel",
+      "scheduled_utc": "2026-11-20T17:30:00",
+      "slot": "A",
+      "media_branch": "reel/w2-capex-oven",
+      "video": "w2-capex-oven.mp4",
+      "cover": "w2-capex-oven.jpg",
+      "master": "scored",
+      "caption": "She spends $100 on an oven. Does her profit fall by $100? No, and you'd be surprised how often this one comes up in accounting interviews.\n\nHer bakery sells $150 of bread a year. Flour, wages and rent cost $100, so a normal year makes her $50.\n\nIf you count the whole oven in year 1, profit looks like -$50. But she'll use that oven for five years, so it goes on the balance sheet and you spread it out: $20 a year of depreciation. Year 1 profit is $30.\n\nCash is a different story. The $100 left her account on day one, so her cash is down $50 this year.\n\nAdd up all five years and both come to $150. Same money, different timing. That's why you'll always want the income statement and the cash flow statement side by side.\n\nYour turn: same oven, but it lasts 10 years. What's her profit in year 1? Tell me in the comments.\n\nRound numbers, before tax, straight line, no scrap value.\n\nNarration: AI-generated voice; script is our original work.\n\n#investmentbanking #accounting #ibinterview #finance",
+      "first_comment": "Bonus level: after two years of $20 depreciation, what is the oven worth on her balance sheet?",
+      "ai_label": true,
+      "published_id": null
     }
   ],
   "reel_slots_et": {

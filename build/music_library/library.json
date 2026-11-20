@@ -631,6 +631,19 @@
    "rights": "ORIGINAL_GENERATED",
    "added": "2026-11-20",
    "note": ""
+  },
+  {
+   "id": "score-w2-capex-oven",
+   "title": "Original score for w2-capex-oven",
+   "video": "w2-capex-oven",
+   "engine": "score.py + GeneralUser GS v2.0.3 (TinySoundFont)",
+   "mood": "explain+resolve",
+   "bpm": 80,
+   "key": "F",
+   "style": "noir_jazz",
+   "rights": "ORIGINAL_GENERATED",
+   "added": "2026-11-20",
+   "note": ""
   }
  ]
 }
