@@ -1028,8 +1028,8 @@
       "series": "Technical of the Day",
       "scheduled_utc": "2026-11-20T22:30:00",
       "caption": "Does growth always add value? Most people say yes. The answer depends on 2 rates.\n\nROIC is what the business earns on the capital it puts in. WACC is what that capital costs.\n\nInvest 100 at a 12% return when capital costs 10%: you earn 12, pay 10, and keep 2 a year. As a perpetuity at 10%, that's about 20 of value.\n\nInvest the same 100 at 8%: revenue and profit grow, and the company's worth less.\n\nAt exactly the cost of capital, growth adds nothing.\n\nSo in a DCF, if you raise growth, raise reinvestment too.\n\nSave it for the valuation round.\n\n#investmentbanking #valuation #dcf #ibinterview",
-      "published_id": null,
-      "published_at_utc": null,
+      "published_id": "18353557846268876",
+      "published_at_utc": "2026-11-20T23:05:02.551149+00:00",
       "images": [
         "n2-06-roic-growth-01.jpg",
         "n2-06-roic-growth-02.jpg",
@@ -1050,8 +1050,8 @@
         "story-2026-11-20.jpg"
       ],
       "caption": "",
-      "published_id": null,
-      "published_at_utc": null
+      "published_id": "17991572018920959",
+      "published_at_utc": "2026-11-20T23:06:00.073356+00:00"
     },
     {
       "id": "n2-07-deferred-revenue",
@@ -1643,7 +1643,9 @@
       "caption": "A $100 bond pays 5%. Rates rise to 10%. What's it worth now? Not $100.\n\nSay it has one year left. It'll pay you $105 at the end, and that number is fixed no matter what rates do.\n\nBut a new bond now pays 10%, so $100 buys you $110. Nobody pays $100 for your $105 when they can get $110.\n\nSo your price falls until it earns 10% too: $105 / 1.1 = $95.45.\n\nWith ten years left the same jump hits harder. $5 a year for ten years plus the $100, discounted at 10%, is worth about $69. Longer bond, bigger fall.\n\nThat's the whole rule in one line: rates up, prices down. The payments never change, only what they're worth today.\n\nYour turn: rates fall to 2% instead. What's the one-year bond worth? Answer in the comments.\n\nRound numbers, annual coupon, before tax and fees.\n\nNarration: AI-generated voice; script is our original work.\n\n#investmentbanking #bonds #ibinterview #finance",
       "first_comment": "Bonus level: same 5% bond, but two years left and rates at 10%. It pays $5 next year, then $105. What's it worth today?",
       "ai_label": true,
-      "published_id": null
+      "published_id": "18132970633829286",
+      "published_at_utc": "2026-11-20T23:05:49.784476+00:00",
+      "first_comment_id": "18008552648794687"
     },
     {
       "id": "reel-w2-capex-oven",
