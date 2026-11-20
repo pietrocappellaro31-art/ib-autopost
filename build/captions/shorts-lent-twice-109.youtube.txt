@@ -1,0 +1,25 @@
+TITLE: A Company Has 100 Shares. How Are 109 Sold Short?
+ALT 1: 100 Shares Exist. 109 Were Sold Short. How?
+ALT 2: How Can You Sell Short More Shares Than Exist?
+
+DESCRIPTION:
+A company has 100 shares and no more exist. So how can 109 of them be sold short? You'd think it's impossible. It isn't, and the answer is lending. Ann lends her 100 shares to a short seller, who sells them to Ben. Ben owns them now, but Ann's account still shows her 100. That's 100 sold short and 200 counted as owned. Then Ben lends his, and they're sold to Cal: 200 sold short, 300 counted as owned, and still only 100 shares. Short interest counts loans, not shares.
+
+It happened. On 31 December 2020, GameStop's short interest hit 109.26% of its shares outstanding, and the SEC staff wrote that short interest can go past 100% when the same shares are lent multiple times by successive buyers. Ann, Ben and Cal are our illustration, they aren't real traders.
+
+We tell the whole story, from the lending chain to the morning the buy button went grey, in our film "109% of GameStop Was Sold Short. How Is That Possible?" It's linked from this Short.
+
+Sources:
+SEC staff, Staff Report on Equity and Options Market Structure Conditions in Early 2021 (October 2021), pp. 25-26: https://www.sec.gov/files/staff-report-equity-options-market-struction-conditions-early-2021.pdf
+SEC press release 2021-212, 18 October 2021: https://www.sec.gov/news/press-release/2021-212
+
+For education only, not financial advice.
+
+#Shorts #stockmarket #investing
+
+Music: original score made for this video.
+Narration: AI-generated voice; script is our original work.
+
+STUDIO TAGS: short selling, short interest, GameStop, GME, short squeeze, securities lending, stock lending, shares outstanding, SEC report, stock market explained, finance math, money puzzle, investing basics, investment banking, Banker's Notebook
+
+PINNED COMMENT: If every share is lent and sold three times, what's the short interest? Put your number below. The full story of GameStop's 109% is in our film "109% of GameStop Was Sold Short. How Is That Possible?"

@@ -152,12 +152,23 @@ def pick(slug, base_bpm, style=None, key=None, bpm=None, n_avoid=3, kind=None, d
     # moves the order on four places, yesterday's four (the last three videos before any run today among them) are
     # never today's; keys take the day's half of the eight (4 d .. 4 d + 3: yesterday had the other half) with the
     # slots rotated inside it so every format meets all eight keys in eight days
+    given_style, given_key = bool(style), bool(key)
     if not style:
         style = STYLE_ORDER[(4 * d + k) % len(STYLE_ORDER)]
     if not key:
         key = KEYS[(4 * d + (k + d) % 4) % len(KEYS)]
     bpm = bpm or round(base_bpm * rng.uniform(.92, 1.08))
     clash = sorted(({style} & used_styles) | ({key} & used_keys))
+    # 20 Nov: the last-three rule enforced, as the 19 Nov note above says it is (it was only reported: the Short of
+    # 20 Nov drew orchestral in D, the style of the 19 Nov Reel B and the key of film #13). A slot style or key used
+    # by one of the last three logged videos moves on to the next free one in its order; an explicit argument wins.
+    if style in used_styles and not given_style:
+        i = STYLE_ORDER.index(style)
+        style = next((STYLE_ORDER[(i + j) % len(STYLE_ORDER)] for j in range(1, len(STYLE_ORDER))
+                      if STYLE_ORDER[(i + j) % len(STYLE_ORDER)] not in used_styles), style)
+    if key in used_keys and not given_key:
+        i = KEYS.index(key)
+        key = next((KEYS[(i + j) % len(KEYS)] for j in range(1, len(KEYS)) if KEYS[(i + j) % len(KEYS)] not in used_keys), key)
     out = dict(style=style, key=key, bpm=bpm, avoided=sorted(used_styles), label=STYLES[style]["label"], slot=k, clash_with_last3=clash)
     if reserve and not slug.startswith("test-"):
         try:

@@ -86,6 +86,8 @@ def words(text):
     t = re.sub(r"\bcache machine", "cash machine", t)                 # 14 Nov: homophones; "cash machine" is the phrase
     t = re.sub(r"\bbackup\b", "back up", t)                           # 16 Nov: the verb said right, the noun written
     t = re.sub(r"\btales\b", "tails", t)                             # 17 Nov: homophones (both tˈAlz in Kokoro); the coin's side
+    t = re.sub(r"\banne\b", "ann", t)                                # 20 Nov: homophones (both ˈæn); the illustration's owner
+    t = re.sub(r"\bs\.? ?e\.? ?c\b\.?", "sec", t)                     # 20 Nov: the regulator's letters, however spelled
     # 14 Nov (YouTube #8): spelling variants of words said correctly, and spoken decades ("the nineteen seventies"
     # is written "the 1970s")
     t = re.sub(r"\badvisors?\b", lambda m: m.group(0).replace("advisor", "adviser"), t)

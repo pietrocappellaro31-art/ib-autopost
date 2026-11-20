@@ -341,6 +341,13 @@
    "kind": "short",
    "id": "sparky-deathcap-september-instrumental",
    "mood": "calm"
+  },
+  {
+   "date": "2026-11-20",
+   "slug": "shorts-lent-twice-109",
+   "kind": "short",
+   "id": "joel-sunny-luminary",
+   "mood": "tense"
   }
  ],
  "originals": [
@@ -570,6 +577,19 @@
    "style": "acoustic",
    "rights": "ORIGINAL_GENERATED",
    "added": "2026-11-19",
+   "note": ""
+  },
+  {
+   "id": "score-shorts-lent-twice-109",
+   "title": "Original score for shorts-lent-twice-109",
+   "video": "shorts-lent-twice-109",
+   "engine": "score.py + GeneralUser GS v2.0.3 (TinySoundFont)",
+   "mood": "mystery+explain",
+   "bpm": 80,
+   "key": "Eb",
+   "style": "solo_piano",
+   "rights": "ORIGINAL_GENERATED",
+   "added": "2026-11-20",
    "note": ""
   }
  ]

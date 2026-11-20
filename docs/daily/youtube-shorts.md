@@ -14,3 +14,4 @@
 | 2026-11-17 | shorts-coin-toss-150-100 | Win $150 or Lose $100 on a Coin Toss. Would You Take It? (Format F, choice; one scored file, acoustic score in C) | HEART | 47.7 s | |
 | 2026-11-18 | shorts-raise-tax-bracket | A $1,000 Raise Into the 22% Bracket. Do You Take Home Less? (Format E, myth; one scored file, harp score in F) | HEART | 51.3 s | |
 | 2026-11-19 | shorts-four-percent-wipeout | $100 of Bonds, $4 of Your Own. They Fall 4%. What's Left? (Format D, animated calculation; number puzzle cut from yt-012-ltcm, Related video = its film; one scored file, acoustic score in E) | HEART | 56.3 s | |
+| 2026-11-20 | shorts-lent-twice-109 | A Company Has 100 Shares. How Are 109 Sold Short? (Format C, one surprising concept; number puzzle cut from yt-013-gamestop-109, Related video = its film; one scored file, solo piano score in Eb) | HEART | 57.2 s | |

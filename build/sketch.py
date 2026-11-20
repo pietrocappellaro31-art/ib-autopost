@@ -6045,3 +6045,332 @@ def bb_asks(p, **_):
 
 
 SCENES.update({f.__name__: f for f in (bb_hook, bb_buyback, bb_catch, bb_real, bb_rule, bb_asks)})
+
+
+# ---- 20 Nov (the short-interest Short, Format C, one surprising concept, cut from YouTube #13, GameStop 2021): a
+# company with 100 shares, 109 sold short. Lending a lent share: Ann's 100 lent and sold to Ben (100 short, 200 counted
+# as owned), Ben's lent and sold to Cal (200 short, 300 owned), still 100 shares. GameStop's 109.26% on 31 Dec 2020 and
+# the SEC staff's sentence (Oct 2021 report, p. 26). Generic shapes of our own: no company, broker or app logo; Ann, Ben
+# and Cal are our illustration. The 19 Nov next improvement: the hook carries ONE continuous action under the whole
+# question (the SOLD SHORT column climbs in eleven steps of ten while the counter runs 0 to 109 and each step marks a
+# row of the 100 shares, until the last step finds no row left: nine red ghost shares).
+
+SS_BASE = 560
+SHARE_C, SHARE_D = "#A9C2DF", "#2E4F7A"
+SHORT_C = "#E8836B"
+
+
+def _ss_ground(x0=30, x1=770):
+    return f'<path d="M{x0} {SS_BASE} H{x1}" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+
+
+def _ss_tile(x, y, s=28, fill=SHARE_C, stroke=INK, dash=False, sw=3):
+    d = ' stroke-dasharray="6 5"' if dash else ""
+    return f'<rect x="{x}" y="{y}" width="{s}" height="{s}" rx="5" fill="{fill}" stroke="{stroke}" stroke-width="{sw}"{d}/>'
+
+
+def _ss_bundle(cx, cy, label="100", s=1.0, fill=SHARE_C):
+    """A bundle of share certificates: three stacked cards and the count."""
+    S = lambda v: v * s
+    out = ""
+    for k in (2, 1, 0):
+        out += (f'<rect x="{cx - S(52) + S(7) * k:.1f}" y="{cy - S(32) - S(7) * k:.1f}" width="{S(104):.1f}" height="{S(64):.1f}" rx="{S(8):.1f}" '
+                f'fill="{fill if k == 0 else "#fff"}" stroke="{INK}" stroke-width="{max(3, S(5)):.1f}"/>')
+    return out + _t(cx, cy + S(13), label, round(S(36)), SHARE_D)
+
+
+def _ss_acct(cx, name, top=40, w_=210, h_=190, faint=False):
+    """An account card: a header strip with the owner's name; the balance and the holding are drawn by the scene."""
+    op = ' opacity=".35"' if faint else ""
+    return (f'<g{op}><rect x="{cx - w_ / 2}" y="{top}" width="{w_}" height="{h_}" rx="16" fill="#fff" stroke="{INK}" stroke-width="6"/>'
+            f'<rect x="{cx - w_ / 2}" y="{top}" width="{w_}" height="42" rx="12" fill="{INK}"/>'
+            + _t(cx, top + 31, name, 26, "#fff", serif=False) + _t(cx, top + 66, "ACCOUNT SHOWS", 15, GREY, serif=False) + "</g>")
+
+
+def _ss_swap(p, t, x, y, a, b, size=52, color=INK, d=.5, pre="", suf=""):
+    """A figure that reads a until t, then counts to b (separators from 1,000)."""
+    p.parts.append(_life(-1, t + 1.01, _t(x, y, f"{pre}{a}{suf}", size, color), fi=.01, fo=.01))
+    p.parts.append(_life(t, 99, _cnt(x, y, a, b, t, d, size=size, color=color, pre=pre, suf=suf), fi=.01, fo=.01))
+
+
+def _ss_travel(p, t_on, legs, inner, keep=99):
+    """inner (drawn at its start place) appears at t_on and travels along legs=[(t, d, dx, dy), ...], each leg a
+    straight eased slide from where the last one ended."""
+    g = inner
+    for t, d, dx, dy in legs:
+        g = f'<g class="a" data-fx="slide" data-at="{t:.2f}" data-d="{d}" data-x0="0" data-y0="0" data-x1="{dx}" data-y1="{dy}" data-ease="inout">{g}</g>'
+    p.parts.append(_life(t_on, keep, g, fi=.08, fo=.15))
+
+
+def ss_hook_steps(seg):
+    """The hook's eleven step times (shared by the drawing and the sound cues): from 15% into 'A company has 100
+    shares' to 80% into 'Yet 109 of them are sold short', so the climb runs under the whole question."""
+    a, b = _fr(seg, 0, .15), _fr(seg, 2, .8)
+    return [a + (b - a) * i / 10 for i in range(11)]
+
+
+def ss_hook(p, seg=None, **_):
+    """The puzzle. From the swipe: the company's 100 shares as a 10 x 10 grid (100 SHARES EXIST), the ground, an empty
+    dashed SOLD SHORT column with a dashed ALL 100 line, and a counter at 0. Then one continuous action under the whole
+    question: the column climbs in eleven steps of ten (the last one nine) while the counter runs 0 to 109 linearly;
+    each of the first ten steps marks one row of the grid red-outlined (those shares are sold short), the tenth crosses
+    the ALL 100 line, and the eleventh finds no row left: nine red dashed ghost shares pop above the grid with a +9
+    tag. On 'How' a red ring closes on the part of the column above the line and a ? bobs over it."""
+    gx, gy, ts, gap = 46, 190, 28, 5
+    k = 3.4
+    cx0, cw = 470, 200
+    y100 = SS_BASE - 100 * k
+    grid = "".join(_ss_tile(gx + c * (ts + gap), gy + r * (ts + gap), ts) for r in range(10) for c in range(10))
+    _set(p, _ss_ground() + grid
+            + _t(gx + 165, 600, "100 SHARES EXIST", 26, SHARE_D, serif=False)
+            + f'<rect x="{cx0}" y="{SS_BASE - 109 * k:.1f}" width="{cw}" height="{109 * k:.1f}" rx="8" fill="none" stroke="{GREY}" stroke-width="4" stroke-dasharray="14 10"/>'
+            + f'<path d="M{cx0 - 62} {y100:.1f} H{cx0 + cw + 30}" stroke="{INK}" stroke-width="5" stroke-dasharray="14 9"/>'
+            + _t(cx0 - 38, y100 - 14, "ALL 100", 20, INK, serif=False)
+            + _t(cx0 + cw / 2, 600, "SOLD SHORT", 26, RED, serif=False))
+    steps = ss_hook_steps(seg)
+    p.parts.append(_life(-1, 99, _cnt(cx0 + cw / 2, 140, 0, 109, steps[0], steps[-1] - steps[0] + .35, size=64, color=RED, pre="")
+                         .replace('data-fx="count"', 'data-fx="count" data-lin="1"', 1), fi=.01, fo=.01))
+    grow = "transform-box:fill-box;transform-origin:center bottom"
+    for i, t in enumerate(steps):
+        n = 9 if i == 10 else 10
+        y1 = SS_BASE - 10 * i * k
+        y0 = y1 - n * k
+        fill = RED if i == 10 else SHORT_C
+        p.parts.append(_g("growY", t, .32, f'<rect x="{cx0 + 4}" y="{y0:.1f}" width="{cw - 8}" height="{n * k:.1f}" rx="4" fill="{fill}" '
+                                           f'stroke="{INK}" stroke-width="4"/>', style=grow))
+        if i < 10:
+            r = 9 - i
+            p.parts.append(_g("pop", t + .1, .3, f'<rect x="{gx - 5}" y="{gy + r * (ts + gap) - 3}" width="{10 * (ts + gap) + 3}" height="{ts + 6}" rx="8" '
+                                                 f'fill="{SHORT_C}" fill-opacity=".45" stroke="{RED}" stroke-width="4"/>'))
+        else:
+            for c in range(9):
+                p.parts.append(_g("pop", t + .05 + .04 * c, .3, _ss_tile(gx + c * (ts + gap), gy - 46, ts, "#FBE3DC", RED, dash=True, sw=4)))
+            p.parts.append(_g("pop", t + .45, .35, _idle("bob", _ptag(gx + 335, gy - 32, 110, "+9", RED, "#fff", 32), 4, 2.2, style="")))
+    p.parts.append(_g("ripple", steps[9] + .3, .7, f'<circle cx="{cx0 + cw / 2}" cy="{y100:.1f}" r="50" fill="none" stroke="{RED}" stroke-width="6"/>'))
+    tq = _fr(seg, 3, .05)
+    yt = SS_BASE - 109 * k
+    p.parts.append(_g("pop", tq, .35, f'<rect x="{cx0 - 10}" y="{yt - 10:.1f}" width="{cw + 20}" height="{y100 - yt + 20:.1f}" rx="10" fill="none" '
+                                      f'stroke="{RED}" stroke-width="7"/>'))
+    p.parts.append(_life(tq + .15, 99, _idle("bob", _t(cx0 + cw + 60, yt + 30, "?", 110, RED), 12, 2.6, style=""), fi=.15, fo=.01))
+    _push(p, 0, seg[3][1] + .5, 1.04, 400, 380)
+
+
+def _ss_person(cx, base, fill=INK, s=1.0):
+    S = lambda v: v * s
+    return (f'<circle cx="{cx}" cy="{base - S(150):.1f}" r="{S(30):.1f}" fill="{fill}"/>'
+            f'<path d="M{cx - S(52):.1f} {base:.1f} V{base - S(70):.1f} Q{cx - S(52):.1f} {base - S(112):.1f} {cx:.1f} {base - S(112):.1f} '
+            f'Q{cx + S(52):.1f} {base - S(112):.1f} {cx + S(52):.1f} {base - S(70):.1f} V{base:.1f} Z" fill="{fill}"/>')
+
+
+SS_SHORT_LEGS = (.12, .36, .6, .84)
+
+
+def ss_short(p, seg=None, **_):
+    """Short selling. From the swipe: three people on the ground, LENDER, YOU (red) and BUYER, the lender holding one
+    share card, YOU tagged OWNS 0. One sentence, on its words: BORROW (the lender's card slides to YOU, an OWES 1 tag swings on),
+    SELL (YOU to the buyer), BUY BACK (a card drops in from the market, top right, to YOU), RETURN (YOU to the lender;
+    the OWES tag gives way to a teal tick)."""
+    xs = dict(L=130, Y=400, B=670)
+    _set(p, _ss_ground() + _ss_person(xs["L"], SS_BASE, INK) + _ss_person(xs["B"], SS_BASE, INK)
+            + _t(xs["L"], 600, "LENDER", 26, INK, serif=False) + _t(xs["Y"], 600, "YOU", 26, RED, serif=False)
+            + _t(xs["B"], 600, "BUYER", 26, INK, serif=False)
+            + f'<rect x="560" y="40" width="220" height="70" rx="14" fill="none" stroke="{GREY}" stroke-width="4" stroke-dasharray="10 8"/>'
+            + _t(670, 86, "MARKET", 26, GREY, serif=False))
+    p.parts.append(_g("fade", -1, .05, _idle("breathe", _ss_person(xs["Y"], SS_BASE, RED), .01, 2.8,
+                                             style="transform-box:fill-box;transform-origin:center bottom"), style=""))
+    card = lambda cx, cy, dash=False: (f'<rect x="{cx - 56}" y="{cy - 36}" width="112" height="72" rx="10" fill="{"#fff" if dash else SHARE_C}" '
+                                       f'stroke="{INK}" stroke-width="5"{" stroke-dasharray=\"9 7\"" if dash else ""}/>'
+                                       + _t(cx, cy - 2, "1", 34, SHARE_D) + _t(cx, cy + 24, "SHARE", 16, SHARE_D, serif=False))
+    cy = 300
+    # 20 Nov: one sentence (cut for length), leg by leg on its words: borrow, sell, buy back, return
+    tb, ts_, tk, tr = (_fr(seg, 0, f) for f in SS_SHORT_LEGS)
+    p.parts.append(_life(-1, tb + .6, _ptag(xs["Y"], 210, 160, "OWNS 0", GREY, "#fff", 28), fi=.01, fo=.2))
+    _ss_travel(p, -1, [(tb, .55, xs["Y"] - xs["L"], 0), (ts_, .55, xs["B"] - xs["Y"], 0)], card(xs["L"], cy))
+    p.parts.append(_life(tb + .45, tr + .5 - tb - .45, _idle("swing", _ptag(xs["Y"], 210, 160, "OWES 1", RED, "#fff", 28), 5, 2.0,
+                                                                 style=f"transform-box:view-box;transform-origin:{xs['Y']}px 170px"), fi=.15, fo=.15))
+    _ss_travel(p, tk - .1, [(tk, .5, 0, 300 - 75), (tk + .5, .5, xs["Y"] - xs["B"], 0), (tr, .55, xs["L"] - xs["Y"], 0)], card(xs["B"], 75))
+    p.parts.append(_g("pop", tk - .05, .3, _t(670, 150, "BUY", 26, TEAL, serif=False)))
+    p.parts.append(_g("draw", tr + .6, .35, f'<path d="M{xs["Y"] - 30} 215 L{xs["Y"] - 5} 240 L{xs["Y"] + 40} 185" fill="none" stroke="{TEAL}" '
+                                           f'stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>', style=""))
+
+
+SS_AX = dict(ANN=140, BEN=400, CAL=660)
+SS_SELLER = (270, 530)
+
+
+def _ss_counters(p, short0, owned0, t_short=None, short1=None, t_owned=None, owned1=None):
+    """The two counters along the bottom: SOLD SHORT (red) and COUNTED AS OWNED (blue), with their swaps."""
+    _set(p, f'<rect x="40" y="430" width="340" height="170" rx="16" fill="#fff" stroke="{RED}" stroke-width="5"/>'
+            f'<rect x="420" y="430" width="340" height="170" rx="16" fill="#fff" stroke="{SHARE_D}" stroke-width="5"/>'
+            + _t(210, 470, "SOLD SHORT", 24, RED, serif=False) + _t(590, 470, "COUNTED AS OWNED", 24, SHARE_D, serif=False))
+    for x, a, t, b, col in ((210, short0, t_short, short1, RED), (590, owned0, t_owned, owned1, SHARE_D)):
+        if t is None:
+            _set(p, _t(x, 570, str(a), 84, col))
+        else:
+            _ss_swap(p, t, x, 570, a, b, size=84, color=col, d=.6)
+            p.parts.append(_g("press", t, .45, f'<rect x="{x - 170}" y="430" width="340" height="170" rx="16" fill="none" stroke="{col}" stroke-width="9"/>'))
+
+
+def ss_once(p, seg=None, **_):
+    """Lent once. From the swipe: ANN's and BEN's account cards (CAL's faint), Ann's showing 100 with the bundle in it,
+    Ben's 0, the counters SOLD SHORT 0 and COUNTED AS OWNED 100. A ripple on her bundle as the beat lands. 'Ann lends
+    her 100 shares to a short seller, who sells them to Ben': the bundle slides down to the short seller (an OWES 100 tag pops)
+    and up into Ben's card, whose balance counts 0 to 100; Ann's card keeps 100 with a LENT tag where the bundle was.
+    'Ben owns them now' rings Ben's balance; 'Ann's account still shows her 100' rings hers with STILL 100. Then SOLD
+    SHORT counts 0 to 100 and COUNTED AS OWNED 100 to 200 on the two halves of the last sentence."""
+    a, b = SS_AX["ANN"], SS_AX["BEN"]
+    _set(p, _ss_acct(a, "ANN") + _ss_acct(b, "BEN") + _ss_acct(SS_AX["CAL"], "CAL", faint=True) + _t(a, 150, "100", 52, INK))
+    _ss_counters(p, 0, 100, _fr(seg, 2, .12), 100, _fr(seg, 2, .62), 200)
+    tq = _fr(seg, 0, .05)
+    p.parts.append(_g("ripple", tq, .7, f'<circle cx="{a}" cy="195" r="50" fill="none" stroke="{SHARE_D}" stroke-width="6"/>'))
+    t1, t2 = _fr(seg, 0, .3), _fr(seg, 0, .75)
+    sx, sy = SS_SELLER[0], 340
+    _ss_travel(p, -1, [(t1, .9, sx - a, sy - 195), (t2, .9, b - sx, 195 - sy)], _ss_bundle(a, 195, "100", .8))
+    # 20 Nov: the path is drawn ahead of the bundle on 'lends' and 'sells' (LENDS, SELLS), so the first sentence moves
+    for (x0, y0, x1, y1, lab, tt) in ((a + 40, 250, sx - 30, sy - 40, "LENDS", _fr(seg, 0, .15)), (sx + 30, sy - 40, b - 40, 250, "SELLS", _fr(seg, 0, .62))):
+        p.parts.append(_g("draw", tt, .45, f'<path d="M{x0} {y0} L{x1} {y1}" fill="none" stroke="{GREY}" stroke-width="5" stroke-dasharray="10 8"/>', style=""))
+
+    p.parts.append(_g("pop", t1 + .5, .35, _idle("swing", _ptag(sx, sy + 58, 170, "OWES 100", RED, "#fff", 28), 4, 2.1,
+                                                 style=f"transform-box:view-box;transform-origin:{sx}px {sy + 30}px")))
+    p.parts.append(_g("pop", t1 + .55, .3, _t(sx, sy - 52, "SHORT SELLER", 18, RED, serif=False)))
+    p.parts.append(_g("fade", t1 + .5, .3, _t(a, 205, "LENT", 26, GREY, serif=False), style=""))
+    _ss_swap(p, t2 + .55, b, 150, 0, 100, size=52)
+    # 20 Nov: second actions for the long middle sentence (panel-only motion): Ben's bundle settles with a press and
+    # keeps breathing; after 'still shows' both account cards press in turn (both count the same 100)
+    p.parts.append(_life(t2 + .6, 99, _idle("breathe", f'<rect x="{b - 56}" y="160" width="112" height="72" rx="12" fill="none" stroke="{SHARE_D}" '
+                                                       f'stroke-width="4"/>', .03, 2.2), fi=.2, fo=.01))
+    t3 = _fr(seg, 1, .12)
+    p.parts.append(_g("pop", t3, .3, f'<rect x="{b - 80}" y="98" width="160" height="70" rx="14" fill="none" stroke="{TEAL}" stroke-width="7"/>'))
+    p.parts.append(_g("pop", _fr(seg, 1, .32), .35, _idle("bob", _ptag(b + 20, 262, 150, "OWNS 100", TEAL, "#fff", 24), 4, 2.3, style="")))
+    t4 = _fr(seg, 1, .62)
+    p.parts.append(_g("pop", t4, .3, f'<rect x="{a - 80}" y="98" width="160" height="70" rx="14" fill="none" stroke="{SHARE_D}" stroke-width="7"/>'))
+    p.parts.append(_g("pop", t4 + .2, .35, _idle("bob", _ptag(a + 10, 262, 160, "STILL 100", SHARE_D, "#fff", 24), 4, 2.4, style="")))
+    p.parts.append(_g("press", t4 + .5, .5, f'<rect x="{a - 105}" y="40" width="210" height="190" rx="16" fill="none" stroke="{SHARE_D}" stroke-width="5"/>'))
+    p.parts.append(_g("press", t4 + .8, .5, f'<rect x="{b - 105}" y="40" width="210" height="190" rx="16" fill="none" stroke="{SHARE_D}" stroke-width="5"/>'))
+
+
+def ss_twice(p, seg=None, **_):
+    """Lent again. From the swipe: the end of the last beat (ANN 100 LENT, BEN 100 with the bundle, the first short
+    seller OWES 100, counters 100 and 200) and CAL's card at 0. 'Then Ben lends them as well, and they're sold to
+    Cal': the bundle slides down to a second short seller (OWES 100) and up into Cal's card (0 to 100); a LENT tag
+    in Ben's. 'Two hundred sold short, three hundred counted as owned': SOLD SHORT 100 to 200, then the three
+    balances ring one after another while COUNTED AS OWNED counts 200 to 300. 'Still only 100 shares': the three cards dim, a
+    red ring closes on the one real bundle with ONLY 100 EXIST."""
+    a, b, c = SS_AX["ANN"], SS_AX["BEN"], SS_AX["CAL"]
+    s1, s2 = SS_SELLER
+    sy = 340
+    _set(p, _ss_acct(a, "ANN") + _ss_acct(b, "BEN") + _ss_acct(c, "CAL") + _t(a, 150, "100", 52, INK) + _t(b, 150, "100", 52, INK)
+            + _t(a, 205, "LENT", 26, GREY, serif=False) + _ptag(s1, sy + 58, 170, "OWES 100", RED, "#fff", 28)
+            + _t(s1, sy - 52, "SHORT SELLER", 18, RED, serif=False))
+    _ss_counters(p, 100, 200, _fr(seg, 1, .1), 200, _fr(seg, 1, .6), 300)
+    t1, t2 = _fr(seg, 0, .25), _fr(seg, 0, .75)
+    _ss_travel(p, -1, [(t1, .6, s2 - b, sy - 195), (t2, .6, c - s2, 195 - sy)], _ss_bundle(b, 195, "100", .8))
+    p.parts.append(_g("pop", t1 + .5, .35, _idle("swing", _ptag(s2, sy + 58, 170, "OWES 100", RED, "#fff", 28), 4, 2.1,
+                                                 style=f"transform-box:view-box;transform-origin:{s2}px {sy + 30}px")))
+    p.parts.append(_g("pop", t1 + .55, .3, _t(s2, sy - 52, "SHORT SELLER 2", 18, RED, serif=False)))
+    p.parts.append(_g("fade", t1 + .5, .3, _t(b, 205, "LENT", 26, GREY, serif=False), style=""))
+    _ss_swap(p, t2 + .55, c, 150, 0, 100, size=52)
+    # 20 Nov: +100 tags rise off the counters as they count (panel-only motion in the counting sentence)
+    for x, f, col in ((210, .1, RED), (590, .6, SHARE_D)):
+        tt = _fr(seg, 1, f) + .15
+        p.parts.append(_life(tt, 1.4, _g("slide", tt, 1.3, _ptag(x + 110, 450, 120, "+100", col, "#fff", 26), style="", x0=0, y0=0, x1=0, y1=-70,
+                                         ease="out"), fi=.1, fo=.4))
+    for j, x in enumerate((a, b, c)):
+        p.parts.append(_g("pop", _fr(seg, 1, .55) + .28 * j, .3, f'<rect x="{x - 80}" y="98" width="160" height="70" rx="14" fill="none" '
+                                                              f'stroke="{SHARE_D}" stroke-width="7"/>'))
+    t4 = _fr(seg, 2, .15)
+    p.parts.append(_life(t4, 99, f'<rect x="30" y="34" width="740" height="202" rx="18" fill="#F7F5F2" fill-opacity=".55"/>', fi=.3, fo=.01))
+    p.parts.append(_g("pop", t4 + .2, .35, f'<rect x="{c - 62}" y="156" width="124" height="80" rx="14" fill="none" stroke="{RED}" stroke-width="8"/>'))
+    p.parts.append(_g("pop", t4 + .4, .35, _idle("bob", _ptag(c - 20, 290, 230, "ONLY 100 EXIST", RED, "#fff", 24), 4, 2.4, style="")))
+
+
+def ss_gme(p, seg=None, **_):
+    """It happened (SEC staff report, Oct 2021, pp. 25-26). From the swipe: a 31 DEC 2020 / GAMESTOP card, two dashed
+    columns (SHARES OUTSTANDING, SOLD SHORT) to one scale with a dashed 100% line, and a document card on the right
+    headed SEC STAFF REPORT, OCT 2021 with grey lines. First sentence: the shares column grows to 100%, then the short
+    column climbs past the line and counts to 109.26%. Second: the report's sentence wipes in on the document under a
+    highlight, quoted, and a loop arrow draws beside it (LENT, SOLD, LENT)."""
+    k = 3.0
+    y100 = SS_BASE - 100 * k
+    _set(p, _ss_ground(30, 390)
+            + f'<rect x="50" y="40" width="320" height="110" rx="14" fill="#fff" stroke="{INK}" stroke-width="6"/>'
+            + _t(210, 88, "31 DEC 2020", 38, INK) + _t(210, 128, "GAMESTOP", 24, GREY, serif=False)
+            + "".join(f'<rect x="{x}" y="{SS_BASE - 109.26 * k:.1f}" width="130" height="{109.26 * k:.1f}" rx="8" fill="none" stroke="{GREY}" '
+                      f'stroke-width="4" stroke-dasharray="12 9"/>' for x in (70, 230))
+            + f'<path d="M50 {y100:.1f} H380" stroke="{INK}" stroke-width="4" stroke-dasharray="12 8"/>'
+            + _t(135, 596, "SHARES", 22, SHARE_D, serif=False) + _t(295, 596, "SOLD SHORT", 22, RED, serif=False)
+            + f'<rect x="420" y="40" width="345" height="560" rx="16" fill="#fff" stroke="{INK}" stroke-width="6"/>'
+            + _t(592, 82, "SEC STAFF REPORT", 24, INK, serif=False) + _t(592, 112, "OCTOBER 2021 · P. 26", 20, GREY, serif=False)
+            + "".join(f'<path d="M450 {y} H{735 if y % 3 else 690}" stroke="#D9D5CF" stroke-width="10" stroke-linecap="round"/>'
+                      for y in (150, 180, 210)))
+    grow = "transform-box:fill-box;transform-origin:center bottom"
+    ta = _fr(seg, 0, .08)
+    p.parts.append(_g("press", _fr(seg, 0, .02), .5, f'<rect x="44" y="34" width="332" height="122" rx="18" fill="none" stroke="{RED}" stroke-width="6"/>'))
+    p.parts.append(_g("growY", ta, 1.2, f'<rect x="70" y="{y100:.1f}" width="130" height="{100 * k:.1f}" rx="8" fill="{SHARE_C}" stroke="{INK}" stroke-width="6"/>',
+                      style=grow))
+    p.parts.append(_g("fade", ta + .6, .3, _t(135, y100 + 60, "100%", 38, SHARE_D), style=""))
+    tb = _fr(seg, 0, .45)
+    yt = SS_BASE - 109.26 * k
+    p.parts.append(_g("growY", tb, 2.0, f'<rect x="230" y="{yt:.1f}" width="130" height="{109.26 * k:.1f}" rx="8" fill="{SHORT_C}" stroke="{INK}" stroke-width="6"/>'
+                      f'<rect x="230" y="{yt:.1f}" width="130" height="{9.26 * k:.1f}" rx="6" fill="{RED}" stroke="{INK}" stroke-width="4"/>', style=grow))
+    p.parts.append(_life(tb, 99, _cnt(295, yt - 20, 0, 109.26, tb, 2.1, size=40, color=RED, pre="", suf="%", dec=2), fi=.1, fo=.01))
+    p.parts.append(_g("pop", tb + 2.1, .35, _idle("bob", _ptag(330, yt + 40, 130, "+9.26", RED, "#fff", 26), 3, 2.0, style="")))
+    p.parts.append(_g("ripple", tb + 1.7, .7, f'<circle cx="295" cy="{y100:.1f}" r="45" fill="none" stroke="{RED}" stroke-width="6"/>'))
+    t2 = _fr(seg, 1, .05)
+    lines = ["“Short interest can", "exceed 100%… when the", "same shares are lent", "multiple times by", "successive purchasers.”"]
+    for j, ln in enumerate(lines):
+        tj = t2 + .45 * j
+        hl = j >= 2
+        if hl:
+            p.parts.append(_g("growX", tj, .4, f'<rect x="440" y="{262 + 46 * j}" width="305" height="40" rx="6" fill="{GOLD}" fill-opacity=".55"/>', style=""))
+        p.parts.append(_g("wipe", tj, .45, _t(450, 292 + 46 * j, ln, 26, INK, anchor="start"), style=""))
+    # 20 Nov: after the quote, a loop draws under it on the last words (LENT, SOLD, LENT AGAIN) so the panel keeps moving
+    tl = _fr(seg, 1, .62)
+    for j, (x, lab) in enumerate(((470, "LENT"), (590, "SOLD"), (710, "LENT"))):
+        p.parts.append(_g("pop", tl + .35 * j, .3, _ptag(x, 580, 110, lab, RED if j != 1 else SHARE_D, "#fff", 20)))
+    p.parts.append(_g("draw", tl + .9, .6, '<path d="M710 552 Q590 505 470 552" fill="none" stroke="#D93A12" stroke-width="4" stroke-dasharray="8 6"/>',
+                      style=""))
+
+
+def ss_rule(p, seg=None, **_):
+    """The reading. From the swipe: a header card COUNTS with two words, SHARES and LOANS, one share card on the left
+    and four empty dashed loan tickets in a column on the right. 'So short interest counts loans, not shares': LOANS
+    gets a teal tick on 'loans', SHARES is struck through in red on 'not shares', then the four tickets fill one by one
+    (LOAN 1 to LOAN 4) as the sentence ends, a chain line drawn from the share to each."""
+    _set(p, f'<rect x="60" y="40" width="680" height="110" rx="16" fill="#fff" stroke="{INK}" stroke-width="6"/>'
+            + _t(150, 108, "COUNTS", 30, GREY, serif=False) + _t(380, 112, "SHARES", 48, INK) + _t(620, 112, "LOANS", 48, INK)
+            + f'<rect x="80" y="300" width="220" height="150" rx="14" fill="{SHARE_C}" stroke="{INK}" stroke-width="7"/>'
+            + _t(190, 385, "1", 64, SHARE_D) + _t(190, 425, "SHARE", 24, SHARE_D, serif=False)
+            + "".join(f'<rect x="480" y="{190 + 102 * j}" width="250" height="80" rx="12" fill="none" stroke="{GREY}" stroke-width="4" '
+                      f'stroke-dasharray="10 8"/>' for j in range(4)))
+    p.parts.append(_g("fade", -1, .05, _idle("bob", f'<rect x="80" y="300" width="220" height="150" rx="14" fill="none" stroke="{SHARE_D}" stroke-width="3"/>',
+                                             3, 2.5, style=""), style=""))
+    p.parts.append(_g("strike", _fr(seg, 0, .8), .45, f'<path d="M285 96 H475" stroke="{RED}" stroke-width="10" stroke-linecap="round"/>', style=""))
+    p.parts.append(_g("pop", _fr(seg, 0, .82), .3, f'<rect x="270" y="56" width="220" height="80" rx="14" fill="none" stroke="{RED}" stroke-width="5"/>'))
+    t1 = _fr(seg, 0, .3)
+    p.parts.append(_g("press", _fr(seg, 0, .55), .5, f'<rect x="74" y="294" width="232" height="162" rx="18" fill="none" stroke="{SHARE_D}" stroke-width="6"/>'))
+    p.parts.append(_g("draw", t1, .35, f'<path d="M690 70 L705 88 L730 55" fill="none" stroke="{TEAL}" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>', style=""))
+    p.parts.append(_g("pop", t1, .3, f'<rect x="525" y="56" width="190" height="80" rx="14" fill="none" stroke="{TEAL}" stroke-width="6"/>'))
+    a, b = seg[-1][1] - .2, seg[-1][1] + .8      # 20 Nov: one sentence; the loans fill as it ends and in the hold
+    for j in range(4):
+        tj = a + (b - a) * j / 3
+        y = 190 + 102 * j
+        p.parts.append(_g("draw", tj - .15, .3, f'<path d="M300 375 C390 375 400 {y + 40} 480 {y + 40}" fill="none" stroke="{SHARE_D}" stroke-width="4" stroke-dasharray="8 6"/>',
+                          style=""))
+        p.parts.append(_g("pop", tj, .3, f'<rect x="480" y="{y}" width="250" height="80" rx="12" fill="#FBE3DC" stroke="{RED}" stroke-width="5"/>'
+                                         + _t(605, y + 53, f"LOAN {j + 1}", 34, RED)))
+
+
+def ss_asks(p, **_):
+    """The close, all on the panel from frame 0: one share card with a LENT AND SOLD 3x tag, a SHORT INTEREST = ?
+    line with a bobbing ?, and the trader pointing at the viewer. The answer (300%) is not shown."""
+    _set(p, _ss_ground(30, 770)
+            + f'<rect x="60" y="250" width="220" height="150" rx="14" fill="{SHARE_C}" stroke="{INK}" stroke-width="7"/>'
+            + _t(170, 335, "1", 64, SHARE_D) + _t(170, 375, "SHARE", 24, SHARE_D, serif=False)
+            + _t(60, 480, "SHORT INTEREST =", 34, INK, serif=False, anchor="start"))
+    p.parts.append(_g("fade", -1, .05, _idle("bob", _ptag(200, 160, 300, "LENT & SOLD 3×", RED, "#fff", 30), 4, 2.4, style=""), style=""))
+    p.parts.append(_g("float", 0, 1, _t(420, 490, "?", 120, RED), style="", amp=10, w=2.4))
+    _trader_poses(p, 650, SS_BASE + 30, .9, [(0, "point")], look=-1)
+
+
+SCENES.update({f.__name__: f for f in (ss_hook, ss_short, ss_once, ss_twice, ss_gme, ss_rule, ss_asks)})

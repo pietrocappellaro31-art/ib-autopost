@@ -113,6 +113,10 @@ def cue_time(off, i, parts, at, spans):
     ("s", j, o) is o seconds after sentence j starts, ("e", j, o) o seconds after it ends, ("d", f) a fraction f
     of the beat's drawing time."""
     k = f"b{i}"
+    if callable(off):
+        # 20 Nov: a cue computed from the beat's sentence spans (the same function the drawing uses), for actions
+        # spread across several sentences (the hook's eleven steps)
+        return off(sentences(parts, at, k))
     if not isinstance(off, tuple):
         return at[k] + off
     if off[0] == "d":

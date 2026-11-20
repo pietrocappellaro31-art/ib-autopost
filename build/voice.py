@@ -28,6 +28,14 @@ DIR = os.environ.get("KOKORO_DIR", "")
 
 # Words outside misaki's dictionaries, with their phonemes written by hand.
 PHONEMES = {
+    # 20 Nov (YouTube Short, the short-interest puzzle): the illustration's three owners
+    "ann": "ˈæn",
+    "ann's": "ˈænz",
+    "cal": "kˈæl",
+    # misaki reads SEC as the word "sec" (sˈɛk; heard "sex" in the first cut): the letters (the recogniser then wrote
+    # "SESC" / "SESE", so the 20 Nov Short says "the market regulator" instead; kept for the next script)
+    "sec": "ˌɛsˌiˈsi",
+    "sec's": "ˌɛsˌiˈsiz",
     # 19 Nov (YouTube #13, GameStop 2021)
     "gamestop": "ɡˈAmstˌɑp",
     "reddit": "ɹˈɛdɪt",

@@ -1,0 +1,16 @@
+# shorts-lent-twice-109 (YouTube Short, Format C: one surprising concept)
+
+- Platform: YouTube Short, uploaded by hand by Pietro. Not cross-posted to Instagram.
+- Cut from: YouTube #13, "109% of GameStop Was Sold Short. How Is That Possible?" (yt-013-gamestop-109, 19 Nov); set as the Short's Related video in Studio.
+- Concept: a company has 100 shares and no more exist, yet 109 can be sold short. A lent share is sold to a buyer who can lend it again, and each lender's account still shows it: lent once, 100 sold short and 200 counted as owned; lent again, 200 and 300; still 100 shares. Short interest counts loans, not shares. GameStop's short interest hit 109.26% on 31 Dec 2020. The maths holds in any country.
+- Sources checked in the run (20 Nov 2026, opened again): SEC staff, Staff Report on Equity and Options Market Structure Conditions in Early 2021 (14 Oct 2021; press release 2021-212, 18 Oct 2021): short interest as shares sold short over shares outstanding (p. 25), the 109.26% high on 31 Dec 2020 (pp. 25-26), "Short interest can exceed 100% ... when the same shares are lent multiple times by successive purchasers" (p. 26, quoted on screen with the dash elided), short selling defined and covered by buying back to return the shares (p. 25 n. 74). Links in the description and the episode docstring.
+- Our illustration: Ann, Ben and Cal and their 100-share company (not real people; said in the description); the arithmetic 100 + 100 = 200 owned, 100 + 100 + 100 = 300; the reading "short interest counts loans, not shares" (ours).
+- Script: ours (build/shorts_lent-twice-109.py). No reconstruction, no real person drawn or named on screen; GameStop named as a fact in plain type, no logo or trade dress; the SEC report drawn as our own page (title in plain type, no seal).
+- Voice: HEART, synthetic (Kokoro af_heart, Apache 2.0, en-us, speed 0.9). Imitates nobody. New PHONEMES: ann, ann's, cal, sec, sec's.
+- Masters: one delivered file, scored (Pietro, 17 Nov). The clean mix stays in build/out as the score gate's reference only.
+- Music: original score from build/score.py, solo piano with a low cello line in Eb at 80 BPM (score.pick; last three acoustic G, noir jazz D, orchestral A), rendered with GeneralUser GS (ORIGINAL_GENERATED, logged in build/music_library/library.json "originals"). No commercial or platform-library music in the file. Credit line: "Music: original score made for this video."
+- Sound effects: synthesised in build/sfx.py and the 48 kHz foley set (tick, thump, knock, paper, clink, pop). No whoosh.
+- Visuals and fonts: ours (Source Serif 4, IBM Plex Sans, SIL OFL). Drawings in build/sketch.py (ss_* scenes): a 10 x 10 share grid and a SOLD SHORT column to scale, three generic people, account cards, share bundles, counters, two bars to scale (100% and 109.26%), our drawn report page, loan tickets, our trader character. No company, broker, app or regulator logo, no photo.
+- Educational only; not financial advice (line in the description). No stock or trade recommended.
+- Disclosure: recommended "Altered or synthetic content: Yes" for the realistic synthetic narrator (reasoning in qa.md); description names the AI narration. Made for kids: No.
+- Approval: Pietro uploads by hand after reviewing the finished file.
