@@ -992,8 +992,8 @@
       "series": "Technical of the Day",
       "scheduled_utc": "2026-11-20T13:00:00",
       "caption": "You calculate equity value per share and use basic shares. The interviewer's next question is about options.\n\nThe treasury stock method. Only count options in the money, with a strike below today's share price.\n\nSay 10 options at a $10 strike, share price $20. Exercising them brings in $100. The method assumes the company uses that $100 to buy back shares at $20, so 5 come back.\n\nNet new shares: 5. Basic 100 becomes 105 diluted.\n\nWhen you're solving for an implied price, the share count moves with it, which is why models iterate.\n\nSave it before your next valuation round.\n\n#investmentbanking #ibinterview #valuation #equityvalue",
-      "published_id": null,
-      "published_at_utc": null,
+      "published_id": "17989093092095432",
+      "published_at_utc": "2026-11-20T13:06:04.782254+00:00",
       "images": [
         "n2-04-tsm-01.jpg",
         "n2-04-tsm-02.jpg",
