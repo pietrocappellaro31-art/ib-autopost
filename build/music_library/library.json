@@ -348,6 +348,20 @@
    "kind": "short",
    "id": "joel-sunny-luminary",
    "mood": "tense"
+  },
+  {
+   "date": "2026-11-20",
+   "slug": "w2-bond-rates",
+   "kind": "short",
+   "id": "flawed-mangoes-swimming",
+   "mood": "calm"
+  },
+  {
+   "date": "2026-11-20",
+   "slug": "w2-capex-oven",
+   "kind": "short",
+   "id": "ludovico-einaudi-experience",
+   "mood": "calm"
   }
  ],
  "originals": [
@@ -601,6 +615,19 @@
    "bpm": 71,
    "key": "C",
    "style": "harp",
+   "rights": "ORIGINAL_GENERATED",
+   "added": "2026-11-20",
+   "note": ""
+  },
+  {
+   "id": "score-w2-bond-rates",
+   "title": "Original score for w2-bond-rates",
+   "video": "w2-bond-rates",
+   "engine": "score.py + GeneralUser GS v2.0.3 (TinySoundFont)",
+   "mood": "discover+resolve",
+   "bpm": 81,
+   "key": "E",
+   "style": "ambient",
    "rights": "ORIGINAL_GENERATED",
    "added": "2026-11-20",
    "note": ""

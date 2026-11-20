@@ -1,0 +1,19 @@
+A $100 bond pays 5%. Rates rise to 10%. What's it worth now? Not $100.
+
+Say it has one year left. It'll pay you $105 at the end, and that number is fixed no matter what rates do.
+
+But a new bond now pays 10%, so $100 buys you $110. Nobody pays $100 for your $105 when they can get $110.
+
+So your price falls until it earns 10% too: $105 / 1.1 = $95.45.
+
+With ten years left the same jump hits harder. $5 a year for ten years plus the $100, discounted at 10%, is worth about $69. Longer bond, bigger fall.
+
+That's the whole rule in one line: rates up, prices down. The payments never change, only what they're worth today.
+
+Your turn: rates fall to 2% instead. What's the one-year bond worth? Answer in the comments.
+
+Round numbers, annual coupon, before tax and fees.
+
+Narration: AI-generated voice; script is our original work.
+
+#investmentbanking #bonds #ibinterview #finance

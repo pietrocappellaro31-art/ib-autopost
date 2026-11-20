@@ -1630,6 +1630,20 @@
       "published_id": "18081193106733871",
       "published_at_utc": "2026-11-19T17:36:17.093065+00:00",
       "first_comment_id": "18342933247279421"
+    },
+    {
+      "id": "reel-w2-bond-rates",
+      "type": "reel",
+      "scheduled_utc": "2026-11-20T23:00:00",
+      "slot": "B",
+      "media_branch": "reel/w2-bond-rates",
+      "video": "w2-bond-rates.mp4",
+      "cover": "w2-bond-rates.jpg",
+      "master": "scored",
+      "caption": "A $100 bond pays 5%. Rates rise to 10%. What's it worth now? Not $100.\n\nSay it has one year left. It'll pay you $105 at the end, and that number is fixed no matter what rates do.\n\nBut a new bond now pays 10%, so $100 buys you $110. Nobody pays $100 for your $105 when they can get $110.\n\nSo your price falls until it earns 10% too: $105 / 1.1 = $95.45.\n\nWith ten years left the same jump hits harder. $5 a year for ten years plus the $100, discounted at 10%, is worth about $69. Longer bond, bigger fall.\n\nThat's the whole rule in one line: rates up, prices down. The payments never change, only what they're worth today.\n\nYour turn: rates fall to 2% instead. What's the one-year bond worth? Answer in the comments.\n\nRound numbers, annual coupon, before tax and fees.\n\nNarration: AI-generated voice; script is our original work.\n\n#investmentbanking #bonds #ibinterview #finance",
+      "first_comment": "Bonus level: same 5% bond, but two years left and rates at 10%. It pays $5 next year, then $105. What's it worth today?",
+      "ai_label": true,
+      "published_id": null
     }
   ],
   "reel_slots_et": {
