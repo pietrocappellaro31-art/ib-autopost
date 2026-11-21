@@ -1076,8 +1076,8 @@
       "series": "Technical of the Day",
       "scheduled_utc": "2026-11-21T17:30:00",
       "caption": "Why is EV / net income the wrong multiple? 1 rule answers this one and every question like it.\n\nEV is what you'd pay for the whole business, so it belongs to everyone who funded it. Lenders too.\n\nThat's why it pairs with numbers before interest: revenue, EBITDA, EBIT. Equity value is the shareholders' slice, and it pairs with numbers after interest, like net income, book value and levered FCF.\n\nMix them and you'll get nonsense. Take 2 companies with the same EV of 1,000 and EBITDA of 100. One has no debt, the other pays 30 of interest a year. At 25% tax (and ignoring D&A), net income is 75 against 52.5, so you get 13.3 times against about 19 times. Same business, different multiple.\n\nHere's my quick test. If interest is already out of the denominator, you need equity value.\n\nSave it before your next comps question.\n\n#investmentbanking #valuation #ibinterview #comps",
-      "published_id": null,
-      "published_at_utc": null,
+      "published_id": "18133588507842478",
+      "published_at_utc": "2026-11-21T18:45:13.950508+00:00",
       "images": [
         "n2-08-matching-rule-01.jpg",
         "n2-08-matching-rule-02.jpg",
