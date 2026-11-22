@@ -376,6 +376,13 @@
    "kind": "short",
    "id": "bloody-mary-instrumental-slowed",
    "mood": "playful"
+  },
+  {
+   "date": "2026-11-22",
+   "slug": "shorts-safe-bond-79",
+   "kind": "short",
+   "id": "flawed-mangoes-missing-pieces",
+   "mood": "tense"
   }
  ],
  "originals": [
@@ -681,6 +688,19 @@
    "bpm": 74,
    "key": "Eb",
    "style": "ambient",
+   "rights": "ORIGINAL_GENERATED",
+   "added": "2026-11-22",
+   "note": ""
+  },
+  {
+   "id": "score-shorts-safe-bond-79",
+   "title": "Original score for shorts-safe-bond-79",
+   "video": "shorts-safe-bond-79",
+   "engine": "score.py + GeneralUser GS v2.0.3 (TinySoundFont)",
+   "mood": "mystery+explain+resolve",
+   "bpm": 75,
+   "key": "E",
+   "style": "noir_jazz",
    "rights": "ORIGINAL_GENERATED",
    "added": "2026-11-22",
    "note": ""

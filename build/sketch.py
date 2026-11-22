@@ -7489,3 +7489,304 @@ def sp_asks(p, **_):
 
 
 SCENES.update({f.__name__: f for f in (sp_hook, sp_shares, sp_price, sp_company, sp_myth, sp_rule, sp_asks)})
+
+
+# ---- 22 Nov Short: the safe bond that loses a fifth (build/shorts_safe-bond-79.py), cut from YouTube #14 (SVB).
+# A $100 bond paying 1.5% a year for 10 years (annual coupons, our example); new bonds pay 4%. Each year it pays
+# $2.50 less than a new bond: 10 x 2.50 = $25, worth 2.5 x (1 - 1.04^-10) / 0.04 = $20.28 today; 100 - 20.28 =
+# $79.72 (= the bond's price at 4%, build/plans/ep014_checks.py). Year 1's $2.50 is worth $2.40 today, year 10's $1.69.
+# Close: new bonds at 1% (more than $100: $104.74, not shown).
+# 22 Nov (the 20 Nov Short's next improvement): every sentence that counts carries ONE running action that lasts
+# the whole sentence (coins arriving one a year, the gap blocks stacking one a year, the blocks shrinking one a year,
+# the dot running down the curve), so no beat's panel is still between its landings.
+
+SB_BASE = 580
+SB_COUPON = 1.5
+SB_PV = [2.5 / 1.04 ** n for n in range(1, 11)]          # each year's $2.50 gap in today's money
+
+
+def _sb_price(c, y, n=10):
+    return sum(c / (1 + y) ** t for t in range(1, n + 1)) + 100 / (1 + y) ** n
+
+
+def _sb_gauge(x, top, h_=380, hi=5, label="NEW BONDS PAY"):
+    """A vertical rate gauge 0% to 5% (one tick a point); returns (svg, y of a rate)."""
+    yr = lambda r: top + h_ - r / hi * h_
+    s = (f'<rect x="{x}" y="{top}" width="60" height="{h_}" rx="30" fill="#fff" stroke="{INK}" stroke-width="6"/>'
+         + _t(x + 30, top - 22, label, 22, INK, serif=False))
+    for r in range(hi + 1):
+        s += (f'<path d="M{x + 60} {yr(r):.0f} h16" stroke="{INK}" stroke-width="4"/>' + _t(x + 84, yr(r) + 8, f"{r}%", 22, GREY, serif=False, anchor="start"))
+    return s, yr
+
+
+def _sb_merc(x, yr, r):
+    y = yr(r)
+    return f'<rect x="{x + 12}" y="{y:.1f}" width="36" height="{max(yr(0) - y, 0):.1f}" rx="18" fill="{RED}"/>'
+
+
+def _sb_rise(p, x, yr, r0, r1, t, d):
+    """The gauge's red column rising from r0 to r1 over the whole stretch t to t + d (one running action)."""
+    p.parts.append(_life(-1, 1 + t + .02, _sb_merc(x, yr, r0), fi=.01, fo=.01))
+    p.parts.append(_life(t, 99, _g("scaleY", t, round(d, 2), _sb_merc(x, yr, r1), style="transform-box:fill-box;transform-origin:center bottom",
+                                   s0=round(r0 / r1, 4), s1=1), fi=.01, fo=.01))
+
+
+def _sb_coin(cx, cy, lab="$1.50", r=27, fill=GOLD):
+    return (f'<circle cx="{cx:.0f}" cy="{cy:.0f}" r="{r}" fill="{fill}" stroke="{INK}" stroke-width="4"/>'
+            + _t(cx, cy + r * .28, lab, round(r * .62), INK, serif=False))
+
+
+def _sb_shield(cx, cy, s=1.0, fill=TEAL):
+    S = lambda v: v * s
+    return (f'<path d="M{cx} {cy - S(60)} L{cx + S(52)} {cy - S(40)} L{cx + S(46)} {cy + S(14)} Q{cx + S(30)} {cy + S(50)} {cx} {cy + S(66)} '
+            f'Q{cx - S(30)} {cy + S(50)} {cx - S(46)} {cy + S(14)} L{cx - S(52)} {cy - S(40)} Z" fill="{fill}" stroke="{INK}" stroke-width="6"/>'
+            f'<path d="M{cx - S(22)} {cy + S(2)} L{cx - S(4)} {cy + S(22)} L{cx + S(26)} {cy - S(20)}" fill="none" stroke="#fff" stroke-width="{S(10):.0f}" '
+            f'stroke-linecap="round" stroke-linejoin="round"/>')
+
+
+def sb_hook_steps(seg):
+    """The hook's ten coupon times: one a year, from 12% to 92% of the first sentence (shared with the sound)."""
+    a, b = _fr(seg, 0, .12), _fr(seg, 0, .92)
+    return [a + (b - a) * i / 9 for i in range(10)]
+
+
+def sb_hook(p, seg=None, **_):
+    """The puzzle. From the swipe: a BOND $100 PAYS 1.5% certificate with a $100 tag, a ten-year timeline under it
+    and the NEW BONDS PAY gauge at 1.5%. One running action per sentence: (1) a $1.50 coin pops onto each of the ten
+    years in turn, and a $100 block lands on year 10; (2) the gauge's red column climbs from 1.5% to 4% across the
+    whole sentence, a 4% pill pops at the top; (3) the $100 tag turns into a red $ ? that swings, the bond shakes and
+    a ring closes on it. The camera starts on the bond and the timeline, pans to the gauge, pulls back."""
+    gx, top, gh = 640, 110, 360
+    g, yr = _sb_gauge(gx, top, gh)
+    x0, dx, ty = 70, 52, 548
+    line = (f'<path d="M{x0 - 30} {ty} H{x0 + 9 * dx + 30}" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+            + "".join(f'<path d="M{x0 + dx * j} {ty - 10} V{ty + 10}" stroke="{INK}" stroke-width="4"/>' for j in range(10))
+            + _t(x0 + 4.5 * dx, ty + 52, "10 YEARS", 26, INK, serif=False))
+    _set(p, _bond(40, 170, 380, 240, "1.5%", "BOND $100") + g + line)
+    steps = sb_hook_steps(seg)
+    for j, t in enumerate(steps):
+        p.parts.append(_g("fade", t, .06, _g("slide", t, .3, _sb_coin(x0 + dx * j, ty - 40, "1.50", 22), style="", y0=-90, y1=0, ease="out"), style=""))
+    p.parts.append(_g("growY", steps[-1] + .25, .4, f'<rect x="{x0 + 9 * dx - 30}" y="{ty - 150}" width="60" height="86" rx="6" fill="{BOND_C}" stroke="{INK}" stroke-width="5"/>'
+                                                  + _t(x0 + 9 * dx, ty - 96, "$100", 20, INK, serif=False), style=_grow(1)))
+    t1, t1e = _fr(seg, 1, .05), _fr(seg, 1, .9)
+    _sb_rise(p, gx, yr, SB_COUPON, 4, t1, t1e - t1)
+    p.parts.append(_g("pop", t1e, .35, _pill(gx + 30, yr(4) - 46, "4%", RED, "#fff", 30)))
+    p.parts.append(_life(-1, 1 + _fr(seg, 2, .1), _idle("swing", _ptag(230, 108, 170, "$100", GOLD, INK, 44), 4, 2.2,
+                                                       style="transform-box:fill-box;transform-origin:center top"), fi=.01, fo=.01))
+    tq = _fr(seg, 2, .1)
+    p.parts.append(_life(tq, 99, _g("pop", tq, .35, _idle("swing", _ptag(230, 108, 170, "$ ?", RED, "#fff", 48), 8, 1.9,
+                                                             style="transform-box:fill-box;transform-origin:center top")), fi=.01, fo=.01))
+    for j in range(3):
+        p.parts.append(_g("press", tq + .1 + .45 * j, .4, _bond(40, 170, 380, 240, "1.5%", "BOND $100")))
+    p.parts.append(_g("ripple", tq + .2, .7, f'<circle cx="230" cy="290" r="70" fill="none" stroke="{RED}" stroke-width="6"/>'))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 280, 330, 1.15), (_fr(seg, 0, .95), 300, 350, 1.15), (_fr(seg, 1, .2), 600, 300, 1.18),
+             (_fr(seg, 1, .95), 600, 300, 1.18), (_fr(seg, 2, .3), 400, 320, 1.0), (end, 400, 320, 1.0)])
+
+
+def sb_safe(p, seg=None, **_):
+    """It can't default. From the swipe the bond sits top left and a dashed RECEIVED column waits on the right.
+    (1) 'It can't default': a teal shield stamps onto the bond with a ripple and a SAFE stamp. (2) one running action
+    across the sentence: ten $1.50 coins arrive, one a year, along the timeline and drop into the column, which climbs
+    in step while its counter runs; then the $100 block lands on top: $115 in all."""
+    k = 2.9
+    cx, cw = 560, 190
+    x0, dx, ty = 70, 46, 560
+    s = (f'<path d="M30 {SB_BASE} H770" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>' + _bond(40, 40, 300, 190, "1.5%", "BOND $100")
+         + f'<rect x="{cx}" y="{SB_BASE - 115 * k:.0f}" width="{cw}" height="{115 * k:.0f}" rx="8" fill="{GOLD}" fill-opacity=".14" stroke="{GREY}" stroke-width="5" stroke-dasharray="14 10"/>'
+         + _t(cx + cw / 2, SB_BASE + 40, "YOU GET", 26, INK, serif=False))
+    _set(p, s)
+    t0 = _fr(seg, 0, .2)
+    p.parts.append(_g("fade", t0, .08, _g("slide", t0, .35, _sb_shield(300, 120, 1.1), style="", y0=-220, y1=0, ease="out"), style=""))
+    p.parts.append(_g("ripple", t0 + .35, .7, f'<circle cx="300" cy="120" r="60" fill="none" stroke="{TEAL}" stroke-width="6"/>'))
+    p.parts.append(_stamp(60, 280, 250, 96, "SAFE", TEAL, t0 + .45, size=58))
+    t1, t1e = _fr(seg, 1, .05), _fr(seg, 1, .75)
+    steps = [t1 + (t1e - t1) * i / 9 for i in range(10)]
+    for j, t in enumerate(steps):
+        sx = 360 + 18 * j
+        p.parts.append(_life(t, .62, _g("slide", t, .55, _sb_coin(sx, 470, "1.50", 24), style="", x0=0, y0=0, x1=cx + cw / 2 - sx, y1=SB_BASE - (j + .5) * SB_COUPON * k - 470,
+                                        ease="inout"), fi=.05, fo=.1))
+        p.parts.append(_g("fade", t + .55, .08, f'<rect x="{cx}" y="{SB_BASE - (j + 1) * SB_COUPON * k:.1f}" width="{cw}" height="{SB_COUPON * k:.1f}" fill="{GOLD}" stroke="{INK}" stroke-width="2"/>', style=""))
+    tb = _fr(seg, 1, .8)
+    p.parts.append(_g("fade", tb, .08, _g("slide", tb, .45, f'<rect x="{cx}" y="{SB_BASE - 115 * k:.0f}" width="{cw}" height="{100 * k:.0f}" rx="8" fill="{BOND_C}" stroke="{INK}" stroke-width="6"/>'
+                                         + _t(cx + cw / 2, SB_BASE - 65 * k, "$100", 40, INK), style="", y0=-320, y1=0, ease="out"), style=""))
+    cy_ = SB_BASE - 115 * k - 24
+    p.parts.append(_life(-1, t1 + .5 + 1.01, _t(cx + cw / 2, cy_, "$0", 46, INK), fi=.01, fo=.01))
+    p.parts.append(_life(t1 + .5, tb + .3 - t1 - .5, _cnt(cx + cw / 2, cy_, 0, 15, t1 + .5, t1e - t1, size=46), fi=.01, fo=.01))
+    p.parts.append(_life(tb + .45, 99, _cnt(cx + cw / 2, cy_, 15, 115, tb + .45, .6, size=46), fi=.01, fo=.01))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 230, 200, 1.35), (_fr(seg, 0, .95), 230, 210, 1.3), (_fr(seg, 1, .2), 520, 420, 1.15),
+             (_fr(seg, 1, .8), 560, 380, 1.12), (_fr(seg, 1, .95), 400, 320, 1.0), (end, 400, 320, 1.0)])
+
+
+def sb_gap(p, seg=None, **_):
+    """The gap. Two bars to scale (60 px a dollar): NEW BOND and YOURS. (1) a NEW BOND 4% slip slides in and its bar
+    grows, counting to $4; YOURS grows to $1.50 beside it and the missing $2.50 above it is outlined red. (2) one
+    running action across the sentence: the red $2.50 is cut off and drops onto a A YEAR LESS stack on the right, ten
+    times, one a year, while the stack's counter runs to 10 x $2.50."""
+    k = 60
+    xn, xy, w_ = 60, 240, 150
+    sx, sw, k2 = 520, 220, 13
+    s = (f'<path d="M30 {SB_BASE} H770" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+         + _t(xn + w_ / 2, SB_BASE + 38, "NEW BOND", 24, INK, serif=False) + _t(xy + w_ / 2, SB_BASE + 38, "YOURS", 24, INK, serif=False)
+         + _t(sx + sw / 2, SB_BASE + 38, "MISSING", 26, RED, serif=False)
+         + f'<rect x="{sx}" y="{SB_BASE - 25 * k2:.0f}" width="{sw}" height="{25 * k2:.0f}" rx="8" fill="{LOSS_C}" fill-opacity=".1" stroke="{GREY}" stroke-width="4" stroke-dasharray="12 9"/>'
+         + _t(xn + w_ / 2, 80, "EACH YEAR", 26, GREY, serif=False))
+    _set(p, s)
+    t0 = _fr(seg, 0, .1)
+    p.parts.append(_life(t0, _fr(seg, 0, .5) - t0, _g("slide", t0, .45, _bond(20, 110, 230, 150, "4%", "NEW BOND"), style="", x0=-320, y0=0, x1=0, y1=0, ease="out"), fi=.05, fo=.25))
+    t1 = _fr(seg, 0, .45)
+    p.parts.append(_g("growY", t1, .8, f'<rect x="{xn}" y="{SB_BASE - 4 * k}" width="{w_}" height="{4 * k}" rx="8" fill="{TEAL}" stroke="{INK}" stroke-width="6"/>', style=_grow(1)))
+    _lv_swap(p, t1, xn + w_ / 2, SB_BASE - 4 * k - 22, 0, 4, size=46, color=TEAL, d=.8, dec=0)
+    t2 = _fr(seg, 0, .8)
+    p.parts.append(_g("growY", t2, .5, f'<rect x="{xy}" y="{SB_BASE - 1.5 * k:.0f}" width="{w_}" height="{1.5 * k:.0f}" rx="8" fill="{GOLD}" stroke="{INK}" stroke-width="6"/>'
+                                       + _t(xy + w_ / 2, SB_BASE - .75 * k + 14, "$1.50", 36, INK), style=_grow(1)))
+    p.parts.append(_g("draw", t2 + .5, .5, f'<path d="M{xy} {SB_BASE - 1.5 * k:.0f} V{SB_BASE - 4 * k} H{xy + w_} V{SB_BASE - 1.5 * k:.0f}" fill="none" stroke="{RED}" stroke-width="6" stroke-dasharray="14 9"/>', style=""))
+    t3, t3e = _fr(seg, 1, .05), _fr(seg, 1, .85)
+    steps = [t3 + (t3e - t3) * i / 9 for i in range(10)]
+    gap = (f'<rect x="{xy}" y="{SB_BASE - 4 * k}" width="{w_}" height="{2.5 * k:.0f}" rx="8" fill="{LOSS_C}" stroke="{INK}" stroke-width="5"/>'
+           + _t(xy + w_ / 2, SB_BASE - 2.75 * k + 14, "$2.50", 36, INK))
+    for j, t in enumerate(steps):
+        nxt = steps[j + 1] if j < 9 else 99
+        # a fresh gap block sits on YOURS, then is lifted off and flown onto the stack (a whole block per year)
+        p.parts.append(_life(t - .05 if j else t, min(.55, nxt - t), _g("slide", t, .5, gap, style="", x0=0, y0=0,
+                                                                         x1=sx + sw / 2 - xy - w_ / 2, y1=(SB_BASE - (j + .5) * 2.5 * k2) - (SB_BASE - 2.75 * k), ease="inout"), fi=.05, fo=.08))
+        p.parts.append(_g("fade", t + .45, .08, f'<rect x="{sx}" y="{SB_BASE - (j + 1) * 2.5 * k2:.1f}" width="{sw}" height="{2.5 * k2:.1f}" fill="{LOSS_C}" stroke="{INK}" stroke-width="3"/>', style=""))
+    p.parts.append(_life(t3 + .45, 99, _cnt(sx + sw / 2, SB_BASE - 25 * k2 - 24, 0, 10, t3 + .45, t3e - t3, size=40, color=RED, pre="", suf=" YEARS")
+                         .replace('data-fx="count"', 'data-fx="count" data-lin="1"', 1), fi=.05, fo=.01))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 230, 380, 1.2), (_fr(seg, 0, .95), 240, 380, 1.2), (_fr(seg, 1, .15), 400, 330, 1.02),
+             (end, 400, 320, 1.0)])
+
+
+def sb_today(p, seg=None, **_):
+    """Today's money. Ten red $2.50 blocks, one per year on a timeline (56 px a dollar). (1) one running action: the
+    blocks step out one a year from TODAY to YEAR 10 while a counter runs to $25. (2) one running action across the
+    sentence: a TODAY lens slides along the years and each block shrinks, in turn, to what it is worth now (year 1
+    $2.40, year 10 $1.69: the later, the smaller), its lost top fading out, while the counter runs from $25.00 down
+    to $20.28."""
+    k = 56
+    x0, dx, bw = 70, 68, 52
+    s = (f'<path d="M30 {SB_BASE} H770" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+         + "".join(_t(x0 + dx * j + bw / 2, SB_BASE + 32, f"{j + 1}", 24, INK, serif=False) for j in range(10))
+         + _t(400, SB_BASE + 64, "YEAR", 22, GREY, serif=False)
+         + f'<rect x="250" y="40" width="300" height="96" rx="16" fill="#fff" stroke="{INK}" stroke-width="5"/>'
+         + "".join(f'<rect x="{x0 + dx * j}" y="{SB_BASE - 2.5 * k:.1f}" width="{bw}" height="{2.5 * k:.1f}" rx="6" fill="{LOSS_C}" fill-opacity=".14" '
+                   f'stroke="{GREY}" stroke-width="3" stroke-dasharray="8 6"/>' for j in range(10)))
+    _set(p, s)
+    blk = lambda j, h_, fill=LOSS_C, op=1: (f'<rect x="{x0 + dx * j}" y="{SB_BASE - h_ * k:.1f}" width="{bw}" height="{h_ * k:.1f}" rx="6" fill="{fill}" '
+                                           f'fill-opacity="{op}" stroke="{INK}" stroke-width="4"/>')
+    t0, t0e = _fr(seg, 0, .05), _fr(seg, 0, .8)
+    st0 = [t0 + (t0e - t0) * i / 9 for i in range(10)]
+    t1, t1e = _fr(seg, 1, .2), _fr(seg, 1, .92)
+    st1 = [t1 + (t1e - t1) * i / 9 for i in range(10)]
+    for j in range(10):
+        p.parts.append(_life(st0[j], st1[j] + .02 - st0[j], _g("growY", st0[j], .35, blk(j, 2.5), style=_grow(1)), fi=.01, fo=.01))
+        p.parts.append(_life(st1[j], 99, _g("scaleY", st1[j], .45, blk(j, 2.5), style="transform-box:fill-box;transform-origin:center bottom",
+                                            s0=1, s1=round(SB_PV[j] / 2.5, 4)), fi=.01, fo=.01))
+    p.parts.append(_life(-1, t0 + 1.01, _t(400, 108, "$0", 56, RED), fi=.01, fo=.01))
+    p.parts.append(_life(t0, t1 - t0 + .01, _cnt(400, 108, 0, 25, t0, t0e - t0 + .3, size=56, color=RED), fi=.01, fo=.01))
+    p.parts.append(_life(t1, 99, _cnt(400, 108, 25, 20.28, t1, t1e - t1 + .45, size=56, color=RED, dec=2)
+                         .replace('data-fx="count"', 'data-fx="count" data-lin="1"', 1), fi=.01, fo=.01))
+    lens = (f'<circle cx="{x0 + bw / 2}" cy="{SB_BASE - 3.6 * k:.0f}" r="34" fill="#fff" fill-opacity=".6" stroke="{TEAL}" stroke-width="7"/>'
+            f'<path d="M{x0 + bw / 2 + 24} {SB_BASE - 3.6 * k + 24:.0f} l26 26" stroke="{TEAL}" stroke-width="10" stroke-linecap="round"/>')
+    p.parts.append(_life(t1 - .1, t1e - t1 + .7, _g("slide", t1, round(t1e - t1 + .3, 2), lens, style="", x0=0, y0=0, x1=dx * 9, y1=0), fi=.1, fo=.3))
+    p.parts.append(_g("pop", st1[0] + .45, .3, _pill(x0 + bw / 2, SB_BASE - 2.5 * k - 40, "$2.40", TEAL, "#fff", 22)))
+    p.parts.append(_g("pop", st1[9] + .45, .3, _pill(x0 + dx * 9 + bw / 2 - 10, SB_BASE - 2.5 * k - 40, "$1.69", TEAL, "#fff", 22)))
+    p.parts.append(_g("pop", t1 - .3, .3, _pill(110, 200, "TODAY", TEAL, "#fff", 26)))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 400, 330, 1.04), (_fr(seg, 0, .9), 400, 320, 1.02), (_fr(seg, 1, .2), 330, 330, 1.1),
+             (_fr(seg, 1, .9), 470, 330, 1.1), (end, 400, 320, 1.0)])
+
+
+def sb_answer(p, seg=None, **_):
+    """The answer. A $100 column to scale (4 px a dollar) under a PAY $100? tag. (1) the tag is crossed out.
+    (2) the top $20.28 (red) lifts off and slides away while the column's counter runs 100 to 79.72 and a $79.72
+    stamp lands. (3) one running action across the sentence: from the $79.72 column, the bond's payments arrive in
+    a row (ten $1.50 coins, then $100), and a 4% A YEAR pill and a NEW BOND 4% chip meet with an = sign."""
+    k = 4.0
+    xc, cw = 90, 220
+    s = (f'<path d="M30 {SB_BASE} H770" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+         + _t(xc + cw / 2, SB_BASE + 38, "PRICE TODAY", 24, INK, serif=False))
+    _set(p, s)
+    col = f'<rect x="{xc}" y="{SB_BASE - 100 * k:.0f}" width="{cw}" height="{100 * k:.0f}" rx="8" fill="{GOLD}" stroke="{INK}" stroke-width="6"/>'
+    t0 = _fr(seg, 0, .15)
+    p.parts.append(_life(-1, 1 + _fr(seg, 1, .2), _idle("swing", _ptag(xc + cw + 160, 90, 230, "PAY $100?", INK, "#fff", 30), 5, 2.3,
+                                                       style="transform-box:fill-box;transform-origin:center top"), fi=.01, fo=.2))
+    p.parts.append(_life(t0, _fr(seg, 1, .2) - t0, _g("draw", t0, .3, f'<path d="M{xc + cw + 50} 70 L{xc + cw + 270} 150" stroke="{RED}" stroke-width="12" stroke-linecap="round"/>', style="")
+                         + _g("draw", t0 + .15, .3, f'<path d="M{xc + cw + 270} 70 L{xc + cw + 50} 150" stroke="{RED}" stroke-width="12" stroke-linecap="round"/>', style=""), fi=.01, fo=.2))
+    p.parts.append(_life(-1, 99, col, fi=.01, fo=.01))
+    t1 = _fr(seg, 1, .1)
+    top = (f'<rect x="{xc}" y="{SB_BASE - 100 * k:.0f}" width="{cw}" height="{20.28 * k:.1f}" rx="8" fill="{LOSS_C}" stroke="{INK}" stroke-width="6"/>'
+           + _t(xc + cw / 2, SB_BASE - 90 * k + 14, "-$20.28", 34, INK))
+    p.parts.append(_life(t1, 99, _g("slide", t1 + .3, .9, top, style="", x0=0, y0=0, x1=330, y1=-10, ease="inout"), fi=.15, fo=.01))
+    p.parts.append(_life(-1, 1 + t1 + .02, _t(xc + cw / 2, SB_BASE - 100 * k - 22, "$100", 48, INK), fi=.01, fo=.01))
+    p.parts.append(_life(t1, 99, _cnt(xc + cw / 2, SB_BASE - 79.72 * k - 22, 100, 79.72, t1 + .3, .9, size=48, color=RED, dec=2), fi=.01, fo=.01))
+    p.parts.append(_stamp(xc - 10, SB_BASE - 50 * k - 50, cw + 20, 96, "$79.72", RED, _fr(seg, 1, .7), size=56))
+    t2, t2e = _fr(seg, 2, .05), _fr(seg, 2, .7)
+    st = [t2 + (t2e - t2) * i / 10 for i in range(11)]
+    for j in range(10):
+        p.parts.append(_g("pop", st[j], .25, _sb_coin(370 + 38 * j, 330, "", 16)))
+    p.parts.append(_g("pop", st[10], .3, f'<rect x="700" y="300" width="70" height="60" rx="6" fill="{BOND_C}" stroke="{INK}" stroke-width="4"/>' + _t(735, 340, "$100", 20, INK, serif=False)))
+    p.parts.append(_g("draw", t2, .6, f'<path d="M{xc + cw + 10} {SB_BASE - 79.72 * k:.0f} Q330 330 360 330" fill="none" stroke="{TEAL}" stroke-width="7"/>', style=""))
+    t3 = _fr(seg, 2, .75)
+    p.parts.append(_g("pop", t3, .35, _pill(450, 440, "EARNS 4% A YEAR", TEAL, "#fff", 28)))
+    p.parts.append(_g("pop", t3 + .3, .35, _t(640, 450, "=", 60, INK)))
+    p.parts.append(_g("pop", t3 + .5, .35, _idle("bob", _pill(640, 510, "NEW BOND 4%", INK, "#fff", 24), 4, 2.4, style="")))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 330, 260, 1.2), (_fr(seg, 0, .95), 330, 260, 1.2), (_fr(seg, 1, .1), 280, 380, 1.15),
+             (_fr(seg, 1, .95), 300, 380, 1.15), (_fr(seg, 2, .1), 480, 380, 1.12), (_fr(seg, 2, .85), 520, 400, 1.12), (end, 400, 320, 1.0)])
+
+
+def sb_rule(p, seg=None, **_):
+    """The rule: the price curve to scale (price at each rate, our bond, 1.5% to 6%). A dot runs down the curve from
+    1.5% / $100 to 4% / $79.72 across 'Rates up, prices down' with a rate counter and a price counter running beside
+    it; on 'even on a bond that's perfectly safe' the shield stamps on the dot."""
+    X = lambda r: 120 + (r - 1.5) / 3.5 * 560
+    Y = lambda v: 520 - (v - 70) / 32 * 420
+    pts = [(r / 10, _sb_price(1.5, r / 1000)) for r in range(15, 51)]
+    path = "M" + " L".join(f"{X(r):.1f} {Y(v):.1f}" for r, v in pts)
+    s = (f'<path d="M120 520 H740 M120 520 V80" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+         + "".join(_t(X(r), 556, f"{r:g}%", 24, GREY, serif=False) for r in (1.5, 3, 4, 5))
+         + "".join(_t(104, Y(v) + 8, f"${v}", 24, GREY, serif=False, anchor="end") for v in (70, 80, 90, 100))
+         + _t(430, 610, "NEW BOND RATE", 24, INK, serif=False) + _t(150, 60, "YOUR BOND'S PRICE", 24, INK, serif=False, anchor="start"))
+    _set(p, s + f'<path d="{path}" fill="none" stroke="{BOND_D}" stroke-width="8" stroke-linecap="round"/>')
+    t0, t0e = _fr(seg, 0, .05), _fr(seg, 0, .5)
+    seg_pts = [(r, v) for r, v in pts if r <= 4.0]
+    kf = [[round(t0 + (t0e - t0) * i / (len(seg_pts) - 1), 3), round(X(r) - X(1.5), 1), round(Y(v) - Y(100), 1), 1, 1, 0] for i, (r, v) in enumerate(seg_pts)]
+    dot = f'<circle cx="{X(1.5):.1f}" cy="{Y(100):.1f}" r="20" fill="{RED}" stroke="{INK}" stroke-width="5"/>'
+    p.parts.append(f"<g class=\"a\" data-fx=\"kf\" data-at=\"{t0:.2f}\" data-d=\"{t0e - t0:.2f}\" data-kf='{_json(kf)}' style=\"transform-box:view-box;transform-origin:0px 0px\">{dot}</g>")
+    p.parts.append(f'<path d="M{X(1.5):.1f} 520 V{Y(100):.1f} H120" fill="none" stroke="{GREY}" stroke-width="4" stroke-dasharray="10 8"/>')
+    p.parts.append(_g("draw", t0e, .4, f'<path d="M{X(4):.1f} 520 V{Y(79.72):.1f} H120" fill="none" stroke="{RED}" stroke-width="5" stroke-dasharray="10 8"/>', style=""))
+    _lv_swap(p, t0, 620, 150, 1.5, 4, size=54, color=RED, pre="", suf="%", d=t0e - t0, dec=1)
+    p.parts.append(_life(-1, 99, _cnt(620, 230, 100, 79.72, t0, t0e - t0, size=54, color=BOND_D, dec=2), fi=.01, fo=.01))
+    p.parts.append(_g("pop", t0 + .1, .3, f'<path d="M450 120 L430 150 M450 120 L470 150 M450 120 V180" stroke="{RED}" stroke-width="8" stroke-linecap="round" fill="none"/>'))
+    p.parts.append(_g("pop", t0e - .2, .3, f'<path d="M450 250 L430 220 M450 250 L470 220 M450 250 V190" stroke="{BOND_D}" stroke-width="8" stroke-linecap="round" fill="none"/>'))
+    t1 = _fr(seg, 0, .62)
+    p.parts.append(_g("fade", t1, .08, _g("slide", t1, .35, _sb_shield(X(4), Y(79.72) - 90, .8), style="", y0=-200, y1=0, ease="out"), style=""))
+    p.parts.append(_g("ripple", t1 + .35, .7, f'<circle cx="{X(4):.1f}" cy="{Y(79.72):.1f}" r="40" fill="none" stroke="{TEAL}" stroke-width="6"/>'))
+    p.parts.append(_g("pop", t1 + .55, .35, _idle("bob", _pill(X(4) + 10, Y(79.72) + 80, "STILL SAFE", TEAL, "#fff", 24), 4, 2.2, style="")))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 400, 280, 1.12), (t0, 400, 280, 1.12), (t0e, 440, 360, 1.12), (_fr(seg, 0, .9), 440, 360, 1.12), (end, 400, 320, 1.0)])
+
+
+def sb_asks(p, **_):
+    """The close: the bond with a $ ? tag that swings, the NEW BONDS PAY gauge falling from 4% to 1% in steps, a
+    MORE OR LESS THAN $100? plate that bobs, a ring pulsing on the bond, and a FULL FILM chip (Silicon Valley Bank).
+    The answer (more: $104.74) is not shown."""
+    gx, top = 590, 120
+    g, yr = _sb_gauge(gx, top, 360)
+    _set(p, _bond(30, 210, 330, 220, "1.5%", "BOND $100") + g)
+    t0, t1 = p.at(.12), p.at(.55)
+    p.parts.append(_life(-1, 1 + t0 + .02, _sb_merc(gx, yr, 4), fi=.01, fo=.01))
+    p.parts.append(_life(t0, 99, _g("scaleY", t0, round(t1 - t0, 2), _sb_merc(gx, yr, 4), style="transform-box:fill-box;transform-origin:center bottom", s0=1, s1=.25), fi=.01, fo=.01))
+    p.parts.append(_g("pop", t1, .35, _pill(gx + 30, yr(1) - 44, "1%", RED, "#fff", 28)))
+    p.parts.append(_g("pop", p.at(.04), .4, _idle("swing", _ptag(195, 110, 170, "$ ?", RED, "#fff", 46), 9, 1.8,
+                                                    style="transform-box:fill-box;transform-origin:center top")))
+    for j in range(6):
+        p.parts.append(_g("ripple", p.at(.08) + .9 * j, .8, f'<circle cx="195" cy="320" r="60" fill="none" stroke="{RED}" stroke-width="6"/>'))
+    p.parts.append(_g("pop", p.at(.3), .35, _idle("bob", _pill(330, 520, "MORE OR LESS THAN $100?", INK, "#fff", 28), 7, 1.8, style="")))
+    p.parts.append(_g("pop", p.at(.6), .35, _idle("bob", _pill(400, 600, "FULL FILM: SILICON VALLEY BANK", TEAL, "#fff", 22), 5, 2.3, ph=1, style="")))
+
+
+SCENES.update({f.__name__: f for f in (sb_hook, sb_safe, sb_gap, sb_today, sb_answer, sb_rule, sb_asks)})

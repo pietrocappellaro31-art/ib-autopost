@@ -24,6 +24,12 @@ jitter stays under that), so a drawing that does not move reads 0. Reported besi
 panel window, where it starts, and the per-beat panel means; the aim for a puzzle hook is no panel second at 0 while
 the question is spoken (PANEL_STILL).
 
+22 Nov (the 20 Nov Short's next improvement): the swipe seconds are taken out of the panel figures. A swipe second
+(any second that overlaps a beat change, from 0.35 s before the new beat to 0.45 s after it) reads 17 to 29 and lifts
+any window it sits in, so a still drawing beside a swipe looked busy. The panel windows and the per-beat means are now
+measured without them (the old figures are still reported beside, as "with swipes"), and a new gate: no beat whose
+panel mean, without its swipe second, is under 2.0 (PANEL_BEAT_MIN), the close included.
+
 Writes build/out/<slug>/entry.json and prints one line per beat.
 """
 
@@ -153,6 +159,7 @@ def quiet(t, mp4):
 
 
 PANEL_STILL = .05          # a panel second whose motion is under this is a still drawing
+PANEL_BEAT_MIN = 2.0       # 22 Nov: every beat's panel mean (swipe seconds out) at least this
 
 
 def panel_motion(t, mp4, beats, rows, fps=6, w=270, h=480, thr=10):
@@ -181,25 +188,41 @@ def panel_motion(t, mp4, beats, rows, fps=6, w=270, h=480, thr=10):
         y0, y1, x0, x1 = box
         per.append(float(d[i:i + fps, y0:y1, x0:x1].mean()))
         owner.append(key)
+    # 22 Nov: the swipe seconds (a beat change from 0.35 s before to 0.45 s after it)
+    changes = [a for a, z, bx, k in boxes if k != "b0"]
+    swipe = {i for i in range(len(per)) if any(i < c + .45 and i + 1 > c - .35 for c in changes)}
+
+    def windows(skip):
+        out = []
+        for i in range(len(per) - 5):
+            chunk = [v for j, v in enumerate(per[i:i + 6], i) if v is not None and j not in skip]
+            if len(chunk) >= 4 and all(v is not None for v in per[i:i + 6]):
+                out.append((round(float(np.mean(chunk)), 2), i))
+        return out
+    win, win_sw = windows(swipe), windows(set())
+    low, low_sw = (min(win) if win else (None, None)), (min(win_sw) if win_sw else (None, None))
     vals = [(v, i) for i, v in enumerate(per) if v is not None]
-    win = []
-    for i in range(len(per) - 5):
-        chunk = [v for v in per[i:i + 6] if v is not None]
-        if len(chunk) == 6:
-            win.append((round(float(np.mean(chunk)), 2), i))
-    low = min(win) if win else (None, None)
     still = [i for v, i in vals if v < PANEL_STILL]
-    by_beat = {}
-    for v, k in zip(per, owner):
+    by_beat, by_beat_sw = {}, {}
+    for i, (v, k) in enumerate(zip(per, owner)):
         if k:
-            by_beat.setdefault(k, []).append(v)
+            by_beat_sw.setdefault(k, []).append(v)
+            if i not in swipe:
+                by_beat.setdefault(k, []).append(v)
     means = {k: round(float(np.mean(v)), 2) for k, v in by_beat.items()}
+    means_sw = {k: round(float(np.mean(v)), 2) for k, v in by_beat_sw.items()}
     hook = by_beat.get("b0", [])
-    print(f"  panel-only motion: lowest 6 s window {low[0]} at {low[1]} s ({where(t, low[1] or 0)}); still panel seconds "
-          f"{len(still)}{' at ' + ', '.join(map(str, still)) if still else ''}; hook min {min(hook):.2f} mean {np.mean(hook):.2f}" if hook else "")
-    print("  panel means by beat: " + ", ".join(f"{k} {v}" for k, v in means.items()))
+    low_beats = [k for k, v in means.items() if v < PANEL_BEAT_MIN]
+    print(f"  panel-only motion (swipe seconds out: {sorted(swipe)}): lowest 6 s window {low[0]} at {low[1]} s ({where(t, low[1] or 0)}) "
+          f"[with swipes {low_sw[0]}]; still panel seconds {len(still)}{' at ' + ', '.join(map(str, still)) if still else ''}"
+          + (f"; hook min {min(hook):.2f} mean {np.mean(hook):.2f}" if hook else ""))
+    print("  panel means by beat, swipes out: " + ", ".join(f"{k} {v}" for k, v in means.items())
+          + (f"  CHECK under {PANEL_BEAT_MIN}: {', '.join(low_beats)}" if low_beats else f"  (all at least {PANEL_BEAT_MIN})"))
+    print("  panel means by beat, with swipes: " + ", ".join(f"{k} {v}" for k, v in means_sw.items()))
     return dict(panel_per_second=[None if v is None else round(v, 2) for v in per], panel_lowest_6s=low[0], panel_lowest_6s_at=low[1],
-                panel_still_seconds=still, panel_means=means, panel_hook_min=round(min(hook), 2) if hook else None)
+                panel_lowest_6s_with_swipes=low_sw[0], swipe_seconds=sorted(swipe), panel_still_seconds=still, panel_means=means,
+                panel_means_with_swipes=means_sw, panel_beat_min=PANEL_BEAT_MIN, panel_beats_under_min=low_beats,
+                panel_hook_min=round(min(hook), 2) if hook else None)
 
 
 if __name__ == "__main__":

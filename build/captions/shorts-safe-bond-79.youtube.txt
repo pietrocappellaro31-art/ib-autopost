@@ -1,0 +1,23 @@
+TITLE: A Safe $100 Bond Pays 1.5%. New Ones Pay 4%. What's It Worth?
+ALT 1: This Bond Can't Default. Why Won't Anyone Pay $100 for It?
+ALT 2: New Bonds Pay 4%. What's Your 1.5% Bond Worth Now?
+
+DESCRIPTION:
+A safe $100 bond pays 1.5% a year for ten years. Then new bonds start paying 4%. Yours can't default, so why won't anyone pay $100 for it?
+
+Each year it pays $2.50 less than a new bond. Over ten years that's $25, and because later money is worth less today, the gap is worth about $20.28 now. So the bond is worth $79.72, and at that price it earns 4% a year, the same as a new one. The bond is our own example and the maths works in any currency.
+
+How we worked it: $1.50 a year for 10 years plus $100 at the end, each payment discounted at 4%. It's our own arithmetic, with no outside data in this Short.
+
+The full story is in our film "$40 Billion Left This Bank in One Day. It Was Full of Safe Bonds." It's about Silicon Valley Bank in March 2023, with its sources, and it's linked from this Short.
+
+For education only, not financial advice.
+
+#Shorts #bonds #investing
+
+Music: original score made for this video.
+Narration: AI-generated voice; script is our original work.
+
+STUDIO TAGS: bond prices, interest rates, bond yield, present value, discounting, time value of money, rates up prices down, interest rate risk, Silicon Valley Bank, SVB, finance math, money puzzle, investing basics, investment banking, Banker's Notebook
+
+PINNED COMMENT: If new bonds paid 1% instead, would your 1.5% bond be worth more or less than $100? Say which and why below. The full story, a bank that was full of safe bonds, is in our film "$40 Billion Left This Bank in One Day. It Was Full of Safe Bonds."
