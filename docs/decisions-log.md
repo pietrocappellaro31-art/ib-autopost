@@ -18,6 +18,16 @@ What has been settled, and what is still open. Newest first.
 
 ## Settled
 
+- **At least 1% better every day; #14 is the bar** (22 Nov, Pietro on YouTube #14, Silicon Valley Bank: "Is actually a
+  very good video, very high quality. Continue to increase the quality in the next days. Your goal is to create better
+  material every day and improve by at least 1% each day"). Read as: from 22 Nov every daily run (long films first; the
+  same spirit for Shorts and Reels) is measured against the previous one of its format, and the quality-log row names
+  at least one measured figure that is 1% or more better than the previous film's (motion: static share, windows under
+  1.2, lowest 6 s window, mean motion; variety: drawing-beside-text share, filmed share of the running time; sound:
+  DNSMOS, voice over score; takes: lines word for word), with no gate going backwards. If a run cannot show it, it says
+  so plainly rather than counting a cosmetic change. #14 is the reference for the long films. His praise was for the
+  film as a whole; it is not read as a verdict on the harp score in particular.
+
 - **Carousels never run dry: a weekly scheduled task builds the next batch** (19 Nov, Pietro: "Why this carousel is
   not publishing anymore since 2 days? Make sure this carousel is published each day."). Cause: the 10 to 16 Nov batch
   (`build/nov1.py`) was the last one queued, so 17 and 18 Nov had no carousel and no Story; the publisher and the

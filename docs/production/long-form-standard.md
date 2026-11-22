@@ -165,3 +165,7 @@ kept as history).
 Each film more engaging to watch, better researched, more cinematic, better animated, better narrated, better
 mixed, more educational, more original. These do not trade against each other: a beautiful film that teaches a
 wrong fact fails, and a correct film that looks like an eight-minute slideshow fails too.
+
+At least 1% better each day (Pietro, 22 Nov, after #14): every quality-log row names at least one measured figure
+that improved by 1% or more on the previous film, with no gate going backwards; #14 (yt-014-svb-40-billion) is the
+reference. See `decisions-log.md`, 22 Nov.
