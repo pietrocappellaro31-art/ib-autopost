@@ -1184,8 +1184,8 @@
         "story-2026-11-22.jpg"
       ],
       "caption": "",
-      "published_id": null,
-      "published_at_utc": null
+      "published_id": "18134945452765979",
+      "published_at_utc": "2026-11-22T23:06:51.345011+00:00"
     },
     {
       "id": "n2-13-goodwill-impairment",
@@ -1707,7 +1707,9 @@
       "caption": "A 2-for-1 split doubles your shares. So are you any richer? Nope.\n\nSay you own 100 shares at $50. That's $5,000. After the split you hold 200 shares, but each one is now half as much of the company, so the price drops to $25. 200 x $25 is still $5,000.\n\nNothing about the business changed. Same profit, same cash. Earnings per share go from $2.50 to $1.25, so the stock still trades at 20x.\n\nThink of it like a pizza cut into 16 slices instead of 8. You've got more slices, but your piece is exactly the same size. Even the dividend follows: $1 a share becomes 50 cents, on twice the shares.\n\nYour turn: a 1-for-5 reverse split. You hold 100 shares at $4. How many shares do you have after, and at what price? Tell me in the comments.\n\nRound numbers, before tax and trading costs.\n\nNarration: AI-generated voice; script is our original work.\n\n#investmentbanking #stocks #ibinterview #finance",
       "first_comment": "Bonus: a 3-for-2 split on 100 shares at $60. How many shares do you hold after, and at what price?",
       "ai_label": true,
-      "published_id": null
+      "published_id": "18117497612169197",
+      "published_at_utc": "2026-11-22T23:06:31.384978+00:00",
+      "first_comment_id": "18131091652880365"
     },
     {
       "id": "story-2026-11-26",
