@@ -281,8 +281,13 @@ window.fitSvg = function (svg, zmax, zmin) {
   // 12 Nov (ported from youtube.py): zoom the viewBox onto what is actually drawn, so a drawing fills its
   // box. Keeps the element's own shape (a 700 x 532 box gets a 700 x 532 view, not a letterboxed 800 x 640).
   if (svg.dataset.fit === 'no' || svg.dataset.fitted) return null;
-  let b; try { b = svg.getBBox(); } catch (e) { return null; }
-  if (!b.width || !b.height) return null;
+  // 22 Nov: parts marked data-nofit (the paper sheet of sketch._wipe_to, which sweeps from -820 to +1640) are left
+  // out of the measure; the 22 Nov minority Reel's wipe beat had been fitted at zoom 0.8 around the sheet's path
+  const nofit = [...svg.querySelectorAll('[data-nofit]')];
+  nofit.forEach(e => { e._disp = e.style.display; e.style.display = 'none'; });
+  let b; try { b = svg.getBBox(); } catch (e) { b = null; }
+  nofit.forEach(e => { e.style.display = e._disp || ''; });
+  if (!b || !b.width || !b.height) return null;
   const vb = svg.viewBox.baseVal, ar = (+svg.getAttribute('width') || vb.width) / (+svg.getAttribute('height') || vb.height);
   const W = +svg.getAttribute('width') || vb.width, Hh = +svg.getAttribute('height') || vb.height;
   const fill0 = Math.min(b.width * Math.min(W / vb.width, Hh / vb.height) / W, 1.5);   // share of the box width drawn on, before
@@ -298,7 +303,24 @@ window.fitSvg = function (svg, zmax, zmin) {
   // 15 Nov: the share is the larger of width and height: a tall drawing (a clock) in a wide box fills it when it
   // runs top to bottom, and the old width-only measure called that 58%.
   const fill1 = Math.min(Math.max(b.width / w, b.height / h), 1);
-  return {zoom: +(800 / w).toFixed(2), before: +fill0.toFixed(2), after: +fill1.toFixed(2), w: +(b.width / w).toFixed(2), h: +(b.height / h).toFixed(2)};
+  // 22 Nov (the 20 Nov next improvement): a camera (sketch._cam, data-cam) framed the 800 x 640 drawing, so once the
+  // fit had zoomed the view onto the ink a camera zoom of 1.3 pushed labels past the edge. Each camera key is now
+  // re-solved inside the fitted view: the window a key shows (w / zoom by h / zoom) is clamped inside the view and
+  // centred there, zoom 1 is the whole fitted view, and the camera's clip becomes the view. Clamped keys are reported.
+  let camKeys = 0, camClamped = 0, camShift = 0;
+  svg.querySelectorAll('[data-cam]').forEach(g => {
+    const raw = JSON.parse(g.dataset.cam), cxV = x + w / 2, cyV = y + h / 2;
+    const kf = raw.map(([t, cx, cy, s]) => {
+      const hw = w / s / 2, hh = h / s / 2;
+      const ccx = Math.min(Math.max(cx, x + hw), x + w - hw), ccy = Math.min(Math.max(cy, y + hh), y + h - hh);
+      camKeys++; const sh = Math.hypot(ccx - cx, ccy - cy); if (s > 1.001 && sh > 1) { camClamped++; camShift = Math.max(camShift, sh); }
+      return [t, +(cxV - s * ccx).toFixed(1), +(cyV - s * ccy).toFixed(1), s, 1, 0];
+    });
+    g.dataset.kf = JSON.stringify(kf); g._kf = null;
+    const cr = g.parentElement && g.parentElement.getAttribute('clip-path') && svg.querySelector(g.parentElement.getAttribute('clip-path').slice(4, -1) + ' rect');
+    if (cr) { cr.setAttribute('x', x.toFixed(1)); cr.setAttribute('y', y.toFixed(1)); cr.setAttribute('width', w.toFixed(1)); cr.setAttribute('height', h.toFixed(1)); }
+  });
+  return {cam: camKeys, cam_clamped: camClamped, cam_shift: +camShift.toFixed(1), zoom: +(800 / w).toFixed(2), before: +fill0.toFixed(2), after: +fill1.toFixed(2), w: +(b.width / w).toFixed(2), h: +(b.height / h).toFixed(2)};
 };
 window.fitSketches = function (zmax = 1.5, zmin = .8) {
   // Each drawing is measured at the end of its own life (the nearest 'life' parent), when all of it is drawn.
@@ -546,6 +568,10 @@ def build(slug, scenes, theme="ink", cover_at=0.0, crf=18, check_at=(), fit=Fals
             if fits:
                 (work / "fit.json").write_text(json.dumps(fits, indent=1))
                 small = [k for k, r in enumerate(fits) if r["after"] < .85]
+                ck = sum(r.get("cam", 0) for r in fits)
+                if ck:
+                    print(f"  camera: {ck} keys re-solved inside the fitted views, {sum(r.get('cam_clamped', 0) for r in fits)} clamped "
+                          f"(largest shift {max(r.get('cam_shift', 0) for r in fits):.0f} units: that framing would have cut ink)")
                 print(f"  fitted {len(fits)} drawings: drawn width {min(r['before'] for r in fits):.2f}-{max(r['before'] for r in fits):.2f}"
                       f" of the box before, {min(r['after'] for r in fits):.2f}-{max(r['after'] for r in fits):.2f} after"
                       + (f"  CHECK under 85%: drawings {small}" if small else ""), flush=True)

@@ -43,6 +43,9 @@ def words(text):
     t = re.sub(r"\$(\d+)\.(\d\d)\b", r"\1 qqstop \2 cents", t)
     t = re.sub(r"\b([a-z]+) dollars and ([a-z]+(?: [a-z]+)?) cents\b", r"\1 qqstop \2 cents", t)
     t = re.sub(r"\b(?:a|one) dollar and ([a-z]+) cents?\b", r"1 qqstop \1 cents", t)     # 19 Nov: "one dollar and three cents" = $1.03
+    t = re.sub(r"\b(?:a|one) dollar ((?:ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen)|"
+               r"(?:twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety)(?:[ -](?:one|two|three|four|five|six|seven|eight|nine))?)\b",
+               lambda m: "1 qqstop " + m.group(1).replace("-", " ") + " cents", t)                  # 22 Nov: "a dollar twenty five" = $1.25
     t = re.sub(r"\ba dollar (ten|twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety)\b", r"1 qqstop \1 cents", t)   # 17 Nov: "a dollar fifty" = $1.50
     t = re.sub(r"\bevery hundred\b", "every 100", t)
     t = re.sub(r"s' ", "s ", t)
@@ -104,6 +107,8 @@ def words(text):
                lambda m: str((_teen.index(m.group(1)) + 11) * 100 + _dig.index(m.group(2)) + 1), t)
     t = re.sub(r"\bd c f\b", "dcf", t)                               # 13 Nov (Levels #12): letters a recogniser spaces out
     t = re.sub(r"\be b i t d a\b", "ebitda", t)                     # 13 Nov (YouTube #6): the place and the company
+    t = re.sub(r"\bebit dah\b", "ebitda", t)                        # 22 Nov: every sound of the word, split in two ("Ebit Dah");
+    #                                                                 "ibita" (the d lost) stays a miss and is reworded
     t = re.sub(r"(?<=[a-z])'s\b", "s", t)
     _o2 = "ten eleven twelve thirteen fourteen fifteen sixteen seventeen eighteen nineteen".split()
     _tn2 = "twenty thirty forty fifty sixty seventy eighty ninety".split()

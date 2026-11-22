@@ -1,0 +1,17 @@
+You own 80% of a company. So why is all of its EBITDA sitting in your numbers?
+
+Because once you own more than half, you control it, and control means you report the whole thing. Your own business makes $40 of EBITDA, the subsidiary makes $10, so you show $50. Not $48.
+
+Here's the catch. Your share price only pays for your 80%. The other 20%, worth $20 in this example, belongs to outside owners. That's minority interest (you'll also hear noncontrolling interest).
+
+So the bridge goes: $300 of equity, plus $100 of debt, minus $20 of cash, plus $20 of minority interest. Enterprise value is $400, and $400 / $50 is 8x.
+
+Forget the minority piece and you'd get 7.6x. The company would look cheaper than it really is, because your EBITDA covers owners your EV left out.
+
+Your turn: you own 30% of another company, no control. Do you add that stake to EV or take it away? Answer in the comments.
+
+Round numbers, our own example.
+
+Narration: AI-generated voice; script is our original work.
+
+#investmentbanking #valuation #ibinterview #finance

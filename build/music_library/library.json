@@ -362,6 +362,20 @@
    "kind": "short",
    "id": "ludovico-einaudi-experience",
    "mood": "calm"
+  },
+  {
+   "date": "2026-11-22",
+   "slug": "w2-minority-interest",
+   "kind": "short",
+   "id": "txmy-ethereal-slowed",
+   "mood": "curious"
+  },
+  {
+   "date": "2026-11-22",
+   "slug": "w2-stock-split",
+   "kind": "short",
+   "id": "bloody-mary-instrumental-slowed",
+   "mood": "playful"
   }
  ],
  "originals": [
@@ -643,6 +657,32 @@
    "style": "noir_jazz",
    "rights": "ORIGINAL_GENERATED",
    "added": "2026-11-20",
+   "note": ""
+  },
+  {
+   "id": "score-w2-minority-interest",
+   "title": "Original score for w2-minority-interest",
+   "video": "w2-minority-interest",
+   "engine": "score.py + GeneralUser GS v2.0.3 (TinySoundFont)",
+   "mood": "explain+resolve",
+   "bpm": 74,
+   "key": "D",
+   "style": "solo_piano",
+   "rights": "ORIGINAL_GENERATED",
+   "added": "2026-11-22",
+   "note": ""
+  },
+  {
+   "id": "score-w2-stock-split",
+   "title": "Original score for w2-stock-split",
+   "video": "w2-stock-split",
+   "engine": "score.py + GeneralUser GS v2.0.3 (TinySoundFont)",
+   "mood": "discover+resolve",
+   "bpm": 74,
+   "key": "Eb",
+   "style": "ambient",
+   "rights": "ORIGINAL_GENERATED",
+   "added": "2026-11-22",
    "note": ""
   }
  ]

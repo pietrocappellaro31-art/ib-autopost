@@ -3053,6 +3053,8 @@ def _abs(p, t):
 
 
 def _g(fx, at, d, inner, style="transform-box:fill-box;transform-origin:center", **data):
+    if fx == "ripple":                   # 22 Nov: a ripple ends at 3x its size; the fit must not measure it
+        data.setdefault("nofit", 1)
     attrs = "".join(f' data-{k}="{v}"' for k, v in data.items())
     return f'<g class="a" data-fx="{fx}" data-at="{at:.2f}" data-d="{d}"{attrs} style="{style}">{inner}</g>'
 
@@ -6393,15 +6395,18 @@ def _cam(p, keys, clip=(0, 0, 800, 640)):
     x, y, w_, h_ = clip
     # one part, not an open tag and a close tag: held_life wraps every part in its own boil group, which closed
     # an open camera (or _push) group straight away and left it empty (the 19 Nov push-ins never moved anything)
+    # 22 Nov: data-cam carries the raw framings (time, centre, zoom); motion.js fitSvg re-solves them inside the
+    # fitted view and clamps each window inside it, so a zoom never cuts the drawing's own labels
+    raw = [[round(t, 3), cx, cy, s] for t, cx, cy, s in keys]
     p.parts[:] = [f'<clipPath id="{cid}"><rect x="{x}" y="{y}" width="{w_}" height="{h_}"/></clipPath>'
                   f'<g clip-path="url(#{cid})"><g class="a" data-fx="kf" data-at="{kf[0][0]}" data-d="{max(kf[-1][0] - kf[0][0], .1):.2f}" '
-                  f"data-kf='{_json(kf)}' style=\"transform-box:view-box;transform-origin:0px 0px\">" + "".join(p.parts) + "</g></g>"]
+                  f"data-kf='{_json(kf)}' data-cam='{_json(raw)}' style=\"transform-box:view-box;transform-origin:0px 0px\">" + "".join(p.parts) + "</g></g>"]
 
 
 def _wipe_to(p, t, inner, d=.5):
     """A full-panel change of state: a paper sheet sweeps left to right across the drawing and leaves the new state
     (inner) behind it."""
-    p.parts.append(f'<g class="a" data-fx="life" data-at="{t:.2f}" data-d="{d + .02:.2f}" data-fi=".01" data-fo=".01">'
+    p.parts.append(f'<g class="a" data-nofit="1" data-fx="life" data-at="{t:.2f}" data-d="{d + .02:.2f}" data-fi=".01" data-fo=".01">'
                    + _g("slide", t, d, f'<rect x="-820" y="-20" width="820" height="680" fill="{PAPER}"/>'
                         f'<rect x="-14" y="-20" width="14" height="680" fill="{INK}"/>', style="", x0=0, y0=0, x1=1640, y1=0, ease="inout") + "</g>")
     p.parts.append(_life(t + d * .5, 99, inner, fi=.01, fo=.01))
@@ -6963,3 +6968,524 @@ def bd_asks(p, **_):
 
 
 SCENES.update({f.__name__: f for f in (bd_hook, bd_bond, bd_rival, bd_price, bd_long, bd_rule, bd_asks)})
+
+
+# ---- 22 Nov Reel A: minority interest in enterprise value (build/reels_minority-interest.py). You own 80% of a
+# subsidiary: you control it, so its whole EBITDA ($10) sits in yours ($40 + $10 = $50). Your equity value ($300)
+# pays only for your 80%; the outside 20% is worth $20 (20% of a $100 subsidiary). EV = 300 + 100 debt - 20 cash +
+# 20 minority interest = $400; 400 / 50 = 8.0x; without it 380 / 50 = 7.6x. Close: a 30% stake (subtract; not shown).
+
+MI_BASE = 580
+SUB_C, OUT_C = "#F2C35B", "#B9B4AC"
+
+
+def _wedge(cx, cy, r, f0, f1, fill, stroke=INK, sw=6):
+    """A pie slice from fraction f0 to f1 of the turn, clockwise from 12 o'clock."""
+    a0, a1 = 2 * math.pi * f0 - math.pi / 2, 2 * math.pi * f1 - math.pi / 2
+    x0, y0, x1, y1 = cx + r * math.cos(a0), cy + r * math.sin(a0), cx + r * math.cos(a1), cy + r * math.sin(a1)
+    big = 1 if f1 - f0 > .5 else 0
+    return (f'<path d="M{cx} {cy} L{x0:.1f} {y0:.1f} A{r} {r} 0 {big} 1 {x1:.1f} {y1:.1f} Z" fill="{fill}" stroke="{stroke}" '
+            f'stroke-width="{sw}" stroke-linejoin="round"/>')
+
+
+def _mi_pie(cx, cy, r, yours=.8, out_fill=OUT_C, labels=True, size=40):
+    s = _wedge(cx, cy, r, 0, yours, TEAL) + _wedge(cx, cy, r, yours, 1, out_fill)
+    if labels:
+        a = 2 * math.pi * yours / 2 - math.pi / 2
+        s += _t(cx + r * .5 * math.cos(a), cy + r * .5 * math.sin(a) + size * .35, f"{round(yours * 100)}%", size, "#fff")
+    return s
+
+
+def mi_hook(p, seg=None, **_):
+    """The hook. From the swipe, framed close on the subsidiary: its pie over it, 80% teal (yours) and 20% grey, its
+    EBITDA block on its roof. On 'You own 80%' the teal slice pulses, an 80% YOURS pill pops and a rope draws from
+    your office to it. On the question the camera pulls back to both offices; the whole EBITDA block lifts off the
+    subsidiary's roof, flies across and lands on yours, a 100%? pill pops and a ? bobs."""
+    pc, pr = (625, 150), 95
+    s = (f'<path d="M30 {MI_BASE} H770" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+         + _office(60, MI_BASE, 270, 300) + _t(195, MI_BASE + 44, "YOU", 30, INK, serif=False)
+         + _office(520, MI_BASE, 210, 230) + _t(625, MI_BASE + 44, "SUBSIDIARY", 26, INK, serif=False)
+         + _wedge(*pc, pr, .8, 1, OUT_C) + _wedge(*pc, pr, 0, .8, TEAL))
+    _set(p, s)
+    t0 = _fr(seg, 0, .25)
+    p.parts.append(_g("press", t0, .5, _wedge(*pc, pr, 0, .8, TEAL)))
+    p.parts.append(_g("pop", t0 + .3, .35, _pill(430, 90, "80% YOURS", TEAL, "#fff", 26)))
+    p.parts.append(_g("draw", t0 + .1, .7, f'<path d="M335 330 Q430 260 515 320" fill="none" stroke="{TEAL}" stroke-width="7" stroke-dasharray="16 10"/>', style=""))
+    t1 = _fr(seg, 1, .2)
+    blk = (f'<rect x="545" y="255" width="160" height="70" rx="10" fill="{SUB_C}" stroke="{INK}" stroke-width="6"/>'
+           + _t(625, 301, "EBITDA", 30, INK, serif=False))
+    p.parts.append(_life(-1, 1 + t1 + .02, blk, fi=.01, fo=.01))
+    p.parts.append(_life(t1, 99, _g("slide", t1, 1.0, blk, style="", x0=0, y0=0, x1=-430, y1=-67, ease="inout"), fi=.01, fo=.01))
+    p.parts.append(_g("pop", t1 + 1.0, .35, _pill(195, 150, "100%?", RED, "#fff", 34)))
+    p.parts.append(_life(t1 + 1.2, 99, _idle("bob", _t(430, 230, "?", 110, RED), 9, 2.3, style=""), fi=.15, fo=.01))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 600, 250, 1.3), (_fr(seg, 0, .6), 590, 260, 1.3), (_fr(seg, 1, .1), 400, 320, 1.0), (end, 400, 320, 1.0)])
+
+
+def _set_life(shape):
+    return f'<g class="a" data-fx="fade" data-at="-1" data-d=".05">{shape}</g>'
+
+
+def mi_control(p, seg=None, **_):
+    """Control. From the swipe, framed on the pie (80% teal YOU, 20% grey OTHERS) with a dashed half line. On 'more
+    than half' the half line draws and a CONTROL stamp lands; the camera pans right to an empty EBITDA column. On the
+    second sentence your $40 block grows, then the subsidiary's whole $10 block drops on top, the total counting to
+    $50; an ALL OF IT pill pops."""
+    k = 6.0
+    xc, wc = 500, 230
+    s = (_mi_pie(220, 300, 175, size=46) + _t(140, 545, "YOU", 28, TEAL, serif=False) + _t(330, 545, "OTHERS", 28, GREY, serif=False)
+         + f'<path d="M{xc - 20} {MI_BASE} H{xc + wc + 20}" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+         + f'<rect x="{xc}" y="{MI_BASE - 50 * k}" width="{wc}" height="{50 * k}" rx="8" fill="none" stroke="{GREY}" stroke-width="5" stroke-dasharray="14 10"/>'
+         + _t(xc + wc / 2, MI_BASE + 40, "YOUR EBITDA", 26, INK, serif=False))
+    _set(p, s)
+    t0 = _fr(seg, 0, .15)
+    p.parts.append(_g("draw", t0, .6, f'<path d="M220 105 V495" stroke="{RED}" stroke-width="6" stroke-dasharray="14 10"/>', style=""))
+    p.parts.append(_g("pop", t0 + .4, .3, _pill(220, 515, "HALF", RED, "#fff", 22)))
+    p.parts.append(_stamp(80, 250, 280, 96, "CONTROL", RED, _fr(seg, 0, .45), size=54, rot=-6))
+    t1 = _fr(seg, 1, .1)
+    own = (f'<rect x="{xc}" y="{MI_BASE - 40 * k}" width="{wc}" height="{40 * k}" rx="8" fill="{TEAL}" stroke="{INK}" stroke-width="6"/>'
+           + _t(xc + wc / 2, MI_BASE - 20 * k + 14, "$40", 44, "#fff"))
+    p.parts.append(_g("growY", t1, .7, own, style="transform-box:fill-box;transform-origin:center bottom"))
+    t2 = _fr(seg, 1, .5)
+    sub = (f'<rect x="{xc}" y="{MI_BASE - 50 * k}" width="{wc}" height="{10 * k}" rx="8" fill="{SUB_C}" stroke="{INK}" stroke-width="6"/>'
+           + _t(xc + wc / 2, MI_BASE - 45 * k + 14, "+$10, ALL", 34, INK))
+    p.parts.append(_life(t2, 99, _g("slide", t2, .6, sub, style="", y0=-320, y1=0, ease="out"), fi=.08, fo=.01))
+    p.parts.append(_life(t1 + .2, t2 + .55 - t1 - .2 + .01, _cnt(xc + wc / 2, MI_BASE - 50 * k - 24, 0, 40, t1 + .2, .6, size=50), fi=.05, fo=.01))
+    p.parts.append(_life(t2 + .55, 99, _cnt(xc + wc / 2, MI_BASE - 50 * k - 24, 40, 50, t2 + .55, .5, size=50), fi=.01, fo=.01))
+    p.parts.append(_g("ripple", t2 + .55, .6, f'<circle cx="{xc + wc / 2}" cy="{MI_BASE - 45 * k}" r="70" fill="none" stroke="{RED}" stroke-width="6"/>'))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 230, 320, 1.25), (_fr(seg, 0, .7), 230, 320, 1.25), (_fr(seg, 1, .05), 560, 360, 1.2),
+             (seg[-1][1] - .3, 560, 360, 1.2), (end, 400, 320, 1.0)])
+
+
+def mi_owners(p, seg=None, **_):
+    """Who your price pays for. From the swipe: your EQUITY VALUE block on the left (a share price tag on it), the
+    subsidiary's pie on the right, three outside owners beside it. On 'your share price' the tag swings and the
+    block counts to $300; on 'your eighty percent' a teal bracket ties the block to the teal slice. On the second
+    sentence the camera follows the grey 20% slice as it slides out of the pie to the outside owners, a $20 tag
+    pops on it, and a NOT YOURS pill."""
+    xb, wb, k = 50, 250, 1.3
+    s = (f'<path d="M30 {MI_BASE} H770" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+         + f'<rect x="{xb}" y="{MI_BASE - 300 * k}" width="{wb}" height="{300 * k}" rx="10" fill="{TEAL}" stroke="{INK}" stroke-width="6"/>'
+         + _t(xb + wb / 2, MI_BASE + 40, "EQUITY VALUE", 26, INK, serif=False)
+         + _wedge(470, 250, 120, 0, .8, TEAL) + _t(470, 418, "SUBSIDIARY", 24, GREY, serif=False)
+         + "".join(_ss_person(560 + 70 * j, MI_BASE, OUT_C if j != 1 else GREY, .62) for j in range(3)))
+    _set(p, s)
+    t0 = _fr(seg, 0, .2)
+    p.parts.append(_life(t0, 99, _cnt(xb + wb / 2, MI_BASE - 150 * k + 20, 0, 300, t0, .8, size=64, color="#fff"), fi=.05, fo=.01))
+    p.parts.append(_g("pop", t0 + .1, .35, _idle("swing", _ptag(xb + wb / 2, 150 - 10, 200, "SHARE PRICE", INK, "#fff", 26), 5, 2.4,
+                                                 style="transform-box:fill-box;transform-origin:center top")))
+    t1 = _fr(seg, 0, .7)
+    p.parts.append(_g("draw", t1, .7, f'<path d="M{xb + wb + 10} 300 Q370 230 {470 - 30} 230" fill="none" stroke="{TEAL}" stroke-width="8"/>', style=""))
+    p.parts.append(_g("pop", t1 + .5, .35, _pill(370, 150, "YOUR 80%", TEAL, "#fff", 26)))
+    t2 = _fr(seg, 1, .1)
+    p.parts.append(_life(-1, 1 + t2 + .02, _wedge(470, 250, 120, .8, 1, OUT_C), fi=.01, fo=.01))
+    p.parts.append(_life(t2, 99, _g("slide", t2, 1.1, _wedge(470, 250, 120, .8, 1, OUT_C) + _t(420, 205, "20%", 30, INK), style="",
+                                    x0=0, y0=0, x1=215, y1=110, ease="inout"), fi=.01, fo=.01))
+    p.parts.append(_g("pop", t2 + 1.0, .35, _idle("swing", _ptag(640, 250, 130, "$20", GOLD, INK, 40), 5, 2.2,
+                                                    style="transform-box:fill-box;transform-origin:center top")))
+    p.parts.append(_g("pop", _fr(seg, 1, .75), .35, _pill(640, 120, "NOT YOURS", RED, "#fff", 28)))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 250, 340, 1.15), (_fr(seg, 0, .6), 280, 320, 1.12), (_fr(seg, 1, .15), 560, 340, 1.22),
+             (seg[-1][1] - .3, 560, 330, 1.22), (end, 400, 320, 1.0)])
+
+
+def mi_bridge(p, seg=None, **_):
+    """The bridge, to scale (1.1 px a dollar). Five dashed columns: EQUITY, +DEBT, -CASH, +MINORITY, EV. The camera
+    walks along them on the words: equity grows to $300, debt adds $100 on top, cash takes $20 off; on the second
+    sentence the minority block ($20, gold) drops in and rings, then the EV column grows to $400 and counts."""
+    k, w_ = 1.1, 122
+    xs = [26, 180, 334, 488, 642]
+    lev = [(0, 300), (300, 400), (380, 400), (380, 400), (0, 400)]
+    labs = ["EQUITY", "+DEBT", "-CASH", "+MINORITY", "EV"]
+    s = f'<path d="M14 {MI_BASE} H786" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+    for x, (lo, hi), lab in zip(xs, lev, labs):
+        fill = {"EQUITY": TEAL, "+DEBT": DEBT_C, "-CASH": LOSS_C, "+MINORITY": SUB_C, "EV": TEAL}[lab]
+        s += (f'<rect x="{x}" y="{MI_BASE - hi * k:.0f}" width="{w_}" height="{(hi - lo) * k:.0f}" rx="8" fill="{fill}" fill-opacity=".22" stroke="{GREY}" stroke-width="4" stroke-dasharray="12 9"/>'
+              + _t(x + w_ / 2, MI_BASE + 36, lab, 21 if len(lab) > 6 else 24, INK, serif=False))
+    for j in range(4):
+        y = MI_BASE - lev[j][1 if j < 2 else 0] * k
+        s += f'<path d="M{xs[j] + w_} {y:.0f} H{xs[j + 1]}" stroke="{GREY}" stroke-width="3" stroke-dasharray="6 6"/>'
+    _set(p, s)
+
+    def blk(j, fill, label, col="#fff", size=34, fx="growY", t=0.0, origin="bottom"):
+        lo, hi = lev[j]
+        x = xs[j]
+        inner = (f'<rect x="{x}" y="{MI_BASE - hi * k:.0f}" width="{w_}" height="{(hi - lo) * k:.0f}" rx="8" fill="{fill}" stroke="{INK}" stroke-width="6"/>'
+                 + _t(x + w_ / 2, MI_BASE - (lo + hi) / 2 * k + size * .36, label, size, col))
+        p.parts.append(_g(fx, t, .6, inner, style=f"transform-box:fill-box;transform-origin:center {origin}"))
+    blk(0, TEAL, "$300", t=_fr(seg, 0, .12), size=40)
+    blk(1, DEBT_C, "$100", t=_fr(seg, 0, .45), size=36)
+    blk(2, LOSS_C, "", INK, size=26, fx="growYdown", t=_fr(seg, 0, .78), origin="top")
+    # 22 Nov: at 1.1 px a dollar the $20 blocks are slivers, so each gets a pill above it on its words
+    p.parts.append(_g("pop", _fr(seg, 0, .8), .35, _pill(xs[2] + w_ / 2, MI_BASE - 400 * k - 70, "-$20", LOSS_C, INK, 28)))
+    t1 = _fr(seg, 1, .25)
+    lo, hi = lev[3]
+    mi = (f'<rect x="{xs[3]}" y="{MI_BASE - hi * k:.0f}" width="{w_}" height="{(hi - lo) * k:.0f}" rx="8" fill="{SUB_C}" stroke="{INK}" stroke-width="6"/>'
+          )
+    p.parts.append(_life(t1, 99, _g("slide", t1, .55, mi, style="", y0=-300, y1=0, ease="out"), fi=.08, fo=.01))
+    p.parts.append(_g("pop", t1 + .45, .35, _pill(xs[3] + w_ / 2, MI_BASE - 400 * k - 70, "+$20", SUB_C, INK, 28)))
+    p.parts.append(_g("pop", t1 + .7, .35, _pill(xs[3] + w_ / 2 - 40, MI_BASE - 400 * k - 135, "MINORITY", RED, "#fff", 24)))
+    for j in range(2):
+        p.parts.append(_life(t1 + .6 + .6 * j, .5, f'<rect x="{xs[3] - 10}" y="{MI_BASE - hi * k - 10:.0f}" width="{w_ + 20}" height="{(hi - lo) * k + 20:.0f}" rx="10" fill="none" stroke="{RED}" stroke-width="6"/>', fi=.1, fo=.15))
+    t2 = _fr(seg, 1, .7)
+    blk(4, TEAL, "", t=t2)
+    p.parts.append(_life(t2 + .2, 99, _cnt(xs[4] + w_ / 2, MI_BASE - 200 * k + 14, 0, 400, t2 + .2, .6, size=40, color="#fff"), fi=.05, fo=.01))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 160, 330, 1.2), (_fr(seg, 0, .3), 170, 330, 1.2), (_fr(seg, 0, .7), 320, 300, 1.2),
+             (_fr(seg, 1, .15), 520, 280, 1.2), (_fr(seg, 1, .6), 540, 280, 1.2), (seg[-1][1], 400, 320, 1.0), (end, 400, 320, 1.0)])
+
+
+def _mi_stack(p, t, x, w_, n, kh, fill, t_step=.14, partial=None, part_fill=None):
+    """n copies of the EBITDA block stacking up from the base, one per t_step, with a running count n.0x."""
+    for j in range(n):
+        y = MI_BASE - (j + 1) * kh
+        p.parts.append(_g("pop", t + t_step * j, .2, f'<rect x="{x}" y="{y:.0f}" width="{w_}" height="{kh - 4:.0f}" rx="6" fill="{fill}" stroke="{INK}" stroke-width="5"/>'))
+    if partial:
+        y = MI_BASE - n * kh - partial * kh
+        p.parts.append(_g("pop", t + t_step * n, .2, f'<rect x="{x}" y="{y:.0f}" width="{w_}" height="{partial * kh - 4:.0f}" rx="6" fill="{part_fill}" stroke="{INK}" stroke-width="5"/>'))
+
+
+def mi_multiple(p, seg=None, **_):
+    """The multiple. EV ($400) on the left as a dashed column, the $50 EBITDA block on the right. On 'eight times'
+    copies of the EBITDA block stack up inside the EV column, one a tick, while 8.0x counts. On 'Leave it out' a
+    paper wipe changes the state: the column is $380 now, the stack stops at 7.6 blocks, the top one cut short in red,
+    7.6x, and a LOOKS CHEAPER stamp lands."""
+    kh = 50 * 1.1
+    xe, we, xb, wb = 90, 240, 520, 200
+    s = (f'<path d="M40 {MI_BASE} H770" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+         + f'<rect x="{xb}" y="{MI_BASE - kh:.0f}" width="{wb}" height="{kh - 4:.0f}" rx="6" fill="{SUB_C}" stroke="{INK}" stroke-width="5"/>'
+         + _t(xb + wb / 2, MI_BASE - kh / 2 + 10, "EBITDA $50", 28, INK, serif=False))
+    _set(p, s)
+
+    def state(ev, label):
+        ghost = "".join(f'<rect x="{xe + 10}" y="{MI_BASE - (j + 1) * kh:.0f}" width="{we - 20}" height="{kh - 4:.0f}" rx="6" fill="{SUB_C}" fill-opacity=".2"/>'
+                        for j in range(int(ev // 50)))
+        return (f'<rect x="{xe}" y="{MI_BASE - ev * 1.1:.0f}" width="{we}" height="{ev * 1.1:.0f}" rx="8" fill="none" stroke="{GREY}" stroke-width="5" stroke-dasharray="14 10"/>'
+                + ghost + _t(xe + we / 2, MI_BASE + 40, label, 26, INK, serif=False))
+    t_w = _fr(seg, 1, .08)
+    p.parts.append(_life(-1, 1 + t_w + .25, state(400, "EV $400"), fi=.01, fo=.01))
+    t0 = _fr(seg, 0, .3)
+    stack_a = []
+    sub = Pen(0, 1)
+    sub.parts = stack_a
+    _mi_stack(sub, t0, xe + 10, we - 20, 8, kh, SUB_C, t_step=.16)
+    p.parts.append(_life(-1, 1 + t_w + .25, "".join(stack_a), fi=.01, fo=.01))
+    p.parts.append(_life(t0, t_w + .25 - t0, _cnt(xb + wb / 2, 250, 0, 8, t0, 1.3, size=110, color=TEAL, pre="", suf="x", dec=1), fi=.05, fo=.01))
+    p.parts.append(_g("pop", t0 + 1.4, .35, _pill(xb + wb / 2, 340, "$400 / $50", INK, "#fff", 26)))
+    stack_b = []
+    sub2 = Pen(0, 1)
+    sub2.parts = stack_b
+    _mi_stack(sub2, t_w + .3, xe + 10, we - 20, 7, kh, SUB_C, t_step=.06, partial=.6, part_fill=LOSS_C)
+    _wipe_to(p, t_w, state(380, "EV $380, NO MINORITY") + "".join(stack_b))
+    p.parts.append(_life(t_w + .3, 99, _cnt(xb + wb / 2, 250, 8, 7.6, t_w + .4, .6, size=110, color=RED, pre="", suf="x", dec=1), fi=.05, fo=.01))
+    p.parts.append(_life(t_w + .7, 99, _pill(xb + wb / 2, 340, "$380 / $50", INK, "#fff", 26), fi=.1, fo=.01))
+    p.parts.append(_stamp(440, 380, 340, 80, "LOOKS CHEAPER", RED, _fr(seg, 1, .6), size=40, rot=-5))
+    t_r = _fr(seg, 1, .6) + .5
+    for j in range(5):
+        p.parts.append(_life(t_r + .5 * j, .35, f'<rect x="{xe}" y="{MI_BASE - 7.6 * kh - 10:.0f}" width="{we}" height="{.6 * kh + 16:.0f}" rx="8" fill="none" stroke="{RED}" stroke-width="7"/>', fi=.06, fo=.1))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 300, 360, 1.15), (_fr(seg, 0, .9), 320, 340, 1.1), (_fr(seg, 1, .4), 400, 320, 1.0), (end, 400, 320, 1.0)])
+
+
+def mi_rule(p, seg=None, **_):
+    """The rule, as a balance. EV on the left pan (you alone), EBITDA 100% on the right: the beam tips, EV light.
+    On 'the same owners' the outside owners drop onto the EV pan and the whole beam swings level; on the second
+    sentence 100% pills pop over both pans and ring."""
+    cx, by, L = 400, 250, 270
+    tilt, t_lvl = 9.0, _fr(seg, 0, .7)
+    dy = L * math.sin(math.radians(tilt))
+    _set(p, f'<path d="M{cx} {by + 10} L{cx - 60} {MI_BASE} H{cx + 60} Z" fill="{GREY}" stroke="{INK}" stroke-width="6" stroke-linejoin="round"/>'
+            f'<path d="M150 {MI_BASE} H650" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>')
+    beam = (f'<rect x="{cx - L - 20}" y="{by - 9}" width="{2 * L + 40}" height="18" rx="9" fill="{INK}"/>'
+            f'<circle cx="{cx}" cy="{by}" r="16" fill="{RED}" stroke="{INK}" stroke-width="5"/>')
+    # 22 Nov: the tilted beam rocks (it was still for 2 s before levelling: 2 still panel seconds on the first cut)
+    rocks, t = [], seg[0][0] - .5
+    while t < t_lvl - .1:
+        rocks.append((round(t, 2), -tilt + (2.5 if len(rocks) % 2 else 0)))
+        t += .55
+    rocks.append((round(t_lvl, 2), -tilt))
+    kfb = [[-1, 0, 0, 1, 1, -tilt]] + [[a, 0, 0, 1, 1, r] for a, r in rocks] + [[round(t_lvl + .8, 2), 0, 0, 1, 1, 0], [99, 0, 0, 1, 1, 0]]
+    pdy = lambda r: L * math.sin(math.radians(-r))
+    p.parts.append(f"<g class=\"a\" data-fx=\"kf\" data-at=\"0\" data-d=\"99\" data-kf='{_json(kfb)}' style=\"transform-box:view-box;transform-origin:{cx}px {by}px\">{beam}</g>")
+
+    def pan(xc, inner):
+        return (f'<path d="M{xc - 90} {by + 150} L{xc} {by} L{xc + 90} {by + 150}" fill="none" stroke="{INK}" stroke-width="4"/>'
+                f'<path d="M{xc - 110} {by + 150} H{xc + 110} Q{xc} {by + 200} {xc - 110} {by + 150} Z" fill="#fff" stroke="{INK}" stroke-width="6"/>' + inner)
+    left = pan(cx - L, _ss_person(cx - L - 40, by + 150, TEAL, .55) + _t(cx - L, by + 240, "EV", 34, INK))
+    right = pan(cx + L, f'<rect x="{cx + L - 80}" y="{by + 80}" width="160" height="70" rx="8" fill="{SUB_C}" stroke="{INK}" stroke-width="6"/>'
+                + _t(cx + L, by + 126, "EBITDA", 28, INK, serif=False) + _t(cx + L, by + 240, "100%", 34, INK))
+    kl = [[-1, 0, -dy, 1, 1, 0]] + [[a, 0, -pdy(r), 1, 1, 0] for a, r in rocks] + [[round(t_lvl + .8, 2), 0, 0, 1, 1, 0], [99, 0, 0, 1, 1, 0]]
+    kr = [[-1, 0, dy, 1, 1, 0]] + [[a, 0, pdy(r), 1, 1, 0] for a, r in rocks] + [[round(t_lvl + .8, 2), 0, 0, 1, 1, 0], [99, 0, 0, 1, 1, 0]]
+    others = "".join(_ss_person(cx - L + 10 + 45 * j, by + 150, OUT_C, .45) for j in range(2))
+    drop = _life(t_lvl - .5, 99, _g("slide", t_lvl - .5, .5, others, style="", y0=-260, y1=0, ease="out"), fi=.05, fo=.01)
+    p.parts.append(f"<g class=\"a\" data-fx=\"kf\" data-at=\"0\" data-d=\"99\" data-kf='{_json(kl)}'>{left}{drop}</g>")
+    p.parts.append(f"<g class=\"a\" data-fx=\"kf\" data-at=\"0\" data-d=\"99\" data-kf='{_json(kr)}'>{right}</g>")
+    p.parts.append(_g("pop", t_lvl + .9, .35, _pill(cx, 120, "SAME OWNERS", TEAL, "#fff", 30)))
+    t1 = _fr(seg, 1, .2)
+    p.parts.append(_g("pop", t1, .35, _pill(cx - L, 80, "ALL OWNERS", INK, "#fff", 24)))
+    p.parts.append(_g("pop", t1 + .5, .35, _pill(cx + L, 80, "ALL EBITDA", INK, "#fff", 24)))
+    for j in range(4):
+        p.parts.append(_life(t1 + .9 + .45 * j, .4, f'<circle cx="{cx - L + 2 * L * (j % 2)}" cy="{by + 150}" r="118" fill="none" stroke="{RED}" stroke-width="6"/>', fi=.08, fo=.12))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 400, 330, 1.08), (t_lvl + 1.0, 400, 330, 1.08), (_fr(seg, 1, .1), 400, 320, 1.0), (end, 400, 320, 1.0)])
+
+
+def mi_asks(p, **_):
+    """The close: a small office with a pie, 30% teal; a 30% STAKE pill; a + OR - ? plate with a ? that bobs. The
+    answer (subtract) is not shown."""
+    _set(p, f'<path d="M30 {MI_BASE} H770" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>' + _office(60, MI_BASE, 210, 230))
+    p.parts.append(_g("pop", p.at(.06), .45, _mi_pie(165, 190, 105, yours=.3, size=34)))
+    p.parts.append(_g("pop", p.at(.15), .4, _idle("swing", _pill(165, 335, "30% STAKE", TEAL, "#fff", 26), 4, 2.4,
+                                                    style="transform-box:fill-box;transform-origin:center top")))
+    p.fill(_pill(570, 250, "+ OR - ?", INK, "#fff", 40), .4)
+    # 22 Nov: the close was the quietest stretch (6 s window 0.80): the 30% slice slides out of its pie and back,
+    # and a large + and - take turns over the plate, through the whole question
+    t_a = p.at(.12)
+    kfw = [[-1, 0, 0, 1, 1, 0]] + [[round(t_a + .7 * j, 2), (60 if j % 2 else 0), (-40 if j % 2 else 0), 1, 1, 0] for j in range(12)]
+    p.parts.append(f"<g class=\"a\" data-fx=\"kf\" data-at=\"0\" data-d=\"99\" data-kf='{_json(kfw)}'>{_wedge(165, 190, 105, 0, .3, TEAL)}</g>")
+    for j in range(10):
+        sg = "+" if j % 2 == 0 else "-"
+        p.parts.append(_life(p.at(.3) + .7 * j, .6, _g("pop", p.at(.3) + .7 * j, .25, _t(570, 400, sg, 150, TEAL if sg == "+" else RED)), fi=.01, fo=.15))
+    for j in range(8):
+        sign, x = ("+", 500) if j % 2 == 0 else ("-", 640)
+        p.parts.append(_life(p.at(.45 + .065 * j), .3, f'<circle cx="{x}" cy="250" r="44" fill="none" stroke="{RED if sign == "-" else TEAL}" stroke-width="7"/>', fi=.05, fo=.1))
+        p.parts.append(_g("press", p.at(.2 + .09 * j), .3, _mi_pie(165, 190, 105, yours=.3, size=34)))
+    p.parts.append(_g("float", 0, 1, _g("pop", p.at(.55), .4, _t(700, 520, "?", 120, RED)), style="", amp=12, w=2.2))
+
+
+SCENES.update({f.__name__: f for f in (mi_hook, mi_control, mi_owners, mi_bridge, mi_multiple, mi_rule, mi_asks)})
+
+
+# ---- 22 Nov Reel B: a 2-for-1 stock split (build/reels_stock-split.py). 100 shares at $50 = $5,000; after the split
+# 200 shares, each half as much of the company, $25: 200 x 25 = $5,000. EPS $2.50 to $1.25, the multiple stays 20x
+# (50 / 2.50 = 25 / 1.25 = 20). A $1 dividend becomes 50 cents on twice the shares: $100 either way. Close: a 1-for-5
+# reverse split of 100 shares at $4 (20 shares at $20; not shown).
+
+SP_BASE = 580
+PIZZA_C, CRUST_C = "#F2C35B", "#D9A441"
+
+
+def _cert(x, y, w_=220, h_=140, label="1 SHARE", price="$50", fill="#FFF8E6"):
+    """A generic share certificate: a cream slip with a double border, the label and a price."""
+    return (f'<rect x="{x}" y="{y}" width="{w_}" height="{h_}" rx="10" fill="{fill}" stroke="{INK}" stroke-width="6"/>'
+            f'<rect x="{x + 12}" y="{y + 12}" width="{w_ - 24}" height="{h_ - 24}" rx="6" fill="none" stroke="#B8862B" stroke-width="4"/>'
+            + _t(x + w_ / 2, y + h_ * .42, label, round(min(w_, 2.2 * h_) * .13), INK)
+            + (_t(x + w_ / 2, y + h_ * .78, price, round(min(w_, 2.2 * h_) * .17), RED) if price else ""))
+
+
+def _sp_tiles(x0, y0, n_rows, n_cols, tw, th, gap, fill=SHARE_C):
+    out = ""
+    for r in range(n_rows):
+        for c in range(n_cols):
+            out += f'<rect x="{x0 + c * (tw + gap):.1f}" y="{y0 + r * (th + gap):.1f}" width="{tw:.1f}" height="{th:.1f}" rx="3" fill="{fill}" stroke="{INK}" stroke-width="2.5"/>'
+    return out
+
+
+def sp_hook(p, seg=None, **_):
+    """The hook. From the swipe, framed close on one share certificate ($50). On 'two for one split' a red dashed cut
+    line draws down it and it splits into two certificates that slide apart, each with a $ ? price; a x2 SHARES pill
+    pops. On the question the camera pulls back to a wallet at the right with a RICHER? plate and a ? that bobs."""
+    _set(p, f'<path d="M30 {SP_BASE} H770" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+            + f'<rect x="560" y="330" width="190" height="130" rx="18" fill="#7A4A2A" stroke="{INK}" stroke-width="6"/>'
+            + f'<rect x="560" y="330" width="190" height="44" rx="14" fill="#5C371F" stroke="{INK}" stroke-width="6"/>'
+            + f'<circle cx="720" cy="352" r="10" fill="{GOLD}" stroke="{INK}" stroke-width="3"/>'
+            + _t(655, 500, "YOUR WEALTH", 22, GREY, serif=False))
+    t0 = _fr(seg, 0, .3)
+    one = _cert(130, 180, 300, 200, "1 SHARE", "$50")
+    p.parts.append(_life(-1, 1 + t0 + .62, one, fi=.01, fo=.01))
+    p.parts.append(_g("draw", t0, .5, f'<path d="M280 160 V400" stroke="{RED}" stroke-width="7" stroke-dasharray="14 10"/>', style=""))
+    halves = [(_cert(130, 180, 145, 200, "1 SHARE", "$ ?"), -60, 50), (_cert(285, 180, 145, 200, "1 SHARE", "$ ?"), 60, 50)]
+    for svg, dx, dy in halves:
+        p.parts.append(_life(t0 + .6, 99, _g("slide", t0 + .6, .6, svg, style="", x0=0, y0=0, x1=dx, y1=dy, ease="inout"), fi=.01, fo=.01))
+    p.parts.append(_g("pop", t0 + 1.1, .35, _pill(280, 120, "x2 SHARES", TEAL, "#fff", 30)))
+    t1 = _fr(seg, 1, .2)
+    p.parts.append(_g("pop", t1, .35, _pill(655, 270, "RICHER?", RED, "#fff", 32)))
+    p.parts.append(_life(t1 + .3, 99, _idle("bob", _t(655, 170, "?", 110, RED), 9, 2.3, style=""), fi=.15, fo=.01))
+    for j in range(3):
+        p.parts.append(_g("press", t1 + .5 + .45 * j, .35, f'<rect x="560" y="330" width="190" height="130" rx="18" fill="none" stroke="{GOLD}" stroke-width="6"/>'))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 290, 300, 1.3), (_fr(seg, 0, .85), 290, 300, 1.25), (_fr(seg, 1, .1), 400, 320, 1.0), (end, 400, 320, 1.0)])
+
+
+def sp_shares(p, seg=None, **_):
+    """Your shares. A 10 x 10 grid of share tiles (100 shares) on the left, a $50 tag, and on the right SHARES and
+    VALUE counters. On the first sentence the grid's rows ring in turn while VALUE counts to $5,000. On 'After the
+    split' a paper wipe crosses the grid and leaves 200 half-width tiles; SHARES counts 100 to 200."""
+    x0, y0, tw, gap = 40, 90, 34, 6
+    full = _sp_tiles(x0, y0, 10, 10, tw, tw, gap)
+    _set(p, _t(x0 + 200, 70, "YOUR SHARES", 26, GREY, serif=False)
+         + f'<rect x="480" y="90" width="290" height="170" rx="16" fill="#fff" stroke="{INK}" stroke-width="6"/>'
+         + _t(625, 130, "SHARES", 24, GREY, serif=False)
+         + f'<rect x="480" y="300" width="290" height="170" rx="16" fill="#fff" stroke="{INK}" stroke-width="6"/>'
+         + _t(625, 340, "VALUE", 24, GREY, serif=False))
+    t_w = _fr(seg, 1, .1)
+    p.parts.append(_life(-1, 1 + t_w + .25, full, fi=.01, fo=.01))
+    t0 = _fr(seg, 0, .15)
+    for r in range(10):
+        p.parts.append(_life(t0 + .1 * r, .3, f'<rect x="{x0 - 5}" y="{y0 + r * 40 - 5}" width="{10 * 40 + 2}" height="{tw + 10}" rx="6" fill="none" stroke="{RED}" stroke-width="5"/>', fi=.05, fo=.1))
+    p.parts.append(_g("pop", _fr(seg, 0, .45), .35, _idle("swing", _ptag(240, 540, 150, "$50", RED, "#fff", 40), 5, 2.2,
+                                                           style="transform-box:fill-box;transform-origin:center top")))
+    p.parts.append(_life(-1, 1 + t_w + .5, _t(625, 225, "100", 64, INK), fi=.01, fo=.01))
+    p.parts.append(_life(_fr(seg, 0, .5), 99, _cnt(625, 435, 0, 5000, _fr(seg, 0, .5), 1.0, size=60, color=TEAL), fi=.05, fo=.01))
+    halves = "".join(f'<rect x="{x0 + c * 40 + h * 18:.1f}" y="{y0 + r * 40}" width="16" height="{tw}" rx="2" fill="{SHARE_C}" stroke="{INK}" stroke-width="2.5"/>'
+                     for r in range(10) for c in range(10) for h in range(2))
+    _wipe_to(p, t_w, halves)
+    p.parts.append(_life(t_w + .5, 99, _cnt(625, 225, 100, 200, t_w + .5, .7, size=64, color=RED, pre=""), fi=.01, fo=.01))
+    p.parts.append(_g("pop", t_w + 1.1, .35, _pill(625, 285, "x2", RED, "#fff", 24)))
+    for r in range(20):
+        p.parts.append(_life(t_w + 1.2 + .09 * r, .25, f'<rect x="{x0 - 5}" y="{y0 + (r % 10) * 40 - 5}" width="{10 * 40 + 2}" height="{tw + 10}" rx="6" fill="none" stroke="{TEAL}" stroke-width="5"/>', fi=.04, fo=.08))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 260, 300, 1.2), (_fr(seg, 0, .4), 300, 320, 1.15), (_fr(seg, 0, .8), 500, 330, 1.12), (t_w + .2, 400, 320, 1.0), (end, 400, 320, 1.0)])
+
+
+def _pizza(cx, cy, r, n, fill=PIZZA_C):
+    s = (f'<circle cx="{cx}" cy="{cy}" r="{r + 14}" fill="{CRUST_C}" stroke="{INK}" stroke-width="6"/>'
+         f'<circle cx="{cx}" cy="{cy}" r="{r}" fill="{fill}" stroke="{INK}" stroke-width="4"/>')
+    for k in range(n):
+        a = 2 * math.pi * k / n - math.pi / 2
+        s += f'<path d="M{cx} {cy} L{cx + (r + 14) * math.cos(a):.1f} {cy + (r + 14) * math.sin(a):.1f}" stroke="{INK}" stroke-width="5"/>'
+    return s
+
+
+def sp_price(p, seg=None, **_):
+    """The price. The company as a pie in 8 slices on the left (each slice a share), a PRICE PER SHARE board on the
+    right at $50. On 'half as much of the company' a red knife line draws through every slice, cutting 8 into 16;
+    on 'twenty five' the board counts $50 down to $25. On the second sentence two VALUE columns stand on the
+    ground, BEFORE $5,000 and AFTER growing to the same height, and an = lands between them."""
+    cx, cy, r = 220, 250, 170
+    _set(p, _pizza(cx, cy, r, 8) + _t(cx, 525, "THE COMPANY", 24, GREY, serif=False)
+         + f'<rect x="470" y="70" width="300" height="190" rx="16" fill="{INK}" stroke="{INK}" stroke-width="6"/>'
+         + _t(620, 110, "PRICE PER SHARE", 22, "#fff", serif=False)
+         + f'<path d="M440 {SP_BASE} H780" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+         + _vbar(470, SP_BASE, 130, 50, 4.0, GOLD) + _t(535, SP_BASE - 225, "$5,000", 28, INK)
+         + _t(535, SP_BASE + 36, "BEFORE", 22, INK, serif=False) + _t(705, SP_BASE + 36, "AFTER", 22, INK, serif=False))
+    t0 = _fr(seg, 0, .35)
+    for k in range(8):
+        a = 2 * math.pi * (k + .5) / 8 - math.pi / 2
+        p.parts.append(_g("draw", t0 + .07 * k, .25, f'<path d="M{cx} {cy} L{cx + (r + 14) * math.cos(a):.1f} {cy + (r + 14) * math.sin(a):.1f}" stroke="{RED}" stroke-width="6"/>', style=""))
+    p.parts.append(_g("pop", t0 + .7, .35, _pill(cx, 470, "8 SLICES, NOW 16", RED, "#fff", 24)))
+    for j in range(10):
+        p.parts.append(_g("press", t0 + .9 + .55 * j, .4, f'<circle cx="{cx}" cy="{cy}" r="{r + 14}" fill="none" stroke="{RED}" stroke-width="{6 if j % 2 else 9}"/>'))
+        p.parts.append(_life(t0 + .9 + .55 * j, .3, _wedge(cx, cy, r, (j % 16) / 16, (j % 16 + 1) / 16, GOLD, RED, 6), fi=.05, fo=.1))
+    t_p = _fr(seg, 0, .8)
+    p.parts.append(_life(-1, 1 + t_p + .01, _t(620, 215, "$50", 84, GOLD), fi=.01, fo=.01))
+    p.parts.append(_life(t_p, 99, _cnt(620, 215, 50, 25, t_p, .7, size=84, color=GOLD), fi=.01, fo=.01))
+    t1 = _fr(seg, 1, .3)
+    _gbar(p, t1, .9, 640, SP_BASE, 130, 50, 4.0, GOLD)
+    p.parts.append(_life(t1 + .3, 99, _cnt(705, SP_BASE - 225, 0, 5000, t1 + .3, .7, size=28), fi=.05, fo=.01))
+    p.parts.append(_g("pop", t1 + 1.0, .4, _t(620, SP_BASE - 90, "=", 90, TEAL)))
+    p.parts.append(_g("pop", _fr(seg, 1, .2), .35, _pill(620, 310, "200 x $25", INK, "#fff", 26)))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 230, 260, 1.2), (_fr(seg, 0, .72), 240, 250, 1.2), (_fr(seg, 0, .85), 600, 220, 1.2),
+             (_fr(seg, 1, .15), 600, 400, 1.1), (seg[-1][1] - .2, 600, 400, 1.1), (end, 400, 320, 1.0)])
+
+
+def sp_company(p, seg=None, **_):
+    """The company. Its office on the left with SAME PROFIT, SAME CASH, SAME VALUE pills and ticks popping on the
+    first sentence. On the second the camera pans to an EPS card: $2.50 counts down to $1.25, then the multiple
+    line builds, $50 / $2.50 and $25 / $1.25, and 20x lands twice with a tick."""
+    _set(p, f'<path d="M30 {SP_BASE} H390" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>' + _office(70, SP_BASE, 250, 300)
+         + f'<rect x="430" y="60" width="340" height="230" rx="16" fill="#fff" stroke="{INK}" stroke-width="6"/>'
+         + _t(600, 105, "EARNINGS PER SHARE", 22, GREY, serif=False)
+         + f'<rect x="430" y="320" width="340" height="250" rx="16" fill="#fff" stroke="{INK}" stroke-width="6"/>'
+         + _t(600, 362, "PRICE / EPS", 22, GREY, serif=False))
+    t0 = _fr(seg, 0, .3)
+    for j, lab in enumerate(("SAME PROFIT", "SAME CASH", "SAME VALUE")):
+        tj = t0 + .45 * j
+        p.parts.append(_g("pop", tj, .35, _pill(195, 36 + 58 * j, lab, TEAL, "#fff", 22)))
+        p.parts.append(_g("draw", tj + .2, .3, f'<path d="M{300} {36 + 58 * j} l10 12 l22 -28" fill="none" stroke="{TEAL}" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>', style=""))
+    for j in range(9):
+        p.parts.append(_life(t0 + 1.4 + .3 * j, .25, f'<rect x="88" y="{36 + 58 * (j % 3) - 22}" width="214" height="44" rx="22" fill="none" stroke="{RED}" stroke-width="5"/>', fi=.04, fo=.08))
+    t1 = _fr(seg, 1, .2)
+    for j in range(6):
+        p.parts.append(_life(t1 + 1.1 + .35 * j, .3, f'<rect x="420" y="50" width="360" height="250" rx="20" fill="none" stroke="{RED if j % 2 else TEAL}" stroke-width="6"/>', fi=.05, fo=.1))
+    p.parts.append(_life(-1, 1 + t1 + .01, _t(600, 220, "$2.50", 90, INK), fi=.01, fo=.01))
+    p.parts.append(_life(t1, 99, _cnt(600, 220, 2.5, 1.25, t1, .8, size=90, color=RED, dec=2), fi=.01, fo=.01))
+    p.parts.append(_g("pop", t1 + .8, .35, _pill(700, 262, "HALF", RED, "#fff", 20)))
+    t2 = _fr(seg, 1, .6)
+    for j, (a, b) in enumerate((("$50 / $2.50", "20x"), ("$25 / $1.25", "20x"))):
+        y = 425 + 80 * j
+        p.parts.append(_g("pop", t2 + .45 * j, .3, _t(560, y, a, 34, INK)))
+        p.parts.append(_g("pop", t2 + .45 * j + .25, .3, _t(715, y, b, 40, TEAL)))
+    p.parts.append(_g("draw", t2 + 1.1, .4, f'<path d="M700 545 l14 16 l28 -36" fill="none" stroke="{TEAL}" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>', style=""))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 220, 300, 1.15), (_fr(seg, 0, .95), 220, 300, 1.15), (_fr(seg, 1, .1), 600, 200, 1.18),
+             (_fr(seg, 1, .55), 600, 300, 1.08), (seg[-1][1] - .2, 600, 330, 1.08), (end, 400, 320, 1.0)])
+
+
+def sp_myth(p, seg=None, **_):
+    """The myth. The pie in 8 slices with YOUR slice gold. On 'the same pie into more slices' the knife lines cut it
+    into 16 and your gold slice gets a cut through it; on the second sentence your slice lifts out of the pie whole
+    (two halves now) and slides right beside a BEFORE copy, and an = lands between them."""
+    cx, cy, r = 250, 320, 200
+    _set(p, _pizza(cx, cy, r, 8))
+    p.parts.append(_set_life(_wedge(cx, cy, r, 0, 1 / 8, GOLD) + _t(cx + 70, cy - 150, "YOU", 26, INK, serif=False)))
+    t0 = _fr(seg, 0, .45)
+    for k in range(8):
+        a = 2 * math.pi * (k + .5) / 8 - math.pi / 2
+        p.parts.append(_g("draw", t0 + .06 * k, .22, f'<path d="M{cx} {cy} L{cx + (r + 14) * math.cos(a):.1f} {cy + (r + 14) * math.sin(a):.1f}" stroke="{RED}" stroke-width="6"/>', style=""))
+    p.parts.append(_g("pop", t0 + .6, .35, _pill(cx, 70, "MORE SLICES", RED, "#fff", 26)))
+    t1 = _fr(seg, 1, .15)
+    yours = (_wedge(cx, cy, r, 0, 1 / 8, GOLD)
+             + f'<path d="M{cx} {cy} L{cx + (r + 14) * math.cos(2 * math.pi / 16 - math.pi / 2):.1f} {cy + (r + 14) * math.sin(2 * math.pi / 16 - math.pi / 2):.1f}" stroke="{RED}" stroke-width="6"/>')
+    p.parts.append(_life(t1, 99, _g("slide", t1, .9, yours, style="", x0=0, y0=0, x1=370, y1=120, ease="inout"), fi=.01, fo=.01))
+    p.parts.append(_life(t1, 99, _g("fade", t1, .3, _wedge(cx, cy, r, 0, 1 / 8, "#fff")), fi=.01, fo=.01))
+    p.parts.append(_g("pop", t1 + .7, .35, f'<g opacity=".85">{_wedge(cx + 370, cy - 210, r, 0, 1 / 8, GOLD)}</g>'))
+    p.parts.append(_g("pop", t1 + .75, .3, _t(720, 90, "BEFORE", 22, INK, serif=False)))
+    p.parts.append(_g("pop", t1 + .95, .3, _t(720, 560, "AFTER", 22, INK, serif=False)))
+    p.parts.append(_g("pop", t1 + 1.2, .4, _t(560, 330, "=", 90, TEAL)))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 260, 300, 1.15), (t1 - .1, 260, 300, 1.15), (t1 + 1.0, 520, 320, 1.08), (seg[-1][1] - .2, 500, 320, 1.08), (end, 400, 320, 1.0)])
+
+
+def sp_rule(p, seg=None, **_):
+    """The rule, with the dividend. On the first sentence the share certificate's price stamps $25 while a VALUE
+    $5,000 plate stays and rings. On the second, BEFORE: a coin stack of 100 x $1 on the left; a row of coins splits
+    in half and the halves fly to the AFTER side, 200 x 50 cents, and both totals read $100."""
+    _set(p, f'<path d="M30 {SP_BASE} H770" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+         + _cert(40, 40, 250, 150, "1 SHARE", "") + f'<rect x="440" y="60" width="320" height="110" rx="16" fill="#fff" stroke="{INK}" stroke-width="6"/>'
+         + _t(600, 100, "COMPANY VALUE", 22, GREY, serif=False) + _t(600, 155, "SAME", 44, TEAL)
+         + _t(180, SP_BASE + 36, "100 x $1", 26, INK, serif=False) + _t(600, SP_BASE + 36, "200 x $0.50", 26, INK, serif=False))
+    t0 = _fr(seg, 0, .25)
+    p.parts.append(_life(-1, 1 + t0 + .01, _t(165, 168, "$50", 40, RED), fi=.01, fo=.01))
+    p.parts.append(_life(t0, 99, _cnt(165, 168, 50, 25, t0, .6, size=40, color=RED), fi=.01, fo=.01))
+    for j in range(2):
+        p.parts.append(_life(_fr(seg, 0, .7) + .5 * j, .4, f'<rect x="430" y="50" width="340" height="130" rx="18" fill="none" stroke="{TEAL}" stroke-width="6"/>', fi=.1, fo=.1))
+    coin = lambda x, y, r: (f'<ellipse cx="{x}" cy="{y}" rx="{r}" ry="{r * .32:.0f}" fill="{GOLD}" stroke="{INK}" stroke-width="4"/>')
+    left = "".join(coin(180, SP_BASE - 20 - 26 * j, 80) for j in range(10))
+    p.parts.append(_set_life(left))
+    t1 = _fr(seg, 1, .2)
+    for j in range(10):
+        tj = t1 + .12 * j
+        for h, dx in ((0, 560), (1, 640)):
+            p.parts.append(_life(tj, 99, _g("slide", tj, .5, coin(180, SP_BASE - 20 - 26 * (9 - j), 40), style="", x0=0, y0=0,
+                                            x1=dx - 180 - 0, y1=26 * (9 - j) - 26 * (9 - j), ease="inout"), fi=.05, fo=.01))
+    t2 = _fr(seg, 1, .85)
+    p.parts.append(_g("pop", t2, .35, _pill(180, 260, "$100", INK, "#fff", 30)))
+    p.parts.append(_g("pop", t2 + .25, .35, _pill(600, 260, "$100", INK, "#fff", 30)))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 400, 190, 1.2), (_fr(seg, 0, .9), 400, 200, 1.2), (_fr(seg, 1, .1), 400, 400, 1.15), (seg[-1][1] - .2, 400, 380, 1.1), (end, 400, 320, 1.0)])
+
+
+def sp_asks(p, **_):
+    """The close: five share certificates (there from the first frame) slide together into one (a 1-for-5 reverse
+    split) and the one left pulses; a 1-FOR-5 pill, a 100 SHARES AT $4 plate, and a ? that bobs. The answer (20
+    shares at $20) is not shown."""
+    _set(p, f'<path d="M30 {SP_BASE} H770" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+         + _pill(570, 160, "100 SHARES AT $4", INK, "#fff", 24))
+    # 22 Nov: the close was the quietest stretch (6 s window 0.78): the five certificates merge into one, spread
+    # out again and merge again, all through the question, and the price board flips between $4 and $ ?
+    t_m = p.at(.12)
+    for j in range(5):
+        c = _cert(40 + 70 * j, 360, 110, 170, "", "")
+        dx = 180 - 70 * j
+        kfc = [[-1, 0, 0, 1, 1, 0]] + [[round(t_m + .8 * q, 2), (dx if q % 2 else 0), 0, 1, 1, 0] for q in range(10)]
+        p.parts.append(f"<g class=\"a\" data-fx=\"kf\" data-at=\"0\" data-d=\"99\" data-kf='{_json(kfc)}'>{c}</g>")
+    for q in range(5):
+        p.parts.append(_life(t_m + .8 * (2 * q + 1), .8, _g("pop", t_m + .8 * (2 * q + 1), .25, _cert(220, 360, 110, 170, "1", "$ ?")), fi=.01, fo=.1))
+    p.fill(_pill(275, 300, "1-FOR-5", RED, "#fff", 30), .3)
+    p.parts.append(_g("float", 0, 1, _g("pop", p.at(.45), .4, _t(570, 460, "?", 170, RED)), style="", amp=14, w=2.6))
+
+
+SCENES.update({f.__name__: f for f in (sp_hook, sp_shares, sp_price, sp_company, sp_myth, sp_rule, sp_asks)})
