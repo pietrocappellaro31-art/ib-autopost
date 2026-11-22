@@ -1662,6 +1662,34 @@
       "published_id": "18383293978241454",
       "published_at_utc": "2026-11-20T17:36:08.771369+00:00",
       "first_comment_id": "18155247721552081"
+    },
+    {
+      "id": "reel-w2-minority-interest",
+      "type": "reel",
+      "scheduled_utc": "2026-11-22T17:30:00",
+      "slot": "A",
+      "media_branch": "reel/w2-minority-interest",
+      "video": "w2-minority-interest.mp4",
+      "cover": "w2-minority-interest.jpg",
+      "master": "scored",
+      "caption": "You own 80% of a company. So why is all of its EBITDA sitting in your numbers?\n\nBecause once you own more than half, you control it, and control means you report the whole thing. Your own business makes $40 of EBITDA, the subsidiary makes $10, so you show $50. Not $48.\n\nHere's the catch. Your share price only pays for your 80%. The other 20%, worth $20 in this example, belongs to outside owners. That's minority interest (you'll also hear noncontrolling interest).\n\nSo the bridge goes: $300 of equity, plus $100 of debt, minus $20 of cash, plus $20 of minority interest. Enterprise value is $400, and $400 / $50 is 8x.\n\nForget the minority piece and you'd get 7.6x. The company would look cheaper than it really is, because your EBITDA covers owners your EV left out.\n\nYour turn: you own 30% of another company, no control. Do you add that stake to EV or take it away? Answer in the comments.\n\nRound numbers, our own example.\n\nNarration: AI-generated voice; script is our original work.\n\n#investmentbanking #valuation #ibinterview #finance",
+      "first_comment": "Bonus: same company, plus a 30% stake worth $15 in another company. What's enterprise value now?",
+      "ai_label": true,
+      "published_id": null
+    },
+    {
+      "id": "reel-w2-stock-split",
+      "type": "reel",
+      "scheduled_utc": "2026-11-22T23:00:00",
+      "slot": "B",
+      "media_branch": "reel/w2-stock-split",
+      "video": "w2-stock-split.mp4",
+      "cover": "w2-stock-split.jpg",
+      "master": "scored",
+      "caption": "A 2-for-1 split doubles your shares. So are you any richer? Nope.\n\nSay you own 100 shares at $50. That's $5,000. After the split you hold 200 shares, but each one is now half as much of the company, so the price drops to $25. 200 x $25 is still $5,000.\n\nNothing about the business changed. Same profit, same cash. Earnings per share go from $2.50 to $1.25, so the stock still trades at 20x.\n\nThink of it like a pizza cut into 16 slices instead of 8. You've got more slices, but your piece is exactly the same size. Even the dividend follows: $1 a share becomes 50 cents, on twice the shares.\n\nYour turn: a 1-for-5 reverse split. You hold 100 shares at $4. How many shares do you have after, and at what price? Tell me in the comments.\n\nRound numbers, before tax and trading costs.\n\nNarration: AI-generated voice; script is our original work.\n\n#investmentbanking #stocks #ibinterview #finance",
+      "first_comment": "Bonus: a 3-for-2 split on 100 shares at $60. How many shares do you hold after, and at what price?",
+      "ai_label": true,
+      "published_id": null
     }
   ],
   "reel_slots_et": {
