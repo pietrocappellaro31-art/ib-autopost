@@ -717,6 +717,19 @@
    "rights": "ORIGINAL_GENERATED",
    "added": "2026-11-22",
    "note": ""
+  },
+  {
+   "id": "score-yt-015-barings-827-million",
+   "title": "Original score for yt-015-barings-827-million",
+   "video": "yt-015-barings-827-million",
+   "engine": "score.py + GeneralUser GS v2.0.3 (TinySoundFont)",
+   "mood": "suspense",
+   "bpm": 80,
+   "key": "E",
+   "style": "orchestral",
+   "rights": "ORIGINAL_GENERATED",
+   "added": "2026-11-22",
+   "note": ""
   }
  ]
 }

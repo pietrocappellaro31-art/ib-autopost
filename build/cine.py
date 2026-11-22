@@ -240,6 +240,9 @@ function life(t, el) {                            // procedural ambient things i
   el.querySelectorAll('[data-swing]').forEach(s => {
     const [a, w, ph, px, py] = JSON.parse(s.dataset.swing);
     s.setAttribute('transform', `rotate(${a*Math.sin(t*w + ph)},${px},${py})`); });
+  el.querySelectorAll('[data-spin]').forEach(s => {          // 22 Nov: turns at [rev/s] about its own origin (a ceiling fan)
+    const [rps] = JSON.parse(s.dataset.spin);
+    s.setAttribute('transform', `rotate(${(360*rps*t) % 360})`); });
   el.querySelectorAll('[data-drift]').forEach(s => {
     const [vx, vy, wrap] = JSON.parse(s.dataset.drift);
     let x = vx*t; if (wrap) x = ((x % wrap) + wrap) % wrap - wrap/2;
