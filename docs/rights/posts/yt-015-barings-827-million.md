@@ -31,7 +31,7 @@
 - Voice: HEART, synthetic (Kokoro af_heart, en-us, speed 0.9, Apache 2.0), the channel narrator. Not a real person,
   no cloning. The narrator does not claim to be a person.
 - Music: one file (Pietro, 17 Nov): an original "suspense" score for this video by `build/score.py` (our own notes per
-  chapter) in the style chosen by `score.pick` (orchestral, E, 80 BPM: `build/out/yt-015-barings-827-million/music.json`),
+  chapter) in the style chosen by `score.pick` (orchestral, G, 80 BPM: `build/out/yt-015-barings-827-million/music.json`),
   on the GeneralUser GS SoundFont instruments (free for commercial music; class ORIGINAL_GENERATED); no third-party
   melody, recording or arrangement; ducked under the voice, level solved for 24 dB of voice over the music. The clean
   mix exists only as the score gate's reference and is not delivered.

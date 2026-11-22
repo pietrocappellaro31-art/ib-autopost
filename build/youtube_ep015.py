@@ -79,6 +79,7 @@ EP = dict(
     slug="yt-015-barings-827-million",
     title="One Trader Lost £827 Million. His Bank Had About £350 Million.",
     score="suspense",
+    score_key="G",            # 22 Nov: the Short of the same day drew E in parallel (score.pick reserves per session); G is in none of the last three and no other video of today
     hook_first=True,
     fx="action",
     held_life=True,
