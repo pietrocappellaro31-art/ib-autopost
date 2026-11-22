@@ -704,6 +704,19 @@
    "rights": "ORIGINAL_GENERATED",
    "added": "2026-11-22",
    "note": ""
+  },
+  {
+   "id": "score-w2-margin-markup",
+   "title": "Original score for w2-margin-markup",
+   "video": "w2-margin-markup",
+   "engine": "score.py + GeneralUser GS v2.0.3 (TinySoundFont)",
+   "mood": "decide+resolve",
+   "bpm": 74,
+   "key": "C",
+   "style": "acoustic",
+   "rights": "ORIGINAL_GENERATED",
+   "added": "2026-11-22",
+   "note": ""
   }
  ]
 }

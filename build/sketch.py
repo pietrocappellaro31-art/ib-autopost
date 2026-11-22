@@ -7790,3 +7790,201 @@ def sb_asks(p, **_):
 
 
 SCENES.update({f.__name__: f for f in (sb_hook, sb_safe, sb_gap, sb_today, sb_answer, sb_rule, sb_asks)})
+# ---- 22 Nov Reel C: margin or markup (build/reels_margin-markup.py). Cost $75, price $100, profit $25; margin
+# 25 / 100 = 25%; markup 25 / 75 = 33.3%. A 50% markup on $100 of cost: price $150, margin 50 / 150 = 33.3%; a 100%
+# markup: price $200, margin 50%. Close: a 25% markup (margin 25 / 125 = 20%, not shown).
+
+MK_BASE, MK_K = 590, 4.0
+COST_C, PROF_C = "#B9B4AC", "#F2C35B"
+
+
+def _mk_bar(x, w_, cost, profit, k=MK_K, base=MK_BASE, labels=True, size=40):
+    s = (f'<rect x="{x}" y="{base - cost * k:.0f}" width="{w_}" height="{cost * k:.0f}" rx="8" fill="{COST_C}" stroke="{INK}" stroke-width="6"/>'
+         f'<rect x="{x}" y="{base - (cost + profit) * k:.0f}" width="{w_}" height="{profit * k:.0f}" rx="8" fill="{PROF_C}" stroke="{INK}" stroke-width="6"/>')
+    if labels:
+        s += (_t(x + w_ / 2, base - cost * k / 2 + size * .36, f"COST ${cost}", size * .7, INK, serif=False)
+              + _t(x + w_ / 2, base - (cost + profit / 2) * k + size * .36, f"${profit}", size, INK))
+    return s
+
+
+def mk_hook(p, seg=None, **_):
+    """The hook. From the swipe, framed on a price tag: a $75 COST box drops onto the ground, then on 'sell it for
+    $100' a gold $25 block lands on top and a $100 price tag swings on the stack. On the question the camera pulls
+    back; two answer cards, 25% and 33%, pop left and right and take turns to pulse, a ? bobs between them."""
+    x, w_ = 300, 200
+    _set(p, f'<path d="M40 {MK_BASE} H760" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+         + f'<rect x="{x}" y="{MK_BASE - 100 * MK_K:.0f}" width="{w_}" height="{100 * MK_K:.0f}" rx="8" fill="none" stroke="{GREY}" stroke-width="5" stroke-dasharray="14 10"/>')
+    t0 = _fr(seg, 0, .15)
+    cost = (f'<rect x="{x}" y="{MK_BASE - 75 * MK_K:.0f}" width="{w_}" height="{75 * MK_K:.0f}" rx="8" fill="{COST_C}" stroke="{INK}" stroke-width="6"/>'
+            + _t(x + w_ / 2, MK_BASE - 37.5 * MK_K + 14, "COST $75", 34, INK, serif=False))
+    p.parts.append(_life(t0, 99, _g("slide", t0, .5, cost, style="", y0=-500, y1=0, ease="out"), fi=.08, fo=.01))
+    t1 = _fr(seg, 0, .7)
+    prof = (f'<rect x="{x}" y="{MK_BASE - 100 * MK_K:.0f}" width="{w_}" height="{25 * MK_K:.0f}" rx="8" fill="{PROF_C}" stroke="{INK}" stroke-width="6"/>'
+            + _t(x + w_ / 2, MK_BASE - 87.5 * MK_K + 14, "+$25", 40, INK))
+    p.parts.append(_life(t1, 99, _g("slide", t1, .45, prof, style="", y0=-300, y1=0, ease="out"), fi=.08, fo=.01))
+    p.parts.append(_g("pop", t1 + .4, .35, _idle("swing", _ptag(x + w_ + 90, 170, 150, "$100", RED, "#fff", 42), 6, 2.2,
+                                                 style="transform-box:fill-box;transform-origin:center top")))
+    t2 = _fr(seg, 1, .3)
+    for j, (cx, lab, col) in enumerate(((130, "25%", TEAL), (670, "33%", RED))):
+        p.parts.append(_g("pop", t2 + .25 * j, .35, f'<rect x="{cx - 95}" y="300" width="190" height="120" rx="18" fill="#fff" stroke="{col}" stroke-width="8"/>'
+                          + _t(cx, 382, lab, 64, col)))
+    for j in range(8):
+        cx = 130 if j % 2 == 0 else 670
+        p.parts.append(_life(t2 + .7 + .45 * j, .35, f'<rect x="{cx - 108}" y="287" width="216" height="146" rx="22" fill="none" stroke="{INK}" stroke-width="6"/>', fi=.05, fo=.1))
+    p.parts.append(_life(t2 + .5, 99, _idle("bob", _t(400, 120, "?", 110, RED), 9, 2.3, style=""), fi=.15, fo=.01))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 420, 330, 1.25), (_fr(seg, 0, .9), 430, 320, 1.2), (_fr(seg, 1, .15), 400, 320, 1.0), (end, 400, 320, 1.0)])
+
+
+def mk_profit(p, seg=None, **_):
+    """The profit. The $100 stack (cost $75, profit $25) on the left; on 'the profit is $25' the gold block lifts off
+    and slides right onto a plate that reads PROFIT $25. On 'what you divide it by' a fraction bar draws under it and
+    two candidates take turns under the line: $100 (PRICE) and $75 (COST), while a ? bobs."""
+    x, w_ = 80, 200
+    _set(p, f'<path d="M40 {MK_BASE} H760" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+         + f'<rect x="{x}" y="{MK_BASE - 75 * MK_K:.0f}" width="{w_}" height="{75 * MK_K:.0f}" rx="8" fill="{COST_C}" stroke="{INK}" stroke-width="6"/>'
+         + _t(x + w_ / 2, MK_BASE - 37.5 * MK_K + 14, "COST $75", 34, INK, serif=False))
+    prof = (f'<rect x="{x}" y="{MK_BASE - 100 * MK_K:.0f}" width="{w_}" height="{25 * MK_K:.0f}" rx="8" fill="{PROF_C}" stroke="{INK}" stroke-width="6"/>'
+            + _t(x + w_ / 2, MK_BASE - 87.5 * MK_K + 14, "$25", 40, INK))
+    t0 = _fr(seg, 0, .55)
+    p.parts.append(_life(-1, 1 + t0 + .02, prof, fi=.01, fo=.01))
+    p.parts.append(_life(t0, 99, _g("slide", t0, .8, prof, style="", x0=0, y0=0, x1=400, y1=60, ease="inout"), fi=.01, fo=.01))
+    p.parts.append(_g("pop", t0 + .8, .35, _pill(580, 120, "PROFIT", TEAL, "#fff", 28)))
+    t1 = _fr(seg, 1, .3)
+    p.parts.append(_g("draw", t1, .5, f'<path d="M470 330 H690" stroke="{INK}" stroke-width="10" stroke-linecap="round"/>', style=""))
+    for j in range(6):
+        lab = "$100 PRICE" if j % 2 == 0 else "$75 COST"
+        p.parts.append(_life(t1 + .5 + .55 * j, .5, _g("pop", t1 + .5 + .55 * j, .2, _t(580, 400, lab, 38, RED if j % 2 else TEAL)), fi=.01, fo=.08))
+    p.parts.append(_life(t1 + .4, 99, _idle("bob", _t(580, 500, "?", 100, RED), 9, 2.3, style=""), fi=.15, fo=.01))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 300, 330, 1.12), (_fr(seg, 0, .5), 320, 320, 1.1), (_fr(seg, 1, .2), 520, 300, 1.15), (seg[-1][1] - .2, 520, 300, 1.15), (end, 400, 320, 1.0)])
+
+
+def mk_margin(p, seg=None, **_):
+    """Margin. The $100 stack with a teal bracket down its whole height labelled PRICE; on 'twenty five over a
+    hundred' the gold block rings, a fraction $25 / $100 builds and a 100-square grid fills 25 squares gold, counting
+    to 25%. On 'every sale you keep' four coins drop onto the grid, one in four turning gold."""
+    x, w_ = 60, 190
+    _set(p, f'<path d="M30 {MK_BASE} H770" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>' + _mk_bar(x, w_, 75, 25, size=36)
+         + "".join(f'<rect x="{440 + 32 * (i % 10)}" y="{150 + 32 * (i // 10)}" width="28" height="28" rx="3" fill="#fff" stroke="{GREY}" stroke-width="2"/>' for i in range(100)))
+    t0 = _fr(seg, 0, .2)
+    p.parts.append(_g("draw", t0, .6, f'<path d="M{x + w_ + 25} {MK_BASE - 100 * MK_K:.0f} h20 V{MK_BASE} h-20" fill="none" stroke="{TEAL}" stroke-width="8"/>', style=""))
+    p.parts.append(_g("pop", t0 + .4, .35, _pill(x + w_ + 40, MK_BASE - 100 * MK_K - 40, "PRICE $100", TEAL, "#fff", 22)))
+    t1 = _fr(seg, 0, .55)
+    for j in range(3):
+        p.parts.append(_life(t1 + .45 * j, .35, f'<rect x="{x - 8}" y="{MK_BASE - 100 * MK_K - 8:.0f}" width="{w_ + 16}" height="{25 * MK_K + 16:.0f}" rx="10" fill="none" stroke="{RED}" stroke-width="7"/>', fi=.05, fo=.1))
+    for i in range(25):
+        p.parts.append(_g("pop", t1 + .04 * i, .15, f'<rect x="{440 + 32 * (i % 10)}" y="{150 + 32 * (i // 10)}" width="28" height="28" rx="3" fill="{PROF_C}" stroke="{INK}" stroke-width="2"/>'))
+    p.parts.append(_life(t1 + .2, 99, _cnt(600, 530, 0, 25, t1 + .2, 1.0, size=72, color=TEAL, pre="", suf="%"), fi=.05, fo=.01))
+    p.parts.append(_g("pop", t1 + .3, .35, _pill(600, 105, "$25 / $100", INK, "#fff", 28)))
+    t2 = _fr(seg, 1, .2)
+    for j in range(4):
+        tj = t2 + .3 * j
+        coin = f'<circle cx="{300 + 0}" cy="0" r="24" fill="{PROF_C if j == 0 else "#fff"}" stroke="{INK}" stroke-width="4"/>'
+        p.parts.append(_life(tj, 99, _g("slide", tj, .4, coin, style="", x0=60 * j, y0=-60, x1=60 * j, y1=560, ease="out"), fi=.05, fo=.01))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 200, 340, 1.15), (_fr(seg, 0, .5), 200, 330, 1.15), (_fr(seg, 0, .6), 560, 300, 1.15), (seg[-1][1] - .3, 520, 320, 1.08), (end, 400, 320, 1.0)])
+
+
+def mk_markup(p, seg=None, **_):
+    """Markup. The same stack; a red bracket down the COST part only. On 'twenty five over seventy five' the gold
+    block is copied three times and the copies stack down the cost column, 1, 2, 3, so $25 fits into $75 three times;
+    the count reads 33%. On 'a bigger number' the 25% card and the 33% card stand side by side and the 33% one grows."""
+    x, w_ = 60, 190
+    _set(p, f'<path d="M30 {MK_BASE} H770" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>' + _mk_bar(x, w_, 75, 25, size=36))
+    t0 = _fr(seg, 0, .2)
+    p.parts.append(_g("draw", t0, .6, f'<path d="M{x + w_ + 25} {MK_BASE - 75 * MK_K:.0f} h20 V{MK_BASE} h-20" fill="none" stroke="{RED}" stroke-width="8"/>', style=""))
+    p.parts.append(_g("pop", t0 + .4, .35, _pill(x + w_ + 110, MK_BASE - 37.5 * MK_K, "COST $75", RED, "#fff", 22)))
+    t1 = _fr(seg, 0, .5)
+    xc = 480
+    p.parts.append(_set_life(f'<rect x="{xc}" y="{MK_BASE - 75 * MK_K:.0f}" width="{w_}" height="{75 * MK_K:.0f}" rx="8" fill="none" stroke="{GREY}" stroke-width="5" stroke-dasharray="12 9"/>'))
+    for j in range(3):
+        tj = t1 + .4 * j
+        blk = (f'<rect x="{x}" y="{MK_BASE - 100 * MK_K:.0f}" width="{w_}" height="{25 * MK_K:.0f}" rx="8" fill="{PROF_C}" stroke="{INK}" stroke-width="6"/>'
+               + _t(x + w_ / 2, MK_BASE - 87.5 * MK_K + 14, str(j + 1), 44, INK))
+        p.parts.append(_life(tj, 99, _g("slide", tj, .5, blk, style="", x0=0, y0=0, x1=xc - x, y1=(75 - 25 * j) * MK_K, ease="inout"), fi=.01, fo=.01))
+    p.parts.append(_life(t1 + 1.3, 99, _cnt(xc + w_ / 2, MK_BASE - 75 * MK_K - 30, 0, 33, t1 + 1.3, .6, size=64, color=RED, pre="", suf="%"), fi=.05, fo=.01))
+    t2 = _fr(seg, 1, .2)
+    p.parts.append(_g("pop", t2, .35, _pill(xc + w_ / 2, 80, "SAME DEAL", INK, "#fff", 26)))
+    for j in range(4):
+        p.parts.append(_life(t2 + .4 + .4 * j, .3, f'<rect x="{xc - 10}" y="{MK_BASE - 75 * MK_K - 90:.0f}" width="{w_ + 20}" height="{75 * MK_K + 100:.0f}" rx="12" fill="none" stroke="{RED}" stroke-width="6"/>', fi=.05, fo=.1))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 200, 360, 1.15), (_fr(seg, 0, .45), 220, 360, 1.12), (_fr(seg, 0, .6), 520, 340, 1.1), (seg[-1][1] - .3, 450, 330, 1.05), (end, 400, 320, 1.0)])
+
+
+def mk_trap(p, seg=None, **_):
+    """The trap. Cost $100 at 2 px a dollar. On 'a fifty percent markup' a $50 gold block lands on it (price $150)
+    and the margin label counts to 33%; on the second sentence a paper wipe leaves cost $100 with a $100 gold block
+    (price $200, a 100% markup) and a HALF bracket, the label counting to 50%."""
+    k, x, w_ = 2.0, 120, 230
+    _set(p, f'<path d="M30 {MK_BASE} H770" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>')
+
+    def state(profit, mark, margin, col):
+        return (_mk_bar(x, w_, 100, profit, k=k, labels=False)
+                + _t(x + w_ / 2, MK_BASE - 50 * k + 14, "COST $100", 30, INK, serif=False)
+                + _t(x + w_ / 2, MK_BASE - (100 + profit / 2) * k + 14, f"+${profit}", 36, INK)
+                + _pill(590, 170, f"MARKUP {mark}", RED, "#fff", 28) + _t(590, 290, "MARGIN", 28, GREY, serif=False))
+    t_w = _fr(seg, 1, .05)
+    p.parts.append(_life(-1, 1 + t_w + .25, _mk_bar(x, w_, 100, 0, k=k, labels=False) + _t(x + w_ / 2, MK_BASE - 50 * k + 14, "COST $100", 30, INK, serif=False), fi=.01, fo=.01))
+    t0 = _fr(seg, 0, .25)
+    first = (f'<rect x="{x}" y="{MK_BASE - 150 * k:.0f}" width="{w_}" height="{50 * k:.0f}" rx="8" fill="{PROF_C}" stroke="{INK}" stroke-width="6"/>'
+             + _t(x + w_ / 2, MK_BASE - 125 * k + 14, "+$50", 36, INK))
+    p.parts.append(_life(t0, t_w + .25 - t0, _g("slide", t0, .5, first, style="", y0=-300, y1=0, ease="out"), fi=.05, fo=.01))
+    p.parts.append(_life(t0 + .2, t_w + .05 - t0, _pill(590, 170, "MARKUP 50%", RED, "#fff", 28) + _t(590, 290, "MARGIN", 28, GREY, serif=False), fi=.1, fo=.01))
+    p.parts.append(_life(t0 + .6, t_w + .05 - t0 - .4, _cnt(590, 400, 0, 33, t0 + .6, .8, size=96, color=TEAL, pre="", suf="%"), fi=.05, fo=.01))
+    p.parts.append(_life(_fr(seg, 0, .85), t_w + .25 - _fr(seg, 0, .85), _g("pop", _fr(seg, 0, .85), .35, _pill(590, 480, "$50 / $150", INK, "#fff", 26)), fi=.01, fo=.01))
+    _wipe_to(p, t_w, state(100, "100%", "50%", TEAL)
+             + f'<path d="M{x + w_ + 20} {MK_BASE - 200 * k:.0f} h20 V{MK_BASE} h-20" fill="none" stroke="{TEAL}" stroke-width="7"/>'
+             + _pill(590, 480, "$100 / $200", INK, "#fff", 26))
+    p.parts.append(_life(t_w + .35, 99, _cnt(590, 400, 33, 50, t_w + .45, .7, size=96, color=TEAL, pre="", suf="%"), fi=.05, fo=.01))
+    p.parts.append(_g("pop", _fr(seg, 1, .6), .35, _pill(x + w_ / 2, 140, "KEEP HALF", TEAL, "#fff", 26)))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 300, 360, 1.1), (_fr(seg, 0, .6), 420, 330, 1.1), (t_w, 400, 320, 1.0), (end, 400, 320, 1.0)])
+
+
+def mk_rule(p, seg=None, **_):
+    """The rule. Three margin pills (GROSS, EBITDA, NET MARGIN) drop in one after another, each with a / REVENUE
+    plate sliding under it, on 'every margin in a model'. On 'Markup is over cost' a smaller COST bar and a REVENUE
+    bar stand side by side under the same $25 and the markup arrow grows longer than the margin arrow."""
+    # 22 Nov: the beat opened on an empty panel (entry check): a faint copy of the whole picture is there from frame 0
+    ghost = "".join(_pill(250, 90 + 90 * j, lab, TEAL, "#fff", 26) + _pill(570, 90 + 90 * j, "/ REVENUE", INK, "#fff", 26)
+                    for j, lab in enumerate(("GROSS MARGIN", "EBITDA MARGIN", "NET MARGIN")))
+    ghost += "".join(f'<rect x="{x}" y="{MK_BASE - (v + 25) * 1.8:.0f}" width="180" height="{(v + 25) * 1.8:.0f}" rx="8" fill="{GREY}"/>' for x, v in ((150, 100), (470, 75)))
+    _set(p, f'<path d="M30 {MK_BASE} H770" stroke="{INK}" stroke-width="6" stroke-linecap="round"/><g opacity=".18">{ghost}</g>')
+    t0 = _fr(seg, 0, .25)
+    for j, lab in enumerate(("GROSS MARGIN", "EBITDA MARGIN", "NET MARGIN")):
+        tj = t0 + .45 * j
+        y = 90 + 90 * j
+        p.parts.append(_life(tj, 99, _g("slide", tj, .4, _pill(250, y, lab, TEAL, "#fff", 26), style="", x0=-500, x1=0, ease="out"), fi=.05, fo=.01))
+        p.parts.append(_life(tj + .3, 99, _g("slide", tj + .3, .4, _pill(570, y, "/ REVENUE", INK, "#fff", 26), style="", x0=500, x1=0, ease="out"), fi=.05, fo=.01))
+    t1 = _fr(seg, 1, .15)
+    k = 1.8
+    for j, (x, base_v, lab, col, pct) in enumerate(((150, 100, "REVENUE $100", TEAL, "25%"), (470, 75, "COST $75", RED, "33%"))):
+        tj = t1 + .4 * j
+        bar = (f'<rect x="{x}" y="{MK_BASE - base_v * k:.0f}" width="180" height="{base_v * k:.0f}" rx="8" fill="{COST_C if j else "#DCEFEA"}" stroke="{INK}" stroke-width="6"/>'
+               + _t(x + 90, MK_BASE + 36, lab, 22, INK, serif=False)
+               + f'<rect x="{x}" y="{MK_BASE - base_v * k - 25 * k:.0f}" width="180" height="{25 * k:.0f}" rx="8" fill="{PROF_C}" stroke="{INK}" stroke-width="6"/>')
+        p.parts.append(_g("growY", tj, .5, bar, style="transform-box:fill-box;transform-origin:center bottom"))
+        p.parts.append(_g("pop", tj + .5, .3, _t(x + 90, MK_BASE - (base_v + 25) * k - 18, pct, 46, col)))
+    for j in range(4):
+        p.parts.append(_life(t1 + 1.2 + .4 * j, .3, f'<rect x="460" y="{MK_BASE - 100 * k - 80:.0f}" width="200" height="{100 * k + 80:.0f}" rx="12" fill="none" stroke="{RED}" stroke-width="6"/>', fi=.05, fo=.1))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 400, 200, 1.2), (_fr(seg, 0, .9), 400, 210, 1.2), (_fr(seg, 1, .1), 400, 400, 1.1), (seg[-1][1] - .2, 400, 380, 1.05), (end, 400, 320, 1.0)])
+
+
+def mk_asks(p, **_):
+    """The close: a cost bar with a +25% MARKUP tag that swings, a gold block that keeps landing on it and lifting,
+    and a MARGIN? plate with a ? that bobs. The answer (20%) is not shown."""
+    k, x = 2.6, 60
+    _set(p, f'<path d="M30 {MK_BASE} H770" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+         + f'<rect x="{x}" y="{MK_BASE - 100 * k:.0f}" width="220" height="{100 * k:.0f}" rx="8" fill="{COST_C}" stroke="{INK}" stroke-width="6"/>'
+         + _t(x + 110, MK_BASE - 50 * k + 14, "COST", 34, INK, serif=False) + _pill(570, 160, "MARGIN?", INK, "#fff", 40))
+    blk = f'<rect x="{x}" y="{MK_BASE - 125 * k:.0f}" width="220" height="{25 * k:.0f}" rx="8" fill="{PROF_C}" stroke="{INK}" stroke-width="6"/>'
+    kfb = [[-1, 0, -120, 1, 1, 0]] + [[round(p.at(.1) + .6 * j, 2), 0, (0 if j % 2 else -120), 1, 1, 0] for j in range(14)]
+    p.parts.append(f"<g class=\"a\" data-fx=\"kf\" data-at=\"0\" data-d=\"99\" data-kf='{_json(kfb)}'>{blk}</g>")
+    p.parts.append(_g("pop", p.at(.05), .4, _idle("swing", _pill(x + 110, 120, "+25% MARKUP", RED, "#fff", 28), 4, 2.4,
+                                                    style="transform-box:fill-box;transform-origin:center top")))
+    p.parts.append(_g("float", 0, 1, _g("pop", p.at(.3), .4, _t(570, 450, "?", 170, RED)), style="", amp=14, w=2.6))
+
+
+SCENES.update({f.__name__: f for f in (mk_hook, mk_profit, mk_margin, mk_markup, mk_trap, mk_rule, mk_asks)})
