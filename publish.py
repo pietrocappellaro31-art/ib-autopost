@@ -37,7 +37,8 @@ DEFAULT_SLOTS_ET = (clock(8, 0), clock(12, 30), clock(17, 30))
 # 16 Nov 2026 (Pietro): two Reels a day, posted automatically with no approval step. Reels have their own
 # daily cap and never take a carousel's place. Their video files are not in main's history: each Reel waits on
 # a temporary branch reel/<slug> (the session cannot create releases) and the branch is deleted once posted.
-MAX_REELS_PER_EASTERN_DAY = 2
+# 22 Nov 2026 (Pietro): three Reels a day for the week of 22 to 29 Nov (slots A, B, C in posts.json reel_slots_et).
+MAX_REELS_PER_EASTERN_DAY = 3
 PROBE_HOURS = 6                      # while Meta blocks the app, try once every 6 hours, never more
 REPO = os.environ.get("GITHUB_REPOSITORY", "pietrocappellaro31-art/ib-autopost")
 # Errors that mean Meta is unhappy with the app or the account: stop the whole run, retry nothing.

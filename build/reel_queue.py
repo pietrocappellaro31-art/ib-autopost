@@ -2,7 +2,7 @@
 Queue a finished Reel for automatic posting (16 Nov 2026, Pietro: "We will post two each day. You won't need my
 approval. ... You will decide at what time to post each day").
 
-    python3 build/reel_queue.py <slug> --slot A|B [--date YYYY-MM-DD] [--master scored|clean] [--dry-run]
+    python3 build/reel_queue.py <slug> --slot A|B|C [--date YYYY-MM-DD] [--master scored|clean] [--dry-run]
                                 [--caption build/captions/<slug>.txt] [--comment "the comment question"]
 
 What it does, in order, and it stops at the first failed check:
@@ -38,7 +38,7 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 OUT = ROOT / "build" / "out"
 MANIFEST = ROOT / "posts.json"
 ET = ZoneInfo("America/New_York")
-DEFAULT_SLOTS = {"A": "12:30", "B": "18:00"}
+DEFAULT_SLOTS = {"A": "12:30", "B": "18:00", "C": "21:00"}      # C: 22 Nov, three Reels a day
 AI_LINE = "Narration: AI-generated voice; script is our original work."
 
 
@@ -131,7 +131,7 @@ def push_media_branch(slug, files, dry):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("slug")
-    ap.add_argument("--slot", choices=["A", "B"], required=True)
+    ap.add_argument("--slot", choices=["A", "B", "C"], required=True)
     ap.add_argument("--date", help="Eastern date, default today")
     ap.add_argument("--master", choices=["scored", "clean"])
     ap.add_argument("--caption")

@@ -69,6 +69,14 @@ STORIES = {
                    "Debt equal to 1 times EBITDA. With $100 of EBITDA and $400 of debt, a company is levered 4 turns."),
     "2026-11-25": ("What does a P/E of 20 tell you?",
                    "Investors pay $20 for each $1 of annual earnings. Flip it and the earnings yield is 5%."),
+    "2026-11-26": ("Does depreciation affect cash?",
+                   "Not directly, it's a non-cash expense. But it lowers taxable income, so at a 25% tax rate $10 of depreciation saves $2.50 of tax."),
+    "2026-11-27": ("Why does equity cost more than debt?",
+                   "Shareholders are paid last and get no fixed return, so they ask for more. Interest is also tax deductible, which makes debt cheaper still."),
+    "2026-11-28": ("A company has $50 of EBITDA and trades at 8x. What's its enterprise value?",
+                   "$400. Enterprise value is the multiple times EBITDA: 8 x $50."),
+    "2026-11-29": ("Inventory goes up by $10. What happens to the three statements?",
+                   "Net income doesn't change. Cash falls $10 on the cash flow statement and inventory rises $10 on the balance sheet, so it still balances."),
 }
 
 PAGE = """<!doctype html><html><head><meta charset="utf-8"><style>{css}

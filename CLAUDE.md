@@ -27,6 +27,8 @@ day post automatically through `publish.py`; YouTube uploads stay manual (Pietro
 - **YouTube from 19 Nov (Pietro, 18 Nov):** Shorts are number puzzles cut from the newest long film without a Short,
   linked to it as Related video; films stay daily, opening on the hook (puzzle or number on screen within 5 s, no card
   first) with title and thumbnail carrying the same number. `docs/decisions-log.md` 18 Nov.
+- **Week of 22 to 29 Nov (Pietro, 22 Nov): three Reels a day (slots A 12:30, B 18:00, C 21:00 ET), one carousel a day
+  (08:00 ET), one Story a day.** `docs/decisions-log.md` 22 Nov.
 - AI disclosure: a recommendation per finished video with its reason, never an automatic tick.
 - Never invent a number, quote, source or credential. Reconstructions are badged. No commercial music in any file.
 

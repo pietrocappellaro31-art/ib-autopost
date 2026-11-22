@@ -123,6 +123,11 @@ Run the content-compliance gate. Write `docs/rights/posts/<slug>.md`.
 
 ## Two Reels a day, posted automatically (Pietro, 16 Nov 2026)
 
+**22 Nov (Pietro): three Reels a day for the week of 22 to 29 Nov** ("for this week we are going for three reels a
+day, one carousel a day and one story a day"). Each daily run makes A, B and C on three different topics and queues
+them at slots A 12:30, B 18:00 and C 21:00 ET (`reel_queue.py --slot C`). Everything below applies to each of the
+three. If time or usage runs short, queue what passed and say what did not, rather than ship a weak Reel.
+
 Pietro: "We will post two each day. You won't need my approval. You will use your own intelligence to analyze the
 top performing reels and make improvements if necessary. You will decide at what time to post each day."
 

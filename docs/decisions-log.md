@@ -18,6 +18,23 @@ What has been settled, and what is still open. Newest first.
 
 ## Settled
 
+- **This week (22 to 29 Nov): three Reels a day, one carousel a day, one Story a day; Reels must keep posting
+  automatically** (22 Nov, Pietro: "Make sure the reels continue to be autoposted. I did not see reels yesterday.
+  Remember that for this week we are going for three reels a day, one carousel a day and one story a day.").
+  Why there were no Reels on 21 Nov: no Reel was queued for that day. The scheduled tasks of 21 Nov failed with
+  "usage limit reached" (the 12:33 and 18:03 ET dispatches, and the Reel run itself made nothing that day); the
+  carousels still went out, late, through GitHub's own cron. The pipeline is sound (the 20 Nov Reels posted at 12:36
+  and 18:05 ET); what failed is the Claude usage that the daily Reel run needs. Changes: (1) Reel slots A 12:30,
+  B 18:00 and a new C 21:00 ET (`posts.json` reel_slots_et; evening Reels have done well: 19:58 1,096, 21:00 1,206);
+  C is covered by a new dispatch task at 21:03 ET and by GitHub's 02-03 UTC cron window; `publish.py`
+  MAX_REELS_PER_EASTERN_DAY 3; `build/reel_queue.py --slot C`. (2) One carousel a day at 08:00 ET: the 16 queued
+  12:30 and 17:30 decks of 22 to 29 Nov were moved, in order, to one a day at 08:00 ET from 30 Nov to 15 Dec
+  (`moved_from_utc` keeps the old time), so nothing built is lost and the queue is full to mid December. (3) One
+  Story a day: Stories for 26 to 29 Nov added (the chain had ended on 25 Nov). (4) The "IG Reel daily" task makes
+  three Reels (A, B, C) through 29 Nov; the "IB carousel weekly build" task fills one carousel a day through 29 Nov.
+  After 29 Nov the counts are Pietro's call; until he says otherwise the runs keep this week's counts.
+  Risk said plainly: three Reels a day uses more of the same usage that ran out on 21 Nov.
+
 - **At least 1% better every day; #14 is the bar** (22 Nov, Pietro on YouTube #14, Silicon Valley Bank: "Is actually a
   very good video, very high quality. Continue to increase the quality in the next days. Your goal is to create better
   material every day and improve by at least 1% each day"). Read as: from 22 Nov every daily run (long films first; the

@@ -1140,7 +1140,7 @@
     {
       "id": "n2-11-cost-of-debt",
       "series": "Technical of the Day",
-      "scheduled_utc": "2026-11-22T17:30:00",
+      "scheduled_utc": "2026-11-30T13:00:00",
       "caption": "What's the cost of debt in WACC? If you said the coupon, that's usually wrong.\n\nThe coupon was set when the bond was issued. WACC needs what lenders want today.\n\nA 5% bond trading at 90 has a current yield of 5.6%, and its yield to maturity is higher still, because it's repaid at 100.\n\nThen take tax off. Interest is deductible, so a 6% pre-tax cost at 25% tax is 4.5%.\n\nNo traded bonds? Use yields on debt with a similar credit rating, or add a spread to the risk-free rate.\n\nAnd skip interest expense over book debt. That's history, not the market.\n\nSave it for your WACC questions.\n\n#investmentbanking #wacc #valuation #ibinterview",
       "published_id": null,
       "published_at_utc": null,
@@ -1153,12 +1153,13 @@
         "n2-11-cost-of-debt-06.jpg",
         "n2-11-cost-of-debt-07.jpg",
         "n2-11-cost-of-debt-08.jpg"
-      ]
+      ],
+      "moved_from_utc": "2026-11-22T17:30:00"
     },
     {
       "id": "n2-12-deal-discussion",
       "series": "Recruiting Playbook",
-      "scheduled_utc": "2026-11-22T22:30:00",
+      "scheduled_utc": "2026-12-01T13:00:00",
       "caption": "\"Tell me about a deal you've followed.\" Most candidates recite the headline. Interviewers want your view.\n\nPick 1 deal you can talk about for 10 minutes, ideally in the group you're interviewing for.\n\nKnow the buyer, the target, the price and how it was paid, from the announcement or the filing.\n\nExplain why the buyer wanted it, why the seller sold, and why now. Most people only cover the buyer.\n\nHave the multiple paid and how it compares with peers.\n\nThen say whether it's a good deal and name the biggest risk.\n\nWhich deal would you use?\n\n#investmentbanking #ibrecruiting #mergersandacquisitions #superday",
       "published_id": null,
       "published_at_utc": null,
@@ -1171,7 +1172,8 @@
         "n2-12-deal-discussion-06.jpg",
         "n2-12-deal-discussion-07.jpg",
         "n2-12-deal-discussion-08.jpg"
-      ]
+      ],
+      "moved_from_utc": "2026-11-22T22:30:00"
     },
     {
       "id": "story-2026-11-22",
@@ -1206,7 +1208,7 @@
     {
       "id": "n2-14-sotp",
       "series": "Technical of the Day",
-      "scheduled_utc": "2026-11-23T17:30:00",
+      "scheduled_utc": "2026-12-02T13:00:00",
       "caption": "How do you value a company with 2 very different businesses? You don't use 1 multiple.\n\nYou do a sum of the parts, valuing each division against its own peers.\n\nDivision A: EBITDA of 50 at 8 times is 400. Division B: EBITDA of 30 at 12 times is 360. That's an enterprise value of 760.\n\nDebt and cash usually sit at group level, so you take net debt of 200 off once, at the end. Equity value: 560.\n\nHead office costs don't belong to either division. Value them and subtract them.\n\nIf the market values the group below the sum, that's the conglomerate discount, and it's why spin-offs happen.\n\nSave it for your valuation prep.\n\n#investmentbanking #valuation #ibinterview #mergersandacquisitions",
       "published_id": null,
       "published_at_utc": null,
@@ -1219,12 +1221,13 @@
         "n2-14-sotp-06.jpg",
         "n2-14-sotp-07.jpg",
         "n2-14-sotp-08.jpg"
-      ]
+      ],
+      "moved_from_utc": "2026-11-23T17:30:00"
     },
     {
       "id": "n2-15-bank-valuation",
       "series": "Technical of the Day",
-      "scheduled_utc": "2026-11-23T22:30:00",
+      "scheduled_utc": "2026-12-03T13:00:00",
       "caption": "Why can't you value a bank on EV / EBITDA? Because for a bank, debt isn't financing. It's inventory.\n\nDeposits and borrowing are what it lends out, and interest is its cost of sales. You can't split operations from financing, so EV and EBITDA stop meaning anything.\n\nUse equity multiples.\n\nP/E, price to book, price to tangible book. If you want the intrinsic version, it's a dividend discount model.\n\nP/B comes down to ROE against the cost of equity: P/B = (ROE - g) / (COE - g). Plug in an ROE of 12%, a cost of equity of 10% and 4% growth and you get about 1.33.\n\nROE equal to COE? P/B is 1.0.\n\nSave it if FIG is on your list.\n\n#investmentbanking #fig #banking #valuation",
       "published_id": null,
       "published_at_utc": null,
@@ -1237,7 +1240,8 @@
         "n2-15-bank-valuation-06.jpg",
         "n2-15-bank-valuation-07.jpg",
         "n2-15-bank-valuation-08.jpg"
-      ]
+      ],
+      "moved_from_utc": "2026-11-23T22:30:00"
     },
     {
       "id": "story-2026-11-23",
@@ -1272,7 +1276,7 @@
     {
       "id": "n2-17-nols",
       "series": "Technical of the Day",
-      "scheduled_utc": "2026-11-24T17:30:00",
+      "scheduled_utc": "2026-12-04T13:00:00",
       "caption": "Why would a buyer pay for a target's past losses? Because they can cut future tax.\n\nNet operating losses offset taxable income later. 100 of NOLs at a 25% rate is worth up to 25 of tax saved.\n\nUp to. The company has to earn taxable income to use them, so value them year by year and discount what's saved.\n\nIn the US, federal losses from 2018 on don't expire, but each year they can offset at most 80% of taxable income.\n\nAfter an acquisition, Section 382 caps how much can be used each year: the old company's value times a long-term tax-exempt rate.\n\nSave it for your M&A prep.\n\n#investmentbanking #mergersandacquisitions #tax #ibinterview",
       "published_id": null,
       "published_at_utc": null,
@@ -1285,12 +1289,13 @@
         "n2-17-nols-06.jpg",
         "n2-17-nols-07.jpg",
         "n2-17-nols-08.jpg"
-      ]
+      ],
+      "moved_from_utc": "2026-11-24T17:30:00"
     },
     {
       "id": "n2-18-cold-email",
       "series": "Recruiting Playbook",
-      "scheduled_utc": "2026-11-24T22:30:00",
+      "scheduled_utc": "2026-12-05T13:00:00",
       "caption": "Bankers read cold emails on their phones between calls. Write for that.\n\nSubject line: a real connection plus the ask. Your shared university gets it opened. \"Quick question\" doesn't.\n\nBody: 4 sentences. Who you are, why them specifically, 1 ask for a 15 minute call, and when you're free.\n\nKeep the ask small. A short call is an easy yes. A referral comes later, after a real conversation.\n\nNo reply in a week? 1 short nudge in the same thread. Then move on.\n\nWhat's the subject line you'd use?\n\n#investmentbanking #ibrecruiting #networking #finance",
       "published_id": null,
       "published_at_utc": null,
@@ -1303,7 +1308,8 @@
         "n2-18-cold-email-06.jpg",
         "n2-18-cold-email-07.jpg",
         "n2-18-cold-email-08.jpg"
-      ]
+      ],
+      "moved_from_utc": "2026-11-24T22:30:00"
     },
     {
       "id": "story-2026-11-24",
@@ -1338,7 +1344,7 @@
     {
       "id": "n2-20-covenants",
       "series": "Technical of the Day",
-      "scheduled_utc": "2026-11-25T17:30:00",
+      "scheduled_utc": "2026-12-06T13:00:00",
       "caption": "Maintenance or incurrence covenant? It's about when the test runs.\n\nMaintenance covenants get tested every period, often every 3 months. Say the limit is 4 times debt / EBITDA, with 350 of debt. EBITDA falls from 100 to 75, use goes from 3.5 to about 4.7 times, and you've breached it without doing a thing. You'll see these in bank loans.\n\nIncurrence covenants only run when you want to act, like raising more debt or paying a dividend. They're common in high-yield bonds.\n\nA breach usually ends in a waiver or an amendment, for a fee or a higher rate. Not bankruptcy.\n\nCovenant-lite loans drop the maintenance tests and keep the incurrence ones.\n\nSave it for LevFin interviews.\n\n#investmentbanking #leveragedfinance #credit #ibinterview",
       "published_id": null,
       "published_at_utc": null,
@@ -1351,12 +1357,13 @@
         "n2-20-covenants-06.jpg",
         "n2-20-covenants-07.jpg",
         "n2-20-covenants-08.jpg"
-      ]
+      ],
+      "moved_from_utc": "2026-11-25T17:30:00"
     },
     {
       "id": "n2-21-thank-you",
       "series": "Recruiting Playbook",
-      "scheduled_utc": "2026-11-25T22:30:00",
+      "scheduled_utc": "2026-12-07T13:00:00",
       "caption": "Your interview thank-you note is the last thing they read from you. Most are generic.\n\nSend it the same day, within 24 hours, by email.\n\n1 note per interviewer. A group email reads like a template.\n\n3 sentences: thanks for their time, 1 specific thing you discussed, and why it confirmed your interest. Leave the full pitch out.\n\nThen check the name and the bank twice. A wrong bank name from your last template undoes a good interview.\n\nSave it for after your next superday.\n\n#investmentbanking #ibrecruiting #superday #interviewtips",
       "published_id": null,
       "published_at_utc": null,
@@ -1369,7 +1376,8 @@
         "n2-21-thank-you-06.jpg",
         "n2-21-thank-you-07.jpg",
         "n2-21-thank-you-08.jpg"
-      ]
+      ],
+      "moved_from_utc": "2026-11-25T22:30:00"
     },
     {
       "id": "story-2026-11-25",
@@ -1404,7 +1412,7 @@
     {
       "id": "n3-02-asset-sale",
       "series": "Technical of the Day",
-      "scheduled_utc": "2026-11-26T17:30:00",
+      "scheduled_utc": "2026-12-08T13:00:00",
       "caption": "You sell equipment with a book value of $50 for $60. The trap here is counting the cash twice.\n\nThe $10 gain is profit. At 25% tax, net income rises $7.50.\n\nOn the cash flow statement you take the gain back out of operations, because it isn't operating cash. Operations ends at -2.5, which is just the tax you paid. The full $60 goes into investing. Cash is up $57.50.\n\nBalance sheet: cash +57.5, PP&E -50 (book value, not the price), retained earnings +7.5. Balances.\n\nSave it for your accounting round.\n\n#investmentbanking #ibinterview #accounting #cashflow",
       "published_id": null,
       "published_at_utc": null,
@@ -1417,12 +1425,13 @@
         "n3-02-asset-sale-06.jpg",
         "n3-02-asset-sale-07.jpg",
         "n3-02-asset-sale-08.jpg"
-      ]
+      ],
+      "moved_from_utc": "2026-11-26T17:30:00"
     },
     {
       "id": "n3-03-teamwork",
       "series": "Recruiting Playbook",
-      "scheduled_utc": "2026-11-26T22:30:00",
+      "scheduled_utc": "2026-12-09T13:00:00",
       "caption": "\"Tell me about a time you worked in a team.\" Say \"we\" the whole way through and they learn nothing about you.\n\nPick a team with real stakes. A deadline that could actually be missed, a client or a professor who'd notice.\n\nThen it's \"I\" for your part. The goal, your role, what you did. Keep \"we\" for the outcome.\n\nPut the friction in.\n\nA missed handoff, a disagreement on the approach, someone falling 2 days behind, and how you dealt with it without turning anyone into the villain. Finish on what happened and 1 thing you'd repeat.\n\nDeal teams are small. They're picturing you on theirs.\n\n#investmentbanking #ibrecruiting #superday #behavioralinterview",
       "published_id": null,
       "published_at_utc": null,
@@ -1435,7 +1444,8 @@
         "n3-03-teamwork-06.jpg",
         "n3-03-teamwork-07.jpg",
         "n3-03-teamwork-08.jpg"
-      ]
+      ],
+      "moved_from_utc": "2026-11-26T22:30:00"
     },
     {
       "id": "n3-04-capitalise",
@@ -1458,7 +1468,7 @@
     {
       "id": "n3-05-convertible",
       "series": "Technical of the Day",
-      "scheduled_utc": "2026-11-27T17:30:00",
+      "scheduled_utc": "2026-12-10T13:00:00",
       "caption": "A $100 convertible bond converts into 5 shares. Is it debt or equity?\n\nEither one. Never both.\n\nConversion price: $100 / 5 = $20. Share at $25? It's in the money, so add the 5 shares to the diluted count and take the bond out of debt. Share at $15? Nobody converts, so it stays as $100 of debt in the EV bridge.\n\nFor diluted EPS it's the if-converted method. Add the shares, and add back the after-tax interest too, because a converted bond stops paying it.\n\nCounting it as shares and as debt is the mistake they're listening for.\n\n#investmentbanking #ibinterview #valuation #convertiblebonds",
       "published_id": null,
       "published_at_utc": null,
@@ -1471,12 +1481,13 @@
         "n3-05-convertible-06.jpg",
         "n3-05-convertible-07.jpg",
         "n3-05-convertible-08.jpg"
-      ]
+      ],
+      "moved_from_utc": "2026-11-27T17:30:00"
     },
     {
       "id": "n3-06-five-years",
       "series": "Recruiting Playbook",
-      "scheduled_utc": "2026-11-27T22:30:00",
+      "scheduled_utc": "2026-12-11T13:00:00",
       "caption": "\"Where do you see yourself in 5 years?\" Say \"private equity\" and they hear that you're leaving in 2.\n\nThey're checking 1 thing.\n\nWill you stay long enough, and work hard enough, to be worth the time it takes to train you? So start with the analyst years: learning the modelling, getting on live deals, being trusted with a bit more each quarter.\n\nThen talk skills, not titles. Judgement on deals beats \"MD by 30.\"\n\nKeep it to 3 sentences. It's a quick check, not a life plan.\n\nWhat would you say if they asked you tomorrow?\n\n#investmentbanking #ibrecruiting #superday #interviewprep",
       "published_id": null,
       "published_at_utc": null,
@@ -1489,7 +1500,8 @@
         "n3-06-five-years-06.jpg",
         "n3-06-five-years-07.jpg",
         "n3-06-five-years-08.jpg"
-      ]
+      ],
+      "moved_from_utc": "2026-11-27T22:30:00"
     },
     {
       "id": "n3-07-no-profit",
@@ -1512,7 +1524,7 @@
     {
       "id": "n3-08-lbo-candidate",
       "series": "Technical of the Day",
-      "scheduled_utc": "2026-11-28T17:30:00",
+      "scheduled_utc": "2026-12-12T13:00:00",
       "caption": "What makes a good LBO candidate? Every answer comes back to 1 thing: can it pay down the debt?\n\nStable, predictable cash flow. Lenders lend against cash they can count on, so a cyclical business with lumpy years is a risk.\n\nLow capex. Picture 2 companies with $100 of EBITDA, one spending $10 on capex and one spending $60. The first has $90 to put towards the debt. The second has $40.\n\nThen room to improve, because hoping the exit multiple goes up isn't a plan: costs to cut, assets to sell, margins to raise.\n\nAnd a clear way out. A strategic buyer, another sponsor, an IPO. You don't have a return until you've sold it.\n\n#investmentbanking #ibinterview #LBO #privateequity",
       "published_id": null,
       "published_at_utc": null,
@@ -1525,12 +1537,13 @@
         "n3-08-lbo-candidate-06.jpg",
         "n3-08-lbo-candidate-07.jpg",
         "n3-08-lbo-candidate-08.jpg"
-      ]
+      ],
+      "moved_from_utc": "2026-11-28T17:30:00"
     },
     {
       "id": "n3-09-why-hire",
       "series": "Recruiting Playbook",
-      "scheduled_utc": "2026-11-28T22:30:00",
+      "scheduled_utc": "2026-12-13T13:00:00",
       "caption": "\"Why should we hire you?\" Everyone dreads it, but it's the easiest question to prepare.\n\n\"Hard-working and detail-oriented\" is what every candidate says. Evidence is what they remember.\n\nPick 3 traits the analyst job actually needs: work ethic for the hours, accuracy for models that have to be right, curiosity to learn fast. Back each with 1 short example from your own experience.\n\nMore than 3 and none of them stick.\n\nClose with 1 line on why this team, right now.\n\nWhich 3 would you pick?\n\n#investmentbanking #ibrecruiting #superday #financecareers",
       "published_id": null,
       "published_at_utc": null,
@@ -1543,7 +1556,8 @@
         "n3-09-why-hire-06.jpg",
         "n3-09-why-hire-07.jpg",
         "n3-09-why-hire-08.jpg"
-      ]
+      ],
+      "moved_from_utc": "2026-11-28T22:30:00"
     },
     {
       "id": "n3-10-asset-stock",
@@ -1566,7 +1580,7 @@
     {
       "id": "n3-11-cash-or-stock",
       "series": "Technical of the Day",
-      "scheduled_utc": "2026-11-29T17:30:00",
+      "scheduled_utc": "2026-12-14T13:00:00",
       "caption": "Should the buyer pay in cash or stock? There's no single right answer. There's a right way to reason, and it takes about 4 steps.\n\n1. Cash makes sense when the buyer has it, or can borrow cheaply, and it's confident in the target. Its own shareholders keep all the upside.\n\n2. Stock makes sense when the buyer's shares look rich, the deal's too big for cash, or there's doubt about the target. The seller becomes an owner and shares the risk. You pay for that in dilution.\n\n3. Ask what the seller wants. Cash is certain. Stock is a slice of what comes next.\n\n4. Weigh the cost first, then who should carry the risk.\n\n#investmentbanking #ibinterview #mergersandacquisitions #dealstructure",
       "published_id": null,
       "published_at_utc": null,
@@ -1579,12 +1593,13 @@
         "n3-11-cash-or-stock-06.jpg",
         "n3-11-cash-or-stock-07.jpg",
         "n3-11-cash-or-stock-08.jpg"
-      ]
+      ],
+      "moved_from_utc": "2026-11-29T17:30:00"
     },
     {
       "id": "n3-12-earnout",
       "series": "Technical of the Day",
-      "scheduled_utc": "2026-11-29T22:30:00",
+      "scheduled_utc": "2026-12-15T13:00:00",
       "caption": "What's an earn-out? Part of the price, paid later, only if the business hits its targets.\n\nIt exists because the 2 sides disagree. The seller believes the forecast. The buyer doubts it. The earn-out pays only if it comes true.\n\nYou tie it to 1 clear metric, like revenue or EBITDA over 2 or 3 years. Vague targets end in disputes.\n\nUnder ASC 805 and IFRS 3 it's contingent consideration, booked at fair value at closing and usually remeasured through profit and loss.\n\nHere's the catch. The seller doesn't run the business anymore, but gets paid on its results, so an earn-out often just delays the argument.\n\n#investmentbanking #ibinterview #mergersandacquisitions #dealstructure",
       "published_id": null,
       "published_at_utc": null,
@@ -1597,7 +1612,8 @@
         "n3-12-earnout-06.jpg",
         "n3-12-earnout-07.jpg",
         "n3-12-earnout-08.jpg"
-      ]
+      ],
+      "moved_from_utc": "2026-11-29T22:30:00"
     },
     {
       "id": "reel-w2-buyback-eps",
@@ -1690,11 +1706,60 @@
       "first_comment": "Bonus: a 3-for-2 split on 100 shares at $60. How many shares do you hold after, and at what price?",
       "ai_label": true,
       "published_id": null
+    },
+    {
+      "id": "story-2026-11-26",
+      "type": "story",
+      "series": "Question of the day",
+      "scheduled_utc": "2026-11-26T23:00:00",
+      "images": [
+        "story-2026-11-26.jpg"
+      ],
+      "caption": "",
+      "published_id": null,
+      "published_at_utc": null
+    },
+    {
+      "id": "story-2026-11-27",
+      "type": "story",
+      "series": "Question of the day",
+      "scheduled_utc": "2026-11-27T23:00:00",
+      "images": [
+        "story-2026-11-27.jpg"
+      ],
+      "caption": "",
+      "published_id": null,
+      "published_at_utc": null
+    },
+    {
+      "id": "story-2026-11-28",
+      "type": "story",
+      "series": "Question of the day",
+      "scheduled_utc": "2026-11-28T23:00:00",
+      "images": [
+        "story-2026-11-28.jpg"
+      ],
+      "caption": "",
+      "published_id": null,
+      "published_at_utc": null
+    },
+    {
+      "id": "story-2026-11-29",
+      "type": "story",
+      "series": "Question of the day",
+      "scheduled_utc": "2026-11-29T23:00:00",
+      "images": [
+        "story-2026-11-29.jpg"
+      ],
+      "caption": "",
+      "published_id": null,
+      "published_at_utc": null
     }
   ],
   "reel_slots_et": {
     "A": "12:30",
-    "B": "18:00"
+    "B": "18:00",
+    "C": "21:00"
   },
-  "reel_slots_note": "16 Nov 2026: two Reels a day, posted automatically (Pietro). 12:30 and 18:00 ET match the dispatches that fire reliably (12:33 and 18:03 ET); GitHub's own cron fired about 7 times a day with gaps up to 10 hours. Moved by the daily Reel run from docs/daily/performance.md, with the reason in docs/decisions-log.md."
+  "reel_slots_note": "16 Nov 2026: two Reels a day, posted automatically (Pietro). 12:30 and 18:00 ET match the dispatches that fire reliably (12:33 and 18:03 ET); GitHub's own cron fired about 7 times a day with gaps up to 10 hours. Moved by the daily Reel run from docs/daily/performance.md, with the reason in docs/decisions-log.md. 22 Nov (Pietro): three Reels a day for the week of 22 to 29 Nov, one carousel a day (08:00 ET) and one Story a day; slot C 21:00 ET, covered by the 21:03 ET dispatch task and GitHub's 02-03 UTC cron window."
 }
