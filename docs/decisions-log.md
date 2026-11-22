@@ -34,6 +34,9 @@ What has been settled, and what is still open. Newest first.
   three Reels (A, B, C) through 29 Nov; the "IB carousel weekly build" task fills one carousel a day through 29 Nov.
   After 29 Nov the counts are Pietro's call; until he says otherwise the runs keep this week's counts.
   Risk said plainly: three Reels a day uses more of the same usage that ran out on 21 Nov.
+  Scheduled tasks changed on 22 Nov with Pietro's go-ahead (the first attempt from the session was refused by the
+  permission check): "IG Reel daily" prompt (three Reels, each queued as soon as it passes), "IB carousel weekly
+  build" prompt (one carousel a day plus the Story), and a new "IB reel 21:00 send" dispatch at 21:03 ET.
 
 - **At least 1% better every day; #14 is the bar** (22 Nov, Pietro on YouTube #14, Silicon Valley Bank: "Is actually a
   very good video, very high quality. Continue to increase the quality in the next days. Your goal is to create better
