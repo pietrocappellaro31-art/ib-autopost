@@ -77,6 +77,14 @@ STORIES = {
                    "$400. Enterprise value is the multiple times EBITDA: 8 x $50."),
     "2026-11-29": ("Inventory goes up by $10. What happens to the three statements?",
                    "Net income doesn't change. Cash falls $10 on the cash flow statement and inventory rises $10 on the balance sheet, so it still balances."),
+    "2026-11-30": ("A company pays a $10 dividend. What happens to the balance sheet?",
+                   "Cash falls $10 and retained earnings fall $10, so both sides drop by the same amount. Net income doesn't change."),
+    "2026-12-01": ("Revenue is $200 and the gross margin is 40%. What's gross profit?",
+                   "$80. Gross profit is revenue times gross margin: 40% x $200."),
+    "2026-12-02": ("Why does a DCF to enterprise value use unlevered free cash flow?",
+                   "It's the cash available to lenders and shareholders together, before interest, so it matches WACC, which prices both."),
+    "2026-12-03": ("A $100 bond pays a 6% coupon. How much interest does it pay each year?",
+                   "$6. The coupon is a percentage of face value: 6% x $100."),
 }
 
 PAGE = """<!doctype html><html><head><meta charset="utf-8"><style>{css}
