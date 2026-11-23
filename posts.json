@@ -1787,7 +1787,9 @@
       "caption": "You put in $100 and get $120 back two years later. That can still be a bad deal, and it's one of the first things a banker checks.\n\nSay the same money could earn 10% a year somewhere else, at the same risk. After one year that's $110. In year two you earn 10% of $110, so $11, and you're at $121.\n\nThe deal pays $120. Your other option pays $121. You'd be $1 behind.\n\nBankers flip it around: what's the $120 worth today? Divide by 1.1 twice and you get about $99.17. Pay $100 for that and the net present value is negative.\n\nGetting more back isn't enough. It has to beat what the money could earn elsewhere.\n\nYour turn: the $120 comes back after one year instead. Good deal or bad? Tell me in the comments.\n\nRound numbers, our own example. Same risk assumed, no tax or fees.\n\nNarration: AI-generated voice; script is our original work.\n\n#investmentbanking #npv #ibinterview #finance",
       "first_comment": "Bonus: same $120 back in two years, but your other option earns 8% a year. Good deal or bad?",
       "ai_label": true,
-      "published_id": null
+      "published_id": "17978033676174228",
+      "published_at_utc": "2026-11-23T17:35:54.308160+00:00",
+      "first_comment_id": "18084688352354014"
     },
     {
       "id": "reel-w2-pe-vs-ev",
