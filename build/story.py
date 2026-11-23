@@ -73,8 +73,21 @@ def timeline(ep, parts):
         spans.append((t, end))
         t = end
     at["close"] = t + .3
-    total = at["close"] + dur("close") + 1.7
+    total = at["close"] + dur("close") + 1.7 + (FOLLOW_HOLD if follows(ep) else 0)
     return at, spans, total
+
+
+# 23 Nov (Pietro: "Make sure all the reels created from today on have a call to follow action. We want to improve
+# conversion rate."): every Instagram Reel (the -16 LUFS master) ends on a follow card: the handle, a + FOLLOW button
+# that gets tapped (a ring, the button turns to FOLLOWING) and one line saying what following gets you, held
+# FOLLOW_HOLD s longer than the old brand card. The close's last spoken line must carry the follow ask too
+# ("Tell me in the comments, and follow for a new one every day."); make() prints a CHECK when it does not.
+FOLLOW_HOLD = 1.4
+FOLLOW_LINE = "A new IB interview question, worked out, every day."
+
+
+def follows(ep):
+    return ep.get("follow", ep.get("lufs") == -16)
 
 
 def hud(ep, spans, close_at, total):
@@ -193,6 +206,20 @@ def scene(ep, parts, at, spans, total):
     brand = A(f'<div style="text-align:center"><div class="num" style="font-size:170px;line-height:1">IB<span style="color:{RED}">.</span></div>'
               '<div style="font-size:26px;font-weight:600;letter-spacing:.24em;opacity:.7;margin-top:16px">INVESTMENT BANKING INTERVIEWS</div></div>',
               "rise", end_voice + .75, .55, style=f"position:absolute;left:0;top:470px;width:{W}px;z-index:8")
+    if follows(ep):
+        t_f = end_voice + 1.05
+        btn = (f'<div style="position:relative;display:inline-block;margin-top:46px">'
+               + A(f'<span style="display:inline-block;background:{RED};color:#fff;font-size:44px;font-weight:700;letter-spacing:.06em;'
+                   f'padding:20px 54px;border-radius:22px">+ FOLLOW</span>', "life", round(t_f, 3), round(1.0, 3), fi=.15, fo=.05)
+               + A(f'<span style="display:inline-block;background:#2A2E35;color:#fff;font-size:44px;font-weight:700;letter-spacing:.06em;'
+                   f'padding:20px 54px;border-radius:22px">FOLLOWING</span>', "life", round(t_f + 1.0, 3), 99, fi=.05, fo=.01,
+                   style="position:absolute;left:0;top:0")
+               + A(f'<span style="display:block;width:120px;height:120px;border-radius:50%;border:8px solid #fff"></span>', "ripple",
+                   round(t_f + .8, 3), .6, style="position:absolute;left:50%;top:50%;margin:-60px 0 0 -60px")
+               + '</div>')
+        brand += A(f'<div style="text-align:center"><div style="font-size:44px;font-weight:700">@investmentbankinginterviews</div>'
+                   f'{btn}<div style="font-size:36px;font-weight:600;opacity:.85;margin:34px auto 0;max-width:640px;text-wrap:balance">{H.escape(FOLLOW_LINE)}</div></div>',
+                   "rise", round(t_f - .2, 3), .5, style=f"position:absolute;left:0;top:760px;width:{W}px;z-index:8")
     # Colour grounds, floaters and the close art under everything (as levels.py).
     grounds = [(b.get("bg"), -1 if i == 0 else spans[i][0], spans[i][1]) for i, b in enumerate(ep["beats"])]
     grounds.append((c.get("bg"), ca - .35, total + 1))
@@ -341,6 +368,8 @@ def cover_js(ep):
 
 
 def make(ep, voice_name="HEART"):
+    if follows(ep) and "follow" not in ep["close"]["say"][-1][0].lower():
+        print("  CHECK the close's last line has no follow ask (Pietro, 23 Nov: every Reel asks for the follow)", flush=True)
     v, parts = synth(ep, voice_name)
     keep_parts(OUT / ep["slug"], parts)
     at, spans, total = timeline(ep, parts)

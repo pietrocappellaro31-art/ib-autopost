@@ -10,7 +10,8 @@ What it does, in order, and it stops at the first failed check:
      (words within 5% of the clean file, loudness within 1 LU of -16, true peak at or under -1.0 dBTP); otherwise the clean one.
      Instagram music cannot be added by a person any more, so the scored file is the default.
   2. Checks the file Instagram will get: H.264 and AAC, 1080 x 1920, 3 to 90 seconds, under 100 MB, audio present.
-  3. Checks the caption: present, at most 2,200 characters, at most 5 hashtags, the AI-narration line, no em dash.
+  3. Checks the caption: present, at most 2,200 characters, at most 5 hashtags, the AI-narration line, no em dash,
+     the follow ask (23 Nov).
   4. Makes the cover with build/reel_cover.py (designed for the 3:4 profile-grid tile: everything inside y 240 to
      1680, centred; a video frame is never the cover) unless --cover is given.
   5. Pushes the video and the cover to a temporary branch reel/<slug> (one commit, no history; main never holds an
@@ -40,6 +41,9 @@ MANIFEST = ROOT / "posts.json"
 ET = ZoneInfo("America/New_York")
 DEFAULT_SLOTS = {"A": "12:30", "B": "18:00", "C": "21:00"}      # C: 22 Nov, three Reels a day
 AI_LINE = "Narration: AI-generated voice; script is our original work."
+# 23 Nov (Pietro: "Make sure all the reels created from today on have a call to follow action"): every caption
+# carries the follow ask with the handle
+FOLLOW_ASK = "Follow @investmentbankinginterviews"
 
 
 def run(*cmd, cwd=ROOT, check=True):
@@ -104,6 +108,8 @@ def check_caption(text):
         problems.append("missing the AI-narration line")
     if "—" in text:
         problems.append("em dash")
+    if FOLLOW_ASK not in text:
+        problems.append(f"missing the follow ask ('{FOLLOW_ASK} for ...', Pietro 23 Nov)")
     return problems
 
 

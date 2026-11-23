@@ -16,6 +16,34 @@ gate), the formats A to F of `short-form-standard.md` and `voice-decision.md`, e
 where they disagree, unless `docs/decisions-log.md` records a newer decision by Pietro. An older copy of this skill
 that names the G2, BELLA, EMMA rotation, "no music in any file" or the Levels quiz as the only format is out of date.
 
+## Pietro, 23 Nov: a call to follow on every Reel, and stronger hooks
+
+"Make sure all the reels created from today on have a call to follow action. We want to improve conversion rate.
+Also, we want stronger hooks. We want to go viral!" (`docs/decisions-log.md` 23 Nov).
+
+**Follow ask, every Reel, three places.** (1) Spoken: the close's last line asks for it, e.g. "Answer in the
+comments, and follow for tomorrow's." (`story.make` prints a CHECK otherwise). (2) On screen: the follow end card,
+automatic on every -16 LUFS story-engine Reel (`story.FOLLOW_LINE`, `FOLLOW_HOLD`; `follow=False` only for a
+re-render of an older Reel). The Levels engine has no card yet: use the story engine, or add the card to
+`levels.py` first. (3) Caption: after the comment ask, "Follow @investmentbankinginterviews for a new IB interview
+question, worked out, every day." (`reel_queue.py` refuses a caption without "Follow @investmentbankinginterviews").
+Never "follow for more" (reflex bait in ig-human): say what a follower gets.
+
+**Hooks, from 24 Nov.** The performance reading so far: short clash openings (two facts that seem to conflict,
+question last) reach 1,100+; long set-ups stay under 1,000. Every hook now:
+- shows the clash on screen from frame 0 (both numbers drawn and moving before the first word), so a scroller sees
+  the conflict before the voice starts;
+- puts a number in its first three words and stays at 13 words or fewer on screen, the question last and alone;
+- is chosen from five candidates written from different formulas (the ig-reel skill's hook list: the clash, the
+  wrong-answer reveal "It's not 10x", the you-stake "You have $100...", the trap "Most people divide by the wrong
+  number" only if it is true by arithmetic, the challenge "Answer before the bar lands"); score each on clash, number
+  early, second person, length and "would someone send this to a friend preparing for interviews", keep the
+  candidates and scores in the episode docstring, and log the chosen type in the ig-reels row;
+- never leans on an invented claim ("90% get this wrong", "asked at every bank") unless it is sourced.
+Topics: pick for shareability (questions people get wrong with a surprising answer), near the families that did
+best (equity and EV, cash, buyouts, bonds). Each run reads reach, shares and saves by hook type in
+`docs/daily/performance.md` and keeps the types that win over at least three Reels.
+
 ## Pietro, 16 Nov: black background
 
 "From tomorrow on - same exact format and quality but black background please." Then, the same evening: "Set this as
@@ -161,7 +189,7 @@ top performing reels and make improvements if necessary. You will decide at what
 
 ## Deliver (one message after both Reels)
 
-1. Caption for each: PASS on ig-human, one ask, up to 4 hashtags, no promise of returns or jobs, no invented
+1. Caption for each: PASS on ig-human, the comment ask plus the follow line (23 Nov), up to 4 hashtags, no promise of returns or jobs, no invented
    experience, a title that matches the content, then just before the hashtags:
    `Narration: AI-generated voice; script is our original work.`
 2. Comment question for each: a bonus level or a follow-up question.

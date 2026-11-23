@@ -18,6 +18,28 @@ What has been settled, and what is still open. Newest first.
 
 ## Settled
 
+- **Every Reel asks for the follow, and the hooks get stronger (23 Nov, Pietro: "Make sure all the reels created
+  from today on have a call to follow action. We want to improve conversion rate. Also, we want stronger hooks. We
+  want to go viral! We want 1 million views!").** Read as a standing rule for every Instagram Reel from 23 Nov.
+  (1) The follow ask in three places: the close's last spoken line ("Answer in the comments, and follow for
+  tomorrow's."); an end card on every -16 LUFS Reel (`build/story.py` FOLLOW: the handle, a + FOLLOW button that is
+  tapped and turns to FOLLOWING, "A new IB interview question, worked out, every day.", 1.4 s longer than the old
+  brand card; make() prints a CHECK if the last close line has no follow ask); and a caption line after the comment
+  ask, "Follow @investmentbankinginterviews for a new IB interview question, worked out, every day."
+  (`build/reel_queue.py` refuses a caption without "Follow @investmentbankinginterviews"). The caption keeps the
+  comment question; the old one-ask caption rule gives way to this. Not "follow for more" (the ig-human lexicon
+  marks it as reflex bait): the line says what a follower gets. 23 Nov's Reel A had posted (17:35 UTC) before the
+  message, so it keeps its caption (a live post is not edited without Pietro); B and C were re-rendered with the
+  spoken ask and the card, their captions carry the line, and they were re-queued at the same slots.
+  (2) Stronger hooks, from 24 Nov: the hook standard in `docs/skill/ib-voiced-reel/SKILL.md` ("Hooks, from 24 Nov"):
+  the clash on screen from frame 0, a number in the first three words, at most 13 words on screen, five candidate
+  hooks written and scored before one is chosen (logged in the episode docstring), topics picked for whether a viewer
+  would send them to a friend preparing for interviews, and each hook type tracked against reach in
+  `docs/daily/performance.md`. Never an invented statistic to sharpen a hook ("most candidates get this wrong" only
+  with a source). Said plainly: 1 million views is the aim, not a forecast. Our Reels reach 120 to 1,600 accounts
+  today (performance.md, 22 Nov), so the measure of progress is reach, shares and follows per Reel rising week on
+  week; shares are the best lever we have seen (the 63-share equity Reel is our top reach).
+
 - **Weekly usage: Instagram first; the daily long video is paused to Sunday 29 Nov** (23 Nov, Pietro: "How come we
   are already at 29% of usage for this week? Make sure we arrive at Sunday with at least IG covered. ... Prioritize
   and suspend creation of certain content if needed."). Measured from the scheduled runs of 23 Nov (session length as
