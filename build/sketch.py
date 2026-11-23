@@ -7988,3 +7988,307 @@ def mk_asks(p, **_):
 
 
 SCENES.update({f.__name__: f for f in (mk_hook, mk_profit, mk_margin, mk_markup, mk_trap, mk_rule, mk_asks)})
+
+
+# ---- 23 Nov Short: right 99 days out of 100 and still down (build/shorts_right-99-days.py), cut from YouTube #15
+# (Barings). Our example from the film (build/plans/ep015_checks.py): collect £1 on each calm day, 99 calm days =
+# +£99, pay £150 on day 100: 99 - 150 = -£51. Close (not answered on screen): win £1 on 90 days of 100, lose £10 on
+# the other 10: 90 - 100 = -£10 (behind).
+# 23 Nov (the 22 Nov Short's next improvement): the answer's first sentence and the close each carry ONE running
+# action that lasts the whole sentence (the 99 wins stacking slice by slice while the count runs; under the close's
+# whole question the day strip filling row by row while the AHEAD / BEHIND needle swings).
+
+RD_K = 2.6                 # px per £ on the bars (99 -> 257 px, 150 -> 390 px, 51 -> 133 px)
+RD_BASE = 440
+CALM = TEAL_L if "TEAL_L" in globals() else "#5EC8B4"
+
+
+def _rd_grid(x0, y0, c=44, g=6, fill=None, dash=True):
+    """The 100 days as a 10 x 10 grid of outlined cells."""
+    st = 'stroke-dasharray="6 5"' if dash else ""
+    return "".join(f'<rect x="{x0 + (c + g) * (i % 10)}" y="{y0 + (c + g) * (i // 10)}" width="{c}" height="{c}" rx="6" '
+                   f'fill="{fill or "#fff"}" stroke="{GREY}" stroke-width="3" {st}/>' for i in range(100))
+
+
+def _rd_row(x0, y0, r, n=10, c=44, g=6, fill=None):
+    """Row r of the grid filled (n cells), each with a tick."""
+    fill = fill or CALM
+    out = ""
+    for i in range(n):
+        x, y = x0 + (c + g) * i, y0 + (c + g) * r
+        out += (f'<rect x="{x}" y="{y}" width="{c}" height="{c}" rx="6" fill="{fill}" stroke="{INK}" stroke-width="3"/>'
+                f'<path d="M{x + 11} {y + 23} l8 9 l15 -18" fill="none" stroke="{INK}" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>')
+    return out
+
+
+def _rd_cross(x, y, c=44, fill=RED):
+    return (f'<rect x="{x}" y="{y}" width="{c}" height="{c}" rx="6" fill="{fill}" stroke="{INK}" stroke-width="4"/>'
+            f'<path d="M{x + 12} {y + 12} L{x + c - 12} {y + c - 12} M{x + c - 12} {y + 12} L{x + 12} {y + c - 12}" stroke="#fff" stroke-width="6" stroke-linecap="round"/>')
+
+
+def _rd_coin(cx, cy, lab="£1", r=24):
+    return (f'<circle cx="{cx:.0f}" cy="{cy:.0f}" r="{r}" fill="{GOLD}" stroke="{INK}" stroke-width="4"/>'
+            + _t(cx, cy + r * .3, lab, round(r * .72), INK, serif=False))
+
+
+def rd_hook_steps(seg):
+    """The hook's ten row times across the first sentence (shared with the sound)."""
+    a, b = _fr(seg, 0, .05), _fr(seg, 0, .88)
+    return [a + (b - a) * i / 9 for i in range(10)]
+
+
+def rd_hook(p, seg=None, **_):
+    """The puzzle. From frame 0: the 100 days as an empty grid and a YOUR MONEY bar with its zero line. (1) one
+    running action across 'right 99 days out of 100': the grid fills row by row with ticked calm cells (the last row
+    nine), a DAYS RIGHT counter runs 0 to 99 and the money bar climbs in step; (2) 'still lose money': the 100th cell
+    lands red with a cross, the bar falls through zero and hangs below it, a £ ? tag; (3) 'How?': a big ? swings,
+    the grid presses, a ring on the red cell. The answer (-£51) is not shown."""
+    gx, gy = 40, 92
+    mx, base = 590, 330
+    _set(p, _rd_grid(gx, gy)
+         + f'<path d="M{mx - 40} {base} H{mx + 130}" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+         + _t(mx + 45, base + 40, "£0", 26, GREY, serif=False) + _t(mx + 45, 70, "YOUR MONEY", 24, INK, serif=False)
+         + _t(gx + 245, 70, "100 DAYS", 26, INK, serif=False))
+    steps = rd_hook_steps(seg)
+    up = f'<rect x="{mx}" y="{base - 99 * 1.9:.0f}" width="90" height="{99 * 1.9:.0f}" rx="8" fill="{CALM}" stroke="{INK}" stroke-width="5"/>'
+    for r, t in enumerate(steps):
+        p.parts.append(_g("growX", t, .35, _rd_row(gx, gy, r, 9 if r == 9 else 10), style=""))
+    t1 = _fr(seg, 1, .1)
+    p.parts.append(_life(steps[0], t1 + .3 - steps[0], _g("scaleY", steps[0], round(steps[-1] + .35 - steps[0], 2), up,
+                                                          style="transform-box:fill-box;transform-origin:center bottom", s0=.1, s1=1), fi=.05, fo=.15))
+    p.parts.append(_life(-1, 1 + steps[0] + .02, _t(gx + 245, 634, "0 DAYS RIGHT", 30, TEAL, serif=False), fi=.01, fo=.01))
+    p.parts.append(_life(steps[0], 99, _cnt(gx + 245, 634, 0, 99, steps[0], steps[-1] + .3 - steps[0], size=30, color=TEAL, pre="", suf=" DAYS RIGHT")
+                         .replace('data-fx="count"', 'data-fx="count" data-lin="1"', 1), fi=.01, fo=.01))
+    cx_, cy_ = gx + 50 * 9, gy + 50 * 9
+    p.parts.append(_g("stamp", t1, .35, _rd_cross(cx_, cy_), rot=-6))
+    p.parts.append(_g("ripple", t1 + .2, .7, f'<circle cx="{cx_ + 22}" cy="{cy_ + 22}" r="40" fill="none" stroke="{RED}" stroke-width="6"/>'))
+    down = f'<rect x="{mx}" y="{base}" width="90" height="120" rx="8" fill="{RED}" stroke="{INK}" stroke-width="5"/>'
+    p.parts.append(_life(t1 + .25, 99, _g("growYdown", t1 + .25, .6, down, style=""), fi=.05, fo=.01))
+    p.parts.append(_g("pop", t1 + .75, .35, _idle("swing", _ptag(mx + 45, base + 190, 150, "£ ?", RED, "#fff", 40), 7, 2.0,
+                                                  style="transform-box:fill-box;transform-origin:center top")))
+    tq = _fr(seg, 2, .05)
+    p.parts.append(_g("pop", tq, .35, _idle("swing", _t(560, 260, "?", 150, RED), 10, 2.4, style="transform-box:fill-box;transform-origin:center bottom")))
+    for j in range(2):
+        p.parts.append(_g("press", tq + .1 + .4 * j, .38, _rd_grid(gx, gy, dash=False, fill="none")))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 300, 330, 1.12), (_fr(seg, 0, .9), 290, 360, 1.12), (_fr(seg, 1, .2), 520, 380, 1.08),
+             (_fr(seg, 1, .95), 520, 360, 1.08), (_fr(seg, 2, .3), 400, 320, 1.0), (end, 400, 320, 1.0)])
+
+
+def rd_bet(p, seg=None, **_):
+    """The bet. From the swipe: an INSURANCE slip (AGAINST A BIG MOVE) and a calm market line's axis. (1) 'our own
+    example': an OUR EXAMPLE stamp lands on the slip; (2) one running action across the sentence: the calm line draws
+    across the days with small wiggles while a £1 coin pops onto each calm day in turn and the slip's YOU COLLECT
+    counter runs; a +£1 A DAY pill at the end."""
+    s = (f'<rect x="40" y="40" width="330" height="230" rx="14" fill="#fff" stroke="{INK}" stroke-width="6"/>'
+         + _t(205, 100, "INSURANCE", 40, INK) + _t(205, 145, "AGAINST A", 26, GREY, serif=False) + _t(205, 180, "BIG MARKET MOVE", 26, GREY, serif=False)
+         + f'<path d="M70 215 H340" stroke="{GREY}" stroke-width="4" stroke-dasharray="10 8"/>'
+         + _t(205, 250, "YOU SELL IT", 24, RED, serif=False)
+         + f'<path d="M40 560 H770 M40 560 V330" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+         + _t(405, 600, "CALM DAYS", 24, INK, serif=False) + _t(470, 70, "YOU COLLECT", 24, INK, serif=False, anchor="start"))
+    _set(p, s)
+    p.parts.append(_stamp(400, 250, 260, 76, "OUR EXAMPLE", TEAL, _fr(seg, 0, .2), size=36, rot=-5))
+    t0, t0e = _fr(seg, 1, .03), _fr(seg, 1, .9)
+    pts = [(60 + i * 8.5, 470 + 10 * math.sin(i * .55) + 5 * math.sin(i * 1.7)) for i in range(84)]
+    path = "M" + " L".join(f"{x:.1f} {y:.1f}" for x, y in pts)
+    p.parts.append(_g("draw", t0, round(t0e - t0, 2), f'<path d="{path}" fill="none" stroke="{BOND_D}" stroke-width="7" stroke-linecap="round"/>', style=""))
+    n = 9
+    for j in range(n):
+        t = t0 + (t0e - t0) * (j + .6) / n
+        x = 60 + (j + .6) / n * 84 * 8.5
+        p.parts.append(_g("fade", t, .06, _g("slide", t, .3, _rd_coin(min(x, 740), 400, "£1", 24), style="", y0=-60, y1=0, ease="out"), style=""))
+    p.parts.append(_life(-1, 1 + t0 + .02, _t(560, 140, "£0", 64, TEAL), fi=.01, fo=.01))
+    p.parts.append(_life(t0, 99, _cnt(560, 140, 0, 9, t0, t0e - t0, size=64, color=TEAL, pre="£").replace('data-fx="count"', 'data-fx="count" data-lin="1"', 1), fi=.01, fo=.01))
+    p.parts.append(_g("pop", t0e, .35, _idle("bob", _pill(590, 230, "+£1 A DAY", TEAL, "#fff", 34), 4, 2.2, style="")))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 230, 220, 1.3), (_fr(seg, 0, .95), 230, 230, 1.28), (_fr(seg, 1, .1), 330, 380, 1.1),
+             (_fr(seg, 1, .9), 470, 360, 1.08), (end, 400, 320, 1.0)])
+
+
+def rd_calm(p, seg=None, **_):
+    """99 calm days. One running action across the whole sentence: a calendar's day counter runs 1 to 99 while £1
+    coins fly one after another into a column to scale (RD_K px a pound), the column climbing in eleven steps of nine,
+    its counter running £0 to £99; a +£99 stamp on 'up'."""
+    cx, cw = 470, 220
+    s = (f'<path d="M30 {RD_BASE} H770" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+         + f'<rect x="{cx}" y="{RD_BASE - 99 * RD_K:.0f}" width="{cw}" height="{99 * RD_K:.0f}" rx="8" fill="{CALM}" fill-opacity=".12" stroke="{GREY}" stroke-width="4" stroke-dasharray="12 9"/>'
+         + _t(cx + cw / 2, RD_BASE + 40, "YOUR MONEY", 26, INK, serif=False)
+         + f'<rect x="60" y="120" width="260" height="250" rx="16" fill="#fff" stroke="{INK}" stroke-width="6"/>'
+         + f'<rect x="60" y="120" width="260" height="70" rx="16" fill="{RED}" stroke="{INK}" stroke-width="6"/>'
+         + _t(190, 168, "DAY", 36, "#fff", serif=False) + _t(190, 420, "ALL CALM", 26, TEAL, serif=False))
+    _set(p, s)
+    t0, t0e = _fr(seg, 0, .03), _fr(seg, 0, .7)
+    p.parts.append(_life(-1, 1 + t0 + .02, _t(190, 310, "1", 110, INK), fi=.01, fo=.01))
+    p.parts.append(_life(t0, 99, _cnt(190, 310, 1, 99, t0, t0e - t0, size=110, pre="").replace('data-fx="count"', 'data-fx="count" data-lin="1"', 1), fi=.01, fo=.01))
+    n = 11
+    for j in range(n):
+        t = t0 + (t0e - t0) * j / (n - 1)
+        h_ = 9 * RD_K
+        p.parts.append(_life(t, .5, _g("slide", t, .42, _rd_coin(330, 230, "£1", 22), style="", x0=0, y0=0, x1=cx + cw / 2 - 330,
+                                        y1=RD_BASE - (j + .5) * h_ - 230, ease="inout"), fi=.05, fo=.08))
+        p.parts.append(_g("fade", t + .42, .08, f'<rect x="{cx}" y="{RD_BASE - (j + 1) * h_:.1f}" width="{cw}" height="{h_:.1f}" fill="{CALM}" stroke="{INK}" stroke-width="2"/>', style=""))
+    ty = RD_BASE - 99 * RD_K - 26
+    p.parts.append(_life(-1, 1 + t0 + .02, _t(cx + cw / 2, ty, "£0", 50, TEAL), fi=.01, fo=.01))
+    p.parts.append(_life(t0, 99, _cnt(cx + cw / 2, ty, 0, 99, t0 + .4, t0e - t0, size=50, color=TEAL, pre="£").replace('data-fx="count"', 'data-fx="count" data-lin="1"', 1), fi=.01, fo=.01))
+    p.parts.append(_stamp(cx + 10, RD_BASE - 60 * RD_K, cw - 20, 90, "+£99", TEAL, _fr(seg, 0, .8), size=58))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 300, 290, 1.15), (_fr(seg, 0, .4), 400, 270, 1.08), (_fr(seg, 0, .85), 520, 280, 1.12), (end, 400, 320, 1.0)])
+
+
+def rd_jump(p, seg=None, **_):
+    """Day 100. The £99 column (teal, to scale) on the left, the calm line on the right. (1) 'the market jumps': a
+    DAY 100 calendar pops, the line spikes straight up, ripples, the column shakes; (2) one running action across
+    'You pay out £150': a red PAY OUT column grows beside the £99 one on the same scale while its counter runs £0 to
+    £150, then a £150 stamp."""
+    x1, x2, cw = 70, 300, 190
+    calm = "M500 400 " + " ".join(f"L{500 + i * 10} {400 + 8 * math.sin(i * .8):.1f}" for i in range(18))
+    s = (f'<path d="M30 {RD_BASE} H460" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+         + f'<rect x="{x1}" y="{RD_BASE - 99 * RD_K:.0f}" width="{cw}" height="{99 * RD_K:.0f}" rx="8" fill="{CALM}" stroke="{INK}" stroke-width="6"/>'
+         + _t(x1 + cw / 2, RD_BASE - 99 * RD_K - 24, "£99", 46, TEAL)
+         + _t(x1 + cw / 2, RD_BASE + 40, "COLLECTED", 24, INK, serif=False) + _t(x2 + cw / 2, RD_BASE + 40, "PAY OUT", 24, RED, serif=False)
+         + f'<rect x="{x2}" y="{RD_BASE - 150 * RD_K:.0f}" width="{cw}" height="{150 * RD_K:.0f}" rx="8" fill="{RED}" fill-opacity=".08" stroke="{GREY}" stroke-width="4" stroke-dasharray="12 9"/>'
+         + f'<path d="M500 560 H770 M500 560 V140" stroke="{INK}" stroke-width="5" stroke-linecap="round"/>'
+         + f'<path d="{calm}" fill="none" stroke="{BOND_D}" stroke-width="7" stroke-linecap="round"/>')
+    _set(p, s)
+    t0 = _fr(seg, 0, .25)
+    p.parts.append(_g("pop", t0, .35, f'<rect x="600" y="440" width="150" height="100" rx="12" fill="#fff" stroke="{INK}" stroke-width="5"/>'
+                                      f'<rect x="600" y="440" width="150" height="32" rx="12" fill="{RED}" stroke="{INK}" stroke-width="5"/>'
+                                      + _t(675, 525, "DAY 100", 30, INK, serif=False)))
+    t1 = _fr(seg, 0, .6)
+    p.parts.append(_g("draw", t1, .45, f'<path d="M670 {400 + 8 * math.sin(17 * .8):.1f} L690 150 L720 200 L740 120" fill="none" stroke="{RED}" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>', style=""))
+    p.parts.append(_g("ripple", t1 + .4, .7, f'<circle cx="700" cy="160" r="50" fill="none" stroke="{RED}" stroke-width="6"/>'))
+    for j in range(3):
+        p.parts.append(_g("press", t1 + .3 + .3 * j, .3, f'<rect x="{x1}" y="{RD_BASE - 99 * RD_K:.0f}" width="{cw}" height="{99 * RD_K:.0f}" rx="8" fill="{CALM}" stroke="{INK}" stroke-width="6"/>'))
+    t2, t2e = _fr(seg, 1, .05), _fr(seg, 1, .85)
+    red = f'<rect x="{x2}" y="{RD_BASE - 150 * RD_K:.0f}" width="{cw}" height="{150 * RD_K:.0f}" rx="8" fill="{RED}" stroke="{INK}" stroke-width="6"/>'
+    p.parts.append(_life(t2, 99, _g("scaleY", t2, round(t2e - t2, 2), red, style="transform-box:fill-box;transform-origin:center bottom", s0=.02, s1=1), fi=.03, fo=.01))
+    ty = RD_BASE - 150 * RD_K - 24
+    p.parts.append(_life(t2, 99, _cnt(x2 + cw / 2, ty, 0, 150, t2, t2e - t2, size=46, color=RED, pre="£").replace('data-fx="count"', 'data-fx="count" data-lin="1"', 1), fi=.05, fo=.01))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 560, 330, 1.12), (_fr(seg, 0, .95), 600, 300, 1.15), (_fr(seg, 1, .1), 400, 320, 1.0),
+             (end, 400, 320, 1.0)])
+
+
+def rd_answer(p, seg=None, **_):
+    """The answer, on one scale. (1) one running action across '99 wins and one loss': the WINS column builds slice by
+    slice (eleven slices of £9) while its count runs 0 to 99 WINS, then one red LOSS column (£150) drops in beside it
+    with 1 LOSS. (2) 'down £51': the loss slides over the wins, the wins shrink to nothing as the loss sinks through
+    the zero line, and £51 of it hangs below: the total counts £99 to -£51, a -£51 stamp."""
+    x1, x2, cw = 90, 330, 190
+    base = 330
+    k = 1.6
+    s = (f'<path d="M30 {base} H770" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+         + _t(760, base - 14, "£0", 26, GREY, serif=False, anchor="end")
+         + f'<rect x="{x1}" y="{base - 99 * k:.0f}" width="{cw}" height="{99 * k:.0f}" rx="8" fill="{CALM}" fill-opacity=".12" stroke="{GREY}" stroke-width="4" stroke-dasharray="12 9"/>'
+         + _t(610, 70, "TOTAL", 26, INK, serif=False))
+    _set(p, s)
+    t0, t0e = _fr(seg, 0, .03), _fr(seg, 0, .62)
+    for j in range(11):
+        t = t0 + (t0e - t0) * j / 10
+        p.parts.append(_life(t, _fr(seg, 1, .2) + .6 - t, _g("growY", t, .25, f'<rect x="{x1}" y="{base - (j + 1) * 9 * k:.1f}" width="{cw}" height="{9 * k:.1f}" fill="{CALM}" stroke="{INK}" stroke-width="2"/>',
+                                                             style=_grow(1)), fi=.01, fo=.25))
+    p.parts.append(_life(-1, 1 + t0 + .02, _t(x1 + cw / 2, base - 99 * k - 26, "0 WINS", 34, TEAL, serif=False), fi=.01, fo=.01))
+    p.parts.append(_life(t0, 99, _cnt(x1 + cw / 2, base - 99 * k - 26, 0, 99, t0, t0e - t0, size=34, color=TEAL, pre="", suf=" WINS").replace('data-fx="count"', 'data-fx="count" data-lin="1"', 1), fi=.01, fo=.01))
+    tl = _fr(seg, 0, .7)
+    loss = f'<rect x="{x2}" y="{base - 150 * k:.0f}" width="{cw}" height="{150 * k:.0f}" rx="8" fill="{RED}" stroke="{INK}" stroke-width="6"/>' + _t(x2 + cw / 2, base - 70 * k, "£150", 40, "#fff")
+    t1 = _fr(seg, 1, .15)
+    p.parts.append(_life(tl, t1 + .1 - tl, _g("fade", tl, .08, _g("slide", tl, .4, loss, style="", y0=-300, y1=0, ease="out"), style=""), fi=.01, fo=.01))
+    p.parts.append(_life(tl + .3, _fr(seg, 1, .15) + .3 - tl, _g("pop", tl + .35, .3, _t(x2 + cw / 2, base - 150 * k - 26, "1 LOSS", 34, RED, serif=False)), fi=.01, fo=.25))
+    # part 2: the loss slides over the wins and sinks: 99 above zero cancel, 51 hang below
+    p.parts.append(_life(t1, 99, _g("slide", t1, 1.1, loss, style="", x0=0, y0=0, x1=x1 - x2, y1=150 * k - 51 * k, ease="inout"), fi=.01, fo=.01))
+    p.parts.append(_g("fade", t1 + 1.15, .4, f'<rect x="{x1 - 6}" y="{base - 99 * k - 6:.0f}" width="{cw + 12}" height="{99 * k + 3:.0f}" fill="{PAPER}"/>'
+                                         + _t(x1 + cw / 2, base - 50 * k + 12, "CANCELLED", 28, GREY, serif=False), style=""))
+    p.parts.append(_life(-1, 1 + t1 + .02, _t(610, 150, "+£99", 64, TEAL), fi=.01, fo=.01))
+    p.parts.append(_life(t1, .65, _cnt(610, 150, 99, 0, t1, .6, size=64, color=TEAL, pre="£").replace('data-fx="count"', 'data-fx="count" data-lin="1"', 1), fi=.01, fo=.01))
+    p.parts.append(_life(t1 + .62, 99, _cnt(610, 150, 0, 51, t1 + .62, .5, size=64, color=RED, pre="-£").replace('data-fx="count"', 'data-fx="count" data-lin="1"', 1), fi=.01, fo=.01))
+    p.parts.append(_g("draw", t1 + 1.1, .4, f'<path d="M{x1 - 20} {base} H{x1 + cw + 20}" stroke="{INK}" stroke-width="8" stroke-linecap="round"/>', style=""))
+    p.parts.append(_stamp(480, 380, 250, 100, "-£51", RED, _fr(seg, 1, .75), size=64))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 260, 260, 1.15), (_fr(seg, 0, .6), 280, 260, 1.15), (_fr(seg, 0, .95), 330, 280, 1.08),
+             (_fr(seg, 1, .2), 400, 320, 1.0), (end, 400, 320, 1.0)])
+
+
+def rd_path():
+    """Our example's running total, day by day: +£1 a day for 99 days, then -£150 on day 100 (ends at -£51)."""
+    tot, out = 0, [(0, 0)]
+    for d in range(1, 101):
+        tot += 1 if d < 100 else -150
+        out.append((d, tot))
+    return out
+
+
+def rd_rule(p, seg=None, **_):
+    """The rule. (1) 'How often you win isn't enough': a WIN RATE gauge fills to 99% (running) and is stamped NOT
+    ENOUGH; (2) one running action across 'how much you lose when you're wrong': a £1 coin and a £150 block on one
+    scale, the block growing as said with SIZE pills; (3) 'Selling options can work like this': our example's running
+    total drawn day by day (computed: +£1 x 99, then -£150) with a dot riding it, small steady steps up, one drop."""
+    _set(p, f'<path d="M60 200 H740" stroke="{GREY}" stroke-width="3" stroke-dasharray="8 7"/>'
+            + f'<rect x="60" y="70" width="400" height="56" rx="28" fill="#fff" stroke="{INK}" stroke-width="5"/>'
+            + _t(60, 52, "WIN RATE", 24, INK, serif=False, anchor="start")
+            # 23 Nov: the rule opens on its set, not bare paper: faint ghosts of the coin, the loss block and the path
+            + f'<g opacity=".22"><circle cx="150" cy="380" r="26" fill="none" stroke="{GREY}" stroke-width="4" stroke-dasharray="7 6"/>'
+            + f'<rect x="300" y="{420 - 150 * 1.6:.0f}" width="140" height="{150 * 1.6:.0f}" rx="8" fill="{RED}" fill-opacity=".25" stroke="{GREY}" stroke-width="4" stroke-dasharray="12 9"/>'
+            + '<path d="M' + " L".join(f"{80 + d * 6.6:.1f} {470 - v * 1.15:.1f}" for d, v in rd_path()) + f'" fill="none" stroke="{GREY}" stroke-width="5" stroke-dasharray="10 8"/></g>')
+    t0, t0e = _fr(seg, 0, .05), _fr(seg, 0, .7)
+    bar = f'<rect x="66" y="76" width="{388 * .99:.0f}" height="44" rx="22" fill="{CALM}"/>'
+    p.parts.append(_g("growX", t0, round(t0e - t0, 2), bar, style=""))
+    p.parts.append(_life(t0, 99, _cnt(520, 114, 0, 99, t0, t0e - t0, size=46, color=TEAL, pre="", suf="%").replace('data-fx="count"', 'data-fx="count" data-lin="1"', 1), fi=.05, fo=.01))
+    p.parts.append(_stamp(470, 140, 260, 70, "NOT ENOUGH", RED, _fr(seg, 0, .8), size=34, rot=-4))
+    # 2: sizes on one scale (1.6 px a pound)
+    t1, t1e = _fr(seg, 1, .05), _fr(seg, 1, .85)
+    p.parts.append(_life(t1, _fr(seg, 2, .05) - t1, _g("pop", t1, .3, _rd_coin(150, 380, "£1", 26) + _t(150, 450, "WIN", 26, TEAL, serif=False)), fi=.01, fo=.25))
+    blk = f'<rect x="300" y="{420 - 150 * 1.6:.0f}" width="140" height="{150 * 1.6:.0f}" rx="8" fill="{RED}" stroke="{INK}" stroke-width="5"/>'
+    p.parts.append(_life(t1 + .2, _fr(seg, 2, .05) - t1 - .2, _g("scaleY", t1 + .2, round(t1e - t1 - .2, 2), blk, style="transform-box:fill-box;transform-origin:center bottom", s0=.02, s1=1)
+                         + _cnt(370, 160, 1, 150, t1 + .2, t1e - t1 - .2, size=40, color=RED, pre="£") + _t(370, 450, "LOSS", 26, RED, serif=False), fi=.05, fo=.25))
+    p.parts.append(_life(t1e, _fr(seg, 2, .05) - t1e, _g("pop", t1e, .3, _idle("bob", _pill(600, 330, "150 x BIGGER", INK, "#fff", 30), 4, 2.2, style="")), fi=.01, fo=.25))
+    # 3: our example's running total, a dot riding it
+    t2, t2e = _fr(seg, 2, .08), _fr(seg, 2, .9)
+    X = lambda d: 80 + d * 6.6
+    Y = lambda v: 470 - v * 1.15
+    pts = rd_path()
+    path = "M" + " L".join(f"{X(d):.1f} {Y(v):.1f}" for d, v in pts)
+    p.parts.append(_life(t2 - .2, 99, f'<path d="M60 {Y(0):.0f} H760" stroke="{INK}" stroke-width="4"/>' + _t(70, Y(0) - 12, "£0", 22, GREY, serif=False, anchor="start"), fi=.2, fo=.01))
+    p.parts.append(_life(t2, 99, _g("draw", t2, round(t2e - t2, 2), f'<path d="{path}" fill="none" stroke="{TEAL}" stroke-width="7" stroke-linejoin="round"/>', style=""), fi=.01, fo=.01))
+    kf = [[round(t2 + (t2e - t2) * d / 100, 3), round(X(d) - X(0), 1), round(Y(v) - Y(0), 1), 1, 1, 0] for d, v in pts[::5] + [pts[-2], pts[-1]]]
+    kf = sorted({k[0]: k for k in kf}.values())
+    dot = f'<circle cx="{X(0):.1f}" cy="{Y(0):.1f}" r="16" fill="{RED}" stroke="{INK}" stroke-width="4"/>'
+    p.parts.append(f"<g class=\"a\" data-fx=\"kf\" data-at=\"{t2:.2f}\" data-d=\"{t2e - t2:.2f}\" data-kf='{_json(kf)}' style=\"transform-box:view-box;transform-origin:0px 0px\">{_life(t2, 99, dot, fi=.1, fo=.01)}</g>")
+    p.parts.append(_g("pop", t2e, .35, _pill(560, Y(-51) + 50, "ONE BIG LOSS", RED, "#fff", 26)))
+    p.parts.append(_g("pop", _fr(seg, 2, .45), .35, _pill(300, Y(60) - 40, "SMALL, STEADY WINS", TEAL, "#fff", 24)))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 400, 160, 1.15), (_fr(seg, 0, .95), 400, 170, 1.12), (_fr(seg, 1, .1), 380, 330, 1.1),
+             (_fr(seg, 1, .95), 380, 330, 1.1), (_fr(seg, 2, .1), 400, 400, 1.05), (end, 400, 380, 1.0)])
+
+
+def rd_asks(p, **_):
+    """The close, one continuous action under the whole question: a 100-day strip fills row by row (90 calm cells
+    +£1, 10 red cells -£10, mixed through the rows) while an AHEAD / BEHIND needle swings without stopping, an AHEAD
+    OR BEHIND? plate bobs, a FULL FILM chip (Barings, 1995). The answer (behind, -£10) is not shown. Laid out inside
+    x 30-740, y 30-600 so the fitted close panel crops nothing (first cut: the dial and the film chip were cut)."""
+    gx, gy, c, g = 40, 40, 30, 4
+    cx, cy, r = 580, 260, 120
+    _set(p, "".join(f'<rect x="{gx + (c + g) * (i % 10)}" y="{gy + (c + g) * (i // 10)}" width="{c}" height="{c}" rx="4" fill="#CFE7E2" stroke="{GREY}" stroke-width="2"/>' for i in range(100))
+         + f'<path d="M{cx - r} {cy} A{r} {r} 0 0 1 {cx + r} {cy}" fill="none" stroke="{INK}" stroke-width="8"/>'
+         + _t(cx - r, cy + 40, "BEHIND", 26, RED, serif=False) + _t(cx + r, cy + 40, "AHEAD", 26, TEAL, serif=False))
+    red = {(r_, (3 * r_ + 7) % 10) for r_ in range(10)}
+    t0, t1 = p.at(.04), p.at(.7)
+    for r_ in range(10):
+        t = t0 + (t1 - t0) * r_ / 9
+        row = ""
+        for i in range(10):
+            x, y = gx + (c + g) * i, gy + (c + g) * r_
+            row += f'<rect x="{x}" y="{y}" width="{c}" height="{c}" rx="4" fill="{RED if (r_, i) in red else CALM}" stroke="{INK}" stroke-width="2"/>'
+        p.parts.append(_g("growX", t, .3, row, style=""))
+        rc = [i for i in range(10) if (r_, i) in red][0]          # the row's red day rings as it lands
+        p.parts.append(_g("ripple", t + .25, .7, f'<circle cx="{gx + (c + g) * rc + c / 2}" cy="{gy + (c + g) * r_ + c / 2}" r="22" fill="none" stroke="{RED}" stroke-width="5"/>'))
+    # 23 Nov: a day counter runs with the rows (the close's panel mean fell to 2.08 when the empty cells were tinted)
+    p.parts.append(_life(t0, 99, _cnt(cx, cy - r - 30, 0, 100, t0, t1 - t0 + .3, size=40, color=INK, pre="DAY ").replace('data-fx="count"', 'data-fx="count" data-lin="1"', 1), fi=.05, fo=.01))
+    p.parts.append(_g("pop", t0, .3, _pill(115, 430, "90 x +£1", TEAL, "#fff", 26)))
+    p.parts.append(_g("pop", t0 + .5, .3, _pill(330, 430, "10 x -£10", RED, "#fff", 26)))
+    needle = f'<path d="M{cx} {cy} L{cx} {cy - r + 20}" stroke="{INK}" stroke-width="9" stroke-linecap="round"/><circle cx="{cx}" cy="{cy}" r="16" fill="{INK}"/>'
+    p.parts.append(f'<g class="a" data-fx="swing" data-at="0" data-d="1" data-amp="60" data-w="2.8" style="transform-box:view-box;transform-origin:{cx}px {cy}px">{needle}</g>')
+    p.parts.append(_g("pop", p.at(.2), .35, _idle("bob", _pill(400, 505, "AHEAD OR BEHIND?", INK, "#fff", 32), 5, 1.8, style="")))
+    p.parts.append(_g("pop", p.at(.55), .35, _idle("bob", _pill(400, 572, "FULL FILM: BARINGS, 1995", TEAL, "#fff", 24), 3, 2.3, ph=1, style="")))
+
+
+SCENES.update({f.__name__: f for f in (rd_hook, rd_bet, rd_calm, rd_jump, rd_answer, rd_rule, rd_asks)})

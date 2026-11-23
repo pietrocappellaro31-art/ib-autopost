@@ -1,0 +1,25 @@
+TITLE: Right 99 Days Out of 100. How Do You Still Lose Money?
+ALT 1: You Win 99% of the Time and Still Lose. How?
+ALT 2: 99 Wins, 1 Loss, and You're Down. How Does That Happen?
+
+DESCRIPTION:
+You're right 99 days out of 100 and you still end up down. Here's how, in our own example. You sell insurance against a big market move and collect £1 on every calm day, so after 99 calm days in a row you're up £99 and feeling pretty clever about it. Then on day 100 the market jumps and you pay out £150. Down £51. From 99 wins and one loss.
+
+How often you win isn't the whole story. What you lose when you're wrong decides it. Selling options can work the same way: small, steady wins, then one big loss.
+
+Your turn: win £1 on 90 days out of 100 and lose £10 on the other 10. Ahead or behind? Tell me in the comments.
+
+The full story is in our film "One Trader Lost £827 Million. His Bank Had About £350 Million." It's about Barings in 1995, and it's linked above this Short.
+
+The numbers here are our own example and our own arithmetic, so there are no outside sources for this one. The film lists its sources in its description.
+
+Educational only, not financial advice.
+
+#Shorts #investing #riskmanagement
+
+Music: original score made for this video.
+Narration: AI-generated voice; script is our original work.
+
+STUDIO TAGS: win rate vs loss size, right 99 percent and still lose, selling options explained, selling insurance, short volatility, risk management, expected value, money maths puzzle, finance puzzle, Barings 1995, Nick Leeson, investing basics, investment banking, Banker's Notebook
+
+PINNED COMMENT: Win £1 on 90 days out of 100 and lose £10 on the other 10. Ahead or behind, and by how much? The full story, about Barings in 1995, is in our film "One Trader Lost £827 Million. His Bank Had About £350 Million."

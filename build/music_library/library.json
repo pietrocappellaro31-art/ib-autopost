@@ -383,6 +383,13 @@
    "kind": "short",
    "id": "flawed-mangoes-missing-pieces",
    "mood": "tense"
+  },
+  {
+   "date": "2026-11-23",
+   "slug": "shorts-right-99-days",
+   "kind": "short",
+   "id": "joel-sunny-luminary",
+   "mood": "tense"
   }
  ],
  "originals": [
@@ -729,6 +736,19 @@
    "style": "orchestral",
    "rights": "ORIGINAL_GENERATED",
    "added": "2026-11-22",
+   "note": ""
+  },
+  {
+   "id": "score-shorts-right-99-days",
+   "title": "Original score for shorts-right-99-days",
+   "video": "shorts-right-99-days",
+   "engine": "score.py + GeneralUser GS v2.0.3 (TinySoundFont)",
+   "mood": "mystery+resolve",
+   "bpm": 74,
+   "key": "F",
+   "style": "mallets",
+   "rights": "ORIGINAL_GENERATED",
+   "added": "2026-11-23",
    "note": ""
   }
  ]

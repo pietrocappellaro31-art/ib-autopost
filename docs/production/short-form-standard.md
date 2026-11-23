@@ -56,6 +56,10 @@ panels; white cards, red accent, bright teal answers, filmed windows as before. 
    when feasible, measure it, and record what changed. No change only for novelty.
 3. Inspect the working tree and keep any changes already there (`git pull --rebase` before
    committing: the long-video run writes the same logs).
+4. (23 Nov, the 22 Nov Short's next improvement) Re-open the source film's pages BEFORE writing a line: the
+   film's URLs (its description) are fetched first. Whatever cannot be opened is out of the plan from the start: no
+   figure from it in the voice, on screen or in the description, no link, and the run says so in qa.md. A Short built
+   on the film's own labelled example and our arithmetic needs no source; the film is then named only as a pointer.
 
 ## 2. Topic
 
