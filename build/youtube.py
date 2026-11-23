@@ -488,7 +488,8 @@ def scenes(ep, items):
         else:
             beat = ch["beats"][b]
             shows = beat.get("shows") or [beat.get("show", dict(kind="statement", text=beat["say"]))]
-            BEATS.append(dict(t=t + .25, dur=dur, say=beat["say"], segs=[(x, t + .25 + s0, t + .25 + s1) for x, s0, s1 in segs], chapter=c))
+            BEATS.append(dict(t=t + .25, dur=dur, say=beat["say"], segs=[(x, t + .25 + s0, t + .25 + s1) for x, s0, s1 in segs], chapter=c, b=b,
+                              kinds=[(sh.get("kind", "statement") + (f":{sh.get('art')}" if sh.get("kind") in ("sketch", "scene") else "")) for sh in shows]))
             if len(shows) == 1 and shows[0].get("kind") == "cine":
                 # 13 Nov (cinematic upgrade, docs/production/animation-engine.md): a filmed shot from cine.py. The page
                 # keeps a dark placeholder; the shot is rendered on its own after the main render and laid over this
@@ -1290,6 +1291,10 @@ def make(ep, voice_name=YOUTUBE_VOICE):
     if CINE:                                                        # 13 Nov: filmed beats over their placeholders
         cine_splice(ep, work, silent, total)
     json.dump(dict(total=total, chapters=[c for c, _ in chapters]), open(work / "timing.json", "w"))
+    # 23 Nov (#16, the 22 Nov next improvement): every beat's time, chapter and visuals, so yt_preview --motion can say
+    # which beat each of the quietest 6 s windows falls in (motion.json "quietest")
+    json.dump([dict(t=round(x["t"], 2), end=round(x["t"] + x["dur"], 2), chapter=x["chapter"] + 1, beat=x.get("b", 0) + 1,
+                    kinds=x.get("kinds", []), say=x["say"][:70]) for x in BEATS], open(work / "beats.json", "w"), indent=1)
     final = mix(ep, work)
     try:
         rep = sound_report(work, final)

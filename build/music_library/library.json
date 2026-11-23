@@ -770,6 +770,19 @@
    "rights": "ORIGINAL_GENERATED",
    "added": "2026-11-23",
    "note": ""
+  },
+  {
+   "id": "score-yt-016-enron-27-billion",
+   "title": "Original score for yt-016-enron-27-billion",
+   "video": "yt-016-enron-27-billion",
+   "engine": "score.py + GeneralUser GS v2.0.3 (TinySoundFont)",
+   "mood": "suspense",
+   "bpm": 77,
+   "key": "Bb",
+   "style": "acoustic",
+   "rights": "ORIGINAL_GENERATED",
+   "added": "2026-11-23",
+   "note": ""
   }
  ]
 }

@@ -28,6 +28,22 @@ DIR = os.environ.get("KOKORO_DIR", "")
 
 # Words outside misaki's dictionaries, with their phonemes written by hand.
 PHONEMES = {
+    # 23 Nov (YouTube #16, Enron): names and words the dictionary lacks
+    "enron": "ˈɛnɹɑn",
+    "enron's": "ˈɛnɹɑnz",
+    "andersen": "ˈændəɹsən",
+    "andersen's": "ˈændəɹsənz",
+    "chewco": "ʧˈukO",
+    "chewco's": "ʧˈukOz",
+    "dynegy": "dˈInəʤi",
+    "fastow": "fˈæstO",
+    "kenneth": "kˈɛnɪθ",
+    "kopper": "kˈɑpəɹ",
+    "ljm": "ˈɛl ʤˈA ˈɛm",
+    "ratified": "ɹˈæɾəfˌId",
+    "spes": "ˈɛs pˈi ˈiz",
+    "unrealised": "ˌʌnɹˈiəlˌIzd",
+    "employees'": "ɛmplˈYiz",
     # 20 Nov (YouTube Short, the short-interest puzzle): the illustration's three owners
     "ann": "ˈæn",
     "ann's": "ˈænz",

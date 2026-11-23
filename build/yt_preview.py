@@ -24,6 +24,9 @@ Motion measures (a picture can be beautiful and still be a slideshow, so stills 
   move but does not shows up here. Thresholds for pass or fail are not set yet: they need a few days of measures
   and Pietro's view (docs/production/quality-gates.md).
 
+Quietest windows (23 Nov): motion.json "quietest" lists the five quietest 6 s windows that do not overlap, and with
+--motion the beat each one falls in (beats.json from youtube.make), so a run knows which beats to film or animate next.
+
 Motion sheets: for every chapter, 8 frames 0.25 s apart from the middle of its second beat (or its first),
 saved as motion-<chapter>.jpg in the episode folder, to look at movement and transitions, not only at stills.
 """
@@ -115,7 +118,38 @@ def motion_stats(mp4, fps=6, still=.5):
                 mean_motion=round(float(np.mean(per_s)), 2) if per_s else None, hard_changes=cuts,
                 lowest_6s=round(low[0], 2) if low[0] is not None else None, lowest_6s_at=low[1],
                 windows_6s_under_1_2=sum(1 for v, _ in win if v < 1.2),
+                quietest=quietest(win, 5),
                 per_second=[round(float(x), 2) for x in per_s])
+
+
+def quietest(win, n=5, sep=6):
+    """23 Nov (#16, the 22 Nov next improvement): the n quietest 6 s windows that do not overlap, quietest first, as
+    (mean motion, start second). Overlapping windows of one quiet stretch count once, so the list names n different
+    places in the film to fix."""
+    out = []
+    for v, i in sorted(win):
+        if all(abs(i - j) >= sep for _, j in out):
+            out.append((round(v, 2), i))
+        if len(out) == n:
+            break
+    return out
+
+
+def place(quiet, beats, chapter_starts):
+    """Name the beat (or chapter card) under each quiet window: [(motion, start s, 'ch 7 beat 2 (sketch:dominoes, ...)
+    "Leeson kept betting..."')]. beats: beats.json from youtube.make."""
+    out = []
+    for v, i in quiet:
+        mid = i + 3
+        hit = [b for b in beats if b["t"] <= mid < b["end"]]
+        if hit:
+            b = hit[0]
+            what = f"ch {b['chapter']} beat {b['beat']} ({', '.join(b['kinds'])}) \"{b['say'][:48]}...\""
+        else:
+            c = max([k for k, t in enumerate(chapter_starts) if t <= mid] or [0])
+            what = f"ch {c + 1} card or a gap"
+        out.append(dict(motion=v, at=f"{i // 60}:{i % 60:02d}", start_s=i, where=what))
+    return out
 
 
 def motion_sheets(ep, work, mp4):
@@ -160,6 +194,10 @@ if __name__ == "__main__":
         work = HERE / "out" / ep["slug"]
         mp4 = work / f"{ep['slug']}.mp4"
         stats = motion_stats(mp4)
+        if (work / "beats.json").exists():                      # 23 Nov: the five quietest 6 s windows, by beat
+            stats["quietest"] = place(stats["quietest"], json.load(open(work / "beats.json")), json.load(open(work / "timing.json"))["chapters"])
+            for q in stats["quietest"]:
+                print(f"  quiet 6 s window {q['motion']:.2f} at {q['at']}: {q['where']}")
         json.dump(stats, open(work / "motion.json", "w"), indent=1)
         print("motion:", {k: v for k, v in stats.items() if k != "per_second"})
         for s in motion_sheets(ep, work, mp4):

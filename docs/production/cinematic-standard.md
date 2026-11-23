@@ -126,7 +126,11 @@ identical cards" fails, and so does swapping one repeated template for another.
    branch front today (a fascia that says only BANK, glass doors with a notice slot, a cash machine); office looks
    office_2023, office_2023b, office_2023c; wall-screen bars on a true dollar scale (`wall_bars`), rows that type and
    count (`rows_screen`).
-   Next: a boardroom today, a trading floor today.
+   23 Nov (YouTube #16, `cine_2001.py`): a glass-walled boardroom (about 2000, serves today too: dusk or day, a wall display
+   that takes content, a long table with laptops, papers, water and a speakerphone whose light pulses, a moving clock,
+   seated directors who read, look up and react); props: paper_sheet with a stamp, box_prop, year_blocks, hedge_board,
+   price_axis (sourced prints only on a true axis).
+   Next: a trading floor today.
 4. **Data in the world** (started): price paths that draw with flags; numbers that lift off documents. Next:
    balance sheet that rearranges, cash-flow waterfall, LBO structure, debt schedule (see `scene-library.md`).
    19 Nov: a billboard that counts the same 100 shares sold twice (SOLD SHORT 0, 100, 200; COUNTED AS OWNED 100, 200,
