@@ -70,6 +70,7 @@ PHONEMES = {
     "mcdonough": "məkdˈʌnə",
     # 22 Nov (YouTube #15, Barings 1995)
     "leeson": "lˈisən",
+    "mia": "mˈiə",                 # 23 Nov (Reel B): the print shop owner in our story
     "leeson's": "lˈisənz",
     "barings'": "bˈɛɹɪŋz",
     "nikkei": "nˈɪkA",

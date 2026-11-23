@@ -106,6 +106,7 @@ def words(text):
     t = re.sub(r"\b(" + "|".join(_teen) + r") oh (" + "|".join(_dig) + r")\b",       # "nineteen oh seven" is 1907
                lambda m: str((_teen.index(m.group(1)) + 11) * 100 + _dig.index(m.group(2)) + 1), t)
     t = re.sub(r"\bd c f\b", "dcf", t)                               # 13 Nov (Levels #12): letters a recogniser spaces out
+    t = re.sub(r"\bp e\b", "pe", t)                                  # 23 Nov: P/E said as two letters, written "PE"
     t = re.sub(r"\be b i t d a\b", "ebitda", t)                     # 13 Nov (YouTube #6): the place and the company
     t = re.sub(r"\bebit dah\b", "ebitda", t)                        # 22 Nov: every sound of the word, split in two ("Ebit Dah");
     #                                                                 "ibita" (the d lost) stays a miss and is reworded

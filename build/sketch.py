@@ -8292,3 +8292,663 @@ def rd_asks(p, **_):
 
 
 SCENES.update({f.__name__: f for f in (rd_hook, rd_bet, rd_calm, rd_jump, rd_answer, rd_rule, rd_asks)})
+
+
+# ---- 23 Nov Reel A: $100 in, $120 back two years later, and still a bad deal (build/reels_npv-120.py). Our own
+# round numbers: the same money could earn 10% a year elsewhere at the same risk: 100 x 1.1 = 110, 110 x 1.1 = 121.
+# The deal's $120 today: 120 / 1.1 / 1.1 = 120 / 1.21 = 99.17; NPV = 99.17 - 100 = -0.83. Close (not shown): the
+# $120 after one year, 120 / 1.1 = 109.09, NPV +9.09 (a good deal).
+
+NV_BASE, NV_K = 590, 3.4
+NV_IN, NV_BACK, NV_ALT = "#B9B4AC", "#F2C35B", "#5EC8B4"
+
+
+def _nv_col(x, w_, v, fill, k=NV_K, base=NV_BASE, label=None, size=40, dash=False, op=1.0):
+    s = (f'<rect x="{x}" y="{base - v * k:.1f}" width="{w_}" height="{v * k:.1f}" rx="8" fill="{fill}" fill-opacity="{op}" '
+         f'stroke="{INK if not dash else GREY}" stroke-width="6"' + (' stroke-dasharray="14 10"' if dash else "") + "/>")
+    if label:
+        s += _t(x + w_ / 2, base - v * k / 2 + size * .36, label, size, INK)
+    return s
+
+
+def nv_hook(p, seg=None, **_):
+    """The hook. From the swipe, framed close on the IN column ($100, grey) on the left: on '$100 in' it drops onto
+    the ground with a count to $100; a dashed arrow runs right through a 2 YEARS pill whose two year ticks pop; on
+    '$120 back' the gold BACK column grows to $120 with its count. On the question the camera pulls back; two cards,
+    GOOD DEAL and BAD DEAL, take turns to pulse and a ? bobs between them (no answer)."""
+    xi, xb, w_ = 70, 520, 200
+    _set(p, f'<path d="M30 {NV_BASE} H770" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+         + _nv_col(xi, w_, 100, NV_IN, dash=True, op=.12) + _nv_col(xb, w_, 120, NV_BACK, dash=True, op=.12)
+         + _t(xi + w_ / 2, NV_BASE + 40, "IN", 30, INK, serif=False) + _t(xb + w_ / 2, NV_BASE + 40, "BACK", 30, INK, serif=False))
+    t0 = _fr(seg, 0, .05)
+    p.parts.append(_life(t0, 99, _g("slide", t0, .5, _nv_col(xi, w_, 100, NV_IN), style="", y0=-520, y1=0, ease="out"), fi=.06, fo=.01))
+    p.parts.append(_life(t0 + .3, 99, _cnt(xi + w_ / 2, NV_BASE - 100 * NV_K - 24, 0, 100, t0 + .3, .5, size=50), fi=.05, fo=.01))
+    t1 = _fr(seg, 1, .0)
+    p.parts.append(_g("draw", t1, .7, f'<path d="M{xi + w_ + 20} 300 C 360 220, 440 220, {xb - 20} 260" fill="none" stroke="{INK}" stroke-width="7" stroke-dasharray="16 12"/>', style=""))
+    p.parts.append(_g("pop", t1 + .5, .3, f'<path d="M{xb - 44} 240 L{xb - 14} 262 L{xb - 48} 278" fill="none" stroke="{INK}" stroke-width="7" stroke-linecap="round"/>'))
+    p.parts.append(_g("pop", t1 + .1, .35, _pill(400, 170, "2 YEARS", INK, "#fff", 30)))
+    for j in range(2):
+        p.parts.append(_g("pop", t1 + .35 + .3 * j, .3, _pill(355 + 90 * j, 110, f"Y{j + 1}", TEAL, "#fff", 24)))
+    t2 = _fr(seg, 1, .35)
+    _gbar(p, t2, .7, xb, NV_BASE, w_, 120, NV_K, NV_BACK)
+    p.parts.append(_life(t2 + .1, 99, _cnt(xb + w_ / 2, NV_BASE - 120 * NV_K - 24, 0, 120, t2 + .1, .7, size=50, color="#8A5F12"), fi=.05, fo=.01))
+    t3 = _fr(seg, 2, .2)
+    for j, (cx, lab, col) in enumerate(((170, "GOOD DEAL", TEAL), (630, "BAD DEAL", RED))):
+        p.parts.append(_g("pop", t3 + .25 * j, .35, f'<rect x="{cx - 130}" y="380" width="260" height="90" rx="18" fill="#fff" stroke="{col}" stroke-width="8"/>'
+                          + _t(cx, 440, lab, 40, col)))
+    for j in range(10):
+        cx = 170 if j % 2 == 0 else 630
+        p.parts.append(_life(t3 + .6 + .42 * j, .32, f'<rect x="{cx - 144}" y="366" width="288" height="118" rx="22" fill="none" stroke="{INK}" stroke-width="6"/>', fi=.05, fo=.1))
+    p.parts.append(_life(t3 + .4, 99, _idle("bob", _t(400, 450, "?", 120, RED), 10, 2.3, style=""), fi=.15, fo=.01))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 190, 380, 1.3), (_fr(seg, 0, .9), 200, 370, 1.3), (_fr(seg, 1, .45), 560, 340, 1.15), (_fr(seg, 2, .15), 400, 320, 1.0), (end, 400, 320, 1.0)])
+
+
+def nv_alt(p, seg=None, **_):
+    """The other option. A YOUR OTHER OPTION plate with 10% A YEAR and SAME RISK chips; a timeline Y0 to Y1 along
+    the top with a dot that travels it. The teal $100 column stands at Y0; on 'After one year' a copy slides to the
+    Y1 slot, a +$10 block drops on top and the count runs 100 to 110."""
+    x0, x1, w_ = 90, 470, 200
+    _set(p, f'<path d="M30 {NV_BASE} H770" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+         + f'<path d="M{x0 + w_ / 2} 70 H{x1 + w_ / 2}" stroke="{GREY}" stroke-width="6" stroke-dasharray="12 10"/>'
+         + _t(x0 + w_ / 2, NV_BASE + 40, "TODAY", 28, INK, serif=False) + _t(x1 + w_ / 2, NV_BASE + 40, "YEAR 1", 28, INK, serif=False)
+         + _nv_col(x0, w_, 100, NV_ALT, label="$100") + _nv_col(x1, w_, 110, NV_ALT, dash=True, op=.12))
+    t0 = _fr(seg, 0, .2)
+    p.parts.append(_g("pop", t0, .35, _pill(560, 160, "10% A YEAR", TEAL, "#fff", 30)))
+    p.parts.append(_g("pop", t0 + .45, .35, _pill(560, 230, "SAME RISK", INK, "#fff", 28)))
+    for j in range(3):
+        p.parts.append(_life(t0 + .9 + .45 * j, .32, f'<rect x="{x0 - 10}" y="{NV_BASE - 100 * NV_K - 10:.0f}" width="{w_ + 20}" height="{100 * NV_K + 20:.0f}" rx="12" fill="none" stroke="{TEAL}" stroke-width="6"/>', fi=.05, fo=.1))
+    t1, t1e = _fr(seg, 1, .05), _fr(seg, 1, .5)
+    dot = f'<circle cx="{x0 + w_ / 2}" cy="70" r="18" fill="{RED}" stroke="{INK}" stroke-width="4"/>'
+    p.parts.append(_g("slide", t1, t1e - t1, dot, style="", x0=0, y0=0, x1=x1 - x0, y1=0, ease="inout"))
+    p.parts.append(_life(t1, 99, _g("slide", t1, .7, _nv_col(x0, w_, 100, NV_ALT), style="", x0=0, y0=0, x1=x1 - x0, y1=0, ease="inout"), fi=.01, fo=.01))
+    blk = _nv_col(x1, w_, 10, NV_BACK, base=NV_BASE - 100 * NV_K) + _t(x1 + w_ / 2, NV_BASE - 105 * NV_K + 12, "+$10", 30, INK)
+    p.parts.append(_life(t1 + .7, 99, _g("slide", t1 + .7, .4, blk, style="", y0=-300, y1=0, ease="out"), fi=.05, fo=.01))
+    p.parts.append(_life(t1 + .7, 99, _cnt(x1 + w_ / 2, NV_BASE - 110 * NV_K - 24, 100, 110, t1 + .9, .6, size=50, color=TEAL), fi=.05, fo=.01))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 380, 260, 1.15), (_fr(seg, 0, .9), 400, 260, 1.15), (t1 + .5, 520, 300, 1.12), (seg[-1][1] - .1, 480, 320, 1.06), (end, 400, 320, 1.0)])
+
+
+def nv_year2(p, seg=None, **_):
+    """Year two. The $110 column at YEAR 1; on 'on the $110' it is ringed and a 10% x $110 pill pops; the column
+    slides to YEAR 2 and a +$11 block lands (a sliver of it, the extra $1, glows red: interest on last year's
+    interest); the count runs 110 to 121 and a $121 stamp lands."""
+    x1, x2, w_ = 90, 470, 200
+    _set(p, f'<path d="M30 {NV_BASE} H770" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+         + _t(x1 + w_ / 2, NV_BASE + 40, "YEAR 1", 28, INK, serif=False) + _t(x2 + w_ / 2, NV_BASE + 40, "YEAR 2", 28, INK, serif=False)
+         + _nv_col(x1, w_, 110, NV_ALT, label="$110") + _nv_col(x2, w_, 121, NV_ALT, dash=True, op=.12))
+    t0 = _fr(seg, 0, .35)
+    for j in range(3):
+        p.parts.append(_life(t0 + .4 * j, .3, f'<rect x="{x1 - 10}" y="{NV_BASE - 110 * NV_K - 10:.0f}" width="{w_ + 20}" height="{110 * NV_K + 20:.0f}" rx="12" fill="none" stroke="{RED}" stroke-width="6"/>', fi=.05, fo=.1))
+    p.parts.append(_g("pop", t0 + .2, .35, _pill(400, 70, "10% x $110 = $11", INK, "#fff", 30)))
+    t1 = _fr(seg, 0, .7)
+    p.parts.append(_life(t1, 99, _g("slide", t1, .7, _nv_col(x1, w_, 110, NV_ALT), style="", x0=0, y0=0, x1=x2 - x1, y1=0, ease="inout"), fi=.01, fo=.01))
+    top = NV_BASE - 110 * NV_K
+    blk = (_nv_col(x2, w_, 11, NV_BACK, base=top) + f'<rect x="{x2 + w_ - 34}" y="{top - 11 * NV_K:.1f}" width="34" height="{11 * NV_K:.1f}" rx="6" fill="{RED}" stroke="{INK}" stroke-width="4"/>'
+           + _t(x2 + w_ / 2 - 14, top - 5.5 * NV_K + 12, "+$11", 32, INK))
+    p.parts.append(_life(t1 + .7, 99, _g("slide", t1 + .7, .4, blk, style="", y0=-300, y1=0, ease="out"), fi=.05, fo=.01))
+    p.parts.append(_life(t1 + .8, 99, _cnt(x2 + w_ / 2, NV_BASE - 121 * NV_K - 24, 110, 121, t1 + .9, .6, size=50, color=TEAL), fi=.05, fo=.01))
+    p.parts.append(_g("pop", t1 + 1.3, .35, _pill(x2 - 40, top - 70, "+$1 ON THE $10", RED, "#fff", 22)))
+    p.parts.append(_stamp(x1 - 10, 150, w_ + 40, 96, "$121", TEAL, _fr(seg, 1, .3), size=58))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 220, 340, 1.15), (t0 + .6, 260, 300, 1.12), (t1 + .8, 560, 230, 1.25), (_fr(seg, 1, .1), 540, 240, 1.2), (end, 400, 320, 1.0)])
+
+
+def nv_verdict(p, seg=None, **_):
+    """The verdict. Two columns on one scale (4 px a dollar): THE DEAL $120 (gold) and YOUR OTHER OPTION $121
+    (teal) grow on the words with their counts; then the camera rises to the tops, a red $1 gap bracket draws
+    between them, and a $1 BEHIND stamp lands."""
+    k = 4.0
+    xa, xb, w_ = 130, 450, 220
+    _set(p, f'<path d="M30 {NV_BASE} H770" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+         + _t(xa + w_ / 2, NV_BASE + 40, "THE DEAL", 28, INK, serif=False) + _t(xb + w_ / 2, NV_BASE + 40, "OTHER OPTION", 28, INK, serif=False)
+         + _nv_col(xa, w_, 120, NV_BACK, k=k, dash=True, op=.12) + _nv_col(xb, w_, 121, NV_ALT, k=k, dash=True, op=.12))
+    t0 = _fr(seg, 0, .1)
+    _gbar(p, t0, .8, xa, NV_BASE, w_, 120, k, NV_BACK)
+    p.parts.append(_life(t0 + .1, 99, _cnt(xa + w_ / 2, NV_BASE - 120 * k + 70, 0, 120, t0 + .1, .8, size=54), fi=.05, fo=.01))
+    t1 = _fr(seg, 0, .6)
+    _gbar(p, t1, .8, xb, NV_BASE, w_, 121, k, NV_ALT)
+    p.parts.append(_life(t1 + .1, 99, _cnt(xb + w_ / 2, NV_BASE - 121 * k + 70, 0, 121, t1 + .1, .8, size=54), fi=.05, fo=.01))
+    t2 = _fr(seg, 1, .05)
+    ya, yb = NV_BASE - 120 * k, NV_BASE - 121 * k
+    p.parts.append(_g("draw", t2, .4, f'<path d="M{xa} {ya:.0f} H{xb + w_}" stroke="{RED}" stroke-width="4" stroke-dasharray="10 8"/>', style=""))
+    p.parts.append(_g("draw", t2 + .2, .4, f'<path d="M{xb + w_ + 18} {yb:.0f} h16 V{ya:.0f} h-16" fill="none" stroke="{RED}" stroke-width="6"/>', style=""))
+    p.parts.append(_stamp(250, 300, 300, 84, "$1 BEHIND", RED, _fr(seg, 1, .45), size=48))
+    for j in range(4):
+        p.parts.append(_g("ripple", t2 + .5 + .6 * j, .6, f'<circle cx="{xb + w_ + 26}" cy="{(ya + yb) / 2:.0f}" r="22" fill="none" stroke="{RED}" stroke-width="5"/>'))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 400, 380, 1.05), (t1 + .8, 400, 340, 1.05), (t2 + .1, 520, 160, 1.45), (_fr(seg, 1, .4), 520, 170, 1.4), (_fr(seg, 1, .5), 400, 300, 1.05), (end, 400, 320, 1.0)])
+
+
+def nv_today(p, seg=None, **_):
+    """Back to today. Three slots, TODAY, YEAR 1 and YEAR 2. The gold $120 column at YEAR 2; on 'what the $120 is
+    worth today' a ? tag swings over TODAY. On the second sentence the column steps back twice, each step a / 1.1 pill
+    and a shrink with its count (120 to 109.09, then to 99.17), and lands at TODAY beside a dashed YOU PAY $100 line
+    that it falls just short of."""
+    k, w_ = 3.4, 180
+    xs = (40, 310, 580)
+    _set(p, f'<path d="M30 {NV_BASE} H770" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+         + "".join(_t(x + w_ / 2, NV_BASE + 40, lab, 26, INK, serif=False) for x, lab in zip(xs, ("TODAY", "YEAR 1", "YEAR 2"))))
+    p.parts.append(_life(-1, 1 + _fr(seg, 1, .1), _nv_col(xs[2], w_, 120, NV_BACK, k=k, label="$120", size=42), fi=.01, fo=.01))
+    t0 = _fr(seg, 0, .55)
+    t1 = _fr(seg, 1, .1)
+    p.parts.append(_life(t0, t1 + 1.3 - t0, _g("pop", t0, .4, _idle("swing", _ptag(xs[0] + w_ / 2, 120, 150, "$ ?", RED, "#fff", 44), 7, 2.1,
+                                             style="transform-box:fill-box;transform-origin:center top")), fi=.01, fo=.2))
+    v1, v0 = 109.09, 99.17
+    # step 1: YEAR 2 to YEAR 1 (shrink by 1.1 while sliding left)
+    p.parts.append(_life(t1, 1.25, _g("slide", t1, .9, _g("scaleY", t1, .9, _nv_col(xs[2], w_, 120, NV_BACK, k=k), style="transform-box:fill-box;transform-origin:center bottom", s0=1, s1=round(v1 / 120, 4)),
+                                         style="", x0=0, y0=0, x1=xs[1] - xs[2], y1=0, ease="inout"), fi=.01, fo=.15))
+    p.parts.append(_g("pop", t1, .3, _pill((xs[1] + xs[2]) / 2 + w_ / 2, 140, "/ 1.1", INK, "#fff", 34)))
+    p.parts.append(_life(t1, 1.25, _cnt(xs[1] + w_ / 2, NV_BASE - v1 * k - 24, 120, v1, t1 + .1, .8, size=44, dec=2), fi=.01, fo=.15))
+    t2 = t1 + 1.25
+    p.parts.append(_life(t2 - .05, 99, _g("slide", t2, .9, _g("scaleY", t2, .9, _nv_col(xs[1], w_, v1, NV_BACK, k=k), style="transform-box:fill-box;transform-origin:center bottom", s0=1, s1=round(v0 / v1, 4)),
+                                            style="", x0=0, y0=0, x1=xs[0] - xs[1], y1=0, ease="inout"), fi=.05, fo=.01))
+    p.parts.append(_g("pop", t2, .3, _pill((xs[0] + xs[1]) / 2 + w_ / 2, 100, "/ 1.1", INK, "#fff", 34)))
+    p.parts.append(_life(t2, 99, _cnt(xs[0] + w_ / 2, NV_BASE - v0 * k - 24, v1, v0, t2 + .1, .8, size=44, dec=2, color=RED), fi=.05, fo=.01))
+    t3 = t2 + 1.0
+    p.parts.append(_g("draw", t3, .5, f'<path d="M20 {NV_BASE - 100 * k:.0f} H{xs[1] + w_}" stroke="{INK}" stroke-width="5" stroke-dasharray="14 10"/>', style=""))
+    p.parts.append(_g("pop", t3 + .3, .35, _pill(xs[1] + 100, NV_BASE - 100 * k + 50, "YOU PAY $100", INK, "#fff", 26)))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 560, 360, 1.12), (t0, 400, 320, 1.0), (t2, 300, 330, 1.08), (t3 + .2, 200, 300, 1.2), (seg[-1][1], 220, 300, 1.2), (end, 400, 320, 1.0)])
+
+
+def _tick(x, y, s=1.0, col=TEAL):
+    return f'<path d="M{x - 22 * s:.0f} {y:.0f} l{16 * s:.0f} {18 * s:.0f} l{30 * s:.0f} -{36 * s:.0f}" fill="none" stroke="{col}" stroke-width="{10 * s:.0f}" stroke-linecap="round" stroke-linejoin="round"/>'
+
+
+def _cross(x, y, s=1.0, col=RED):
+    r = 20 * s
+    return f'<path d="M{x - r:.0f} {y - r:.0f} L{x + r:.0f} {y + r:.0f} M{x + r:.0f} {y - r:.0f} L{x - r:.0f} {y + r:.0f}" stroke="{col}" stroke-width="{10 * s:.0f}" stroke-linecap="round"/>'
+
+
+def nv_rule(p, seg=None, **_):
+    """The rule. An equation builds on the words: WORTH TODAY $99.17 (gold block), minus YOU PAY $100 (grey block),
+    and the NPV lands as a counter 0 to -0.83 with a red NEGATIVE stamp. On the second sentence two test rows drop in:
+    MORE BACK THAN YOU PUT IN? gets a teal tick, BEATS YOUR OTHER OPTION? gets a red cross that pulses."""
+    _set(p, "<g opacity='.18'>" + f'<rect x="40" y="70" width="230" height="140" rx="14" fill="{NV_BACK}"/><rect x="330" y="70" width="200" height="140" rx="14" fill="{NV_IN}"/><rect x="590" y="70" width="180" height="140" rx="14" fill="#fff" stroke="{RED}" stroke-width="7"/>' + "</g>")
+    _set(p, "<g opacity='.16'>" + _pill(400, 420, "MORE BACK THAN YOU PUT IN?", INK, "#fff", 28) + _pill(400, 520, "BEATS YOUR OTHER OPTION?", INK, "#fff", 28) + "</g>")
+    t0 = _fr(seg, 0, .05)
+    p.parts.append(_g("pop", t0, .4, f'<rect x="40" y="70" width="230" height="140" rx="14" fill="{NV_BACK}" stroke="{INK}" stroke-width="6"/>'
+                      + _t(155, 120, "WORTH TODAY", 24, INK, serif=False) + _t(155, 180, "$99.17", 50, INK)))
+    p.parts.append(_g("pop", t0 + .5, .3, _t(300, 160, "-", 70, INK)))
+    p.parts.append(_g("pop", t0 + .7, .4, f'<rect x="330" y="70" width="200" height="140" rx="14" fill="{NV_IN}" stroke="{INK}" stroke-width="6"/>'
+                      + _t(430, 120, "YOU PAY", 24, INK, serif=False) + _t(430, 180, "$100", 50, INK)))
+    t1 = _fr(seg, 0, .6)
+    p.parts.append(_g("pop", t1, .3, _t(560, 160, "=", 70, INK)))
+    p.parts.append(_g("pop", t1 + .1, .4, f'<rect x="590" y="70" width="180" height="140" rx="14" fill="#fff" stroke="{RED}" stroke-width="7"/>' + _t(680, 120, "NPV", 26, RED, serif=False)))
+    p.parts.append(_life(t1 + .2, 99, _cnt(680, 182, 0, 0.83, t1 + .3, .7, size=46, color=RED, dec=2, pre="-$"), fi=.05, fo=.01))
+    p.parts.append(_stamp(470, 240, 300, 80, "NEGATIVE", RED, _fr(seg, 0, .95), size=44, rot=-6))
+    t2 = _fr(seg, 1, .1)
+    p.parts.append(_life(t2, 99, _g("slide", t2, .4, _pill(400, 420, "MORE BACK THAN YOU PUT IN?", INK, "#fff", 28), style="", x0=-600, x1=0, ease="out"), fi=.05, fo=.01))
+    p.parts.append(_g("draw", t2 + .5, .3, _tick(740, 418, 1.1), style=""))
+    t3 = _fr(seg, 2, .05)
+    p.parts.append(_life(t3, 99, _g("slide", t3, .4, _pill(400, 520, "BEATS YOUR OTHER OPTION?", INK, "#fff", 28), style="", x0=600, x1=0, ease="out"), fi=.05, fo=.01))
+    p.parts.append(_g("draw", t3 + .5, .3, _cross(730, 520, 1.1), style=""))
+    for j in range(4):
+        p.parts.append(_g("ripple", t3 + .8 + .55 * j, .55, f'<circle cx="730" cy="520" r="34" fill="none" stroke="{RED}" stroke-width="5"/>'))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 400, 160, 1.3), (t1 + .4, 420, 170, 1.25), (t2, 400, 300, 1.0), (end, 400, 320, 1.0)])
+
+
+def nv_asks(p, **_):
+    """The close: the $100 IN column and the $120 BACK column, a 2 YEARS pill that flips to 1 YEAR (struck through,
+    then the new label), a calendar page that keeps flipping, a GOOD DEAL OR BAD? plate that bobs, a needle swinging
+    between GOOD and BAD. The answer (good: $109.09 today, NPV +$9.09) is not shown. Laid inside x 30-770, y 30-610."""
+    k, w_ = 2.6, 170
+    xi, xb = 50, 280
+    cx, cy, r = 610, 300, 120
+    _set(p, f'<path d="M30 {NV_BASE} H470" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+         + _nv_col(xi, w_, 100, NV_IN, k=k, label="$100", size=36) + _nv_col(xb, w_, 120, NV_BACK, k=k, label="$120", size=36)
+         + _t(xi + w_ / 2, NV_BASE - 100 * k - 20, "IN", 28, INK, serif=False) + _t(xb + w_ / 2, NV_BASE - 120 * k - 20, "BACK", 28, INK, serif=False)
+         + f'<path d="M{cx - r} {cy} A{r} {r} 0 0 1 {cx + r} {cy}" fill="none" stroke="{INK}" stroke-width="8"/>'
+         + _t(cx - r, cy + 40, "BAD", 28, RED, serif=False) + _t(cx + r, cy + 40, "GOOD", 28, TEAL, serif=False))
+    p.parts.append(_life(-1, 1 + p.at(.15), _pill(260, 90, "2 YEARS", INK, "#fff", 32), fi=.01, fo=.2))
+    p.parts.append(_g("draw", p.at(.08), .3, '<path d="M170 92 H350" stroke="#D93A12" stroke-width="9" stroke-linecap="round"/>', style=""))
+    p.parts.append(_life(p.at(.15), 99, _g("pop", p.at(.15), .4, _idle("swing", _pill(260, 90, "1 YEAR", RED, "#fff", 36), 5, 2.2, style="transform-box:fill-box;transform-origin:center top")), fi=.05, fo=.01))
+    for j in range(8):
+        p.parts.append(_g("ripple", p.at(.2) + .8 * j, .7, f'<circle cx="{xb + w_ / 2}" cy="{NV_BASE - 120 * k / 2:.0f}" r="60" fill="none" stroke="{NV_BACK}" stroke-width="6"/>'))
+    needle = f'<path d="M{cx} {cy} L{cx} {cy - r + 20}" stroke="{INK}" stroke-width="9" stroke-linecap="round"/><circle cx="{cx}" cy="{cy}" r="16" fill="{INK}"/>'
+    p.parts.append(f'<g class="a" data-fx="swing" data-at="0" data-d="1" data-amp="62" data-w="2.6" style="transform-box:view-box;transform-origin:{cx}px {cy}px">{needle}</g>')
+    p.parts.append(_g("pop", p.at(.3), .35, _idle("bob", _pill(cx, 430, "GOOD OR BAD?", INK, "#fff", 34), 6, 1.9, style="")))
+    p.parts.append(_g("float", 0, 1, _g("pop", p.at(.4), .4, _t(cx, 560, "?", 120, RED)), style="", amp=12, w=2.4))
+
+
+SCENES.update({f.__name__: f for f in (nv_hook, nv_alt, nv_year2, nv_verdict, nv_today, nv_rule, nv_asks)})
+
+
+# ---- 23 Nov Reel B: a $30 profit and $70 less cash (build/reels_profit-cash.py). Our own story with round numbers:
+# Mia's print shop does a $100 poster job; the client pays in 60 days; she pays $70 for paper and ink now. Revenue is
+# counted when the work is done (accrual basis): revenue $100, costs $70, profit $30 (before tax). Cash: 0 in, 70 out,
+# -$70. The $100 owed is a receivable; when it is paid, cash -70 + 100 = +$30. Close (not shown): three such jobs in a
+# month, none paid yet: profit 3 x 30 = $90, cash 3 x -70 = -$210.
+
+PC_ZERO = 330
+PAPER_C, INK_C, POSTER_C = "#FFFFFF", "#3B3F48", "#E8836B"
+
+
+def _printer(x, y, s=1.0):
+    """A generic poster printer: a box, a feed slot, a paper roll on top, a small screen. No brand."""
+    S = lambda v: v * s
+    return (f'<rect x="{x + S(30)}" y="{y - S(40)}" width="{S(200)}" height="{S(46)}" rx="{S(22)}" fill="#fff" stroke="{INK}" stroke-width="5"/>'
+            f'<rect x="{x}" y="{y}" width="{S(260)}" height="{S(150)}" rx="{S(16)}" fill="{GREY}" stroke="{INK}" stroke-width="6"/>'
+            f'<rect x="{x + S(30)}" y="{y + S(96)}" width="{S(200)}" height="{S(16)}" rx="{S(8)}" fill="{INK}"/>'
+            f'<rect x="{x + S(180)}" y="{y + S(24)}" width="{S(56)}" height="{S(36)}" rx="{S(6)}" fill="#123B37"/>'
+            f'<circle cx="{x + S(40)}" cy="{y + S(42)}" r="{S(10)}" fill="{TEAL}" stroke="{INK}" stroke-width="3"/>')
+
+
+def _poster(x, y, w_=120, h_=160, rot=0, k=0):
+    """A poster sheet: a coloured sun and two lines, no words."""
+    col = (POSTER_C, "#5EC8B4", "#F2C35B")[k % 3]
+    return (f'<g transform="rotate({rot} {x + w_ / 2} {y + h_ / 2})"><rect x="{x}" y="{y}" width="{w_}" height="{h_}" rx="6" fill="#fff" stroke="{INK}" stroke-width="4"/>'
+            f'<circle cx="{x + w_ / 2}" cy="{y + h_ * .38}" r="{w_ * .24}" fill="{col}"/>'
+            f'<rect x="{x + w_ * .18}" y="{y + h_ * .72}" width="{w_ * .64}" height="8" rx="4" fill="{GREY}"/>'
+            f'<rect x="{x + w_ * .28}" y="{y + h_ * .82}" width="{w_ * .44}" height="8" rx="4" fill="{GREY}"/></g>')
+
+
+def _invoice(x, y, w_=220, h_=150, amount="$100", due="PAY IN 60 DAYS"):
+    return (f'<rect x="{x}" y="{y}" width="{w_}" height="{h_}" rx="10" fill="#fff" stroke="{INK}" stroke-width="5"/>'
+            + _t(x + w_ / 2, y + 40, "INVOICE", 24, GREY, serif=False) + _t(x + w_ / 2, y + 95, amount, 50, INK)
+            + _t(x + w_ / 2, y + 132, due, 18, RED, serif=False))
+
+
+def pc_hook(p, seg=None, **_):
+    """The hook. From the swipe, framed close on her PROFIT column: on 'a $30 profit' it grows above the zero line,
+    teal, with a count to $30 and an up arrow. On the question the camera pulls back to show her CASH column beside
+    it: it drops below the zero line, red, counting to -$70; the two arrows pulse in turn and a ? bobs."""
+    k = 2.6
+    xp, xc, w_ = 110, 470, 220
+    _set(p, f'<path d="M30 {PC_ZERO} H770" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+         + _vbar(xp, PC_ZERO, w_, 30, k, TEAL, dash=True, op=.12) + _vbar(xc, PC_ZERO, w_, -70, k, LOSS_C, dash=True, op=.12)
+         + _t(xp + w_ / 2, PC_ZERO + 50, "PROFIT", 30, INK, serif=False) + _t(xc + w_ / 2, PC_ZERO - 30, "CASH", 30, INK, serif=False)
+         + _printer(60, 450, .6))
+    t0 = _fr(seg, 0, .2)
+    _gbar(p, t0, .7, xp, PC_ZERO, w_, 30, k, TEAL)
+    p.parts.append(_life(t0 + .1, 99, _cnt(xp + w_ / 2, PC_ZERO - 30 * k - 24, 0, 30, t0 + .1, .6, size=54, color=TEAL), fi=.05, fo=.01))
+    up = f'<path d="M{xp + w_ + 40} {PC_ZERO - 20} V{PC_ZERO - 140} M{xp + w_ + 18} {PC_ZERO - 112} L{xp + w_ + 40} {PC_ZERO - 140} L{xp + w_ + 62} {PC_ZERO - 112}" fill="none" stroke="{TEAL}" stroke-width="9" stroke-linecap="round"/>'
+    p.parts.append(_g("draw", t0 + .5, .4, up, style=""))
+    t1 = _fr(seg, 1, .2)
+    _gbar(p, t1, .8, xc, PC_ZERO, w_, -70, k, LOSS_C)
+    p.parts.append(_life(t1 + .1, 99, _cnt(xc + w_ / 2, PC_ZERO + 70 * k + 56, 0, 70, t1 + .1, .8, size=54, color=RED, pre="-$"), fi=.05, fo=.01))
+    dn = f'<path d="M{xc - 40} {PC_ZERO + 20} V{PC_ZERO + 140} M{xc - 62} {PC_ZERO + 112} L{xc - 40} {PC_ZERO + 140} L{xc - 18} {PC_ZERO + 112}" fill="none" stroke="{RED}" stroke-width="9" stroke-linecap="round"/>'
+    p.parts.append(_g("draw", t1 + .6, .4, dn, style=""))
+    for j in range(8):
+        cx, cy = (xp + w_ / 2, PC_ZERO - 40) if j % 2 == 0 else (xc + w_ / 2, PC_ZERO + 90)
+        p.parts.append(_g("ripple", t1 + 1.0 + .45 * j, .45, f'<circle cx="{cx}" cy="{cy}" r="46" fill="none" stroke="{TEAL if j % 2 == 0 else RED}" stroke-width="6"/>'))
+    p.parts.append(_life(t1 + .9, 99, _idle("bob", _t(400, 180, "?", 120, RED), 10, 2.3, style=""), fi=.15, fo=.01))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 220, 260, 1.35), (_fr(seg, 0, .9), 230, 260, 1.3), (_fr(seg, 1, .15), 400, 320, 1.0), (end, 400, 320, 1.0)])
+
+
+def pc_job(p, seg=None, **_):
+    """The job. The printer on the left; on 'prints $100 of posters' three posters slide out of it one by one and
+    land on a stack, and an INVOICE $100 PAY IN 60 DAYS card flies to the client side. On the second sentence the
+    camera moves to her CASH TIN: a bundle of notes flies out of it into a PAPER AND INK box with a -$70 tag."""
+    _set(p, _printer(40, 140) + f'<path d="M30 590 H770" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+         + f'<rect x="80" y="430" width="180" height="150" rx="14" fill="#DCD7CF" stroke="{INK}" stroke-width="6"/>' + _t(170, 520, "CASH", 30, INK, serif=False)
+         + f'<rect x="500" y="440" width="230" height="140" rx="10" fill="#E8E4DE" stroke="{INK}" stroke-width="6"/>'
+         + f'<path d="M500 470 H730" stroke="{INK}" stroke-width="5"/>' + _t(615, 530, "PAPER AND INK", 24, INK, serif=False))
+    t0 = _fr(seg, 0, .15)
+    for j in range(3):
+        tj = t0 + .35 * j
+        p.parts.append(_life(tj, 99, _g("slide", tj, .5, _poster(110, 236, rot=0, k=j), style="", x0=0, y0=0, x1=250 + 14 * j, y1=-170 + 8 * j, ease="out"), fi=.05, fo=.01))
+    t1 = _fr(seg, 0, .6)
+    p.parts.append(_life(t1, 99, _g("slide", t1, .6, _invoice(540, 120), style="", x0=-300, y0=60, x1=0, y1=0, ease="out", r=-6), fi=.08, fo=.01))
+    p.parts.append(_life(t1 + .6, 99, _idle("swing", f'<g>{_ptag(650, 300, 130, "CLIENT", TEAL, "#fff", 28)}</g>', 5, 2.4, style="transform-box:fill-box;transform-origin:center top"), fi=.1, fo=.01))
+    t2 = _fr(seg, 1, .2)
+    notes = "".join(_banknote(0 + 8 * j, 0 - 8 * j, 110, 54, -6 + 6 * j) for j in range(3))
+    p.parts.append(_life(t2, 1.3, _g("slide", t2, 1.0, f'<g transform="translate(115 420)">{notes}</g>', style="", x0=0, y0=0, x1=440, y1=40, ease="inout"), fi=.05, fo=.3))
+    p.parts.append(_g("press", t2 + .1, .4, f'<rect x="80" y="430" width="180" height="150" rx="14" fill="#DCD7CF" stroke="{INK}" stroke-width="6"/>' + _t(170, 520, "CASH", 30, INK, serif=False)))
+    p.parts.append(_g("pop", t2 + 1.0, .35, _idle("swing", _ptag(615, 410, 140, "-$70", RED, "#fff", 40), 6, 2.2, style="transform-box:fill-box;transform-origin:center top")))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 260, 260, 1.2), (t1, 380, 240, 1.1), (t2 - .1, 400, 450, 1.15), (seg[-1][1] - .1, 400, 440, 1.12), (end, 400, 320, 1.0)])
+
+
+def pc_profit(p, seg=None, **_):
+    """The profit. A WORK DONE stamp lands on a poster; three columns on one scale: REVENUE grows to $100 (gold),
+    COSTS to $70 (grey) with PAPER and INK stacking in; on 'Profit: $30' the top $30 of REVENUE lifts off and
+    slides into PROFIT (teal), counting to $30, with a BEFORE TAX pill."""
+    k, xs, w_ = 3.6, (60, 310, 560), 180
+    base = 590
+    s = f'<path d="M30 {base} H770" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+    for x, lab, v in zip(xs, ("REVENUE", "COSTS", "PROFIT"), (100, 70, 30)):
+        s += _vbar(x, base, w_, v, k, GOLD, dash=True, op=.12) + _t(x + w_ / 2, base + 40, lab, 28, INK, serif=False)
+    _set(p, s)
+    t0 = _fr(seg, 0, .05)
+    p.parts.append(_life(t0, _fr(seg, 0, .35) - t0, _poster(620, 80, 120, 160, rot=4, k=1) + "", fi=.1, fo=.2))
+    p.parts.append(_life(t0, _fr(seg, 0, .35) - t0, _stamp(560, 140, 240, 70, "WORK DONE", TEAL, t0 + .2, size=34), fi=.01, fo=.2))
+    t1 = _fr(seg, 0, .4)
+    _gbar(p, t1, .7, xs[0], base, w_, 70, k, GOLD)
+    p.parts.append(_life(t1, _fr(seg, 1, .2) - t1 + .05, _g("growY", t1, .7, _vbar(xs[0], base - 70 * k, w_, 30, k, GOLD), style=_grow(1)), fi=.01, fo=.01))
+    p.parts.append(_life(t1 + .1, 99, _cnt(xs[0] + w_ / 2, base - 100 * k - 22, 0, 100, t1 + .1, .7, size=46), fi=.05, fo=.01))
+    t2 = _fr(seg, 0, .75)
+    for j, (lab, h_) in enumerate((("PAPER", 40), ("INK", 30))):
+        y = base - (40 if j else 0) * k - h_ * k
+        blk = (f'<rect x="{xs[1]}" y="{y:.1f}" width="{w_}" height="{h_ * k:.1f}" rx="6" fill="{GREY if j == 0 else "#B9B4AC"}" stroke="{INK}" stroke-width="5"/>'
+               + _t(xs[1] + w_ / 2, y + h_ * k / 2 + 9, lab, 26, INK, serif=False))
+        p.parts.append(_g("fade", t2 + .4 * j, .08, _g("slide", t2 + .4 * j, .45, blk, style="", y0=-300, y1=0, ease="out"), style=""))
+    p.parts.append(_life(t2 + .2, 99, _cnt(xs[1] + w_ / 2, base - 70 * k - 22, 0, 70, t2 + .2, .8, size=46), fi=.05, fo=.01))
+    t3 = _fr(seg, 1, .2)
+    p.parts.append(_life(t3, 99, _g("slide", t3, .8, _vbar(xs[0], base - 70 * k, w_, 30, k, TEAL), style="", x0=0, y0=0, x1=xs[2] - xs[0], y1=70 * k, ease="inout"), fi=.01, fo=.01))
+    p.parts.append(_life(t3 + .7, 99, _cnt(xs[2] + w_ / 2, base - 30 * k - 22, 0, 30, t3 + .7, .4, size=50, color=TEAL), fi=.05, fo=.01))
+    p.parts.append(_g("pop", t3 + 1.0, .35, _pill(xs[2] + w_ / 2, 200, "BEFORE TAX", INK, "#fff", 24)))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 560, 300, 1.2), (t1 - .1, 400, 320, 1.0), (t3, 480, 380, 1.12), (seg[-1][1], 520, 400, 1.12), (end, 400, 320, 1.0)])
+
+
+def pc_cash(p, seg=None, **_):
+    """The cash. A calendar page at DAY 1 with PAID ON DAY 60 under it; CASH IN stays an empty dashed box whose count
+    reads $0 (a coin drops, bounces off and is gone); CASH OUT grows down to $70 (red); on 'Cash: down $70' the
+    total counts 0 to -$70 and a -$70 stamp lands."""
+    k = 3.0
+    xi, xo, w_ = 70, 330, 200
+    _set(p, f'<path d="M30 {PC_ZERO} H560" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+         + _t(xi + w_ / 2, PC_ZERO - 120, "CASH IN", 28, INK, serif=False) + _t(xo + w_ / 2, PC_ZERO - 30, "CASH OUT", 28, INK, serif=False)
+         + f'<rect x="{xi}" y="{PC_ZERO - 90}" width="{w_}" height="90" rx="8" fill="none" stroke="{GREY}" stroke-width="5" stroke-dasharray="12 9"/>'
+         + _vbar(xo, PC_ZERO, w_, -70, k, LOSS_C, dash=True, op=.12)
+         + f'<rect x="600" y="70" width="170" height="190" rx="14" fill="#fff" stroke="{INK}" stroke-width="6"/><rect x="600" y="70" width="170" height="50" rx="14" fill="{RED}" stroke="{INK}" stroke-width="6"/>')
+    p.parts.append(_life(-1, 99, _cnt(685, 215, 1, 1, 0, .1, size=70, pre="", color=INK), fi=.01, fo=.01))
+    p.parts.append(_set_life(_t(685, 105, "DAY", 26, "#fff", serif=False)))
+    p.parts.append(_g("pop", _fr(seg, 0, .1), .35, _pill(685, 300, "PAID ON DAY 60", RED, "#fff", 22)))
+    t0 = _fr(seg, 0, .2)
+    p.parts.append(_life(t0, 99, _cnt(xi + w_ / 2, PC_ZERO - 30, 0, 0, t0, .3, size=50), fi=.05, fo=.01))
+    coin_ = f'<circle cx="{xi + w_ / 2}" cy="0" r="26" fill="{GOLD}" stroke="{INK}" stroke-width="4"/>'
+    p.parts.append(_life(t0, 1.2, _g("slide", t0, 1.1, coin_, style="", x0=0, y0=-40, x1=-180, y1=260, ease="inout"), fi=.05, fo=.3))
+    t1 = _fr(seg, 0, .6)
+    _gbar(p, t1, .8, xo, PC_ZERO, w_, -70, k, LOSS_C)
+    p.parts.append(_life(t1 + .1, 99, _cnt(xo + w_ / 2, PC_ZERO + 70 * k + 50, 0, 70, t1 + .1, .8, size=46, color=RED, pre="$"), fi=.05, fo=.01))
+    t2 = _fr(seg, 1, .1)
+    p.parts.append(_g("pop", t2, .3, _pill(685, 400, "CASH", INK, "#fff", 26)))
+    p.parts.append(_life(t2 + .1, 99, _cnt(685, 490, 0, 70, t2 + .2, .6, size=64, color=RED, pre="-$"), fi=.05, fo=.01))
+    p.parts.append(_stamp(590, 520, 190, 76, "-$70", RED, _fr(seg, 1, .8), size=46))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 300, 240, 1.15), (t1, 330, 300, 1.08), (t2, 600, 420, 1.2), (seg[-1][1], 620, 430, 1.2), (end, 400, 320, 1.0)])
+
+
+def pc_gap(p, seg=None, **_):
+    """The gap. Her balance sheet: CASH -$70 (red, below the line) and, on 'as a receivable', a gold RECEIVABLE $100
+    block slides in with an OWED TO HER pill. On the second sentence the calendar counts DAY 1 to DAY 60, the
+    receivable block slides across into the cash column and the cash count runs -$70 to +$30 as the column climbs
+    through zero (a full re-scale), a PAID stamp landing on the invoice."""
+    k = 2.6
+    xc, xr, w_ = 80, 330, 200
+    _set(p, f'<path d="M30 {PC_ZERO} H560" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+         + _t(xc + w_ / 2, 60, "CASH", 28, INK, serif=False) + _t(xr + w_ / 2, 60, "RECEIVABLE", 28, INK, serif=False)
+         + _vbar(xr, PC_ZERO, w_, 100, k, GOLD, dash=True, op=.12)
+         + f'<rect x="600" y="70" width="170" height="190" rx="14" fill="#fff" stroke="{INK}" stroke-width="6"/><rect x="600" y="70" width="170" height="50" rx="14" fill="{RED}" stroke="{INK}" stroke-width="6"/>'
+         + _t(685, 105, "DAY", 26, "#fff", serif=False))
+    t2 = _fr(seg, 1, .45)
+    p.parts.append(_life(-1, 1 + t2 + .05, _vbar(xc, PC_ZERO, w_, -70, k, LOSS_C), fi=.01, fo=.01))
+    p.parts.append(_life(-1, 1 + t2 + .05, _t(xc + w_ / 2, PC_ZERO + 70 * k + 50, "-$70", 46, RED), fi=.01, fo=.01))
+    t0 = _fr(seg, 0, .35)
+    p.parts.append(_life(t0, t2 - t0 + .05, _g("slide", t0, .6, _vbar(xr, PC_ZERO, w_, 100, k, GOLD) + _t(xr + w_ / 2, PC_ZERO - 50 * k + 16, "$100", 46, INK),
+                                              style="", x0=400, y0=0, x1=0, y1=0, ease="out"), fi=.05, fo=.01))
+    p.parts.append(_g("pop", _fr(seg, 0, .75), .35, _idle("bob", _pill(xr + w_ / 2, PC_ZERO + 60, "OWED TO HER", TEAL, "#fff", 26), 4, 2.2, style="")))
+    t1 = _fr(seg, 1, .05)
+    p.parts.append(_life(-1, 99, _cnt(685, 215, 1, 60, t1, t2 - t1, size=70, pre="", color=INK), fi=.01, fo=.01))
+    p.parts.append(_life(t2, 99, _g("slide", t2, .8, _vbar(xr, PC_ZERO, w_, 100, k, GOLD), style="", x0=0, y0=0, x1=xc - xr, y1=70 * k, ease="inout"), fi=.01, fo=.01))
+    p.parts.append(_life(t2 + .75, 99, _vbar(xc, PC_ZERO, w_, 30, k, TEAL), fi=.2, fo=.01))
+    p.parts.append(_life(t2, 99, _cnt(xc + w_ / 2, PC_ZERO - 30 * k - 30, -70, 30, t2 + .1, .9, size=50, color=TEAL, pre="$"), fi=.05, fo=.01))
+    p.parts.append(_stamp(600, 300, 170, 70, "PAID", TEAL, t2 + .3, size=40))
+    p.parts.append(_g("pop", t2 + 1.0, .35, _pill(xc + w_ / 2 + 40, PC_ZERO + 70, "+$30 IN THE END", TEAL, "#fff", 24)))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 300, 330, 1.1), (t0 + .5, 360, 300, 1.08), (t1, 520, 260, 1.12), (t2, 300, 300, 1.08), (end, 400, 320, 1.0)])
+
+
+def pc_rule(p, seg=None, **_):
+    """The rule. PROFIT = EARNED and CASH = CAME IN plates drop in on the first sentence. On the second, one running
+    action: job tiles pop in a row, one after another, and with each the PROFIT bar climbs by $30 while the CASH
+    bar sinks by $70 towards a dashed EMPTY line; when it crosses, an OUT OF CASH stamp lands."""
+    k = .55
+    _set(p, f'<path d="M30 400 H770" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+         + f'<path d="M30 {400 + 200} H770" stroke="{RED}" stroke-width="4" stroke-dasharray="12 10"/>' + _t(760, 590, "EMPTY", 22, RED, serif=False, anchor="end")
+         + "<g opacity='.16'>" + _pill(220, 60, "PROFIT = EARNED", TEAL, "#fff", 28) + _pill(580, 60, "CASH = CAME IN", INK, "#fff", 28) + "</g>")
+    t0 = _fr(seg, 0, .1)
+    p.parts.append(_life(t0, 99, _g("slide", t0, .4, _pill(220, 60, "PROFIT = EARNED", TEAL, "#fff", 28), style="", y0=-200, y1=0, ease="out"), fi=.05, fo=.01))
+    p.parts.append(_life(_fr(seg, 1, .1), 99, _g("slide", _fr(seg, 1, .1), .4, _pill(580, 60, "CASH = CAME IN", INK, "#fff", 28), style="", y0=-200, y1=0, ease="out"), fi=.05, fo=.01))
+    t1, t1e = _fr(seg, 2, .05), _fr(seg, 2, .8)
+    n = 5
+    xp, xc, w_ = 470, 620, 120
+    for j in range(n):
+        tj = t1 + (t1e - t1) * j / (n - 1)
+        p.parts.append(_g("pop", tj, .3, _poster(40 + 80 * j, 140, 66, 88, rot=-4 + 2 * j, k=j)))
+        p.parts.append(_g("growY", tj, .35, _vbar(xp, 400 - 30 * j * k * 0 - 30 * j * k * 1.0 * 1, w_, 30, k * 1.0, TEAL), style=_grow(1)))
+        p.parts.append(_g("growYdown", tj, .35, _vbar(xc, 400 + 70 * j * k, w_, -70, k, LOSS_C), style=_grow(-1)))
+    p.parts.append(_life(t1, 99, _cnt(xp + w_ / 2, 400 - 30 * n * k - 50, 0, 30 * n, t1, t1e - t1 + .3, size=36, color=TEAL), fi=.05, fo=.01))
+    p.parts.append(_life(t1, 99, _cnt(xc + w_ / 2, 400 - 24, 0, 70 * n, t1, t1e - t1 + .3, size=36, color=RED, pre="-$"), fi=.05, fo=.01))
+    p.parts.append(_set_life(_t(xp + w_ / 2, 440, "PROFIT", 24, INK, serif=False)))
+    p.parts.append(_stamp(60, 460, 360, 84, "OUT OF CASH", RED, t1e + .1, size=46))
+    p.parts.append(_g("pop", t1 + .2, .3, _pill(200, 290, "MORE JOBS ON CREDIT", INK, "#fff", 22)))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 400, 120, 1.3), (_fr(seg, 1, .9), 400, 130, 1.25), (t1, 400, 330, 1.0), (end, 400, 320, 1.0)])
+
+
+def pc_asks(p, **_):
+    """The close: three poster jobs pop in a row, each with a swinging $100 tag and an unpaid clock; PROFIT? and
+    CASH? plates bob in turn; a ? floats. The answers (profit $90, cash -$210) are not shown. Laid inside x 30-770,
+    y 30-610."""
+    for j in range(3):
+        x = 60 + 240 * j
+        p.parts.append(_g("pop", p.at(.04 + .06 * j), .4, _poster(x, 90, 150, 200, rot=-3 + 3 * j, k=j)))
+        p.parts.append(_g("pop", p.at(.1 + .06 * j), .35, _idle("swing", _ptag(x + 75, 320, 130, "$100", RED, "#fff", 36), 7, 2.0 + .3 * j, ph=j,
+                                                                style="transform-box:fill-box;transform-origin:center top")))
+        p.parts.append(_g("ripple", p.at(.15 + .06 * j), .9, f'<circle cx="{x + 75}" cy="190" r="70" fill="none" stroke="{GOLD}" stroke-width="6"/>'))
+    for j in range(6):
+        p.parts.append(_g("ripple", p.at(.35) + .9 * j, .8, f'<circle cx="{x + 75}" cy="190" r="70" fill="none" stroke="{GOLD}" stroke-width="6"/>'.replace(f'cx="{x + 75}"', f'cx="{135 + 240 * (j % 3)}"')))
+    p.parts.append(_g("pop", p.at(.3), .35, _idle("bob", _pill(220, 480, "PROFIT?", TEAL, "#fff", 40), 6, 1.9, style="")))
+    p.parts.append(_g("pop", p.at(.4), .35, _idle("bob", _pill(560, 480, "CASH?", RED, "#fff", 40), 6, 1.9, ph=1.2, style="")))
+    p.parts.append(_g("float", 0, 1, _g("pop", p.at(.5), .4, _t(400, 590, "?", 100, RED)), style="", amp=10, w=2.4))
+
+
+SCENES.update({f.__name__: f for f in (pc_hook, pc_job, pc_profit, pc_cash, pc_gap, pc_rule, pc_asks)})
+
+
+# ---- 23 Nov Reel C: same business, P/E 10x against 4x (build/reels_pe-vs-ev.py). Our own round numbers, tax left
+# out: both companies have EBITDA $50, depreciation $10, operating profit $40, and the whole business is worth
+# EV $400 (8x EBITDA). A: no debt, equity $400, earnings $40, P/E 10x. B: debt $300 at 5% = $15 interest, earnings
+# $25, equity 400 - 300 = $100, P/E 4x. Both EV / EBITDA 400 / 50 = 8x. Close (not shown): C with $200 of debt at
+# 5%: interest $10, earnings $30, equity $200, P/E about 6.7x.
+
+PE_BASE, PE_K = 590, 1.15
+EQ_C, DEBT_C, EBITDA_C = "#5EC8B4", "#8E96A3", "#F2C35B"
+
+
+def _pe_col(x, w_, debt, k=PE_K, base=PE_BASE, labels=True, size=30, total=400):
+    """A company's value as one column, total $400: debt at the bottom (grey), the shares on top (teal)."""
+    eq = total - debt
+    s = ""
+    if debt:
+        s += f'<rect x="{x}" y="{base - debt * k:.1f}" width="{w_}" height="{debt * k:.1f}" rx="8" fill="{DEBT_C}" stroke="{INK}" stroke-width="6"/>'
+    s += f'<rect x="{x}" y="{base - total * k:.1f}" width="{w_}" height="{eq * k:.1f}" rx="8" fill="{EQ_C}" stroke="{INK}" stroke-width="6"/>'
+    if labels:
+        if debt:
+            s += _t(x + w_ / 2, base - debt * k / 2 + 6, "DEBT", size * .8, INK, serif=False) + _t(x + w_ / 2, base - debt * k / 2 + size + 6, f"${debt}", size, INK)
+        s += _t(x + w_ / 2, base - debt * k - eq * k / 2 + (6 if eq > 60 else 10), "SHARES", size * .8, INK, serif=False)
+        s += _t(x + w_ / 2, base - debt * k - eq * k / 2 + size + (6 if eq > 60 else -26), f"${eq}", size, INK) if eq > 60 else ""
+    return s
+
+
+def _co_badge(cx, cy, letter, col=INK):
+    return (f'<circle cx="{cx}" cy="{cy}" r="38" fill="#fff" stroke="{col}" stroke-width="7"/>' + _t(cx, cy + 16, letter, 44, col))
+
+
+def pe_hook(p, seg=None, **_):
+    """The hook. From the swipe, framed close on company A: its badge, a shopfront and a 10x EARNINGS tag that swings.
+    On 'the other at 4x' the camera pans to B, the same shopfront, a 4x EARNINGS tag. On the question both pull back,
+    a CHEAPER? plate drops between them and the two tags pulse in turn (B's brighter: it looks cheap); a ? bobs."""
+    def shop(x):
+        return (f'<rect x="{x}" y="300" width="260" height="230" rx="10" fill="#E8E4DE" stroke="{INK}" stroke-width="6"/>'
+                f'<path d="M{x - 14} 300 L{x + 20} 240 H{x + 240} L{x + 274} 300 Z" fill="{RED}" stroke="{INK}" stroke-width="6"/>'
+                + "".join(f'<path d="M{x + 20 + 44 * j} 240 L{x + 6 + 44 * j} 300" stroke="#fff" stroke-width="8"/>' for j in range(1, 6))
+                + f'<rect x="{x + 30}" y="350" width="90" height="180" rx="6" fill="#3B3F48" stroke="{INK}" stroke-width="5"/>'
+                f'<rect x="{x + 145}" y="350" width="90" height="80" rx="6" fill="#CFE7E2" stroke="{INK}" stroke-width="5"/>')
+    _set(p, f'<path d="M30 {PE_BASE - 60} H770" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>' + shop(70) + shop(470)
+         + _co_badge(200, 180, "A") + _co_badge(600, 180, "B"))
+    t0 = _fr(seg, 1, .35)
+    p.parts.append(_g("pop", t0, .4, _idle("swing", _ptag(200, 70, 220, "10x EARNINGS", INK, "#fff", 30), 6, 2.2, style="transform-box:fill-box;transform-origin:center top")))
+    t1 = _fr(seg, 1, .8)
+    p.parts.append(_g("pop", t1, .4, _idle("swing", _ptag(600, 70, 220, "4x EARNINGS", RED, "#fff", 30), 6, 2.4, ph=1, style="transform-box:fill-box;transform-origin:center top")))
+    t2 = _fr(seg, 2, .1)
+    p.parts.append(_life(t2, 99, _g("slide", t2, .45, _pill(400, 580, "CHEAPER?", INK, "#fff", 40), style="", y0=200, y1=0, ease="out"), fi=.05, fo=.01))
+    for j in range(10):
+        cx = 200 if j % 2 == 0 else 600
+        p.parts.append(_life(t2 + .5 + .4 * j, .3, f'<rect x="{cx - 130}" y="30" width="260" height="90" rx="18" fill="none" stroke="{RED if j % 2 else INK}" stroke-width="6"/>', fi=.05, fo=.1))
+    p.parts.append(_life(t2 + .3, 99, _idle("bob", _t(400, 440, "?", 110, RED), 9, 2.3, style=""), fi=.15, fo=.01))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 200, 260, 1.35), (t0 + .4, 200, 250, 1.35), (t1 + .2, 600, 250, 1.35), (_fr(seg, 2, .05), 600, 260, 1.3), (_fr(seg, 2, .4), 400, 320, 1.0), (end, 400, 320, 1.0)])
+
+
+def pe_business(p, seg=None, **_):
+    """The business. A and B side by side: on '$50 of EBITDA' a gold EBITDA $50 block grows under each badge with an
+    = sign between them; on 'worth $400' both value columns grow to $400 (dashed, then filled) with EV $400 counts;
+    on 'leave tax out' a NO TAX chip stamps on and a ripple runs over both columns."""
+    xa, xb, w_ = 110, 470, 220
+    _set(p, f'<path d="M30 {PE_BASE} H770" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+         + _co_badge(xa + w_ / 2, 60, "A") + _co_badge(xb + w_ / 2, 60, "B")
+         + "".join(f'<rect x="{x}" y="{PE_BASE - 400 * PE_K:.0f}" width="{w_}" height="{400 * PE_K:.0f}" rx="8" fill="none" stroke="{GREY}" stroke-width="5" stroke-dasharray="14 10"/>' for x in (xa, xb)))
+    t0 = _fr(seg, 0, .15)
+    for j, x in enumerate((xa, xb)):
+        blk = f'<rect x="{x + 20}" y="130" width="{w_ - 40}" height="80" rx="10" fill="{EBITDA_C}" stroke="{INK}" stroke-width="6"/>' + _t(x + w_ / 2, 165, "EBITDA", 22, INK, serif=False) + _t(x + w_ / 2, 200, "$50", 34, INK)
+        p.parts.append(_g("pop", t0 + .3 * j, .4, blk))
+    p.parts.append(_g("pop", t0 + .7, .3, _t(400, 190, "=", 70, INK)))
+    t1 = _fr(seg, 0, .6)
+    for j, x in enumerate((xa, xb)):
+        p.parts.append(_g("growY", t1 + .2 * j, .8, f'<rect x="{x}" y="{PE_BASE - 400 * PE_K * .72:.0f}" width="{w_}" height="{400 * PE_K * .72:.0f}" rx="8" fill="{EQ_C}" fill-opacity=".55" stroke="{INK}" stroke-width="6"/>', style=_grow(1)))
+        p.parts.append(_life(t1 + .2 * j, 99, _cnt(x + w_ / 2, PE_BASE - 120, 0, 400, t1 + .2 * j, .8, size=46), fi=.05, fo=.01))
+        p.parts.append(_g("pop", t1 + .8 + .2 * j, .3, _t(x + w_ / 2, PE_BASE - 170, "EV", 30, INK, serif=False)))
+    t2 = _fr(seg, 1, .3)
+    p.parts.append(_stamp(270, 250, 260, 80, "NO TAX", RED, t2, size=46, rot=-6))
+    for j in range(3):
+        p.parts.append(_g("ripple", t2 + .5 + .6 * j, .6, f'<circle cx="400" cy="400" r="90" fill="none" stroke="{TEAL}" stroke-width="6"/>'))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 400, 160, 1.3), (t1, 400, 180, 1.2), (t1 + .8, 400, 340, 1.0), (end, 400, 320, 1.0)])
+
+
+def pe_a(p, seg=None, **_):
+    """Company A. Its $400 column, all SHARES (teal), on the left. On 'After $10 of depreciation' the EBITDA $50 block
+    on the right loses a $10 slice that falls away, and the count reads $40 (EARNINGS). On the second sentence a
+    fraction builds, $400 over $40, the shares column slides up onto the top of it, and the P/E counts 0 to 10x."""
+    xa, w_ = 60, 230
+    _set(p, f'<path d="M30 {PE_BASE} H770" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>' + _pe_col(xa, w_, 0, size=40) + _co_badge(xa + w_ / 2, 70, "A")
+         + _t(xa + w_ / 2, 140, "NO DEBT", 26, GREY, serif=False))
+    k2 = 3.2
+    xe, ye = 470, 300
+    p.parts.append(_set_life(f'<rect x="{xe}" y="{ye}" width="220" height="{40 * k2:.0f}" rx="8" fill="{EBITDA_C}" stroke="{INK}" stroke-width="6"/>'))
+    t0 = _fr(seg, 1, .35)
+    sl = f'<rect x="{xe}" y="{ye - 10 * k2:.0f}" width="220" height="{10 * k2:.0f}" rx="6" fill="{LOSS_C}" stroke="{INK}" stroke-width="5"/>' + _t(xe + 110, ye - 10 * k2 / 2 + 10, "-$10", 26, INK)
+    p.parts.append(_life(-1, 99, _g("slide", t0, .9, sl, style="", x0=0, y0=0, x1=60, y1=300, ease="inout", r=25), fi=.01, fo=.01))
+    p.parts.append(_life(-1, 99, _cnt(xe + 110, ye + 40 * k2 / 2 + 16, 50, 40, t0 + .2, .7, size=50), fi=.01, fo=.01))
+    p.parts.append(_g("pop", t0 + .7, .35, _pill(xe + 110, ye + 40 * k2 + 50, "EARNINGS", INK, "#fff", 24)))
+    t1 = _fr(seg, 2, .25)
+    p.parts.append(_g("draw", t1, .4, f'<path d="M{xe - 10} 240 H{xe + 230}" stroke="{INK}" stroke-width="10" stroke-linecap="round"/>', style=""))
+    p.parts.append(_life(t1, 99, _g("slide", t1, .6, _pill(xe + 110, 190, "SHARES $400", TEAL, "#fff", 30), style="", x0=-360, y0=200, x1=0, y1=0, ease="inout"), fi=.05, fo=.01))
+    t2 = _fr(seg, 2, .7)
+    p.parts.append(_g("pop", t2, .3, _t(xe + 110, 90, "P/E", 34, GREY, serif=False)))
+    p.parts.append(_stamp(xe - 10, 40, 240, 90, "P/E 10x", TEAL, t2 + .1, size=50))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 560, 330, 1.2), (t0 + .9, 560, 360, 1.2), (t1, 500, 230, 1.15), (seg[-1][1], 500, 220, 1.15), (end, 400, 320, 1.0)])
+
+
+def pe_b(p, seg=None, **_):
+    """Company B. Its $400 column builds on 'owes $300': a grey DEBT $300 block, a 5% chip. On the second sentence the
+    EARNINGS $40 block loses a $15 slice that slides to the lender (INTEREST), the count runs 40 to 25, and the shares
+    part of the column, only $100, glows. On '$100 / $25' the fraction builds and a P/E 4x stamp lands."""
+    xb, w_ = 60, 230
+    _set(p, f'<path d="M30 {PE_BASE} H770" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>' + _co_badge(xb + w_ / 2, 70, "B")
+         + f'<rect x="{xb}" y="{PE_BASE - 400 * PE_K:.0f}" width="{w_}" height="{400 * PE_K:.0f}" rx="8" fill="none" stroke="{GREY}" stroke-width="5" stroke-dasharray="14 10"/>')
+    t0 = _fr(seg, 0, .2)
+    debt = f'<rect x="{xb}" y="{PE_BASE - 300 * PE_K:.0f}" width="{w_}" height="{300 * PE_K:.0f}" rx="8" fill="{DEBT_C}" stroke="{INK}" stroke-width="6"/>' + _t(xb + w_ / 2, PE_BASE - 150 * PE_K, "DEBT", 30, INK, serif=False) + _t(xb + w_ / 2, PE_BASE - 150 * PE_K + 46, "$300", 42, INK)
+    p.parts.append(_g("growY", t0, .7, debt, style=_grow(1)))
+    p.parts.append(_g("pop", t0 + .7, .35, _idle("swing", _ptag(xb + w_ + 80, PE_BASE - 300 * PE_K + 30, 110, "5%", RED, "#fff", 34), 6, 2.2, style="transform-box:fill-box;transform-origin:center top")))
+    t1 = _fr(seg, 1, .05)
+    eq = f'<rect x="{xb}" y="{PE_BASE - 400 * PE_K:.0f}" width="{w_}" height="{100 * PE_K:.0f}" rx="8" fill="{EQ_C}" stroke="{INK}" stroke-width="6"/>' + _t(xb + w_ / 2, PE_BASE - 350 * PE_K + 12, "SHARES $100", 28, INK)
+    p.parts.append(_g("pop", _fr(seg, 1, .7), .4, eq))
+    k2 = 3.2
+    xe, ye = 470, 330
+    p.parts.append(_set_life(f'<rect x="{xe}" y="{ye}" width="220" height="{25 * k2:.0f}" rx="8" fill="{EBITDA_C}" stroke="{INK}" stroke-width="6"/>'))
+    sl = f'<rect x="{xe}" y="{ye - 15 * k2:.0f}" width="220" height="{15 * k2:.0f}" rx="6" fill="{DEBT_C}" stroke="{INK}" stroke-width="5"/>' + _t(xe + 110, ye - 15 * k2 / 2 + 10, "-$15", 28, INK)
+    p.parts.append(_life(-1, 99, _g("slide", t1 + .2, .9, sl, style="", x0=0, y0=0, x1=-(xe - xb - 20), y1=(PE_BASE - 300 * PE_K + 80) - (ye - 15 * k2), ease="inout"), fi=.01, fo=.01))
+    p.parts.append(_life(-1, 1 + t1 + 1.1, _t(xe + 110, ye - 15 * k2 - 20, "INTEREST", 22, GREY, serif=False), fi=.01, fo=.2))
+    p.parts.append(_life(-1, 99, _cnt(xe + 110, ye + 25 * k2 / 2 + 16, 40, 25, t1 + .4, .8, size=50), fi=.01, fo=.01))
+    p.parts.append(_set_life(_pill(xe + 110, ye + 25 * k2 + 46, "EARNINGS", INK, "#fff", 24)))
+    for j in range(3):
+        p.parts.append(_life(_fr(seg, 1, .8) + .4 * j, .3, f'<rect x="{xb - 10}" y="{PE_BASE - 400 * PE_K - 10:.0f}" width="{w_ + 20}" height="{100 * PE_K + 20:.0f}" rx="12" fill="none" stroke="{TEAL}" stroke-width="7"/>', fi=.05, fo=.1))
+    t2 = _fr(seg, 2, .1)
+    p.parts.append(_g("draw", t2, .4, f'<path d="M{xe - 10} 250 H{xe + 230}" stroke="{INK}" stroke-width="10" stroke-linecap="round"/>', style=""))
+    p.parts.append(_life(t2, 99, _g("slide", t2, .6, _pill(xe + 110, 200, "SHARES $100", TEAL, "#fff", 30), style="", x0=-360, y0=-40, x1=0, y1=0, ease="inout"), fi=.05, fo=.01))
+    p.parts.append(_stamp(xe - 10, 50, 240, 90, "P/E 4x", RED, _fr(seg, 2, .6), size=50))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 200, 380, 1.2), (t1, 220, 360, 1.12), (t1 + .3, 520, 340, 1.15), (_fr(seg, 1, .7), 300, 260, 1.1), (t2, 520, 200, 1.15), (end, 400, 320, 1.0)])
+
+
+def pe_catch(p, seg=None, **_):
+    """The catch. B's 4x tag swings on its column (debt $300 under shares $100) and is struck through on 'because of
+    its debt', the debt part pulsing. On the second sentence A's column slides in beside B's; a bracket draws over
+    each whole column (EV $400), an EBITDA $50 plate slides under each, and both counts run to 8x with an = between."""
+    xa, xb, w_ = 80, 470, 220
+    _set(p, f'<path d="M30 {PE_BASE} H770" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>' + _pe_col(xb, w_, 300, size=30))
+    p.parts.append(_life(-1, 1 + _fr(seg, 1, .3), _idle("swing", _ptag(xb + w_ / 2, 50, 200, "P/E 4x", RED, "#fff", 34), 6, 2.2, style="transform-box:fill-box;transform-origin:center top"), fi=.01, fo=.2))
+    t0 = _fr(seg, 0, .5)
+    p.parts.append(_life(t0, _fr(seg, 1, .3) - t0, _g("draw", t0, .3, f'<path d="M{xb + 10} 60 L{xb + w_ - 10} 120" stroke="{RED}" stroke-width="12" stroke-linecap="round"/>', style=""), fi=.01, fo=.2))
+    for j in range(3):
+        p.parts.append(_life(t0 + .2 + .4 * j, .3, f'<rect x="{xb - 10}" y="{PE_BASE - 300 * PE_K - 10:.0f}" width="{w_ + 20}" height="{300 * PE_K + 20:.0f}" rx="12" fill="none" stroke="{RED}" stroke-width="7"/>', fi=.05, fo=.1))
+    t1 = _fr(seg, 1, .1)
+    p.parts.append(_life(t1, 99, _g("slide", t1, .7, _pe_col(xa, w_, 0, size=30), style="", x0=-400, x1=0, ease="out"), fi=.05, fo=.01))
+    for j, x in enumerate((xa, xb)):
+        tj = t1 + .7 + .2 * j
+        top = PE_BASE - 400 * PE_K
+        p.parts.append(_g("draw", tj, .4, f'<path d="M{x} {top - 20:.0f} v-16 H{x + w_} v16" fill="none" stroke="{INK}" stroke-width="6"/>', style=""))
+        p.parts.append(_g("pop", tj + .3, .3, _pill(x + w_ / 2, top - 62, "EV $400", INK, "#fff", 26)))
+    t2 = _fr(seg, 1, .55)
+    for j, x in enumerate((xa, xb)):
+        p.parts.append(_life(t2 + .2 * j, 99, _g("slide", t2 + .2 * j, .45, _pill(x + w_ / 2, PE_BASE - 40, "/ EBITDA $50", EBITDA_C, INK, 22), style="", y0=120, y1=0, ease="out"), fi=.05, fo=.01))
+        p.parts.append(_life(t2 + .5 + .2 * j, 99, f'<rect x="{x + 30}" y="{PE_BASE - 230}" width="{w_ - 60}" height="90" rx="14" fill="#fff" stroke="{INK}" stroke-width="5"/>'
+                             + _cnt(x + w_ / 2, PE_BASE - 166, 0, 8, t2 + .5 + .2 * j, .6, size=58, pre="", suf="x", color=INK), fi=.1, fo=.01))
+    p.parts.append(_g("pop", t2 + 1.2, .3, _t(400 - 15, PE_BASE - 170, "=", 70, INK)))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 580, 280, 1.15), (t1, 580, 280, 1.12), (t1 + .8, 400, 320, 1.0), (end, 400, 320, 1.0)])
+
+
+def pe_rule(p, seg=None, **_):
+    """The rule. B's column: a P/E lens (a red frame) sits on the SHARES part only and slides down over the DEBT as
+    'mixes ... how it's funded' is said, a FUNDING chip on the debt; on the second sentence an EV / EBITDA bracket
+    draws over the whole column and a second column (A, no debt) slides in under the same bracket, both reading 8x."""
+    xb, xa, w_ = 470, 110, 200
+    _set(p, f'<path d="M30 {PE_BASE} H770" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>' + _pe_col(xb, w_, 300, size=28)
+         + "<g opacity='.16'>" + _pe_col(xa, w_, 0, size=28, labels=False) + "</g>")
+    top = PE_BASE - 400 * PE_K
+    t0 = _fr(seg, 0, .1)
+    lens = f'<rect x="{xb - 14}" y="{top - 14:.0f}" width="{w_ + 28}" height="{100 * PE_K + 28:.0f}" rx="14" fill="none" stroke="{RED}" stroke-width="8"/>' + _t(xb + w_ / 2, top - 30, "P/E", 34, RED)
+    kf = [[-1, 0, 0, 1, 0, 0], [round(t0, 2), 0, 0, 1, 1, 0], [round(_fr(seg, 0, .55), 2), 0, 0, 1, 1, 0], [round(_fr(seg, 0, .9), 2), 0, 300 * PE_K * .5, 1, 1, 0], [round(_fr(seg, 1, .1), 2), 0, 0, 1, 1, 0]]
+    p.parts.append(f"<g class=\"a\" data-fx=\"kf\" data-at=\"-1\" data-d=\"99\" data-kf='{_json(kf)}'>{lens}</g>")
+    p.parts.append(_g("pop", _fr(seg, 0, .7), .35, _idle("bob", _pill(xb - 120, PE_BASE - 150 * PE_K, "FUNDING", INK, "#fff", 26), 4, 2.2, style="")))
+    t1 = _fr(seg, 1, .2)
+    p.parts.append(_life(t1, 99, _g("slide", t1, .7, _pe_col(xa, w_, 0, size=28), style="", x0=-400, x1=0, ease="out"), fi=.05, fo=.01))
+    for j, x in enumerate((xa, xb)):
+        tj = t1 + .6 + .25 * j
+        p.parts.append(_g("draw", tj, .4, f'<path d="M{x - 10} {top - 70:.0f} v-14 H{x + w_ + 10} v14 M{x - 10} {PE_BASE + 14} v14 H{x + w_ + 10} v-14" fill="none" stroke="{TEAL}" stroke-width="7"/>', style=""))
+        p.parts.append(_g("pop", tj + .3, .35, _pill(x + w_ / 2, top - 112, "EV / EBITDA 8x", TEAL, "#fff", 24)))
+    for j in range(3):
+        p.parts.append(_g("ripple", t1 + 1.3 + .6 * j, .6, f'<circle cx="400" cy="{top - 112:.0f}" r="40" fill="none" stroke="{TEAL}" stroke-width="5"/>'))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 560, 300, 1.15), (_fr(seg, 0, .9), 560, 380, 1.12), (t1, 400, 320, 1.0), (end, 400, 320, 1.0)])
+
+
+def pe_asks(p, **_):
+    """The close: company C's $400 column with DEBT $200 under SHARES $200 and a 5% chip that swings, its badge, and a
+    P/E? plate that bobs beside an empty fraction whose bar pulses; a ? floats. The answer (about 6.7x) is not shown.
+    Laid inside x 30-770, y 30-610."""
+    xc, w_ = 90, 240
+    _set(p, f'<path d="M30 {PE_BASE} H770" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>' + _pe_col(xc, w_, 200, size=34) + _co_badge(xc + w_ / 2, 70, "C"))
+    p.parts.append(_g("pop", p.at(.05), .4, _idle("swing", _ptag(xc + w_ + 70, PE_BASE - 200 * PE_K + 20, 110, "5%", RED, "#fff", 34), 7, 2.1, style="transform-box:fill-box;transform-origin:center top")))
+    p.parts.append(_g("pop", p.at(.2), .35, _idle("bob", _pill(590, 140, "P/E?", INK, "#fff", 48), 6, 1.9, style="")))
+    p.parts.append(_g("pop", p.at(.3), .3, f'<rect x="490" y="250" width="200" height="80" rx="10" fill="none" stroke="{GREY}" stroke-width="5" stroke-dasharray="12 9"/>'
+                      + f'<rect x="490" y="390" width="200" height="80" rx="10" fill="none" stroke="{GREY}" stroke-width="5" stroke-dasharray="12 9"/>'))
+    for j in range(8):
+        p.parts.append(_life(p.at(.35) + .7 * j, .35, '<path d="M480 360 H700" stroke="#D93A12" stroke-width="10" stroke-linecap="round"/>', fi=.05, fo=.15))
+    p.parts.append(_set_life('<path d="M480 360 H700" stroke="#0A0A0A" stroke-width="10" stroke-linecap="round"/>'))
+    for j in range(6):
+        p.parts.append(_g("ripple", p.at(.3) + .9 * j, .8, f'<circle cx="{xc + w_ / 2}" cy="{PE_BASE - 300 * PE_K:.0f}" r="60" fill="none" stroke="{TEAL}" stroke-width="6"/>'))
+    p.parts.append(_g("float", 0, 1, _g("pop", p.at(.45), .4, _t(590, 570, "?", 100, RED)), style="", amp=10, w=2.4))
+
+
+SCENES.update({f.__name__: f for f in (pe_hook, pe_business, pe_a, pe_b, pe_catch, pe_rule, pe_asks)})

@@ -390,6 +390,13 @@
    "kind": "short",
    "id": "joel-sunny-luminary",
    "mood": "tense"
+  },
+  {
+   "date": "2026-11-23",
+   "slug": "w2-npv-120",
+   "kind": "short",
+   "id": "flawed-mangoes-swimming",
+   "mood": "curious"
   }
  ],
  "originals": [
@@ -747,6 +754,19 @@
    "bpm": 74,
    "key": "F",
    "style": "mallets",
+   "rights": "ORIGINAL_GENERATED",
+   "added": "2026-11-23",
+   "note": ""
+  },
+  {
+   "id": "score-w2-npv-120",
+   "title": "Original score for w2-npv-120",
+   "video": "w2-npv-120",
+   "engine": "score.py + GeneralUser GS v2.0.3 (TinySoundFont)",
+   "mood": "discover+resolve",
+   "bpm": 76,
+   "key": "A",
+   "style": "harp",
    "rights": "ORIGINAL_GENERATED",
    "added": "2026-11-23",
    "note": ""

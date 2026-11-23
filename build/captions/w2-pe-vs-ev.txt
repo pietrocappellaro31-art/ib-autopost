@@ -1,0 +1,19 @@
+Same business. One trades at 10x earnings, the other at 4x. Which would you buy? Careful: the 4x one isn't cheaper, it just carries a lot more debt than the other.
+
+Both make $50 of EBITDA and the whole business is worth $400. We left tax out.
+
+Company A has no debt. After $10 of depreciation it earns $40, and its shares are worth all $400, so its P/E is $400 / $40 = 10x.
+
+Company B owes $300 at 5%. That's $15 of interest a year. It earns $25, and its shares are worth only $100. P/E: 4x.
+
+Now price the whole business, lenders and shareholders together, and you get $400 / $50 = 8x EBITDA for both of them.
+
+P/E mixes the business with how it's funded. EV / EBITDA doesn't.
+
+Your turn: Company C has the same business and $200 of debt at 5%. What's its P/E? Tell me in the comments.
+
+Companies A, B and C are made up. Round numbers, no tax, no cash.
+
+Narration: AI-generated voice; script is our original work.
+
+#investmentbanking #valuation #ibinterview #finance

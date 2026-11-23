@@ -170,13 +170,24 @@ def scene(ep, parts, at, spans, total):
     cs, ca = seg("close"), at["close"]
     big = L.kara(c["say"][0][1], ca + cs[0][1], cs[0][2] - cs[0][1], cls="olchk",
                  style="font-family:'Serif',serif;font-weight:700;font-size:96px;line-height:1.04;letter-spacing:-.03em;text-wrap:balance")
+    # 23 Nov (the 22 Nov Reel next improvement): with bar=True the last line ("Tell me in the comments.") leaves the
+    # caption block and is said under the picture as a slim bar, so the close picture can be as large as a beat's
+    # (art_w x art_h, 720 x 576: 752 x 602 ran 7 px past the safe area under a three-line question) instead of a 520 x 416 box under three large lines
+    bar_line = c.get("bar") and len(c["say"]) > 1
+    mids = list(zip(c["say"][1:], cs[1:]))
+    tail = mids.pop() if bar_line else None
     rest = "".join(L.kara(d, ca + x, y - x, c.get("cols"), hide=True, cls="olchk",
                           style="font-size:50px;font-weight:600;line-height:1.24;margin-top:18px;text-wrap:balance")
-                   for (s, d), (_, x, y) in zip(c["say"][1:], cs[1:]))
+                   for (s, d), (_, x, y) in mids)
     end_voice = ca + cs[-1][2]
     pic = panel(c["pic"](ca, end_voice - ca + 1), c.get("art_w", 520), c.get("art_h", 416),
                 f"{24 + (24 if L.TH['panel'] else 0)}px auto 0") if c.get("pic") else ""
-    els.append(L.group(L.column(f'<div style="margin-top:{-120 if pic else -260}px">{big}{rest}{pic}</div>'), ca - .35,
+    if tail:
+        (s, d), (_, x, y) = tail
+        bar = L.kara(d, ca + x, y - x, c.get("cols"), hide=True, cls="olchk",
+                     style="font-size:40px;font-weight:600;line-height:1.2;text-align:center")
+        pic += (f'<div style="margin:{14 + (24 if L.TH["panel"] else 0)}px auto 0;width:{c.get("art_w", 520)}px">{bar}</div>')
+    els.append(L.group(L.column(f'<div style="margin-top:{c.get("mt", (0 if tail else -120) if pic else -260)}px">{big}{rest}{pic}</div>'), ca - .35,
                        end_voice - ca + 1.0, fo=.45, out="fade"))
     check_at.append(end_voice - .1)
     brand = A(f'<div style="text-align:center"><div class="num" style="font-size:170px;line-height:1">IB<span style="color:{RED}">.</span></div>'
