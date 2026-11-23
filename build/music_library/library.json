@@ -397,6 +397,20 @@
    "kind": "short",
    "id": "flawed-mangoes-swimming",
    "mood": "curious"
+  },
+  {
+   "date": "2026-11-23",
+   "slug": "w2-profit-cash",
+   "kind": "short",
+   "id": "sparky-deathcap-september-instrumental",
+   "mood": "calm"
+  },
+  {
+   "date": "2026-11-23",
+   "slug": "w2-pe-vs-ev",
+   "kind": "short",
+   "id": "ludovico-einaudi-experience",
+   "mood": "curious"
   }
  ],
  "originals": [
@@ -780,6 +794,19 @@
    "bpm": 77,
    "key": "Bb",
    "style": "acoustic",
+   "rights": "ORIGINAL_GENERATED",
+   "added": "2026-11-23",
+   "note": ""
+  },
+  {
+   "id": "score-w2-pe-vs-ev",
+   "title": "Original score for w2-pe-vs-ev",
+   "video": "w2-pe-vs-ev",
+   "engine": "score.py + GeneralUser GS v2.0.3 (TinySoundFont)",
+   "mood": "decide+resolve",
+   "bpm": 80,
+   "key": "G",
+   "style": "orchestral",
    "rights": "ORIGINAL_GENERATED",
    "added": "2026-11-23",
    "note": ""

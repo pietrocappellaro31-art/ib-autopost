@@ -1788,6 +1788,20 @@
       "first_comment": "Bonus: same $120 back in two years, but your other option earns 8% a year. Good deal or bad?",
       "ai_label": true,
       "published_id": null
+    },
+    {
+      "id": "reel-w2-pe-vs-ev",
+      "type": "reel",
+      "scheduled_utc": "2026-11-24T02:00:00",
+      "slot": "C",
+      "media_branch": "reel/w2-pe-vs-ev",
+      "video": "w2-pe-vs-ev.mp4",
+      "cover": "w2-pe-vs-ev.jpg",
+      "master": "scored",
+      "caption": "Same business. One trades at 10x earnings, the other at 4x. Which would you buy? Careful: the 4x one isn't cheaper, it just carries a lot more debt than the other.\n\nBoth make $50 of EBITDA and the whole business is worth $400. We left tax out.\n\nCompany A has no debt. After $10 of depreciation it earns $40, and its shares are worth all $400, so its P/E is $400 / $40 = 10x.\n\nCompany B owes $300 at 5%. That's $15 of interest a year. It earns $25, and its shares are worth only $100. P/E: 4x.\n\nNow price the whole business, lenders and shareholders together, and you get $400 / $50 = 8x EBITDA for both of them.\n\nP/E mixes the business with how it's funded. EV / EBITDA doesn't.\n\nYour turn: Company C has the same business and $200 of debt at 5%. What's its P/E? Tell me in the comments.\n\nCompanies A, B and C are made up. Round numbers, no tax, no cash.\n\nNarration: AI-generated voice; script is our original work.\n\n#investmentbanking #valuation #ibinterview #finance",
+      "first_comment": "Bonus: Company B's $300 of debt costs 10% instead of 5%. What's its P/E now?",
+      "ai_label": true,
+      "published_id": null
     }
   ],
   "reel_slots_et": {
