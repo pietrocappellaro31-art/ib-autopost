@@ -1771,7 +1771,9 @@
       "caption": "You buy it for $75 and sell it for $100. Is your margin 25% or 33%? Both numbers are real. Only one is margin.\n\nThe profit is $25 either way. What changes is what you divide it by.\n\nMargin divides by the price: $25 / $100 = 25%. It's the share of every sale you get to keep.\n\nMarkup divides by the cost: $25 / $75 = 33%. Same deal, bigger number.\n\nThat's where people get caught. A 50% markup on $100 of cost gets you a $150 price, and $50 / $150 is only a 33% margin. If you want to keep half of every sale, you need a 100% markup.\n\nIn a model, gross margin, EBITDA margin and net margin are all over revenue. Markup is over cost, so it always looks bigger.\n\nYour turn: it's a 25% markup. What's the margin? Tell me in the comments.\n\nRound numbers, our own example.\n\nNarration: AI-generated voice; script is our original work.\n\n#investmentbanking #accounting #ibinterview #finance",
       "first_comment": "Bonus: your cost is $60 and you want a 40% margin. What price do you charge?",
       "ai_label": true,
-      "published_id": null
+      "published_id": "18095232401210439",
+      "published_at_utc": "2026-11-23T02:05:14.615829+00:00",
+      "first_comment_id": "18103815806183053"
     }
   ],
   "reel_slots_et": {
