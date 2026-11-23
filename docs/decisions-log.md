@@ -18,6 +18,14 @@ What has been settled, and what is still open. Newest first.
 
 ## Settled
 
+- **Weekly usage: Instagram first; the daily long video is paused to Sunday 29 Nov** (23 Nov, Pietro: "How come we
+  are already at 29% of usage for this week? Make sure we arrive at Sunday with at least IG covered. ... Prioritize
+  and suspend creation of certain content if needed."). Measured from the scheduled runs of 23 Nov (session length as
+  the proxy for usage): the long video ran 2 h 53 min, the Short 1 h 33 min, the three Reels 1 h 37 min, each
+  dispatch 2 to 3 min. The long video was close to half of each day. Its scheduled task is disabled from 24 Nov, to be
+  switched back on on Monday 30 Nov. Three Reels a day, the carousel, the Story and the YouTube Short continue.
+  While no new film is made, the Short makes a standalone number puzzle (its own rule when no film has a usable one).
+
 - **This week (22 to 29 Nov): three Reels a day, one carousel a day, one Story a day; Reels must keep posting
   automatically** (22 Nov, Pietro: "Make sure the reels continue to be autoposted. I did not see reels yesterday.
   Remember that for this week we are going for three reels a day, one carousel a day and one story a day.").
