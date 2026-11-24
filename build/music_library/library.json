@@ -411,6 +411,13 @@
    "kind": "short",
    "id": "ludovico-einaudi-experience",
    "mood": "curious"
+  },
+  {
+   "date": "2026-11-24",
+   "slug": "shorts-hedge-own-shares",
+   "kind": "short",
+   "id": "joel-sunny-luminary",
+   "mood": "tense"
   }
  ],
  "originals": [
@@ -822,6 +829,19 @@
    "style": "orchestral",
    "rights": "ORIGINAL_GENERATED",
    "added": "2026-11-23",
+   "note": ""
+  },
+  {
+   "id": "score-shorts-hedge-own-shares",
+   "title": "Original score for shorts-hedge-own-shares",
+   "video": "shorts-hedge-own-shares",
+   "engine": "score.py + GeneralUser GS v2.0.3 (TinySoundFont)",
+   "mood": "mystery+decide",
+   "bpm": 85,
+   "key": "D",
+   "style": "solo_piano",
+   "rights": "ORIGINAL_GENERATED",
+   "added": "2026-11-24",
    "note": ""
   }
  ]

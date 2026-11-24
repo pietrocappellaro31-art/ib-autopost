@@ -8969,3 +8969,308 @@ def pe_asks(p, **_):
 
 
 SCENES.update({f.__name__: f for f in (pe_hook, pe_business, pe_a, pe_b, pe_catch, pe_rule, pe_asks)})
+
+
+# ---- 24 Nov Short: a hedge paid in your own shares (build/shorts_hedge-own-shares.py), cut from YouTube #16 (Enron).
+# The film's own labelled puzzle (ours, not Enron's figures): a $100 investment, insured by a partner whose only money
+# is $100 of your own shares. Investment falls to $60: owed $40, the partner has $100, covered. Your shares fall 70%:
+# 100 x 0.3 = $30. Owes $40, has $30: $10 short, can't pay; and the $30 is your own stock. Close (not shown): how far
+# can the shares fall before the partner can't pay the $40? (more than 60%: 100 x 0.4 = 40, not given).
+# 24 Nov (the 23 Nov Short's next improvement): the close picture is as large as a beat's (700 x 560, the question on
+# two lines, the comment ask as a slim bar) and carries two running actions (the shares column stepping down with its
+# % tally, and the CAN PAY / CAN'T PAY needle that never stops).
+
+HG_K, HG_BASE = 3.4, 480              # px per $ (100 -> 340 px), the zero line
+HG_L, HG_R, HG_W = 80, 480, 220       # the investment column, the partner's column, their width
+
+
+def _hg_slice(x, top, h_, w_=HG_W, kind="cash"):
+    """One $10 slice of a column: teal cash, or a share certificate (blue card with two lines)."""
+    if kind == "cash":
+        return f'<rect x="{x}" y="{top:.1f}" width="{w_}" height="{h_:.1f}" fill="{TEAL_L}" stroke="{INK}" stroke-width="2.5"/>'
+    return (f'<rect x="{x}" y="{top:.1f}" width="{w_}" height="{h_:.1f}" fill="{SHARE_C}" stroke="{INK}" stroke-width="2.5"/>'
+            f'<path d="M{x + 24} {top + h_ * .4:.1f} H{x + w_ - 24} M{x + 24} {top + h_ * .7:.1f} H{x + w_ - 70}" stroke="{SHARE_D}" stroke-width="3" stroke-linecap="round"/>')
+
+
+def _hg_outline(x, dollars, col=GREY, fill="none", w_=HG_W):
+    return (f'<rect x="{x}" y="{HG_BASE - dollars * HG_K:.0f}" width="{w_}" height="{dollars * HG_K:.0f}" rx="8" fill="{fill}" '
+            f'stroke="{col}" stroke-width="4" stroke-dasharray="12 9"/>')
+
+
+def _hg_col(x, dollars, kind="cash", w_=HG_W):
+    """A full column of $10 slices up to `dollars` (static)."""
+    h_ = 10 * HG_K
+    return "".join(_hg_slice(x, HG_BASE - (j + 1) * h_, h_, w_, kind) for j in range(int(dollars // 10)))
+
+
+def _hg_base(labels=("YOUR INVESTMENT", "THE PARTNER'S MONEY")):
+    return (f'<path d="M30 {HG_BASE} H770" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+            + _t(HG_L + HG_W / 2, HG_BASE + 42, labels[0], 26, INK, serif=False)
+            + _t(HG_R + HG_W / 2, HG_BASE + 42, labels[1], 26, SHARE_D, serif=False))
+
+
+def hg_hook_steps(seg):
+    """The hook's ten cash slices across the first sentence, then ten share slices across the second (sound too)."""
+    a, b = _fr(seg, 0, .05), _fr(seg, 0, .6)
+    c, d = _fr(seg, 1, .12), _fr(seg, 1, .85)
+    return [a + (b - a) * i / 9 for i in range(10)], [c + (d - c) * i / 9 for i in range(10)]
+
+
+def hg_hook(p, seg=None, **_):
+    """The puzzle, from frame 0: two dashed $100 outlines on one zero line, YOUR INVESTMENT and THE PARTNER'S MONEY.
+    (1) one running action across 'Your $100 investment is insured against any fall': the investment column builds
+    slice by slice to $100 while its counter runs, then a shield lands on it (INSURED); (2) across 'its only money is
+    $100 of your own shares': a rope draws from the shield to the partner, whose column builds from share certificates
+    while its counter runs to $100, a YOUR SHARES tag; (3) 'Are you safe?': a big ? swings, both columns tremble, a ring
+    on the shield. The answer is not shown."""
+    # 24 Nov: the hook opens on its set, not bare outlines (first cut: 4 of 4 entry frames under 20% of the final
+    # ink): both columns tinted, a faint shield and faint certificate lines waiting to be filled
+    _set(p, _hg_base() + _hg_outline(HG_L, 100, GREY, "#CFE7E2") + _hg_outline(HG_R, 100, SHARE_D, "#DCE6F2")
+         + f'<g opacity=".3">{_sb_shield(HG_L + HG_W / 2, HG_BASE - 55 * HG_K, 1.25, "#CFE7E2")}</g>'
+         + "".join(f'<path d="M{HG_R + 24} {HG_BASE - (j + .6) * 10 * HG_K:.0f} H{HG_R + HG_W - 24}" stroke="{SHARE_D}" stroke-opacity=".3" stroke-width="3"/>' for j in range(10))
+         + _t(380, 250, "?", 150, "#E8E4DE"))
+    cash, shares = hg_hook_steps(seg)
+    h_ = 10 * HG_K
+    for j, t in enumerate(cash):
+        p.parts.append(_g("growY", t, .22, _hg_slice(HG_L, HG_BASE - (j + 1) * h_, h_), style=_grow(1)))
+    ty = HG_BASE - 100 * HG_K - 28
+    p.parts.append(_life(-1, 1 + cash[0] + .02, _t(HG_L + HG_W / 2, ty, "$0", 52, TEAL), fi=.01, fo=.01))
+    p.parts.append(_life(cash[0], 99, _cnt(HG_L + HG_W / 2, ty, 0, 100, cash[0], cash[-1] + .2 - cash[0], size=52, color=TEAL)
+                         .replace('data-fx="count"', 'data-fx="count" data-lin="1"', 1), fi=.01, fo=.01))
+    ts = _fr(seg, 0, .72)
+    p.parts.append(_g("stamp", ts, .35, _sb_shield(HG_L + HG_W / 2, HG_BASE - 55 * HG_K, 1.25), rot=-6))
+    p.parts.append(_g("pop", ts + .25, .3, _pill(HG_L + HG_W / 2, HG_BASE - 20 * HG_K, "INSURED", INK, "#fff", 30)))
+    tr = _fr(seg, 1, .04)
+    rope = f'<path d="M{HG_L + HG_W / 2 + 60} {HG_BASE - 60 * HG_K:.0f} C 380 {HG_BASE - 90 * HG_K:.0f}, 420 {HG_BASE - 30 * HG_K:.0f}, {HG_R - 6} {HG_BASE - 60 * HG_K:.0f}" fill="none" stroke="{INK}" stroke-width="6" stroke-dasharray="14 10" stroke-linecap="round"/>'
+    p.parts.append(_g("draw", tr, .5, rope, style=""))
+    for j, t in enumerate(shares):
+        p.parts.append(_g("growY", t, .22, _hg_slice(HG_R, HG_BASE - (j + 1) * h_, h_, kind="share"), style=_grow(1)))
+    p.parts.append(_life(-1, 1 + shares[0] + .02, _t(HG_R + HG_W / 2, ty, "$0", 52, SHARE_D), fi=.01, fo=.01))
+    p.parts.append(_life(shares[0], 99, _cnt(HG_R + HG_W / 2, ty, 0, 100, shares[0], shares[-1] + .2 - shares[0], size=52, color=SHARE_D)
+                         .replace('data-fx="count"', 'data-fx="count" data-lin="1"', 1), fi=.01, fo=.01))
+    p.parts.append(_g("pop", shares[-1] + .25, .3, _idle("bob", _pill(HG_R + HG_W / 2, HG_BASE - 50 * HG_K, "YOUR SHARES", RED, "#fff", 30), 4, 2.0, style="")))
+    tq = _fr(seg, 2, .05)
+    p.parts.append(_g("pop", tq, .35, _idle("swing", _t(380, 250, "?", 150, RED), 10, 2.4, style="transform-box:fill-box;transform-origin:center bottom")))
+    for j in range(2):
+        p.parts.append(_g("press", tq + .1 + .4 * j, .38, _hg_outline(HG_L, 100, INK) + _hg_outline(HG_R, 100, INK)))
+    p.parts.append(_g("ripple", tq + .2, .7, f'<circle cx="{HG_L + HG_W / 2}" cy="{HG_BASE - 55 * HG_K:.0f}" r="70" fill="none" stroke="{RED}" stroke-width="6"/>'))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 400, 320, 1.0), (_fr(seg, 0, .1), 300, 310, 1.12), (_fr(seg, 0, .9), 240, 300, 1.15), (_fr(seg, 1, .1), 520, 320, 1.12),
+             (_fr(seg, 1, .9), 560, 300, 1.12), (_fr(seg, 2, .3), 400, 320, 1.0), (end, 400, 320, 1.0)])
+
+
+def hg_fall(p, seg=None, **_):
+    """Our numbers. Both columns full ($100 cash, $100 of shares) from the swipe. (1) an OUR EXAMPLE stamp; (2) one
+    running action across 'Your investment falls to $60': the top four slices of the investment drop away one by one
+    (red dashed gap left behind) while the counter runs $100 to $60, a -$40 tag; (3) across 'The partner owes you $40,
+    and it has $100, so you're covered': an OWES $40 IOU card travels from the partner to the gap, the gap fills gold
+    (PAID BY THE PARTNER), HAS $100 on the partner, COVERED stamp."""
+    _set(p, _hg_base() + _hg_col(HG_L, 100) + _hg_col(HG_R, 100, "share"))
+    p.parts.append(_stamp(305, 200, 190, 60, "OUR EXAMPLE", TEAL, _fr(seg, 0, .2), size=26, rot=-5))
+    h_ = 10 * HG_K
+    t0, t0e = _fr(seg, 1, .1), _fr(seg, 1, .8)
+    ty = HG_BASE - 100 * HG_K - 28
+    for j in range(4):
+        t = t0 + (t0e - t0) * j / 3
+        top = HG_BASE - (10 - j) * h_
+        # the slice drops off the column and fades; a red dashed outline stays where it was
+        p.parts.append(_g("fade", t, .06, f'<rect x="{HG_L - 2}" y="{top - 1:.1f}" width="{HG_W + 4}" height="{h_ + 2:.1f}" fill="{PAPER}"/>'
+                          f'<rect x="{HG_L}" y="{top:.1f}" width="{HG_W}" height="{h_:.1f}" fill="{RED}" fill-opacity=".08" stroke="{RED}" stroke-width="3" stroke-dasharray="9 7"/>', style=""))
+        p.parts.append(_life(t, .55, _g("slide", t, .5, _hg_slice(HG_L, top, h_), style="", x0=0, y0=0, x1=-60, y1=260, ease="in"), fi=.01, fo=.2))
+    p.parts.append(_life(-1, 1 + t0 + .02, _t(HG_L + HG_W / 2, ty, "$100", 52, TEAL), fi=.01, fo=.01))
+    p.parts.append(_life(t0, 99, _cnt(HG_L + HG_W / 2, ty, 100, 60, t0, t0e - t0 + .1, size=52, color=TEAL)
+                         .replace('data-fx="count"', 'data-fx="count" data-lin="1"', 1), fi=.01, fo=.01))
+    p.parts.append(_g("pop", t0e + .1, .3, _pill(HG_L + HG_W / 2, HG_BASE - 80 * HG_K, "-$40", RED, "#fff", 40)))
+    p.parts.append(_life(-1, 99, _t(HG_R + HG_W / 2, ty, "$100", 52, SHARE_D), fi=.01, fo=.01))
+    t1, t1e = _fr(seg, 2, .05), _fr(seg, 2, .7)
+    iou = (f'<rect x="{HG_R + 20}" y="{HG_BASE - 70 * HG_K:.0f}" width="180" height="96" rx="12" fill="#fff" stroke="{INK}" stroke-width="5"/>'
+           + _t(HG_R + 110, HG_BASE - 70 * HG_K + 40, "OWES", 26, GREY, serif=False) + _t(HG_R + 110, HG_BASE - 70 * HG_K + 82, "$40", 42, RED))
+    p.parts.append(_life(t1, .42, _g("pop", t1, .3, iou), fi=.01, fo=.01))
+    p.parts.append(_life(t1 + .4, 99, _g("slide", t1 + .4, round(t1e - t1 - .4, 2), iou, style="", x0=0, y0=0, x1=HG_L - HG_R + 20, y1=-22, ease="inout"), fi=.01, fo=.01))
+    gold = "".join(f'<rect x="{HG_L}" y="{HG_BASE - (10 - j) * h_:.1f}" width="{HG_W}" height="{h_:.1f}" fill="{GOLD}" stroke="{INK}" stroke-width="2.5"/>' for j in range(4))
+    p.parts.append(_g("fade", t1e, .4, gold, style=""))
+    p.parts.append(_g("pop", _fr(seg, 2, .5), .3, _pill(HG_R + HG_W / 2, HG_BASE - 20 * HG_K, "HAS $100", SHARE_D, "#fff", 30)))
+    p.parts.append(_stamp(300, 30, 200, 70, "COVERED", TEAL, _fr(seg, 2, .85), size=38, rot=-4))   # 24 Nov: clear of HAS $100
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 400, 160, 1.2), (_fr(seg, 0, .95), 400, 200, 1.12), (_fr(seg, 1, .1), 220, 300, 1.15),
+             (_fr(seg, 1, .95), 220, 300, 1.15), (_fr(seg, 2, .1), 400, 320, 1.0), (end, 400, 320, 1.0)])
+
+
+def hg_twist(p, seg=None, **_):
+    """The twist. From the swipe: the investment at $60 with its gold $40 IOU on top, the partner's $100 of shares,
+    and a small share-price chart at 100. (1) one running action across 'your own shares fall too, by 70%': the price
+    line steps down seven times while a % counter runs 0 to -70%; (2) across 'The partner's $100 is now worth $30':
+    the partner's certificates grey out one by one from the top, its counter running $100 to $30, a $30 stamp."""
+    h_ = 10 * HG_K
+    gold = "".join(f'<rect x="{HG_L}" y="{HG_BASE - (10 - j) * h_:.1f}" width="{HG_W}" height="{h_:.1f}" fill="{GOLD}" stroke="{INK}" stroke-width="2.5"/>' for j in range(4))
+    cx0, cy0, cw, ch = 310, 70, 160, 150
+    _set(p, _hg_base() + _hg_col(HG_L, 60) + gold + _t(HG_L + HG_W / 2, HG_BASE - 80 * HG_K + 10, "OWED $40", 30, INK, serif=False)
+         + _hg_col(HG_R, 100, "share")
+         + f'<rect x="{cx0}" y="{cy0}" width="{cw}" height="{ch}" rx="10" fill="#fff" stroke="{INK}" stroke-width="4"/>'
+         + _t(cx0 + cw / 2, cy0 - 12, "YOUR SHARE PRICE", 20, INK, serif=False))
+    ty = HG_BASE - 100 * HG_K - 28
+    t0, t0e = _fr(seg, 0, .2), _fr(seg, 0, .9)
+    X = lambda i: cx0 + 14 + i * (cw - 28) / 7
+    Y = lambda v: cy0 + 14 + (100 - v) / 100 * (ch - 28)
+    path = f"M{X(0):.1f} {Y(100):.1f} " + " ".join(f"L{X(i + 1):.1f} {Y(100 - 10 * (i + 1)):.1f}" for i in range(7))
+    p.parts.append(_g("draw", t0, round(t0e - t0, 2), f'<path d="{path}" fill="none" stroke="{RED}" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>', style=""))
+    p.parts.append(_life(-1, 1 + t0 + .02, _t(cx0 + cw / 2, cy0 + ch + 50, "0%", 46, RED), fi=.01, fo=.01))
+    p.parts.append(_life(t0, 99, _cnt(cx0 + cw / 2, cy0 + ch + 50, 0, 70, t0, t0e - t0, size=46, color=RED, pre="-", suf="%")
+                         .replace('data-fx="count"', 'data-fx="count" data-lin="1"', 1), fi=.01, fo=.01))
+    t1, t1e = _fr(seg, 1, .1), _fr(seg, 1, .8)
+    for j in range(7):
+        t = t1 + (t1e - t1) * j / 6
+        top = HG_BASE - (10 - j) * h_
+        p.parts.append(_g("fade", t, .12, f'<rect x="{HG_R}" y="{top:.1f}" width="{HG_W}" height="{h_:.1f}" fill="{PAPER}" stroke="{GREY}" stroke-width="3" stroke-dasharray="9 7"/>', style=""))
+        p.parts.append(_life(t, .5, _g("slide", t, .45, _hg_slice(HG_R, top, h_, kind="share"), style="", x0=0, y0=0, x1=50, y1=240, ease="in"), fi=.01, fo=.2))
+    p.parts.append(_life(-1, 1 + t1 + .02, _t(HG_R + HG_W / 2, ty, "$100", 52, SHARE_D), fi=.01, fo=.01))
+    p.parts.append(_life(t1, 99, _cnt(HG_R + HG_W / 2, ty, 100, 30, t1, t1e - t1 + .1, size=52, color=SHARE_D)
+                         .replace('data-fx="count"', 'data-fx="count" data-lin="1"', 1), fi=.01, fo=.01))
+    p.parts.append(_stamp(HG_R + 30, HG_BASE - 30 * HG_K - 110, 160, 84, "$30", RED, _fr(seg, 1, .88), size=56, rot=-5))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 390, 200, 1.3), (_fr(seg, 0, .95), 390, 210, 1.25), (_fr(seg, 1, .1), 520, 320, 1.1),
+             (_fr(seg, 1, .95), 540, 320, 1.1), (end, 400, 320, 1.0)])
+
+
+def hg_answer(p, seg=None, **_):
+    """The answer, on one scale. (1) one running action across 'It owes you $40, and it has $30': an OWES column (red
+    dashed) and a HAS column (shares) grow side by side while their counters run to 40 and 30, a $10 SHORT bracket;
+    (2) 'It can't pay': the HAS column pushes up toward the line and falls back, CAN'T PAY stamp; (3) across 'the $30 it
+    does have is your own stock': an arrow draws from the $30 back to YOU, and its three certificates turn red one by
+    one with YOURS on them."""
+    xo, xh, w_ = 130, 450, 220
+    _set(p, f'<path d="M30 {HG_BASE} H770" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+         + _hg_outline(xo, 40, RED, w_=w_) + _hg_outline(xh, 40, GREY, w_=w_)
+         + _t(xo + w_ / 2, HG_BASE + 42, "IT OWES YOU", 26, RED, serif=False) + _t(xh + w_ / 2, HG_BASE + 42, "IT HAS", 26, SHARE_D, serif=False))
+    h_ = 10 * HG_K
+    t0, t0e = _fr(seg, 0, .05), _fr(seg, 0, .85)
+    ty = HG_BASE - 40 * HG_K - 30
+    for j in range(4):
+        t = t0 + (t0e - t0) * j / 3
+        p.parts.append(_g("growY", t, .25, f'<rect x="{xo}" y="{HG_BASE - (j + 1) * h_:.1f}" width="{w_}" height="{h_:.1f}" fill="{RED}" fill-opacity=".85" stroke="{INK}" stroke-width="2.5"/>', style=_grow(1)))
+    for j in range(3):
+        t = t0 + .3 + (t0e - t0 - .3) * j / 2
+        p.parts.append(_life(t, _fr(seg, 2, .2) + .3 - t, _g("growY", t, .25, _hg_slice(xh, HG_BASE - (j + 1) * h_, h_, w_, "share"), style=_grow(1)), fi=.01, fo=.3))
+    p.parts.append(_life(t0, 99, _cnt(xo + w_ / 2, ty, 0, 40, t0, t0e - t0, size=52, color=RED).replace('data-fx="count"', 'data-fx="count" data-lin="1"', 1), fi=.05, fo=.01))
+    p.parts.append(_life(t0 + .3, 99, _cnt(xh + w_ / 2, ty + h_, 0, 30, t0 + .3, t0e - t0 - .3, size=52, color=SHARE_D).replace('data-fx="count"', 'data-fx="count" data-lin="1"', 1), fi=.05, fo=.01))
+    bx = xh + w_ + 18
+    p.parts.append(_g("draw", t0e, .4, f'<path d="M{bx} {HG_BASE - 40 * HG_K:.0f} h18 v{h_:.0f} h-18" fill="none" stroke="{RED}" stroke-width="6" stroke-linejoin="round"/>', style=""))
+    p.parts.append(_g("pop", t0e + .3, .3, _idle("bob", _pill(bx + 20, HG_BASE - 40 * HG_K - 50, "$10 SHORT", RED, "#fff", 28), 4, 2.0, style="")))
+    t1 = _fr(seg, 1, .1)
+    for j in range(2):
+        p.parts.append(_g("press", t1 + .35 * j, .32, f'<rect x="{xh}" y="{HG_BASE - 30 * HG_K:.0f}" width="{w_}" height="{30 * HG_K:.0f}" fill="none" stroke="{INK}" stroke-width="5"/>'))
+    p.parts.append(_stamp(240, 40, 320, 90, "CAN'T PAY", RED, _fr(seg, 1, .45), size=50, rot=-5))
+    t2, t2e = _fr(seg, 2, .1), _fr(seg, 2, .85)
+    arrow = (f'<path d="M{xh + w_ / 2} {HG_BASE - 30 * HG_K - 8:.0f} C {xh + w_ / 2} 170, {xo + w_ / 2 + 60} 150, {xo + w_ / 2 + 10} {HG_BASE - 40 * HG_K - 80:.0f}" '
+             f'fill="none" stroke="{INK}" stroke-width="7" stroke-linecap="round" stroke-dasharray="16 10"/>')
+    p.parts.append(_g("draw", t2, round((t2e - t2) * .5, 2), arrow, style=""))
+    for j in range(3):
+        t = t2 + (t2e - t2) * (.35 + .3 * j)
+        top = HG_BASE - (j + 1) * h_
+        p.parts.append(_g("press", t, .3, f'<rect x="{xh}" y="{top:.1f}" width="{w_}" height="{h_:.1f}" fill="{SHARE_C}" stroke="{RED}" stroke-width="6"/>'
+                          + _t(xh + w_ / 2, top + h_ * .72, "YOURS", 24, RED, serif=False)))
+    p.parts.append(_g("pop", t2e, .35, _idle("bob", _pill(xo + w_ / 2 + 10, HG_BASE - 40 * HG_K - 110, "YOUR OWN STOCK", INK, "#fff", 28), 4, 2.2, style="")))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 420, 380, 1.15), (_fr(seg, 0, .9), 440, 380, 1.15), (_fr(seg, 1, .1), 420, 300, 1.05),
+             (_fr(seg, 2, .1), 400, 320, 1.0), (end, 400, 320, 1.0)])
+
+
+def hg_rule(p, seg=None, **_):
+    """The rule. (1) one running action across 'A hedge is only as good as the money behind it': a PROMISE card is
+    lifted by a stack of money blocks built under it one by one; (2) across 'If that money falls when you fall': two
+    lines (YOU, THE MONEY BEHIND IT) draw down together with a dot each, the blocks under the promise dropping away in
+    step, NOT A HEDGE stamp; (3) 'The full story is in our film on Enron': a FULL FILM chip pops and bobs."""
+    _set(p, f'<path d="M40 470 H330" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+         + f'<g opacity=".25"><rect x="95" y="230" width="180" height="230" rx="8" fill="none" stroke="{GREY}" stroke-width="4" stroke-dasharray="12 9"/></g>'
+         + f'<rect x="400" y="80" width="360" height="390" rx="14" fill="#fff" stroke="{INK}" stroke-width="5"/>'
+         + _t(580, 60, "WHEN THINGS GO WRONG", 22, INK, serif=False))
+    t0, t0e = _fr(seg, 0, .05), _fr(seg, 0, .8)
+    blocks = []
+    for j in range(5):
+        t = t0 + (t0e - t0) * j / 4
+        b = f'<rect x="105" y="{470 - (j + 1) * 46}" width="160" height="40" rx="6" fill="{SHARE_C}" stroke="{INK}" stroke-width="3"/>'
+        blocks.append((t, b, 470 - (j + 1) * 46))
+    t1, t1e = _fr(seg, 1, .05), _fr(seg, 1, .85)
+    for j, (t, b, y) in enumerate(blocks):
+        tf = t1 + (t1e - t1) * (4 - j) / 5          # the top block goes first
+        p.parts.append(_life(t, tf - t + .05, _g("growY", t, .22, b, style=_grow(1)), fi=.01, fo=.01))
+        p.parts.append(_life(tf, .55, _g("slide", tf, .5, b, style="", x0=0, y0=0, x1=-30, y1=470 - y + 60, ease="in"), fi=.01, fo=.2))
+    promise = (f'<rect x="85" y="-60" width="200" height="56" rx="10" fill="{GOLD}" stroke="{INK}" stroke-width="5"/>'
+               + _t(185, -22, "PROMISE", 28, INK, serif=False))
+    kf = [[round(t0 - .2, 3), 0, 474, 1, 1, 0]] + [[round(t + .22, 3), 0, y + 4, 1, 1, 0] for t, _, y in blocks]
+    for j in range(5):                        # block j leaves at its time; the promise sinks to the block below
+        tf = t1 + (t1e - t1) * (4 - j) / 5
+        kf.append([round(tf + .3, 3), 0, 470 - j * 46 + 4, 1, 1, 0])
+    kf = sorted({k[0]: k for k in kf}.values())
+    p.parts.append(f"<g class=\"a\" data-fx=\"kf\" data-at=\"{kf[0][0]:.2f}\" data-d=\"{kf[-1][0] - kf[0][0]:.2f}\" data-kf='{_json(kf)}' style=\"transform-box:view-box;transform-origin:0px 0px\">{promise}</g>")
+    p.parts.append(_g("pop", _fr(seg, 0, .85), .3, _pill(185, 160, "THE MONEY BEHIND IT", SHARE_D, "#fff", 20)))
+    X = lambda i: 430 + i * 300 / 8
+    you = "M" + " L".join(f"{X(i):.1f} {140 + i * 34 + 6 * math.sin(i * 1.3):.1f}" for i in range(9))
+    mon = "M" + " L".join(f"{X(i):.1f} {120 + i * 36 + 6 * math.sin(i * 1.7 + 1):.1f}" for i in range(9))
+    p.parts.append(_g("draw", t1, round(t1e - t1, 2), f'<path d="{you}" fill="none" stroke="{TEAL}" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>', style=""))
+    p.parts.append(_g("draw", t1 + .1, round(t1e - t1, 2), f'<path d="{mon}" fill="none" stroke="{RED}" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="14 8"/>', style=""))
+    p.parts.append(_g("pop", t1, .3, _t(500, 118, "YOU", 24, TEAL, serif=False) + _t(640, 108, "THE MONEY", 24, RED, serif=False)))
+    p.parts.append(_stamp(440, 360, 300, 84, "NOT A HEDGE", RED, _fr(seg, 1, .9), size=42, rot=-5))
+    # 24 Nov (first cut: this sentence held the lowest panel window, 2.26): a film strip runs under the chip for the
+    # whole sentence, its frames replaying the two falling lines
+    t2, t2e = _fr(seg, 2, .02), seg[-1][1] + .4
+    fr_ = "".join(f'<rect x="{40 + 130 * k}" y="494" width="120" height="72" rx="6" fill="#fff" stroke="{INK}" stroke-width="4"/>'
+                  f'<path d="M{55 + 130 * k} 510 l90 40" stroke="{TEAL}" stroke-width="5"/><path d="M{55 + 130 * k} 518 l90 36" stroke="{RED}" stroke-width="5" stroke-dasharray="8 5"/>'
+                  + "".join(f'<rect x="{44 + 130 * k + 22 * q}" y="{y}" width="12" height="6" fill="{INK}"/>' for q in range(5) for y in (497, 559))
+                  for k in range(12))
+    p.parts.append(_life(t2, 99, _g("slide", t2, round(t2e - t2, 2), fr_, style="", x0=0, y0=0, x1=-780, y1=0, nofit=1), fi=.2, fo=.01))
+    # and inside the chart, two dots ride the falling lines together across the sentence, then again (the entry
+    # check crops the panel above the strip, so the strip alone read as 2 still seconds)
+    for path_, col, dy in ((you, TEAL, 0), (mon, RED, 0)):
+        pts_ = [tuple(map(float, q.split())) for q in path_[1:].split(" L")]
+        half = (t2e - t2) / 2
+        kf2 = []
+        for rep in range(2):
+            for i, (x, y) in enumerate(pts_):
+                kf2.append([round(t2 + rep * half + half * i / 8 * .95, 3), round(x - pts_[0][0], 1), round(y - pts_[0][1], 1), 1, 1, 0])
+        dot = f'<circle cx="{pts_[0][0]:.1f}" cy="{pts_[0][1]:.1f}" r="15" fill="{col}" stroke="{INK}" stroke-width="4"/>'
+        p.parts.append(f"<g class=\"a\" data-fx=\"kf\" data-at=\"{t2:.2f}\" data-d=\"{t2e - t2:.2f}\" data-kf='{_json(kf2)}' style=\"transform-box:view-box;transform-origin:0px 0px\">{_life(t2, 99, dot, fi=.1, fo=.01)}</g>")
+    p.parts.append(_g("pop", _fr(seg, 2, .2), .35, _idle("bob", _pill(400, 602, "FULL FILM: ENRON", TEAL, "#fff", 30), 4, 2.2, style="")))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 190, 330, 1.25), (_fr(seg, 0, .95), 190, 300, 1.2), (_fr(seg, 1, .1), 450, 300, 1.05),
+             (_fr(seg, 1, .95), 470, 300, 1.05), (_fr(seg, 2, .1), 400, 330, 1.0), (end, 400, 330, 1.0)])
+
+
+def hg_asks(p, **_):
+    """The close, two running actions under the whole question (24 Nov): the partner's shares column steps down 10% at
+    a time from $100 to $50 against an OWED $40 line, its % tally running 0 to -50% and then a ? hanging over the gap;
+    a CAN PAY / CAN'T PAY needle that never stops; a FULL FILM chip. The break point is not shown or labelled."""
+    h_ = 10 * HG_K
+    xr, cx, cy, r = 110, 630, 250, 105
+    _set(p, f'<path d="M40 {HG_BASE} H760" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+         + _hg_outline(xr, 100, SHARE_D)
+         + f'<path d="M60 {HG_BASE - 40 * HG_K:.0f} H{xr + HG_W + 40}" stroke="{RED}" stroke-width="6" stroke-dasharray="16 10"/>'
+         + _t(xr + HG_W + 20, HG_BASE - 40 * HG_K + 44, "OWED $40", 28, RED, serif=False, anchor="start")
+         + _t(xr + HG_W / 2, HG_BASE + 42, "THE PARTNER'S SHARES", 24, SHARE_D, serif=False)
+         + f'<path d="M{cx - r} {cy} A{r} {r} 0 0 1 {cx + r} {cy}" fill="none" stroke="{INK}" stroke-width="8"/>'
+         + _t(cx - r + 10, cy + 40, "CAN'T PAY", 24, RED, serif=False) + _t(cx + r - 10, cy + 40, "CAN PAY", 24, TEAL, serif=False))
+    t0, t1 = p.at(.04), p.at(.62)
+    for j in range(10):                       # the full column at the start, slices leaving from the top
+        top = HG_BASE - (j + 1) * h_
+        k = 9 - j                             # the step at which this slice leaves (top slice first)
+        if k < 5:
+            tl = t0 + (t1 - t0) * k / 4
+            p.parts.append(_life(-1, tl + 1.05, _hg_slice(xr, top, h_, kind="share"), fi=.01, fo=.01))
+            p.parts.append(_life(tl, .55, _g("slide", tl, .5, _hg_slice(xr, top, h_, kind="share"), style="", x0=0, y0=0, x1=-40, y1=300, ease="in"), fi=.01, fo=.2))
+        else:
+            p.parts.append(_hg_slice(xr, top, h_, kind="share"))
+    p.parts.append(_life(-1, 1 + t0 + .02, _t(cx, 90, "SHARES 0%", 40, INK, serif=False), fi=.01, fo=.01))
+    p.parts.append(_life(t0, 99, _cnt(cx, 90, 0, 50, t0, t1 - t0 + .3, size=40, color=INK, pre="SHARES -", suf="%")
+                         .replace('data-fx="count"', 'data-fx="count" data-lin="1"', 1), fi=.01, fo=.01))
+    p.parts.append(_life(-1, 1 + t0 + .02, _t(xr + HG_W / 2, HG_BASE - 100 * HG_K - 24, "$100", 46, SHARE_D), fi=.01, fo=.01))
+    p.parts.append(_life(t0, 99, _cnt(xr + HG_W / 2, HG_BASE - 100 * HG_K - 24, 100, 50, t0, t1 - t0 + .3, size=46, color=SHARE_D)
+                         .replace('data-fx="count"', 'data-fx="count" data-lin="1"', 1), fi=.01, fo=.01))
+    p.parts.append(_g("pop", t1 + .5, .35, _idle("swing", _t(xr + HG_W / 2, HG_BASE - 50 * HG_K - 30, "?", 110, RED), 10, 2.2,
+                                                style="transform-box:fill-box;transform-origin:center bottom")))
+    needle = f'<path d="M{cx} {cy} L{cx} {cy - r + 20}" stroke="{INK}" stroke-width="9" stroke-linecap="round"/><circle cx="{cx}" cy="{cy}" r="16" fill="{INK}"/>'
+    p.parts.append(f'<g class="a" data-fx="swing" data-at="0" data-d="1" data-amp="60" data-w="2.6" style="transform-box:view-box;transform-origin:{cx}px {cy}px">{needle}</g>')
+    p.parts.append(_g("pop", p.at(.25), .35, _idle("bob", _pill(cx, 400, "HOW FAR?", INK, "#fff", 34), 5, 1.8, style="")))
+    p.parts.append(_g("pop", p.at(.5), .35, _idle("bob", _pill(cx, 470, "FULL FILM: ENRON", TEAL, "#fff", 26), 3, 2.3, ph=1, style="")))
+
+
+SCENES.update({f.__name__: f for f in (hg_hook, hg_fall, hg_twist, hg_answer, hg_rule, hg_asks)})

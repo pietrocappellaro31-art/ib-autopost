@@ -182,7 +182,9 @@ def scene(ep, parts, at, spans, total):
     c = ep["close"]
     cs, ca = seg("close"), at["close"]
     big = L.kara(c["say"][0][1], ca + cs[0][1], cs[0][2] - cs[0][1], cls="olchk",
-                 style="font-family:'Serif',serif;font-weight:700;font-size:96px;line-height:1.04;letter-spacing:-.03em;text-wrap:balance")
+                 style=f"font-family:'Serif',serif;font-weight:700;font-size:{c.get('size', 96)}px;line-height:1.04;letter-spacing:-.03em;text-wrap:balance")
+    # 24 Nov: close size= sets the question's type (default 96), so a one-sentence question can sit on two lines over a
+    # 700 x 560 picture (the 23 Nov Short's next improvement: its close panel was 520 x 416 under four lines)
     # 23 Nov (the 22 Nov Reel next improvement): with bar=True the last line ("Tell me in the comments.") leaves the
     # caption block and is said under the picture as a slim bar, so the close picture can be as large as a beat's
     # (art_w x art_h, 720 x 576: 752 x 602 ran 7 px past the safe area under a three-line question) instead of a 520 x 416 box under three large lines
