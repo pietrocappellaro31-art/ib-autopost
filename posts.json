@@ -1898,6 +1898,20 @@
       "first_comment": "Bonus: same 8x buy and 10x sale, but no debt at all. What do the owners make?",
       "ai_label": true,
       "published_id": null
+    },
+    {
+      "id": "reel-w2-beta-myth",
+      "type": "reel",
+      "scheduled_utc": "2026-11-24T23:00:00",
+      "slot": "B",
+      "media_branch": "reel/w2-beta-myth",
+      "video": "w2-beta-myth.mp4",
+      "cover": "w2-beta-myth.jpg",
+      "master": "scored",
+      "caption": "Beta 2 means a stock swings twice as much as the market. Twice the return, then? Nope.\n\nSay safe government bonds pay 4% and the market's expected to return 9%, so you'd think a stock that moves twice as hard should get you 18%. That's the myth.\n\nBeta only doubles the part above the safe rate. That part is 9% minus 4%, so 5%, and twice 5% is 10%. Put the 4% back on and you land at 14%, a full four points under the 18% you might have guessed.\n\nExpected return = safe rate + beta x the market's extra. That's CAPM. It's how bankers usually get the cost of equity for a DCF.\n\nYour turn: the beta is 0.5. What return should you expect? Tell me in the comments.\n\nFollow @investmentbankinginterviews for a new IB interview question, worked out, every day.\n\nRound numbers, our own example. Not a forecast for any stock or market.\n\nNarration: AI-generated voice; script is our original work.\n\n#investmentbanking #capm #ibinterview #finance",
+      "first_comment": "Bonus: a stock with a beta of 1.5. Same 4% safe rate, market at 9%. What return should you expect?",
+      "ai_label": true,
+      "published_id": null
     }
   ],
   "reel_slots_et": {

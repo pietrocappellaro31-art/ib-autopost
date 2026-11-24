@@ -890,6 +890,19 @@
    "rights": "ORIGINAL_GENERATED",
    "added": "2026-11-24",
    "note": ""
+  },
+  {
+   "id": "score-w2-beta-myth",
+   "title": "Original score for w2-beta-myth",
+   "video": "w2-beta-myth",
+   "engine": "score.py + GeneralUser GS v2.0.3 (TinySoundFont)",
+   "mood": "explain+resolve",
+   "bpm": 81,
+   "key": "F",
+   "style": "acoustic",
+   "rights": "ORIGINAL_GENERATED",
+   "added": "2026-11-24",
+   "note": ""
   }
  ]
 }
