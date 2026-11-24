@@ -9549,7 +9549,7 @@ def _bt_col(x, w_, v, fill, base=BT_BASE, k=BT_K, label=None, size=40, dash=Fals
 def bt_hook(p, seg=None, **_):
     """The hook. From frame 0 two lines scroll across the panel: the MARKET (teal, a small swing) and the BETA 2
     stock (red, twice the swing), with 9% and 18%? tags bobbing on them. On the first sentence a x2 bracket draws
-    between the swings and pulses; on 'Twice the return?' the camera pulls back to a TWICE THE RETURN? plate and a
+    between the swings and pulses; on 'Does it earn double?' the camera pulls back to a DOUBLE THE RETURN? plate and a
     ? that bobs."""
     ym, per = 250, 260
     _set(p, f'<rect x="30" y="60" width="740" height="380" rx="18" fill="#fff" stroke="{INK}" stroke-width="6"/>'
@@ -9564,10 +9564,10 @@ def bt_hook(p, seg=None, **_):
     for j in range(4):
         p.parts.append(_g("ripple", t0 + .6 + .5 * j, .5, f'<circle cx="640" cy="{ym - 90}" r="40" fill="none" stroke="{RED}" stroke-width="5"/>'))
     t1 = _fr(seg, 1, .05)
-    p.parts.append(_g("pop", t1, .4, f'<rect x="150" y="480" width="500" height="100" rx="20" fill="#fff" stroke="{RED}" stroke-width="8"/>' + _t(400, 545, "TWICE THE RETURN?", 44, RED)))
+    p.parts.append(_g("pop", t1, .4, f'<rect x="150" y="480" width="500" height="100" rx="20" fill="#fff" stroke="{RED}" stroke-width="8"/>' + _t(400, 545, "DOUBLE THE RETURN?", 42, RED)))
     p.parts.append(_life(t1 + .3, 99, _idle("bob", _t(720, 560, "?", 110, RED), 10, 2.2, style=""), fi=.15, fo=.01))
     end = seg[-1][1] + .4
-    _cam(p, [(seg[0][0] - .4, 400, 230, 1.15), (t0, 520, 200, 1.25), (t0 + 1.2, 560, 220, 1.2), (t1 + .1, 400, 330, 1.0), (end, 400, 330, 1.0)])
+    _cam(p, [(seg[0][0] - .4, 400, 240, 1.04), (t0, 480, 220, 1.2), (t0 + 1.2, 520, 230, 1.15), (t1 + .1, 400, 330, 1.0), (end, 400, 330, 1.0)])
 
 
 def bt_setup(p, seg=None, **_):
@@ -9579,7 +9579,7 @@ def bt_setup(p, seg=None, **_):
          + _t(xs + w_ / 2, BT_BASE + 40, "SAFE BONDS", 28, INK, serif=False) + _t(xm + w_ / 2, BT_BASE + 40, "THE MARKET", 28, INK, serif=False)
          + _bt_col(xs, w_, 4, BT_SAFE, dash=True, op=.14) + _bt_col(xm, w_, 9, BT_MKT, dash=True, op=.14)
          + _bond(xs + 10, 150, 200, 130, rate="4%", head="BOND"))
-    _bt_moving(p, xm - 10, xm + w_ + 10, 70, 220, [_bt_wave(xm, xm + w_, 145, 40, 110, TEAL, 7)], 110, step=1.1)
+    _bt_moving(p, xm, xm + w_, 120, 260, [_bt_wave(xm, xm + w_, 190, 40, 110, TEAL, 7)], 110, step=1.1)
     t0 = _fr(seg, 0, .3)
     _gbar(p, t0, .7, xs, BT_BASE, w_, 4, BT_K, BT_SAFE)
     p.parts.append(_life(t0 + .1, 99, _cnt(xs + w_ / 2, BT_BASE - 4 * BT_K + 66, 0, 4, t0 + .1, .7, size=50, pre="", suf="%"), fi=.05, fo=.01))
@@ -9587,7 +9587,7 @@ def bt_setup(p, seg=None, **_):
     _gbar(p, t1, .8, xm, BT_BASE, w_, 9, BT_K, BT_MKT)
     p.parts.append(_life(t1 + .1, 99, _cnt(xm + w_ / 2, BT_BASE - 9 * BT_K + 66, 0, 9, t1 + .1, .8, size=50, pre="", suf="%"), fi=.05, fo=.01))
     p.parts.append(_g("draw", t1 + 1.0, .5, f'<path d="M{xs} {BT_BASE - 4 * BT_K:.0f} H{xm + w_}" stroke="{INK}" stroke-width="5" stroke-dasharray="14 10"/>', style=""))
-    p.parts.append(_g("pop", t1 + 1.3, .35, _pill(xm + w_ / 2, BT_BASE - 4 * BT_K - 34, "SAFE RATE 4%", INK, "#fff", 24)))
+    p.parts.append(_g("pop", t1 + 1.3, .35, _pill(xs + w_ / 2, 440, "SAFE RATE 4%", INK, "#fff", 24)))
     end = seg[-1][1] + .4
     _cam(p, [(seg[0][0] - .4, 220, 380, 1.2), (t0 + .8, 240, 360, 1.15), (t1 - .2, 560, 330, 1.15), (t1 + 1.2, 450, 360, 1.05), (end, 400, 330, 1.0)])
 
@@ -9603,13 +9603,13 @@ def bt_double(p, seg=None, **_):
     blk = _bt_col(x, w_, 9, RED, base=BT_BASE - 9 * BT_K, label="+9%", size=46)
     t1 = _fr(seg, 1, .1)
     p.parts.append(_life(t0, 99, _g("slide", t0, .5, _g("press", t1 + .3, .4, blk), style="", y0=-420, y1=0, ease="out"), fi=.05, fo=.01))
-    p.parts.append(_g("pop", t0 + .2, .35, _pill(620, 300, "2 x 9% = 18%", INK, "#fff", 30)))
-    p.parts.append(_life(t0 + .5, 99, _idle("swing", _ptag(620, 120, 170, "18%?", RED, "#fff", 48), 8, 2.0, style="transform-box:fill-box;transform-origin:center top"), fi=.05, fo=.01))
+    p.parts.append(_g("pop", t0 + .2, .35, _pill(590, 330, "2 x 9% = 18%", INK, "#fff", 28)))
+    p.parts.append(_life(t0 + .5, 99, _idle("swing", _ptag(590, 130, 160, "18%?", RED, "#fff", 46), 8, 2.0, style="transform-box:fill-box;transform-origin:center top"), fi=.05, fo=.01))
     p.parts.append(_stamp(60, 150, 210, 90, "MYTH", RED, t1 + .2, size=56, rot=-8))
     for j in range(4):
         p.parts.append(_g("ripple", t1 + .5 + .5 * j, .5, f'<circle cx="{x + w_ / 2}" cy="{BT_BASE - 13.5 * BT_K:.0f}" r="60" fill="none" stroke="{RED}" stroke-width="6"/>'))
     end = seg[-1][1] + .4
-    _cam(p, [(seg[0][0] - .4, 400, 420, 1.15), (t0 + .4, 420, 260, 1.15), (t1, 300, 220, 1.2), (end, 400, 330, 1.0)])
+    _cam(p, [(seg[0][0] - .4, 400, 420, 1.12), (t0 + .4, 400, 280, 1.04), (t1, 330, 250, 1.12), (end, 400, 330, 1.0)])
 
 
 def bt_split(p, seg=None, **_):
@@ -9631,7 +9631,7 @@ def bt_split(p, seg=None, **_):
     t2 = _fr(seg, 1, .6)
     p.parts.append(_life(t2, 99, _g("slide", t2, .6, _bt_col(xr, w_, 5, BT_EXTRA, base=BT_BASE - 5 * BT_K, label="5%", size=40), style="", y0=5 * BT_K, y1=0, x0=0, x1=0, ease="out"), fi=.05, fo=.01))
     p.parts.append(_life(t2 + .4, 99, _cnt(xr + w_ / 2, BT_BASE - 10 * BT_K - 24, 5, 10, t2 + .5, .6, size=50, pre="", suf="%", color="#8A5F12"), fi=.05, fo=.01))
-    p.parts.append(_g("pop", t2 + .7, .35, _pill(xr + w_ / 2 - 260, BT_BASE - 10 * BT_K + 20, "x 2", RED, "#fff", 34)))
+    p.parts.append(_g("pop", t2 + .7, .35, _pill(xr + w_ + 45, BT_BASE - 7.5 * BT_K, "x 2", RED, "#fff", 30)))
     end = seg[-1][1] + .4
     _cam(p, [(seg[0][0] - .4, 220, 400, 1.2), (t0 + .5, 320, 380, 1.1), (t0 + 1.4, 520, 400, 1.15), (t1 - .1, 400, 300, 1.05), (t2 + .3, 560, 330, 1.2), (end, 400, 330, 1.0)])
 
@@ -9648,7 +9648,7 @@ def bt_answer(p, seg=None, **_):
     p.parts.append(_life(-1, 99, _g("slide", t0, .6, _bt_col(xa, w_, 10, BT_EXTRA, label="10%", size=40), style="", x0=0, y0=0, x1=0, y1=-4 * BT_K, ease="inout"), fi=.01, fo=.01))
     p.parts.append(_life(t0, 99, _g("slide", t0, .6, _bt_col(xa, w_, 4, BT_SAFE, label="4%", size=36), style="", x0=-420, y0=0, x1=0, y1=0, ease="out"), fi=.05, fo=.01))
     p.parts.append(_life(t0 + .6, 99, _cnt(xa + w_ / 2, BT_BASE - 14 * BT_K - 24, 10, 14, t0 + .7, .6, size=54, pre="", suf="%", color=TEAL), fi=.05, fo=.01))
-    p.parts.append(_stamp(250, 40, 220, 80, "14%", TEAL, _fr(seg, 0, .85), size=52, rot=-5))
+    p.parts.append(_stamp(470, 40, 220, 80, "14%", TEAL, _fr(seg, 0, .85), size=52, rot=-5))
     t1 = _fr(seg, 1, .05)
     y14, y18 = BT_BASE - 14 * BT_K, BT_BASE - 18 * BT_K
     p.parts.append(_g("draw", t1, .4, f'<path d="M{xa} {y14:.0f} H{xg + w_ + 30}" stroke="{INK}" stroke-width="4" stroke-dasharray="10 8"/>', style=""))
@@ -9682,10 +9682,19 @@ def bt_rule(p, seg=None, **_):
     p.parts.append(_life(t2, .9, _pill(710, 310, "THE MARKET", TEAL, "#fff", 22), fi=.1, fo=.1))
     p.parts.append(_life(t2 + .9, 99, _pill(690, 310, "THE SAFE RATE", INK, "#fff", 22), fi=.1, fo=.01))
     p.parts.append(_g("pop", _fr(seg, 1, .05), .4, _idle("bob", _pill(400, 450, "COST OF EQUITY (CAPM)", "#8A5F12", "#fff", 32), 6, 1.9, style="")))
+    # 24 Nov (the 23 Nov next improvement: a second large move inside the longest sentence): a frame travels the
+    # equation tile by tile while it is said, and a 4% + 2 x 5% = 14% strip draws under it
+    s0a, s0b = _fr(seg, 0, .05), _fr(seg, 0, 1.0)
+    ring = f'<rect x="20" y="108" width="200" height="174" rx="18" fill="none" stroke="{RED}" stroke-width="7"/>'
+    xs_ = (0, 240, 430, 610)
+    for j in range(3):
+        a = s0a + (s0b - s0a) * j / 3
+        p.parts.append(_life(a, (s0b - s0a) / 3 + .05, _g("slide", a, (s0b - s0a) / 3, ring, style="", x0=xs_[j], y0=0, x1=xs_[j + 1], y1=0, ease="inout"), fi=.05, fo=.05))
+    p.parts.append(_life(_fr(seg, 0, .7), t2 - _fr(seg, 0, .7), _g("wipe", _fr(seg, 0, .7), .8, _pill(400, 340, "4% + 2 x 5% = 14%", INK, "#fff", 30)), fi=.05, fo=.15))
     for j in range(4):
         p.parts.append(_g("ripple", t2 + .45 * j, .45, f'<circle cx="345" cy="220" r="60" fill="none" stroke="{RED}" stroke-width="5"/>'))
     end = seg[-1][1] + .4
-    _cam(p, [(seg[0][0] - .4, 220, 200, 1.3), (t1, 380, 200, 1.25), (t1 + 1.0, 560, 200, 1.25), (t2 - .2, 400, 300, 1.0), (t2 + .5, 520, 210, 1.3), (end, 400, 320, 1.0)])
+    _cam(p, [(seg[0][0] - .4, 400, 230, 1.04), (t1, 400, 210, 1.05), (t1 + 1.0, 400, 250, 1.02), (t2 - .2, 400, 320, 1.0), (t2 + .5, 400, 260, 1.05), (end, 400, 320, 1.0)])
 
 
 def bt_asks(p, **_):
@@ -9749,15 +9758,15 @@ def mx_hook(p, seg=None, **_):
     t0 = _fr(seg, 0, .1)
     blk = _mx_col(xc, w_, 20, MX_GAIN, base=MX_BASE - 80 * MX_K)
     p.parts.append(_life(t0, 99, _g("growY", t0, .7, blk, style="transform-box:fill-box;transform-origin:center bottom"), fi=.01, fo=.01))
-    p.parts.append(_life(-1, 99, _cnt(xc + w_ / 2, MX_BASE - 50 * MX_K, 80, 100, t0, .7, size=56), fi=.01, fo=.01))
+    p.parts.append(_life(-1, 99, _cnt(xc + w_ / 2, MX_BASE - 50 * MX_K, 80, 100, t0, .7, size=56).replace('data-fx="count"', 'data-fx="count" data-show="1"', 1), fi=.01, fo=.01))
     t1 = _fr(seg, 1, .1)
     blk = _mx_col(xo, w_, 20, MX_GAIN, base=MX_BASE - 40 * MX_K)
     p.parts.append(_life(t1, 99, _g("growY", t1, .7, blk, style="transform-box:fill-box;transform-origin:center bottom"), fi=.01, fo=.01))
-    p.parts.append(_life(-1, 99, _cnt(xo + w_ / 2, MX_BASE - 25 * MX_K, 40, 60, t1, .7, size=56), fi=.01, fo=.01))
+    p.parts.append(_life(-1, 99, _cnt(xo + w_ / 2, MX_BASE - 25 * MX_K, 40, 60, t1, .7, size=56).replace('data-fx="count"', 'data-fx="count" data-show="1"', 1), fi=.01, fo=.01))
     t2 = _fr(seg, 2, .0)
     p.parts.append(_life(t2, 99, _g("pop", t2, .35, _idle("swing", _ptag(400, 260, 120, "?", RED, "#fff", 80), 10, 2.2, style="transform-box:fill-box;transform-origin:center top")), fi=.05, fo=.01))
     end = seg[-1][1] + .4
-    _cam(p, [(seg[0][0] - .4, 220, 330, 1.2), (t0 + .9, 230, 300, 1.2), (t1 - .1, 560, 360, 1.2), (t1 + .9, 560, 380, 1.18), (t2, 400, 330, 1.0), (end, 400, 330, 1.0)])
+    _cam(p, [(seg[0][0] - .4, 400, 330, 1.0), (t0 - .1, 400, 330, 1.0), (t0 + .5, 250, 300, 1.15), (t1 - .1, 270, 320, 1.12), (t1 + .5, 560, 360, 1.15), (t2, 400, 330, 1.0), (end, 400, 330, 1.0)])
 
 
 def mx_buy(p, seg=None, **_):
@@ -9769,7 +9778,7 @@ def mx_buy(p, seg=None, **_):
          + _t(x + w_ / 2, MX_BASE + 40, "PRICE", 28, INK, serif=False) + _mx_col(x, w_, 80, MX_EB, dash=True, op=.1)
          + f'<rect x="480" y="80" width="200" height="110" rx="14" fill="{MX_EB}" stroke="{INK}" stroke-width="6"/>' + _t(580, 125, "EBITDA", 26, INK, serif=False) + _t(580, 172, "$10", 44, INK))
     t0 = _fr(seg, 0, .2)
-    p.parts.append(_g("pop", t0, .35, _idle("swing", _ptag(720, 230, 110, "8x", RED, "#fff", 44), 7, 2.0, style="transform-box:fill-box;transform-origin:center top")))
+    p.parts.append(_g("pop", t0, .35, _idle("swing", _ptag(580, 250, 110, "8x", RED, "#fff", 44), 7, 2.0, style="transform-box:fill-box;transform-origin:center top")))
     t1 = _fr(seg, 1, .2)
     _mx_blocks(p, x, w_, 8, t0 + .3, gap=.16, life=t1 + .1 - (t0 + .3))
     p.parts.append(_life(t0 + .3, t1 + .1 - t0 - .3, _cnt(x + w_ / 2, MX_BASE - 80 * MX_K - 24, 0, 80, t0 + .3, 8 * .16 + .3, size=50), fi=.05, fo=.1))
@@ -9779,7 +9788,7 @@ def mx_buy(p, seg=None, **_):
     p.parts.append(_g("pop", t1 + 1.5, .35, _pill(x + w_ / 2, MX_BASE - 40 * MX_K - 40, "OWNERS", TEAL, "#fff", 28)))
     p.parts.append(_g("pop", t1 + 1.0, .4, _pill(xr + w_ / 2, 230, "LENDER", "#3B3F48", "#fff", 28)))
     end = seg[-1][1] + .4
-    _cam(p, [(seg[0][0] - .4, 460, 250, 1.2), (t0 + .3, 300, 330, 1.05), (t1, 260, 380, 1.1), (t1 + 1.0, 420, 380, 1.05), (end, 400, 330, 1.0)])
+    _cam(p, [(seg[0][0] - .4, 440, 260, 1.1), (t0 + .3, 380, 330, 1.03), (t1, 330, 380, 1.06), (t1 + 1.0, 420, 360, 1.04), (end, 400, 330, 1.0)])
 
 
 def mx_wait(p, seg=None, **_):
@@ -9799,7 +9808,7 @@ def mx_wait(p, seg=None, **_):
         p.parts.append(_g("pop", a, .25, f'<circle cx="{100 + 80 * j}" cy="190" r="14" fill="{RED}" stroke="{INK}" stroke-width="4"/>'))
         if j:
             p.parts.append(_g("draw", a - .1, .25, f'<path d="M{100 + 80 * (j - 1)} 190 H{100 + 80 * j}" stroke="{RED}" stroke-width="6"/>', style=""))
-        p.parts.append(_life(a, .35 if j < 4 else 99, _pill(580, 120, f"YEAR {j + 1}", INK, "#fff", 34), fi=.02, fo=.02))
+        p.parts.append(_life(a, .35 if j < 4 else 99, _pill(640, 120, f"YEAR {j + 1}", INK, "#fff", 34), fi=.02, fo=.02))
     p.parts.append(_g("pop", t0 + 1.9, .35, _pill(270, 100, "FLAT", RED, "#fff", 26)))
     t1 = _fr(seg, 1, .15)
     p.parts.append(_g("pop", t1, .3, f'<circle cx="655" cy="{MX_BASE - 40 * MX_K:.0f}" r="18" fill="{RED}" stroke="{INK}" stroke-width="4"/>'))
@@ -9807,7 +9816,7 @@ def mx_wait(p, seg=None, **_):
     for j in range(3):
         p.parts.append(_g("ripple", t1 + .3 + .5 * j, .5, f'<circle cx="655" cy="{MX_BASE - 20 * MX_K:.0f}" r="50" fill="none" stroke="{RED}" stroke-width="5"/>'))
     end = seg[-1][1] + .4
-    _cam(p, [(seg[0][0] - .4, 260, 260, 1.2), (t0 + 1.0, 280, 290, 1.15), (t1, 600, 400, 1.2), (end, 400, 330, 1.0)])
+    _cam(p, [(seg[0][0] - .4, 360, 280, 1.06), (t0 + 1.0, 340, 300, 1.08), (t1, 520, 400, 1.1), (end, 400, 330, 1.0)])
 
 
 def mx_sale(p, seg=None, **_):
@@ -9855,7 +9864,7 @@ def mx_split(p, seg=None, **_):
     for j in range(3):
         p.parts.append(_g("ripple", t1 + 1.2 + .5 * j, .5, f'<circle cx="{xo + 115}" cy="{MX_BASE - 30 * MX_K:.0f}" r="60" fill="none" stroke="{TEAL}" stroke-width="6"/>'))
     end = seg[-1][1] + .4
-    _cam(p, [(seg[0][0] - .4, 400, 330, 1.05), (t0 + .5, 560, 380, 1.15), (t1, 480, 360, 1.05), (t1 + 1.0, 220, 360, 1.15), (end, 400, 330, 1.0)])
+    _cam(p, [(seg[0][0] - .4, 400, 330, 1.0), (t0 + .5, 480, 370, 1.08), (t1, 430, 350, 1.03), (t1 + 1.0, 320, 360, 1.08), (end, 400, 330, 1.0)])
 
 
 def mx_answer(p, seg=None, **_):
@@ -9880,15 +9889,17 @@ def mx_answer(p, seg=None, **_):
     for j in range(4):
         p.parts.append(_g("ripple", t1 + 1.6 + .5 * j, .5, f'<circle cx="{xo + w_ / 2}" cy="{MX_BASE - 50 * MX_K:.0f}" r="44" fill="none" stroke="{MX_GAIN}" stroke-width="6"/>'))
     end = seg[-1][1] + .4
-    _cam(p, [(seg[0][0] - .4, 250, 330, 1.15), (t0 + .5, 240, 250, 1.2), (t1 - .1, 400, 330, 1.0), (t1 + .5, 600, 300, 1.2), (t1 + 1.3, 420, 300, 1.1), (end, 400, 330, 1.0)])
+    _cam(p, [(seg[0][0] - .4, 400, 330, 1.0), (t0 + .5, 320, 270, 1.1), (t1 - .1, 400, 330, 1.0), (t1 + .5, 480, 300, 1.08), (t1 + 1.3, 400, 310, 1.04), (end, 400, 330, 1.0)])
 
 
 def mx_rule(p, seg=None, **_):
     """The rule. A MULTIPLE EXPANSION stamp lands on 8x to 10x; on the second sentence a price bar half grey (DEBT)
     half teal (OWNERS) draws, then the +25% bar for the company grows and a copy of it stacks on itself to make the
     owners' +50% bar (twice the company's), with a x2 pill that pulses."""
-    _set(p, f'<rect x="40" y="60" width="300" height="110" rx="14" fill="#fff" stroke="{INK}" stroke-width="6"/>' + _t(190, 132, "8x TO 10x", 44, INK))
-    p.parts.append(_stamp(370, 70, 400, 90, "MULTIPLE EXPANSION", RED, _fr(seg, 0, .3), size=34, rot=-4))
+    _set(p, f'<rect x="40" y="60" width="300" height="110" rx="14" fill="#fff" stroke="{INK}" stroke-width="6"/>' + _t(190, 132, "8x TO 10x", 44, INK)
+         + "<g opacity='.16'>" + f'<rect x="40" y="230" width="720" height="80" rx="10" fill="{MX_DEBT}"/><rect x="40" y="370" width="225" height="80" rx="10" fill="{MX_EB}"/>'
+         + f'<rect x="40" y="510" width="450" height="80" rx="10" fill="{MX_GAIN}"/>' + "</g>")
+    p.parts.append(_stamp(380, 75, 370, 80, "MULTIPLE EXPANSION", RED, _fr(seg, 0, .3), size=30, rot=-4))
     t1 = _fr(seg, 1, .05)
     p.parts.append(_g("growX", t1, .5, f'<rect x="40" y="230" width="360" height="80" rx="10" fill="{MX_DEBT}" stroke="{INK}" stroke-width="5"/>' + _t(220, 282, "DEBT HALF", 28, INK, serif=False)))
     p.parts.append(_g("growX", t1 + .4, .5, f'<rect x="400" y="230" width="360" height="80" rx="10" fill="{MX_OWN}" stroke="{INK}" stroke-width="5"/>' + _t(580, 282, "OWNERS HALF", 28, INK, serif=False)))
@@ -9905,7 +9916,7 @@ def mx_rule(p, seg=None, **_):
     for j in range(4):
         p.parts.append(_g("ripple", t2 + 2.0 + .5 * j, .5, f'<circle cx="640" cy="550" r="44" fill="none" stroke="{RED}" stroke-width="5"/>'))
     end = seg[-1][1] + .4
-    _cam(p, [(seg[0][0] - .4, 400, 130, 1.4), (_fr(seg, 0, .8), 420, 140, 1.35), (t1, 400, 280, 1.15), (t2 + .3, 330, 470, 1.25), (t2 + 1.8, 400, 460, 1.15), (end, 400, 330, 1.0)])
+    _cam(p, [(seg[0][0] - .4, 400, 260, 1.04), (_fr(seg, 0, .8), 400, 230, 1.1), (t1, 400, 290, 1.04), (t2 + .3, 380, 420, 1.1), (t2 + 1.8, 400, 400, 1.05), (end, 400, 330, 1.0)])
 
 
 def mx_asks(p, **_):

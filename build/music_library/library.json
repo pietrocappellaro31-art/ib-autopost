@@ -425,6 +425,20 @@
    "kind": "short",
    "id": "txmy-ethereal-slowed",
    "mood": "curious"
+  },
+  {
+   "date": "2026-11-24",
+   "slug": "w2-multiple-expansion",
+   "kind": "short",
+   "id": "txmy-ethereal-slowed",
+   "mood": "curious"
+  },
+  {
+   "date": "2026-11-24",
+   "slug": "w2-beta-myth",
+   "kind": "short",
+   "id": "txmy-ethereal-slowed",
+   "mood": "curious"
   }
  ],
  "originals": [
@@ -860,6 +874,19 @@
    "bpm": 81,
    "key": "Eb",
    "style": "ambient",
+   "rights": "ORIGINAL_GENERATED",
+   "added": "2026-11-24",
+   "note": ""
+  },
+  {
+   "id": "score-w2-multiple-expansion",
+   "title": "Original score for w2-multiple-expansion",
+   "video": "w2-multiple-expansion",
+   "engine": "score.py + GeneralUser GS v2.0.3 (TinySoundFont)",
+   "mood": "decide+resolve",
+   "bpm": 85,
+   "key": "E",
+   "style": "mallets",
    "rights": "ORIGINAL_GENERATED",
    "added": "2026-11-24",
    "note": ""
