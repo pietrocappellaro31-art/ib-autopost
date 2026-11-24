@@ -18,6 +18,12 @@ What has been settled, and what is still open. Newest first.
 
 ## Settled
 
+- **YouTube Shorts paused for the rest of this week too** (24 Nov, Pietro: "Stop also youtube shorts for this week.").
+  The "YouTube Short daily" scheduled task (trig_01FjzT23zvvYe6cudn7gafpL) was disabled on 24 Nov after that day's Short
+  (shorts-hedge-own-shares) had been delivered; no Shorts on 25 to 29 Nov. Read as: back on Monday 30 Nov with the long film,
+  but nothing switches it on automatically (a one-off reminder to resume it was not created in that session), so it
+  stays off until Pietro says to resume it. Instagram (three Reels, one carousel, one Story a day) continues.
+
 - **Every Reel asks for the follow, and the hooks get stronger (23 Nov, Pietro: "Make sure all the reels created
   from today on have a call to follow action. We want to improve conversion rate. Also, we want stronger hooks. We
   want to go viral! We want 1 million views!").** Read as a standing rule for every Instagram Reel from 23 Nov.
