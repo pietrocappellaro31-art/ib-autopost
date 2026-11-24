@@ -9274,3 +9274,656 @@ def hg_asks(p, **_):
 
 
 SCENES.update({f.__name__: f for f in (hg_hook, hg_fall, hg_twist, hg_answer, hg_rule, hg_asks)})
+
+
+# ---- 24 Nov Reel A: a bond that pays 0% interest (build/reels_zero-coupon.py). Our own round numbers: a zero coupon
+# bond pays $100 back in 2 years and nothing before; other bonds like it pay 5% a year (compounded yearly, no tax, no
+# default). Price 100 / 1.05 = 95.24, / 1.05 again = 90.70 (100 / 1.1025 = 90.7029). Held: 90.70 x 1.05 = 95.24
+# (+4.54), x 1.05 = 100.00 (+4.76); interest 100 - 90.70 = $9.30. At 8%: 100 / 1.1664 = 85.73 (the rule's second
+# move). Close (not shown): other bonds at 10%, 100 / 1.21 = $82.64.
+
+ZC_BASE, ZC_K = 590, 3.4
+ZC_FACE, ZC_PRICE = "#F2C35B", "#5EC8B4"
+
+
+def _zc_col(x, w_, v, fill, k=ZC_K, base=ZC_BASE, label=None, size=40, dash=False, op=1.0):
+    return _nv_col(x, w_, v, fill, k=k, base=base, label=label, size=size, dash=dash, op=op)
+
+
+def _zc_slot(x, y, lab, val, w_=130, h_=150):
+    return (f'<rect x="{x}" y="{y}" width="{w_}" height="{h_}" rx="16" fill="#fff" stroke="{INK}" stroke-width="6"/>'
+            + _t(x + w_ / 2, y + 40, lab, 24, INK, serif=False) + _t(x + w_ / 2, y + 112, val, 54, GREY))
+
+
+def zc_hook(p, seg=None, **_):
+    """The hook. From frame 0 the clash is on the panel and moving: a bond certificate PAYS 0% (its 0% tag swinging,
+    a ripple pulsing on it) beside two coupon slots, YEAR 1 $0 and YEAR 2 $0 (breathing), and a gold $100 BACK IN
+    2 YEARS pill that bobs. On 'It pays 0% interest' red crosses land on both $0 slots in turn and a 0% INTEREST
+    stamp lands; on the question the camera pulls back, a PRICE ? tag swings under the bond and WHY BUY? bobs."""
+    _set(p, _bond(40, 70, 380, 250, rate="0%", head="BOND $100"))
+    for j, (x, lab) in enumerate(((470, "YEAR 1"), (630, "YEAR 2"))):
+        p.parts.append(_idle("breathe", _zc_slot(x, 90, lab, "$0"), .02, 2.2 + .3 * j, ph=j))
+    p.parts.append(_idle("bob", _pill(400, 420, "$100 BACK IN 2 YEARS", ZC_FACE, INK, 34), 7, 1.7))
+    p.parts.append(_idle("swing", _ptag(150, 380, 150, "0%", RED, "#fff", 52), 9, 2.4, style="transform-box:fill-box;transform-origin:center top"))
+    for j in range(5):
+        p.parts.append(_g("ripple", .05 + .9 * j, .7, f'<circle cx="150" cy="400" r="40" fill="none" stroke="{RED}" stroke-width="5"/>'))
+    t0 = _fr(seg, 0, .25)
+    for j, x in enumerate((535, 695)):
+        p.parts.append(_g("draw", t0 + .35 * j, .3, _cross(x, 165, 1.6), style=""))
+        p.parts.append(_g("ripple", t0 + .35 * j + .2, .6, f'<circle cx="{x}" cy="165" r="40" fill="none" stroke="{RED}" stroke-width="5"/>'))
+    p.parts.append(_stamp(470, 260, 300, 80, "0% INTEREST", RED, _fr(seg, 0, .8), size=40, rot=-5))
+    t1 = _fr(seg, 1, .15)
+    p.parts.append(_life(t1, 99, _g("pop", t1, .4, _idle("swing", _ptag(560, 520, 230, "PRICE: ?", INK, "#fff", 40), 8, 2.1,
+                                                     style="transform-box:fill-box;transform-origin:center top")), fi=.05, fo=.01))
+    p.parts.append(_g("pop", t1 + .45, .35, _idle("bob", _pill(200, 530, "WHY BUY?", RED, "#fff", 40), 8, 1.9, style="")))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 260, 250, 1.25), (t0 - .1, 300, 240, 1.2), (t0 + .5, 600, 220, 1.25), (_fr(seg, 0, .95), 560, 260, 1.15),
+             (t1 + .2, 400, 320, 1.0), (end, 400, 330, 1.0)])
+
+
+def zc_catch(p, seg=None, **_):
+    """The catch. A timeline TODAY to YEAR 2 along the top with a red dot that travels it; on 'pays $100 back in two
+    years' the gold $100 column grows at YEAR 2 with its count and ripples. On 'you don't pay $100 for it' a $100
+    price tag pops at TODAY, a red line strikes it and a swinging $ ? tag takes its place; the camera crosses back."""
+    x0, x2, w_ = 90, 500, 210
+    _set(p, f'<path d="M30 {ZC_BASE} H770" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+         + f'<path d="M{x0 + w_ / 2} 70 H{x2 + w_ / 2}" stroke="{GREY}" stroke-width="6" stroke-dasharray="12 10"/>'
+         + _t(x0 + w_ / 2, ZC_BASE + 40, "TODAY", 28, INK, serif=False) + _t(x2 + w_ / 2, ZC_BASE + 40, "YEAR 2", 28, INK, serif=False)
+         + _zc_col(x2, w_, 100, ZC_FACE, dash=True, op=.14) + _bond(x0, 340, w_, 150, rate="0%", head="BOND"))
+    t0 = _fr(seg, 0, .1)
+    dot = f'<circle cx="{x0 + w_ / 2}" cy="70" r="18" fill="{RED}" stroke="{INK}" stroke-width="4"/>'
+    p.parts.append(_g("slide", t0, _fr(seg, 0, .8) - t0, dot, style="", x0=0, y0=0, x1=x2 - x0, y1=0, ease="inout"))
+    t1 = _fr(seg, 0, .35)
+    _gbar(p, t1, .8, x2, ZC_BASE, w_, 100, ZC_K, ZC_FACE)
+    p.parts.append(_life(t1 + .1, 99, _cnt(x2 + w_ / 2, ZC_BASE - 100 * ZC_K - 24, 0, 100, t1 + .1, .8, size=52, color="#8A5F12"), fi=.05, fo=.01))
+    for j in range(3):
+        p.parts.append(_g("ripple", t1 + .9 + .5 * j, .5, f'<circle cx="{x2 + w_ / 2}" cy="{ZC_BASE - 50 * ZC_K:.0f}" r="50" fill="none" stroke="{ZC_FACE}" stroke-width="6"/>'))
+    t2 = _fr(seg, 1, .1)
+    p.parts.append(_life(t2, _fr(seg, 1, .6) - t2 + .3, _g("pop", t2, .35, _ptag(x0 + w_ / 2, 150, 170, "$100", ZC_FACE, INK, 50)), fi=.01, fo=.15))
+    p.parts.append(_g("draw", _fr(seg, 1, .45), .3, f'<path d="M{x0 + 10} 210 L{x0 + w_ - 10} 170" stroke="{RED}" stroke-width="12" stroke-linecap="round"/>', style=""))
+    t3 = _fr(seg, 1, .7)
+    p.parts.append(_life(t3, 99, _g("pop", t3, .4, _idle("swing", _ptag(x0 + w_ / 2, 150, 170, "$ ?", RED, "#fff", 50), 8, 2.0,
+                                                     style="transform-box:fill-box;transform-origin:center top")), fi=.05, fo=.01))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 250, 330, 1.15), (t1, 500, 320, 1.1), (t1 + 1.0, 600, 330, 1.15), (t2 - .1, 560, 320, 1.1), (t2 + .4, 220, 260, 1.3),
+             (seg[-1][1], 240, 270, 1.25), (end, 400, 320, 1.0)])
+
+
+def zc_price(p, seg=None, **_):
+    """The price. Slots TODAY, YEAR 1, YEAR 2; the gold $100 column at YEAR 2. On 'other bonds like it pay 5% a year'
+    two small 5% bonds drop in over TODAY and YEAR 1 and pulse. On the second sentence they lift away and the column
+    steps back twice, each step a / 1.05 pill and a shrink with its count (100 to 95.24, then 90.70), landing at TODAY
+    under a PRICE $90.70 stamp."""
+    k, w_ = ZC_K, 180
+    xs = (40, 310, 580)
+    _set(p, f'<path d="M30 {ZC_BASE} H770" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+         + "".join(_t(x + w_ / 2, ZC_BASE + 40, lab, 26, INK, serif=False) for x, lab in zip(xs, ("TODAY", "YEAR 1", "YEAR 2"))))
+    t1 = _fr(seg, 1, .1)
+    p.parts.append(_life(-1, 1 + t1, _zc_col(xs[2], w_, 100, ZC_FACE, label="$100", size=42), fi=.01, fo=.01))
+    t0 = _fr(seg, 0, .3)
+    for j in range(2):
+        b = _bond(xs[j] - 10, 260, 200, 140, rate="5%", head="BOND")
+        p.parts.append(_life(t0 + .3 * j, t1 - t0 - .3 * j, _g("slide", t0 + .3 * j, .4, _idle("bob", b, 5, 2 + .3 * j, ph=j, style=""), style="", y0=-420, y1=0, ease="out"), fi=.05, fo=.2))
+    p.parts.append(_life(t0 + .2, t1 - t0, _pill(310, 110, "OTHER BONDS: 5% A YEAR", TEAL, "#fff", 30), fi=.1, fo=.2))
+    for j in range(3):
+        p.parts.append(_g("ripple", t0 + .8 + .45 * j, .5, f'<circle cx="{xs[j % 2] + 90}" cy="330" r="50" fill="none" stroke="{TEAL}" stroke-width="5"/>'))
+    v1, v0 = 95.24, 90.70
+    p.parts.append(_life(t1, 1.2, _g("slide", t1, .9, _g("scaleY", t1, .9, _zc_col(xs[2], w_, 100, ZC_FACE), style="transform-box:fill-box;transform-origin:center bottom", s0=1, s1=round(v1 / 100, 4)),
+                                        style="", x0=0, y0=0, x1=xs[1] - xs[2], y1=0, ease="inout"), fi=.01, fo=.15))
+    p.parts.append(_g("pop", t1, .3, _pill((xs[1] + xs[2]) / 2 + w_ / 2, 150, "/ 1.05", INK, "#fff", 34)))
+    p.parts.append(_life(t1, 1.2, _cnt(xs[1] + w_ / 2, ZC_BASE - v1 * k - 24, 100, v1, t1 + .1, .8, size=44, dec=2), fi=.01, fo=.15))
+    t2 = t1 + 1.2
+    p.parts.append(_life(t2 - .05, 99, _g("slide", t2, .9, _g("scaleY", t2, .9, _zc_col(xs[1], w_, v1, ZC_PRICE), style="transform-box:fill-box;transform-origin:center bottom", s0=1, s1=round(v0 / v1, 4)),
+                                           style="", x0=0, y0=0, x1=xs[0] - xs[1], y1=0, ease="inout"), fi=.05, fo=.01))
+    p.parts.append(_g("pop", t2, .3, _pill((xs[0] + xs[1]) / 2 + w_ / 2, 110, "/ 1.05", INK, "#fff", 34)))
+    p.parts.append(_life(t2, 99, _cnt(xs[0] + w_ / 2, ZC_BASE - v0 * k - 24, v1, v0, t2 + .1, .8, size=44, dec=2, color=TEAL), fi=.05, fo=.01))
+    p.parts.append(_stamp(300, 330, 300, 84, "PRICE $90.70", TEAL, t2 + 1.0, size=42, rot=-5))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 560, 380, 1.1), (t0 + .2, 300, 280, 1.08), (t1 - .2, 330, 300, 1.05), (t1 + .6, 520, 330, 1.12), (t2 + .4, 260, 330, 1.15),
+             (seg[-1][1], 230, 330, 1.2), (end, 400, 320, 1.0)])
+
+
+def zc_grow(p, seg=None, **_):
+    """The interest. The teal $90.70 column at TODAY, dashed ghosts at YEAR 1 and YEAR 2. On the first sentence it
+    slides to YEAR 1 as a +$4.54 block drops (count 90.70 to 95.24), then to YEAR 2 as a +$4.76 block drops (to
+    $100). On 'That $9.30 is your interest' a dashed line runs from TODAY's top, a gold bracket draws the $9.30 gap and
+    an INTEREST $9.30 stamp lands while the bracket pulses."""
+    k, w_ = ZC_K, 180
+    xs = (40, 310, 580)
+    vals = (90.70, 95.24, 100.0)
+    _set(p, f'<path d="M30 {ZC_BASE} H770" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+         + "".join(_t(x + w_ / 2, ZC_BASE + 40, lab, 26, INK, serif=False) for x, lab in zip(xs, ("TODAY", "YEAR 1", "YEAR 2")))
+         + _zc_col(xs[1], w_, vals[1], ZC_PRICE, dash=True, op=.12) + _zc_col(xs[2], w_, vals[2], ZC_PRICE, dash=True, op=.12))
+    p.parts.append(_life(-1, 99, _zc_col(xs[0], w_, vals[0], ZC_PRICE, label="$90.70", size=38), fi=.01, fo=.01))
+    t0 = _fr(seg, 0, .2)
+    for j, (add, lab) in enumerate(((4.54, "+$4.54"), (4.76, "+$4.76"))):
+        ta = t0 + 1.3 * j
+        dx = xs[j + 1] - xs[j]
+        p.parts.append(_life(ta, 99 if j else 1.3, _g("slide", ta, .7, _zc_col(xs[j], w_, vals[j], ZC_PRICE), style="", x0=0, y0=0, x1=dx, y1=0, ease="inout"), fi=.01, fo=.05))
+        top = ZC_BASE - vals[j] * k
+        blk = _zc_col(xs[j + 1], w_, add, ZC_FACE, base=top) + _t(xs[j + 1] + w_ / 2, top - 60, lab, 30, INK)
+        p.parts.append(_life(ta + .7, 99 if j else 1.3 - .7, _g("slide", ta + .7, .4, blk, style="", y0=-300, y1=0, ease="out"), fi=.05, fo=.05))
+        p.parts.append(_life(ta + .7, 99 if j else 1.3 - .7, _cnt(xs[j + 1] + w_ / 2, ZC_BASE - vals[j + 1] * k - 90, vals[j], vals[j + 1], ta + .8, .5, size=44, dec=2, color=TEAL), fi=.05, fo=.05))
+    t1 = _fr(seg, 1, .05)
+    ytop, ybase = ZC_BASE - 100 * k, ZC_BASE - vals[0] * k
+    p.parts.append(_g("draw", t1, .5, f'<path d="M{xs[0]} {ybase:.0f} H{xs[2] + w_}" stroke="{INK}" stroke-width="5" stroke-dasharray="14 10"/>', style=""))
+    p.parts.append(_g("draw", t1 + .3, .4, f'<path d="M{xs[2] + w_ + 4} {ytop:.0f} h14 V{ybase:.0f} h-14" fill="none" stroke="{ZC_FACE}" stroke-width="8"/>', style=""))
+    p.parts.append(_stamp(120, 110, 320, 84, "INTEREST $9.30", "#8A5F12", _fr(seg, 1, .45), size=40, rot=-5))
+    for j in range(4):
+        p.parts.append(_g("ripple", t1 + .8 + .55 * j, .55, f'<circle cx="{xs[2] + w_ + 12}" cy="{(ytop + ybase) / 2:.0f}" r="26" fill="none" stroke="{ZC_FACE}" stroke-width="5"/>'))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 220, 360, 1.15), (t0 + .5, 360, 330, 1.1), (t0 + 1.8, 560, 300, 1.12), (t1 + .2, 600, 220, 1.3), (_fr(seg, 1, .6), 480, 220, 1.2),
+             (end, 400, 320, 1.0)])
+
+
+def zc_rate(p, seg=None, **_):
+    """Same rate, paid differently. Two rows on Y1 and Y2 tracks. COUPON BOND (pay $100): on the second sentence $5
+    coins drop at Y1 and Y2, then a $100 note at Y2. ZERO COUPON (pay $90.70): Y1 shows an empty dashed slot that
+    pulses, then a single $100 block lands at Y2 with a ONE PAYMENT, AT THE END stamp. On the first sentence a 5% A
+    YEAR pill pops on each row and a teal tick lands on both."""
+    _set(p, _t(40, 80, "COUPON BOND: PAY $100", 30, INK, serif=False, anchor="start")
+         + _t(40, 370, "ZERO COUPON: PAY $90.70", 30, INK, serif=False, anchor="start")
+         + "".join(f'<path d="M40 {y} H760" stroke="{GREY}" stroke-width="5" stroke-dasharray="12 10"/>' for y in (250, 540))
+         + "".join(_t(x, y + 40, lab, 24, INK, serif=False) for y in (250, 540) for x, lab in ((330, "YEAR 1"), (620, "YEAR 2"))))
+    t0 = _fr(seg, 0, .15)
+    for j, y in enumerate((80, 370)):
+        p.parts.append(_g("pop", t0 + .4 * j, .35, _pill(640, y - 10, "5% A YEAR", TEAL, "#fff", 28)))
+        p.parts.append(_g("draw", t0 + .4 * j + .4, .3, _tick(750, y - 10, .9), style=""))
+    t1 = _fr(seg, 1, .05)
+    for j, x in enumerate((330, 620)):
+        p.parts.append(_life(t1 + .35 * j, 99, _g("slide", t1 + .35 * j, .35, _coin_shape(x, 200, 42, "$5"), style="", y0=-260, y1=0, ease="out"), fi=.05, fo=.01))
+    p.parts.append(_life(t1 + .8, 99, _g("slide", t1 + .8, .35, f'<rect x="680" y="160" width="90" height="80" rx="10" fill="{ZC_FACE}" stroke="{INK}" stroke-width="5"/>' + _t(725, 210, "$100", 26, INK), style="", y0=-260, y1=0, ease="out"), fi=.05, fo=.01))
+    p.parts.append(f'<rect x="270" y="430" width="120" height="100" rx="14" fill="none" stroke="{GREY}" stroke-width="5" stroke-dasharray="10 8"/>' + _t(330, 495, "$0", 40, GREY))
+    for j in range(3):
+        p.parts.append(_g("ripple", t1 + .3 + .45 * j, .45, f'<circle cx="330" cy="480" r="40" fill="none" stroke="{GREY}" stroke-width="5"/>'))
+    t2 = _fr(seg, 1, .55)
+    p.parts.append(_life(t2, 99, _g("slide", t2, .4, f'<rect x="540" y="390" width="170" height="140" rx="14" fill="{ZC_FACE}" stroke="{INK}" stroke-width="6"/>' + _t(625, 480, "$100", 50, INK), style="", y0=-420, y1=0, ease="out"), fi=.05, fo=.01))
+    p.parts.append(_stamp(20, 420, 230, 64, "AT THE END", RED, t2 + .45, size=30, rot=-4))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 400, 200, 1.08), (t0 + .9, 400, 320, 1.0), (t1, 400, 190, 1.1), (t1 + 1.2, 400, 210, 1.08), (t2 - .1, 400, 440, 1.1), (end, 400, 330, 1.0)])
+
+
+def zc_rule(p, seg=None, **_):
+    """The rule. FACE VALUE $100 (gold) and PRICE $90.70 (teal) grow side by side on one scale with a BELOW FACE stamp;
+    on 'The gap is your interest' a gold bracket draws the $9.30 gap and a PRICE = $100 / 1.05 x 1.05 pill pops. On
+    'the higher rates go, the bigger the gap' a rate chip slides 5% to 8%: the price column shrinks to $85.73 with its
+    count and the bracket stretches (8%: 100 / 1.1664 = 85.73)."""
+    k = 3.6
+    xf, xp, w_ = 110, 440, 230
+    _set(p, f'<path d="M30 {ZC_BASE} H770" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+         + _t(xf + w_ / 2, ZC_BASE + 40, "FACE VALUE", 28, INK, serif=False) + _t(xp + w_ / 2, ZC_BASE + 40, "PRICE", 28, INK, serif=False)
+         + _zc_col(xf, w_, 100, ZC_FACE, k=k, dash=True, op=.12) + _zc_col(xp, w_, 90.7, ZC_PRICE, k=k, dash=True, op=.12))
+    t0 = _fr(seg, 0, .1)
+    _gbar(p, t0, .7, xf, ZC_BASE, w_, 100, k, ZC_FACE)
+    p.parts.append(_life(t0 + .1, 99, _cnt(xf + w_ / 2, ZC_BASE - 100 * k + 70, 0, 100, t0 + .1, .7, size=50), fi=.05, fo=.01))
+    t2 = _fr(seg, 2, .3)
+    p.parts.append(_life(t0 + .5, t2 - t0 - .5, _g("growY", t0 + .5, .7, _zc_col(xp, w_, 90.7, ZC_PRICE, k=k), style="transform-box:fill-box;transform-origin:center bottom"), fi=.01, fo=.01))
+    p.parts.append(_life(t0 + .6, t2 - t0 - .6, _cnt(xp + w_ / 2, ZC_BASE - 90.7 * k + 70, 0, 90.70, t0 + .6, .7, size=50, dec=2), fi=.05, fo=.01))
+    p.parts.append(_stamp(80, 110, 240, 70, "BELOW FACE", TEAL, _fr(seg, 0, .8), size=34, rot=-5))
+    t1 = _fr(seg, 1, .1)
+    ytop = ZC_BASE - 100 * k
+    p.parts.append(_g("draw", t1, .4, f'<path d="M{xf} {ytop:.0f} H{xp + w_ + 30}" stroke="{INK}" stroke-width="4" stroke-dasharray="10 8"/>', style=""))
+    p.parts.append(_life(t1 + .2, t2 - t1 - .2, _g("draw", t1 + .2, .4, f'<path d="M{xp + w_ + 14} {ytop:.0f} h16 V{ZC_BASE - 90.7 * k:.0f} h-16" fill="none" stroke="{ZC_FACE}" stroke-width="8"/>', style=""), fi=.01, fo=.1))
+    p.parts.append(_g("pop", t1 + .5, .35, _pill(400, 60, "PRICE = $100 / (1.05 x 1.05)", INK, "#fff", 26)))
+    # the second large move: rates up to 8%, the price shrinks to 85.73 and the gap stretches
+    p.parts.append(_life(t2 - .2, .7, _pill(xp + w_ / 2, 210, "RATES 5%", TEAL, "#fff", 30), fi=.1, fo=.1))
+    p.parts.append(_life(t2 + .4, 99, _g("pop", t2 + .4, .3, _pill(xp + w_ / 2, 210, "RATES 8%", RED, "#fff", 30)), fi=.05, fo=.01))
+    p.parts.append(_life(t2, 99, _g("scaleY", t2, .9, _zc_col(xp, w_, 90.7, ZC_PRICE, k=k), style="transform-box:fill-box;transform-origin:center bottom", s0=1, s1=round(85.73 / 90.7, 4)), fi=.01, fo=.01))
+    p.parts.append(_life(t2, 99, _cnt(xp + w_ / 2, ZC_BASE - 85.73 * k + 70, 90.70, 85.73, t2 + .1, .9, size=50, dec=2, color=RED), fi=.01, fo=.01))
+    p.parts.append(_life(t2 + .9, 99, _g("draw", t2 + .9, .4, f'<path d="M{xp + w_ + 14} {ytop:.0f} h16 V{ZC_BASE - 85.73 * k:.0f} h-16" fill="none" stroke="{RED}" stroke-width="8"/>', style=""), fi=.05, fo=.01))
+    for j in range(3):
+        p.parts.append(_g("ripple", t2 + 1.2 + .5 * j, .5, f'<circle cx="{xp + w_ + 24}" cy="{ytop + 7 * k:.0f}" r="28" fill="none" stroke="{RED}" stroke-width="5"/>'))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 400, 360, 1.05), (t1, 420, 300, 1.05), (t1 + .5, 400, 160, 1.3), (t2 - .3, 560, 300, 1.2), (t2 + 1.0, 600, 250, 1.3), (end, 400, 320, 1.0)])
+
+
+def zc_asks(p, **_):
+    """The close: the zero coupon bond, a rate gauge whose red mercury climbs from 5% to 10% and stays there,
+    wobbling; the $100 at YEAR 2 and a swinging PRICE: ? tag at TODAY; a WHAT'S IT WORTH? plate that bobs. The
+    answer ($82.64) is not shown. Laid inside x 30-770, y 30-610."""
+    g, yr = _ratemeter(640, 90, h_=420, lo=0, hi=12)
+    _set(p, g + _bond(40, 40, 300, 190, rate="0%", head="BOND $100")
+         + f'<path d="M40 {ZC_BASE} H560" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+         + _zc_col(380, 160, 100, ZC_FACE, k=2.6, label="$100", size=34) + _t(460, ZC_BASE + 36, "YEAR 2", 24, INK, serif=False)
+         + _t(130, ZC_BASE + 36, "TODAY", 24, INK, serif=False))
+    p.parts.append(_life(-1, 1 + p.at(.12), _mercury(640, yr, 5, 90), fi=.01, fo=.05))
+    for j, r in enumerate((6, 7, 8, 9)):
+        a = p.at(.12) + .25 * j
+        p.parts.append(_life(a, .3, _mercury(640, yr, r, 90), fi=.02, fo=.05))
+    # 24 Nov: the climb repeats (5% to 10%, every 2.4 s), so the close panel never holds still (first cut: close panel 1.97)
+    for r_ in range(1, 6):
+        a0 = p.at(.12) + 2.4 * r_
+        p.parts.append(_life(a0 - 1.4, 1.4, _mercury(640, yr, 10, 90), fi=.02, fo=.02))
+        for j, r in enumerate((5, 6, 7, 8, 9)):
+            p.parts.append(_life(a0 + .2 * j, .22, _mercury(640, yr, r, 90), fi=.02, fo=.02))
+    p.parts.append(_idle("bob", _bond(40, 40, 300, 190, rate="0%", head="BOND $100"), 6, 1.6))
+    p.parts.append(_g("pop", p.at(.12) + 1.0, .35, _pill(560, 160, "10%", RED, "#fff", 34)))
+    p.parts.append(_idle("swing", _ptag(130, 420, 190, "PRICE: ?", RED, "#fff", 40), 9, 2.2, style="transform-box:fill-box;transform-origin:center top"))
+    for j in range(8):
+        p.parts.append(_g("ripple", p.at(.2) + .8 * j, .7, f'<circle cx="130" cy="450" r="60" fill="none" stroke="{RED}" stroke-width="6"/>'))
+    p.parts.append(_g("pop", p.at(.3), .35, _idle("bob", _pill(300, 300, "WHAT'S IT WORTH?", INK, "#fff", 32), 6, 1.9, style="")))
+
+
+SCENES.update({f.__name__: f for f in (zc_hook, zc_catch, zc_price, zc_grow, zc_rate, zc_rule, zc_asks)})
+
+
+# ---- 24 Nov Reel B: beta 2 does not mean twice the return (build/reels_beta-myth.py). Our own round numbers: safe
+# government bonds pay 4%, the market is expected to return 9% (5% above the safe rate). CAPM: expected return = 4% +
+# beta x 5%. Beta 2: 4 + 10 = 14%, not 2 x 9 = 18%. Beta 1: 9%; beta 0: 4% (the rule's second move). Close (not
+# shown): beta 0.5, 4 + 2.5 = 6.5%.
+
+BT_BASE, BT_K = 590, 24.0          # 24 px a percentage point
+BT_SAFE, BT_MKT, BT_EXTRA = "#B9B4AC", "#5EC8B4", "#F2C35B"
+_BT_N = [0]
+
+
+def _bt_wave(x0, x1, ym, amp, period, col, w=8):
+    pts = []
+    x = x0 - period
+    while x <= x1 + 2 * period:
+        pts.append(f"{x:.0f},{ym - amp * math.sin(2 * math.pi * (x - x0) / period):.1f}")
+        x += period / 16
+    return f'<polyline points="{" ".join(pts)}" fill="none" stroke="{col}" stroke-width="{w}" stroke-linecap="round" stroke-linejoin="round"/>'
+
+
+def _bt_moving(p, x0, x1, y0, y1, waves, period, step=1.6, until=40.0):
+    """Waves that scroll left for ever inside a clip box: one period per `step` seconds, chained slides (a periodic
+    line shifted by one period looks the same, so the chain reads as one continuous movement)."""
+    _BT_N[0] += 1
+    cid = f"btclip{_BT_N[0]}"
+    inner = "".join(waves)
+    body = ""
+    until = min(until, p.at(1.0) + 1.5)
+    n = int(until / step) + 1
+    for j in range(n):
+        a = j * step
+        body += _life(a if j else -1, step if j else step + 1, _g("slide", a, step, inner, style="", x0=0, y0=0, x1=-period, y1=0), fi=.01, fo=.01)
+    p.parts.append(f'<defs><clipPath id="{cid}"><rect x="{x0}" y="{y0}" width="{x1 - x0}" height="{y1 - y0}"/></clipPath></defs>'
+                   f'<g clip-path="url(#{cid})" data-nofit="1">{body}</g>')
+
+
+def _bt_col(x, w_, v, fill, base=BT_BASE, k=BT_K, label=None, size=40, dash=False, op=1.0):
+    return _nv_col(x, w_, v, fill, k=k, base=base, label=label, size=size, dash=dash, op=op)
+
+
+def bt_hook(p, seg=None, **_):
+    """The hook. From frame 0 two lines scroll across the panel: the MARKET (teal, a small swing) and the BETA 2
+    stock (red, twice the swing), with 9% and 18%? tags bobbing on them. On the first sentence a x2 bracket draws
+    between the swings and pulses; on 'Twice the return?' the camera pulls back to a TWICE THE RETURN? plate and a
+    ? that bobs."""
+    ym, per = 250, 260
+    _set(p, f'<rect x="30" y="60" width="740" height="380" rx="18" fill="#fff" stroke="{INK}" stroke-width="6"/>'
+         + f'<path d="M40 {ym} H760" stroke="{GREY}" stroke-width="3" stroke-dasharray="10 10"/>')
+    _bt_moving(p, 36, 764, 66, 434, [_bt_wave(40, 760, ym, 60, per, BT_MKT, 9), _bt_wave(40, 760, ym, 120, per, RED, 9)], per)
+    p.parts.append(_idle("bob", _pill(150, 110, "MARKET: 9%", TEAL, "#fff", 30), 5, 1.8))
+    p.parts.append(_idle("bob", _pill(620, 110, "BETA 2: 18%?", RED, "#fff", 30), 6, 2.1, ph=1))
+    t0 = _fr(seg, 0, .3)
+    xb = 700
+    p.parts.append(_g("draw", t0, .4, f'<path d="M{xb} {ym - 60} h20 M{xb} {ym - 120} h20 M{xb + 10} {ym - 120} V{ym - 60}" fill="none" stroke="{INK}" stroke-width="6"/>', style=""))
+    p.parts.append(_g("pop", t0 + .3, .35, _pill(640, ym - 90, "x2", INK, "#fff", 34)))
+    for j in range(4):
+        p.parts.append(_g("ripple", t0 + .6 + .5 * j, .5, f'<circle cx="640" cy="{ym - 90}" r="40" fill="none" stroke="{RED}" stroke-width="5"/>'))
+    t1 = _fr(seg, 1, .05)
+    p.parts.append(_g("pop", t1, .4, f'<rect x="150" y="480" width="500" height="100" rx="20" fill="#fff" stroke="{RED}" stroke-width="8"/>' + _t(400, 545, "TWICE THE RETURN?", 44, RED)))
+    p.parts.append(_life(t1 + .3, 99, _idle("bob", _t(720, 560, "?", 110, RED), 10, 2.2, style=""), fi=.15, fo=.01))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 400, 230, 1.15), (t0, 520, 200, 1.25), (t0 + 1.2, 560, 220, 1.2), (t1 + .1, 400, 330, 1.0), (end, 400, 330, 1.0)])
+
+
+def bt_setup(p, seg=None, **_):
+    """The set-up. SAFE BONDS (grey, a bond certificate above) and THE MARKET (teal, a small scrolling line above):
+    on the first sentence the 4% column grows with its count; on the second the 9% column grows and its line keeps
+    moving; a dashed 4% line runs across from SAFE's top."""
+    xs, xm, w_ = 110, 470, 220
+    _set(p, f'<path d="M30 {BT_BASE} H770" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+         + _t(xs + w_ / 2, BT_BASE + 40, "SAFE BONDS", 28, INK, serif=False) + _t(xm + w_ / 2, BT_BASE + 40, "THE MARKET", 28, INK, serif=False)
+         + _bt_col(xs, w_, 4, BT_SAFE, dash=True, op=.14) + _bt_col(xm, w_, 9, BT_MKT, dash=True, op=.14)
+         + _bond(xs + 10, 150, 200, 130, rate="4%", head="BOND"))
+    _bt_moving(p, xm - 10, xm + w_ + 10, 70, 220, [_bt_wave(xm, xm + w_, 145, 40, 110, TEAL, 7)], 110, step=1.1)
+    t0 = _fr(seg, 0, .3)
+    _gbar(p, t0, .7, xs, BT_BASE, w_, 4, BT_K, BT_SAFE)
+    p.parts.append(_life(t0 + .1, 99, _cnt(xs + w_ / 2, BT_BASE - 4 * BT_K + 66, 0, 4, t0 + .1, .7, size=50, pre="", suf="%"), fi=.05, fo=.01))
+    t1 = _fr(seg, 1, .3)
+    _gbar(p, t1, .8, xm, BT_BASE, w_, 9, BT_K, BT_MKT)
+    p.parts.append(_life(t1 + .1, 99, _cnt(xm + w_ / 2, BT_BASE - 9 * BT_K + 66, 0, 9, t1 + .1, .8, size=50, pre="", suf="%"), fi=.05, fo=.01))
+    p.parts.append(_g("draw", t1 + 1.0, .5, f'<path d="M{xs} {BT_BASE - 4 * BT_K:.0f} H{xm + w_}" stroke="{INK}" stroke-width="5" stroke-dasharray="14 10"/>', style=""))
+    p.parts.append(_g("pop", t1 + 1.3, .35, _pill(xm + w_ / 2, BT_BASE - 4 * BT_K - 34, "SAFE RATE 4%", INK, "#fff", 24)))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 220, 380, 1.2), (t0 + .8, 240, 360, 1.15), (t1 - .2, 560, 330, 1.15), (t1 + 1.2, 450, 360, 1.05), (end, 400, 330, 1.0)])
+
+
+def bt_double(p, seg=None, **_):
+    """The myth's sum. The teal 9% MARKET column; on 'twice the market' a second 9% block drops on top in red, the
+    count runs 9% to 18% and an 18%? tag swings; on 'That's the myth' a MYTH stamp lands and the red block shakes."""
+    x, w_ = 290, 220
+    _set(p, f'<path d="M30 {BT_BASE} H770" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+         + _t(x + w_ / 2, BT_BASE + 40, "BETA 2?", 28, INK, serif=False) + _bt_col(x, w_, 18, RED, dash=True, op=.1))
+    p.parts.append(_life(-1, 99, _bt_col(x, w_, 9, BT_MKT, label="9%", size=46), fi=.01, fo=.01))
+    t0 = _fr(seg, 0, .2)
+    blk = _bt_col(x, w_, 9, RED, base=BT_BASE - 9 * BT_K, label="+9%", size=46)
+    t1 = _fr(seg, 1, .1)
+    p.parts.append(_life(t0, 99, _g("slide", t0, .5, _g("press", t1 + .3, .4, blk), style="", y0=-420, y1=0, ease="out"), fi=.05, fo=.01))
+    p.parts.append(_g("pop", t0 + .2, .35, _pill(620, 300, "2 x 9% = 18%", INK, "#fff", 30)))
+    p.parts.append(_life(t0 + .5, 99, _idle("swing", _ptag(620, 120, 170, "18%?", RED, "#fff", 48), 8, 2.0, style="transform-box:fill-box;transform-origin:center top"), fi=.05, fo=.01))
+    p.parts.append(_stamp(60, 150, 210, 90, "MYTH", RED, t1 + .2, size=56, rot=-8))
+    for j in range(4):
+        p.parts.append(_g("ripple", t1 + .5 + .5 * j, .5, f'<circle cx="{x + w_ / 2}" cy="{BT_BASE - 13.5 * BT_K:.0f}" r="60" fill="none" stroke="{RED}" stroke-width="6"/>'))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 400, 420, 1.15), (t0 + .4, 420, 260, 1.15), (t1, 300, 220, 1.2), (end, 400, 330, 1.0)])
+
+
+def bt_split(p, seg=None, **_):
+    """Only the extra doubles. The 9% column splits on the first sentence: its 4% base turns grey (SAFE RATE) and
+    its top 5% turns gold and lifts away to the right (THE EXTRA). On the second sentence 9 - 4 = 5% pops, then a second
+    5% block copies off the first and stacks: 2 x 5% = 10%, with a count."""
+    x, w_, xr = 80, 220, 470
+    _set(p, f'<path d="M30 {BT_BASE} H770" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+         + _t(x + w_ / 2, BT_BASE + 40, "THE MARKET", 28, INK, serif=False) + _t(xr + w_ / 2, BT_BASE + 40, "BETA x EXTRA", 28, INK, serif=False))
+    t0 = _fr(seg, 0, .3)
+    p.parts.append(_life(-1, 1 + t0, _bt_col(x, w_, 9, BT_MKT, label="9%", size=46), fi=.01, fo=.01))
+    p.parts.append(_life(t0, 99, _bt_col(x, w_, 4, BT_SAFE, label="4%", size=40), fi=.1, fo=.01))
+    top = _bt_col(x, w_, 5, BT_EXTRA, base=BT_BASE - 4 * BT_K, label="5%", size=40)
+    p.parts.append(_life(t0, 99, _g("slide", t0 + .4, .8, top, style="", x0=0, y0=0, x1=xr - x, y1=4 * BT_K, ease="inout"), fi=.1, fo=.01))
+    p.parts.append(_g("pop", t0 + .2, .35, _pill(x + w_ / 2, BT_BASE - 4 * BT_K - 160, "SAFE RATE", INK, "#fff", 24)))
+    p.parts.append(_g("pop", t0 + 1.2, .35, _pill(xr + w_ / 2, 130, "THE EXTRA", "#8A5F12", "#fff", 26)))
+    t1 = _fr(seg, 1, .1)
+    p.parts.append(_g("pop", t1, .35, _pill(400, 70, "9% - 4% = 5%", INK, "#fff", 30)))
+    t2 = _fr(seg, 1, .6)
+    p.parts.append(_life(t2, 99, _g("slide", t2, .6, _bt_col(xr, w_, 5, BT_EXTRA, base=BT_BASE - 5 * BT_K, label="5%", size=40), style="", y0=5 * BT_K, y1=0, x0=0, x1=0, ease="out"), fi=.05, fo=.01))
+    p.parts.append(_life(t2 + .4, 99, _cnt(xr + w_ / 2, BT_BASE - 10 * BT_K - 24, 5, 10, t2 + .5, .6, size=50, pre="", suf="%", color="#8A5F12"), fi=.05, fo=.01))
+    p.parts.append(_g("pop", t2 + .7, .35, _pill(xr + w_ / 2 - 260, BT_BASE - 10 * BT_K + 20, "x 2", RED, "#fff", 34)))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 220, 400, 1.2), (t0 + .5, 320, 380, 1.1), (t0 + 1.4, 520, 400, 1.15), (t1 - .1, 400, 300, 1.05), (t2 + .3, 560, 330, 1.2), (end, 400, 330, 1.0)])
+
+
+def bt_answer(p, seg=None, **_):
+    """The answer. On 'Add back the 4%' a grey 4% block slides under the gold 10%, the column rises and its count runs
+    to 14% with a 14% stamp; beside it a dashed red 18% ghost. On 'Not 18%' a gap bracket draws between 14 and 18, the
+    ghost is crossed out and pulses."""
+    xa, xg, w_ = 130, 460, 220
+    _set(p, f'<path d="M30 {BT_BASE} H770" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+         + _t(xa + w_ / 2, BT_BASE + 40, "BETA 2", 28, INK, serif=False) + _t(xg + w_ / 2, BT_BASE + 40, "THE MYTH", 28, RED, serif=False)
+         + _bt_col(xg, w_, 18, RED, dash=True, op=.12) + _t(xg + w_ / 2, BT_BASE - 9 * BT_K + 16, "18%", 50, RED))
+    t0 = _fr(seg, 0, .15)
+    p.parts.append(_life(-1, 99, _g("slide", t0, .6, _bt_col(xa, w_, 10, BT_EXTRA, label="10%", size=40), style="", x0=0, y0=0, x1=0, y1=-4 * BT_K, ease="inout"), fi=.01, fo=.01))
+    p.parts.append(_life(t0, 99, _g("slide", t0, .6, _bt_col(xa, w_, 4, BT_SAFE, label="4%", size=36), style="", x0=-420, y0=0, x1=0, y1=0, ease="out"), fi=.05, fo=.01))
+    p.parts.append(_life(t0 + .6, 99, _cnt(xa + w_ / 2, BT_BASE - 14 * BT_K - 24, 10, 14, t0 + .7, .6, size=54, pre="", suf="%", color=TEAL), fi=.05, fo=.01))
+    p.parts.append(_stamp(250, 40, 220, 80, "14%", TEAL, _fr(seg, 0, .85), size=52, rot=-5))
+    t1 = _fr(seg, 1, .05)
+    y14, y18 = BT_BASE - 14 * BT_K, BT_BASE - 18 * BT_K
+    p.parts.append(_g("draw", t1, .4, f'<path d="M{xa} {y14:.0f} H{xg + w_ + 30}" stroke="{INK}" stroke-width="4" stroke-dasharray="10 8"/>', style=""))
+    p.parts.append(_g("draw", t1 + .2, .4, f'<path d="M{xg + w_ + 14} {y18:.0f} h16 V{y14:.0f} h-16" fill="none" stroke="{RED}" stroke-width="8"/>', style=""))
+    p.parts.append(_g("draw", t1 + .4, .3, _cross(xg + w_ / 2, BT_BASE - 9 * BT_K, 2.2), style=""))
+    for j in range(4):
+        p.parts.append(_g("ripple", t1 + .7 + .5 * j, .5, f'<circle cx="{xg + w_ / 2}" cy="{BT_BASE - 9 * BT_K:.0f}" r="60" fill="none" stroke="{RED}" stroke-width="6"/>'))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 240, 330, 1.15), (t0 + 1.0, 260, 250, 1.2), (t1, 520, 220, 1.2), (end, 400, 330, 1.0)])
+
+
+def bt_rule(p, seg=None, **_):
+    """The rule. The equation builds on the words: SAFE RATE 4% + BETA 2 x EXTRA 5% = 14%. The second move, on 'the
+    cost of equity': the beta tile counts down 2 to 1 to 0 and the answer counts with it, 14% to 9% to 4% (beta 1 is
+    the market, beta 0 is the safe rate), while a COST OF EQUITY plate bobs. Beta 0.5 (the close) is not shown."""
+    _set(p, "<g opacity='.16'>" + "".join(f'<rect x="{x}" y="120" width="{w}" height="150" rx="14" fill="{c}"/>' for x, w, c in ((30, 180, BT_SAFE), (270, 150, "#fff"), (460, 150, BT_EXTRA), (640, 140, BT_MKT))) + "</g>")
+    t0 = _fr(seg, 0, .05)
+    p.parts.append(_g("pop", t0, .4, f'<rect x="30" y="120" width="180" height="150" rx="14" fill="{BT_SAFE}" stroke="{INK}" stroke-width="6"/>' + _t(120, 170, "SAFE RATE", 24, INK, serif=False) + _t(120, 240, "4%", 56, INK)))
+    p.parts.append(_g("pop", t0 + .5, .3, _t(240, 215, "+", 64, INK)))
+    t1 = _fr(seg, 0, .55)
+    p.parts.append(_g("pop", t1, .4, f'<rect x="270" y="120" width="150" height="150" rx="14" fill="#fff" stroke="{RED}" stroke-width="7"/>' + _t(345, 170, "BETA", 24, RED, serif=False)))
+    t2 = _fr(seg, 1, .2)
+    for j, (b, a, d) in enumerate((("2", t1, t2 - t1), ("1", t2, .9), ("0", t2 + .9, 99))):
+        p.parts.append(_life(a, d, _t(345, 245, b, 64, RED), fi=.05, fo=.05))
+    p.parts.append(_g("pop", t1 + .3, .3, _t(440, 215, "x", 56, INK)))
+    p.parts.append(_g("pop", t1 + .5, .4, f'<rect x="460" y="120" width="150" height="150" rx="14" fill="{BT_EXTRA}" stroke="{INK}" stroke-width="6"/>' + _t(535, 170, "EXTRA", 24, INK, serif=False) + _t(535, 240, "5%", 56, INK)))
+    p.parts.append(_g("pop", t1 + .8, .3, _t(625, 215, "=", 56, INK)))
+    p.parts.append(_g("pop", t1 + .9, .4, f'<rect x="640" y="120" width="140" height="150" rx="14" fill="{BT_MKT}" stroke="{INK}" stroke-width="6"/>'))
+    for j, (v, a, d) in enumerate((("14%", t1 + 1.0, t2 - t1 - 1.0), ("9%", t2, .9), ("4%", t2 + .9, 99))):
+        p.parts.append(_life(a, d, _g("pop", a, .3, _t(710, 225, v, 50, INK)), fi=.05, fo=.05))
+    p.parts.append(_life(t2, .9, _pill(710, 310, "THE MARKET", TEAL, "#fff", 22), fi=.1, fo=.1))
+    p.parts.append(_life(t2 + .9, 99, _pill(690, 310, "THE SAFE RATE", INK, "#fff", 22), fi=.1, fo=.01))
+    p.parts.append(_g("pop", _fr(seg, 1, .05), .4, _idle("bob", _pill(400, 450, "COST OF EQUITY (CAPM)", "#8A5F12", "#fff", 32), 6, 1.9, style="")))
+    for j in range(4):
+        p.parts.append(_g("ripple", t2 + .45 * j, .45, f'<circle cx="345" cy="220" r="60" fill="none" stroke="{RED}" stroke-width="5"/>'))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 220, 200, 1.3), (t1, 380, 200, 1.25), (t1 + 1.0, 560, 200, 1.25), (t2 - .2, 400, 300, 1.0), (t2 + .5, 520, 210, 1.3), (end, 400, 320, 1.0)])
+
+
+def bt_asks(p, **_):
+    """The close: two scrolling lines, the market and a BETA 0.5 stock that swings half as much; a 4% SAFE and 9%
+    MARKET pair of small columns; a ?% tag that swings, a WHAT RETURN? plate that bobs. The answer (6.5%) is not shown.
+    Laid inside x 30-770, y 30-610."""
+    ym, per = 190, 240
+    _set(p, f'<rect x="30" y="40" width="740" height="300" rx="18" fill="#fff" stroke="{INK}" stroke-width="6"/>'
+         + f'<path d="M40 {ym} H760" stroke="{GREY}" stroke-width="3" stroke-dasharray="10 10"/>'
+         + f'<path d="M30 {BT_BASE} H500" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+         + _bt_col(60, 180, 4, BT_SAFE, k=16, label="4%", size=34) + _bt_col(290, 180, 9, BT_MKT, k=16, label="9%", size=36)
+         + _t(150, BT_BASE + 34, "SAFE", 24, INK, serif=False) + _t(380, BT_BASE + 34, "MARKET", 24, INK, serif=False))
+    _bt_moving(p, 36, 764, 46, 334, [_bt_wave(40, 760, ym, 90, per, BT_MKT, 9), _bt_wave(40, 760, ym, 45, per, RED, 9)], per)
+    p.parts.append(_idle("bob", _pill(640, 80, "BETA 0.5", RED, "#fff", 30), 5, 1.8))
+    p.parts.append(_idle("swing", _ptag(640, 400, 170, "?%", RED, "#fff", 56), 9, 2.2, style="transform-box:fill-box;transform-origin:center top"))
+    for j in range(8):
+        p.parts.append(_g("ripple", p.at(.2) + .8 * j, .7, f'<circle cx="640" cy="440" r="60" fill="none" stroke="{RED}" stroke-width="6"/>'))
+    p.parts.append(_g("pop", p.at(.3), .35, _idle("bob", _pill(640, 560, "WHAT RETURN?", INK, "#fff", 30), 6, 1.9, style="")))
+
+
+SCENES.update({f.__name__: f for f in (bt_hook, bt_setup, bt_double, bt_split, bt_answer, bt_rule, bt_asks)})
+
+
+# ---- 24 Nov Reel C: multiple expansion in a buyout (build/reels_multiple-expansion.py). Our own round numbers:
+# EBITDA $10 bought at 8x = $80, paid with $40 of debt and $40 of the owners' money; five years later EBITDA is still
+# $10 and none of the debt is repaid; sold at 10x = $100 (+25%). Lender $40 back, owners 100 - 40 = $60: 60 / 40 = 1.5x,
+# +50%. The $20 rise all goes to the owners: 20 / 80 = 25% on the company, 20 / 40 = 50% on the owners. Close (not
+# shown): sold at 7x = $70, owners $30, 0.75x, -25%.
+
+MX_BASE, MX_K = 590, 3.6
+MX_DEBT, MX_OWN, MX_GAIN, MX_EB = "#B9B4AC", "#5EC8B4", "#F2C35B", "#E8836B"
+
+
+def _mx_col(x, w_, v, fill, base=MX_BASE, k=MX_K, label=None, size=40, dash=False, op=1.0):
+    return _nv_col(x, w_, v, fill, k=k, base=base, label=label, size=size, dash=dash, op=op)
+
+
+def _mx_blocks(p, x, w_, n, t, gap=.12, base=MX_BASE, k=MX_K, fill=MX_EB, life=99):
+    """n $10 EBITDA blocks dropping one by one into a column (each 10 x k px tall)."""
+    for j in range(n):
+        b = (f'<rect x="{x}" y="{base - (j + 1) * 10 * k:.1f}" width="{w_}" height="{10 * k:.1f}" rx="6" fill="{fill}" stroke="{INK}" stroke-width="4"/>'
+             + _t(x + w_ / 2, base - (j + .5) * 10 * k + 10, "$10", 26, INK))
+        p.parts.append(_life(t + gap * j, life - gap * j if life < 99 else 99, _g("slide", t + gap * j, .3, b, style="", y0=-380, y1=0, ease="out"), fi=.03, fo=.1))
+
+
+def mx_hook(p, seg=None, **_):
+    """The hook. From frame 0 both clashing numbers are on the panel and moving: THE COMPANY (gold $80 column, a
+    dashed $100 ghost) under a bobbing +25% tag, THE OWNERS (teal $40 column, a dashed $60 ghost) under a bobbing +50%
+    tag. On '25% more for the company' its column grows to $100 with its count; on '50% more for the owners' theirs
+    grows to $60; on 'How?' the camera pulls back and a ? swings between them."""
+    xc, xo, w_ = 90, 470, 230
+    _set(p, f'<path d="M30 {MX_BASE} H770" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+         + _t(xc + w_ / 2, MX_BASE + 40, "THE COMPANY", 28, INK, serif=False) + _t(xo + w_ / 2, MX_BASE + 40, "THE OWNERS", 28, INK, serif=False)
+         + _mx_col(xc, w_, 100, MX_GAIN, dash=True, op=.12) + _mx_col(xo, w_, 60, MX_OWN, dash=True, op=.12))
+    p.parts.append(_life(-1, 99, _idle("breathe", _mx_col(xc, w_, 80, MX_GAIN), .012, 2.4, style="transform-box:fill-box;transform-origin:center bottom"), fi=.01, fo=.01))
+    p.parts.append(_life(-1, 99, _idle("breathe", _mx_col(xo, w_, 40, MX_OWN), .012, 2.1, ph=1, style="transform-box:fill-box;transform-origin:center bottom"), fi=.01, fo=.01))
+    p.parts.append(_idle("bob", _pill(xc + w_ / 2, 150, "+25%", "#8A5F12", "#fff", 40), 7, 1.8))
+    p.parts.append(_idle("bob", _pill(xo + w_ / 2, 150, "+50%", RED, "#fff", 40), 7, 2.1, ph=1))
+    for j in range(4):
+        p.parts.append(_g("ripple", .05 + .7 * j, .6, f'<circle cx="{xo + w_ / 2}" cy="150" r="46" fill="none" stroke="{RED}" stroke-width="5"/>'))
+    t0 = _fr(seg, 0, .1)
+    blk = _mx_col(xc, w_, 20, MX_GAIN, base=MX_BASE - 80 * MX_K)
+    p.parts.append(_life(t0, 99, _g("growY", t0, .7, blk, style="transform-box:fill-box;transform-origin:center bottom"), fi=.01, fo=.01))
+    p.parts.append(_life(-1, 99, _cnt(xc + w_ / 2, MX_BASE - 50 * MX_K, 80, 100, t0, .7, size=56), fi=.01, fo=.01))
+    t1 = _fr(seg, 1, .1)
+    blk = _mx_col(xo, w_, 20, MX_GAIN, base=MX_BASE - 40 * MX_K)
+    p.parts.append(_life(t1, 99, _g("growY", t1, .7, blk, style="transform-box:fill-box;transform-origin:center bottom"), fi=.01, fo=.01))
+    p.parts.append(_life(-1, 99, _cnt(xo + w_ / 2, MX_BASE - 25 * MX_K, 40, 60, t1, .7, size=56), fi=.01, fo=.01))
+    t2 = _fr(seg, 2, .0)
+    p.parts.append(_life(t2, 99, _g("pop", t2, .35, _idle("swing", _ptag(400, 260, 120, "?", RED, "#fff", 80), 10, 2.2, style="transform-box:fill-box;transform-origin:center top")), fi=.05, fo=.01))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 220, 330, 1.2), (t0 + .9, 230, 300, 1.2), (t1 - .1, 560, 360, 1.2), (t1 + .9, 560, 380, 1.18), (t2, 400, 330, 1.0), (end, 400, 330, 1.0)])
+
+
+def mx_buy(p, seg=None, **_):
+    """The buy. An EBITDA $10 block and an 8x tag; on the first sentence eight $10 blocks drop one by one into a
+    column, counting to $80. On the second the column turns into two halves: the bottom $40 (grey) slides right to a
+    LENDER plate as DEBT, the top $40 (teal) drops into its place as OWNERS."""
+    x, w_, xr = 120, 210, 470
+    _set(p, f'<path d="M30 {MX_BASE} H770" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+         + _t(x + w_ / 2, MX_BASE + 40, "PRICE", 28, INK, serif=False) + _mx_col(x, w_, 80, MX_EB, dash=True, op=.1)
+         + f'<rect x="480" y="80" width="200" height="110" rx="14" fill="{MX_EB}" stroke="{INK}" stroke-width="6"/>' + _t(580, 125, "EBITDA", 26, INK, serif=False) + _t(580, 172, "$10", 44, INK))
+    t0 = _fr(seg, 0, .2)
+    p.parts.append(_g("pop", t0, .35, _idle("swing", _ptag(720, 230, 110, "8x", RED, "#fff", 44), 7, 2.0, style="transform-box:fill-box;transform-origin:center top")))
+    t1 = _fr(seg, 1, .2)
+    _mx_blocks(p, x, w_, 8, t0 + .3, gap=.16, life=t1 + .1 - (t0 + .3))
+    p.parts.append(_life(t0 + .3, t1 + .1 - t0 - .3, _cnt(x + w_ / 2, MX_BASE - 80 * MX_K - 24, 0, 80, t0 + .3, 8 * .16 + .3, size=50), fi=.05, fo=.1))
+    p.parts.append(_life(t1 + .1, 99, _g("slide", t1 + .2, .8, _mx_col(x, w_, 40, MX_DEBT, label="$40", size=40), style="", x0=0, y0=0, x1=xr - x, y1=0, ease="inout"), fi=.01, fo=.01))
+    p.parts.append(_life(t1 + .1, 99, _g("slide", t1 + 1.0, .5, _mx_col(x, w_, 40, MX_OWN, base=MX_BASE - 40 * MX_K, label="$40", size=40), style="", x0=0, y0=0, x1=0, y1=40 * MX_K, ease="out"), fi=.01, fo=.01))
+    p.parts.append(_g("pop", t1 + .9, .35, _pill(xr + w_ / 2, MX_BASE - 40 * MX_K - 40, "DEBT", INK, "#fff", 28)))
+    p.parts.append(_g("pop", t1 + 1.5, .35, _pill(x + w_ / 2, MX_BASE - 40 * MX_K - 40, "OWNERS", TEAL, "#fff", 28)))
+    p.parts.append(_g("pop", t1 + 1.0, .4, _pill(xr + w_ / 2, 230, "LENDER", "#3B3F48", "#fff", 28)))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 460, 250, 1.2), (t0 + .3, 300, 330, 1.05), (t1, 260, 380, 1.1), (t1 + 1.0, 420, 380, 1.05), (end, 400, 330, 1.0)])
+
+
+def mx_wait(p, seg=None, **_):
+    """Five years, nothing changes. A year counter runs Y1 to Y5 while a calendar page flips each year; the EBITDA
+    $10 block pulses on every year and stays $10 (a flat line draws year by year). On the second sentence the grey
+    $40 DEBT column gets a pin and a STILL $40 stamp; ripples on it."""
+    _set(p, f'<rect x="40" y="60" width="440" height="260" rx="16" fill="#fff" stroke="{INK}" stroke-width="6"/>'
+         + "".join(_t(100 + 80 * j, 300, f"Y{j + 1}", 24, GREY, serif=False) for j in range(5))
+         + f'<path d="M30 {MX_BASE} H770" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+         + _mx_col(560, 190, 40, MX_DEBT, label="$40", size=40) + _t(655, MX_BASE + 40, "DEBT", 28, INK, serif=False)
+         + f'<rect x="70" y="380" width="260" height="140" rx="14" fill="{MX_EB}" stroke="{INK}" stroke-width="6"/>' + _t(200, 430, "EBITDA", 28, INK, serif=False))
+    t0 = _fr(seg, 0, .05)
+    for j in range(5):
+        a = t0 + .35 * j
+        p.parts.append(_life(a, .35 if j < 4 else 99, _t(200, 495, "$10", 52, INK), fi=.02, fo=.02))
+        p.parts.append(_g("press", a, .3, f'<rect x="70" y="380" width="260" height="140" rx="14" fill="none" stroke="{RED}" stroke-width="6"/>'))
+        p.parts.append(_g("pop", a, .25, f'<circle cx="{100 + 80 * j}" cy="190" r="14" fill="{RED}" stroke="{INK}" stroke-width="4"/>'))
+        if j:
+            p.parts.append(_g("draw", a - .1, .25, f'<path d="M{100 + 80 * (j - 1)} 190 H{100 + 80 * j}" stroke="{RED}" stroke-width="6"/>', style=""))
+        p.parts.append(_life(a, .35 if j < 4 else 99, _pill(580, 120, f"YEAR {j + 1}", INK, "#fff", 34), fi=.02, fo=.02))
+    p.parts.append(_g("pop", t0 + 1.9, .35, _pill(270, 100, "FLAT", RED, "#fff", 26)))
+    t1 = _fr(seg, 1, .15)
+    p.parts.append(_g("pop", t1, .3, f'<circle cx="655" cy="{MX_BASE - 40 * MX_K:.0f}" r="18" fill="{RED}" stroke="{INK}" stroke-width="4"/>'))
+    p.parts.append(_stamp(530, 250, 250, 76, "STILL $40", RED, _fr(seg, 1, .6), size=40, rot=-5))
+    for j in range(3):
+        p.parts.append(_g("ripple", t1 + .3 + .5 * j, .5, f'<circle cx="655" cy="{MX_BASE - 20 * MX_K:.0f}" r="50" fill="none" stroke="{RED}" stroke-width="5"/>'))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 260, 260, 1.2), (t0 + 1.0, 280, 290, 1.15), (t1, 600, 400, 1.2), (end, 400, 330, 1.0)])
+
+
+def mx_sale(p, seg=None, **_):
+    """The sale. The 8x tag flips to 10x on the first sentence (8x struck, 10x swings in); on the second ten $10
+    blocks drop into the PRICE column, the count runs to $100, and the top two blocks glow gold (+$20) beside a dashed
+    line at the old $80."""
+    x, w_ = 200, 230
+    _set(p, f'<path d="M30 {MX_BASE} H770" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+         + _t(x + w_ / 2, MX_BASE + 40, "SALE PRICE", 28, INK, serif=False) + _mx_col(x, w_, 100, MX_EB, dash=True, op=.1)
+         + f'<path d="M{x - 20} {MX_BASE - 80 * MX_K:.0f} H{x + w_ + 120}" stroke="{GREY}" stroke-width="5" stroke-dasharray="12 10"/>'
+         + _t(x + w_ + 180, MX_BASE - 80 * MX_K + 10, "$80", 30, GREY, serif=False))
+    t0 = _fr(seg, 0, .2)
+    p.parts.append(_life(-1, 1 + t0 + .6, _ptag(620, 140, 140, "8x", "#3B3F48", "#fff", 50), fi=.01, fo=.2))
+    p.parts.append(_g("draw", t0 + .1, .3, '<path d="M560 150 L680 110" stroke="#D93A12" stroke-width="12" stroke-linecap="round"/>', style=""))
+    p.parts.append(_life(t0 + .6, 99, _g("pop", t0 + .6, .4, _idle("swing", _ptag(620, 140, 160, "10x", RED, "#fff", 56), 8, 2.0, style="transform-box:fill-box;transform-origin:center top")), fi=.05, fo=.01))
+    t1 = _fr(seg, 1, .05)
+    _mx_blocks(p, x, w_, 8, t1, gap=.09)
+    for j in (8, 9):
+        b = (f'<rect x="{x}" y="{MX_BASE - (j + 1) * 10 * MX_K:.1f}" width="{w_}" height="{10 * MX_K:.1f}" rx="6" fill="{MX_GAIN}" stroke="{INK}" stroke-width="4"/>'
+             + _t(x + w_ / 2, MX_BASE - (j + .5) * 10 * MX_K + 10, "$10", 26, INK))
+        p.parts.append(_life(t1 + .09 * j, 99, _g("slide", t1 + .09 * j, .3, b, style="", y0=-380, y1=0, ease="out"), fi=.03, fo=.01))
+    p.parts.append(_life(t1, 99, _cnt(x + w_ / 2, MX_BASE - 100 * MX_K - 24, 0, 100, t1, 1.2, size=52), fi=.05, fo=.01))
+    p.parts.append(_g("pop", t1 + 1.3, .35, _pill(x + w_ + 110, MX_BASE - 90 * MX_K, "+$20", "#8A5F12", "#fff", 34)))
+    for j in range(3):
+        p.parts.append(_g("ripple", t1 + 1.5 + .5 * j, .5, f'<circle cx="{x + w_ / 2}" cy="{MX_BASE - 90 * MX_K:.0f}" r="50" fill="none" stroke="{MX_GAIN}" stroke-width="6"/>'))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 560, 200, 1.3), (t0 + 1.0, 580, 200, 1.25), (t1, 340, 360, 1.0), (t1 + 1.4, 400, 220, 1.2), (end, 400, 330, 1.0)])
+
+
+def mx_split(p, seg=None, **_):
+    """The split. The $100 column (grey $40 at the bottom, teal $40, gold $20 on top). On the first sentence the grey
+    $40 slides right to the LENDER with its count; on the second the teal and gold slide left to THE OWNERS and settle
+    as one $60 column with its count."""
+    x, w_ = 285, 230
+    xl, xo = 545, 30
+    _set(p, f'<path d="M20 {MX_BASE} H780" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+         + _t(xl + 110, MX_BASE + 40, "LENDER", 28, INK, serif=False) + _t(xo + 110, MX_BASE + 40, "OWNERS", 28, INK, serif=False))
+    t0 = _fr(seg, 0, .15)
+    t1 = _fr(seg, 1, .15)
+    p.parts.append(_life(-1, 99, _g("slide", t0, .8, _mx_col(x, w_, 40, MX_DEBT, label="$40", size=40), style="", x0=0, y0=0, x1=xl - x, y1=0, ease="inout"), fi=.01, fo=.01))
+    up = _mx_col(x, w_, 40, MX_OWN, base=MX_BASE - 40 * MX_K) + _mx_col(x, w_, 20, MX_GAIN, base=MX_BASE - 80 * MX_K)
+    p.parts.append(_life(-1, 99, _g("slide", t1, .9, up, style="", x0=0, y0=0, x1=xo - x, y1=40 * MX_K, ease="inout"), fi=.01, fo=.01))
+    p.parts.append(_g("pop", t0 + .8, .35, _pill(xl + 115, MX_BASE - 40 * MX_K - 40, "$40 BACK", INK, "#fff", 28)))
+    p.parts.append(_life(t1 + .9, 99, _cnt(xo + 115, MX_BASE - 60 * MX_K - 24, 0, 60, t1 + .9, .6, size=56, color=TEAL), fi=.05, fo=.01))
+    for j in range(3):
+        p.parts.append(_g("ripple", t1 + 1.2 + .5 * j, .5, f'<circle cx="{xo + 115}" cy="{MX_BASE - 30 * MX_K:.0f}" r="60" fill="none" stroke="{TEAL}" stroke-width="6"/>'))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 400, 330, 1.05), (t0 + .5, 560, 380, 1.15), (t1, 480, 360, 1.05), (t1 + 1.0, 220, 360, 1.15), (end, 400, 330, 1.0)])
+
+
+def mx_answer(p, seg=None, **_):
+    """The answer. IN $40 and OUT $60 for the owners, a 1.5x pill and a +50% stamp on the first sentence. On the
+    second the gold +$20 block flies from a small COMPANY $80 to $100 column (+25%) into the owners' column, and the
+    two percentages sit side by side: +25% (on $80) and +50% (on $40)."""
+    xi, xo, xc, w_ = 40, 250, 560, 180
+    _set(p, f'<path d="M20 {MX_BASE} H780" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+         + _t(xi + w_ / 2, MX_BASE + 40, "IN", 28, INK, serif=False) + _t(xo + w_ / 2, MX_BASE + 40, "OUT", 28, INK, serif=False)
+         + _t(xc + w_ / 2, MX_BASE + 40, "COMPANY", 28, INK, serif=False)
+         + _mx_col(xi, w_, 40, MX_OWN, label="$40", size=38) + _mx_col(xo, w_, 40, MX_OWN) + _mx_col(xc, w_, 80, MX_EB, label="$80", size=38))
+    t0 = _fr(seg, 0, .3)
+    p.parts.append(_life(-1, 99, _g("growY", t0, .6, _mx_col(xo, w_, 20, MX_GAIN, base=MX_BASE - 40 * MX_K), style="transform-box:fill-box;transform-origin:center bottom"), fi=.01, fo=.01))
+    p.parts.append(_life(t0, 99, _cnt(xo + w_ / 2, MX_BASE - 60 * MX_K - 24, 40, 60, t0, .6, size=50, color=TEAL), fi=.05, fo=.01))
+    p.parts.append(_g("pop", t0 + .5, .35, _pill(200, 90, "60 / 40 = 1.5x", INK, "#fff", 30)))
+    p.parts.append(_stamp(40, 130, 260, 80, "+50%", RED, _fr(seg, 0, .85), size=50, rot=-6))
+    t1 = _fr(seg, 1, .1)
+    blk = _mx_col(xc, w_, 20, MX_GAIN, base=MX_BASE - 80 * MX_K) + _t(xc + w_ / 2, MX_BASE - 90 * MX_K + 10, "+$20", 30, INK)
+    p.parts.append(_life(t1, 1.4, _g("pop", t1, .3, blk), fi=.01, fo=.05))
+    p.parts.append(_g("pop", t1 + .2, .35, _pill(xc + w_ / 2, 140, "+25%", "#8A5F12", "#fff", 34)))
+    p.parts.append(_life(t1 + 1.0, .6, _g("slide", t1 + 1.0, .5, blk, style="", x0=0, y0=0, x1=xo - xc, y1=40 * MX_K, ease="inout"), fi=.01, fo=.2))
+    for j in range(4):
+        p.parts.append(_g("ripple", t1 + 1.6 + .5 * j, .5, f'<circle cx="{xo + w_ / 2}" cy="{MX_BASE - 50 * MX_K:.0f}" r="44" fill="none" stroke="{MX_GAIN}" stroke-width="6"/>'))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 250, 330, 1.15), (t0 + .5, 240, 250, 1.2), (t1 - .1, 400, 330, 1.0), (t1 + .5, 600, 300, 1.2), (t1 + 1.3, 420, 300, 1.1), (end, 400, 330, 1.0)])
+
+
+def mx_rule(p, seg=None, **_):
+    """The rule. A MULTIPLE EXPANSION stamp lands on 8x to 10x; on the second sentence a price bar half grey (DEBT)
+    half teal (OWNERS) draws, then the +25% bar for the company grows and a copy of it stacks on itself to make the
+    owners' +50% bar (twice the company's), with a x2 pill that pulses."""
+    _set(p, f'<rect x="40" y="60" width="300" height="110" rx="14" fill="#fff" stroke="{INK}" stroke-width="6"/>' + _t(190, 132, "8x TO 10x", 44, INK))
+    p.parts.append(_stamp(370, 70, 400, 90, "MULTIPLE EXPANSION", RED, _fr(seg, 0, .3), size=34, rot=-4))
+    t1 = _fr(seg, 1, .05)
+    p.parts.append(_g("growX", t1, .5, f'<rect x="40" y="230" width="360" height="80" rx="10" fill="{MX_DEBT}" stroke="{INK}" stroke-width="5"/>' + _t(220, 282, "DEBT HALF", 28, INK, serif=False)))
+    p.parts.append(_g("growX", t1 + .4, .5, f'<rect x="400" y="230" width="360" height="80" rx="10" fill="{MX_OWN}" stroke="{INK}" stroke-width="5"/>' + _t(580, 282, "OWNERS HALF", 28, INK, serif=False)))
+    t2 = _fr(seg, 1, .45)
+    k = 9.0
+    p.parts.append(_g("growX", t2, .5, f'<rect x="40" y="370" width="{25 * k:.0f}" height="80" rx="10" fill="{MX_EB}" stroke="{INK}" stroke-width="5"/>' + _t(40 + 25 * k / 2, 422, "+25%", 32, INK)))
+    p.parts.append(_t(40, 360, "COMPANY", 24, INK, serif=False, anchor="start"))
+    p.parts.append(_t(40, 500, "OWNERS", 24, INK, serif=False, anchor="start"))
+    for j in range(2):
+        b = f'<rect x="{40 + 25 * k * j:.0f}" y="510" width="{25 * k:.0f}" height="80" rx="10" fill="{MX_GAIN}" stroke="{INK}" stroke-width="5"/>'
+        p.parts.append(_life(t2 + .6 + .5 * j, 99, _g("slide", t2 + .6 + .5 * j, .45, b, style="", x0=0, y0=-140, x1=0, y1=0, ease="out"), fi=.05, fo=.01))
+    p.parts.append(_g("pop", t2 + 1.6, .35, _t(40 + 25 * k, 568, "+50%", 36, INK)))
+    p.parts.append(_g("pop", t2 + 1.8, .35, _pill(640, 550, "x2", RED, "#fff", 40)))
+    for j in range(4):
+        p.parts.append(_g("ripple", t2 + 2.0 + .5 * j, .5, f'<circle cx="640" cy="550" r="44" fill="none" stroke="{RED}" stroke-width="5"/>'))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 400, 130, 1.4), (_fr(seg, 0, .8), 420, 140, 1.35), (t1, 400, 280, 1.15), (t2 + .3, 330, 470, 1.25), (t2 + 1.8, 400, 460, 1.15), (end, 400, 330, 1.0)])
+
+
+def mx_asks(p, **_):
+    """The close: seven $10 blocks stacking under a swinging 7x tag (they re-stack over and over), the grey $40 DEBT
+    column pinned beside them, an OWNERS column showing only ? that pulses, a WHAT DID THE OWNERS MAKE? plate that
+    bobs. The answer ($30, 0.75x, -25%) is not shown. Laid inside x 30-770, y 30-610."""
+    k = 3.4
+    _set(p, f'<path d="M30 {MX_BASE} H770" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+         + _t(140, MX_BASE + 36, "SALE PRICE", 24, INK, serif=False) + _t(400, MX_BASE + 36, "DEBT", 24, INK, serif=False) + _t(640, MX_BASE + 36, "OWNERS", 24, INK, serif=False)
+         + _mx_col(320, 160, 40, MX_DEBT, k=k, label="$40", size=36) + _mx_col(560, 160, 30, MX_OWN, k=k, dash=True, op=.1))
+    for r in range(4):
+        a = p.at(.05) + 2.4 * r
+        _mx_blocks(p, 50, 180, 7, a, gap=.15, k=k, life=2.3)
+    p.parts.append(_idle("swing", _ptag(140, 110, 130, "7x", RED, "#fff", 52), 9, 2.2, style="transform-box:fill-box;transform-origin:center top"))
+    p.parts.append(_idle("bob", _t(640, 460, "?", 120, RED), 10, 2.0))
+    for j in range(8):
+        p.parts.append(_g("ripple", p.at(.2) + .8 * j, .7, f'<circle cx="640" cy="440" r="60" fill="none" stroke="{RED}" stroke-width="6"/>'))
+    p.parts.append(_g("pop", p.at(.3), .35, _idle("bob", _pill(520, 170, "OWNERS MAKE?", INK, "#fff", 32), 6, 1.9, style="")))
+
+
+SCENES.update({f.__name__: f for f in (mx_hook, mx_buy, mx_wait, mx_sale, mx_split, mx_answer, mx_rule, mx_asks)})

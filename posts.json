@@ -1870,6 +1870,20 @@
       "caption": "",
       "published_id": null,
       "published_at_utc": null
+    },
+    {
+      "id": "reel-w2-zero-coupon",
+      "type": "reel",
+      "scheduled_utc": "2026-11-24T17:30:00",
+      "slot": "A",
+      "media_branch": "reel/w2-zero-coupon",
+      "video": "w2-zero-coupon.mp4",
+      "cover": "w2-zero-coupon.jpg",
+      "master": "scored",
+      "caption": "It pays 0% interest. So why does anyone buy this bond? Simple: nobody pays $100 for it.\n\nSay it pays you $100 back in two years and nothing before that, while other bonds like it pay 5% a year. Then it's worth about $90.70 today. That's $100 divided by 1.05, twice.\n\nHold it two years and your $90.70 turns into $100. The $9.30 in between? That's your interest. It still works out to 5% a year, you just get it all at the end instead of along the way.\n\nSo a zero coupon bond always sells below face value. The gap is the interest, and when rates go up, it gets bigger.\n\nYour turn: other bonds now pay 10%. What's this one worth today? Tell me in the comments.\n\nFollow @investmentbankinginterviews for a new IB interview question, worked out, every day.\n\nRound numbers, our own example. Yearly compounding, no tax, no default.\n\nNarration: AI-generated voice; script is our original work.\n\n#investmentbanking #bonds #ibinterview #finance",
+      "first_comment": "Bonus: same bond, but three years to go and other bonds at 5%. What's it worth today?",
+      "ai_label": true,
+      "published_id": null
     }
   ],
   "reel_slots_et": {
