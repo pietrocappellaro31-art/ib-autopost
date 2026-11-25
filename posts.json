@@ -1946,6 +1946,20 @@
       "first_comment": "Bonus: instead of the dividend, the company spends the same cash buying back shares at $50. What happens to the price of the shares left?",
       "ai_label": true,
       "published_id": null
+    },
+    {
+      "id": "reel-w2-writedown-cash",
+      "type": "reel",
+      "scheduled_utc": "2026-11-26T02:00:00",
+      "slot": "C",
+      "media_branch": "reel/w2-writedown-cash",
+      "video": "w2-writedown-cash.mp4",
+      "cover": "w2-writedown-cash.jpg",
+      "master": "scored",
+      "caption": "$10 of inventory gets written off and profit falls $7.50. So why is cash up $2.50?\n\nLeo's shop (made up for this one) has $10 of winter jackets nobody will buy, so he writes them down to $0.\n\nIncome statement: it's a $10 expense, so profit before tax falls $10. At a 25% tax rate the tax bill's $2.50 lower, and net income falls $7.50.\n\nCash flow: no cash left the shop, since he'd paid for the jackets long ago. Start from the -$7.50, add back the $10 that wasn't cash, and cash ends up $2.50 higher than it would have been.\n\nBalance sheet: inventory down $10, cash up $2.50, so assets fall $7.50. Retained earnings fall $7.50 too. It balances.\n\nThe $2.50 is just the tax he doesn't pay: $10 x 25%.\n\nYour turn: Leo writes off $40 of jackets instead. What happens to his cash? Tell me in the comments.\n\nFollow @investmentbankinginterviews for a new IB interview question, worked out, every day.\n\nOur example assumes the write-down is tax deductible. Real tax rules vary.\n\nNarration: AI-generated voice; script is our original work.\n\n#investmentbanking #accounting #ibinterview #finance",
+      "first_comment": "Bonus: the same $10 write-down, but the tax rate is 30%. What happens to net income and to cash?",
+      "ai_label": true,
+      "published_id": null
     }
   ],
   "reel_slots_et": {

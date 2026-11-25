@@ -950,6 +950,19 @@
    "rights": "ORIGINAL_GENERATED",
    "added": "2026-11-25",
    "note": ""
+  },
+  {
+   "id": "score-w2-writedown-cash",
+   "title": "Original score for w2-writedown-cash",
+   "video": "w2-writedown-cash",
+   "engine": "score.py + GeneralUser GS v2.0.3 (TinySoundFont)",
+   "mood": "explain+resolve",
+   "bpm": 74,
+   "key": "D",
+   "style": "solo_piano",
+   "rights": "ORIGINAL_GENERATED",
+   "added": "2026-11-25",
+   "note": ""
   }
  ]
 }

@@ -1,0 +1,14 @@
+# w2-writedown-cash (Reel, Format B: a short financial story, an inventory write-down through the three statements; HEART, story engine, black)
+
+- Platform: Instagram Reel, posted automatically by publish.py at slot C 21:00 ET, 25 Nov 2026 (Pietro, 22 Nov: three Reels a day this week; 16 Nov: no approval, the content-compliance gate is the gate).
+- Concept: Leo's shop (invented, said so in the caption) writes $10 of unsellable jackets down to $0; at 25% tax and assuming the write-down is deductible: profit before tax -$10, tax -$2.50, net income -$7.50; cash flow -7.50 + 10 added back = +$2.50 against no write-down (the tax not paid; no cash moves on the day); balance sheet inventory -10, cash +2.50, assets -7.50, retained earnings -7.50, it balances. Rule: the cash effect is the tax saved, $10 x 25%. Close asks a $40 write-down (cash +$10, not given); comment bonus 30% tax (net income -$7, cash +$3). Not in topics.md "Used" for Reels (16 Nov walked a loan through the three statements; the 8 Nov balance-sheet Reel covered the accounting equation, not a write-down). Related, said plainly: Levels #8 (9 Nov, the old quiz format) asked whether more depreciation can raise free cash flow, the same tax-shield mechanism on a different item; this Reel is a different format (a story) and a different question (the full three-statement walk of a write-down), and the first time the page shows all three statements moving together.
+- Sources: the three-statement arithmetic only, worked in build/reels_writedown.py. The 25% rate and the deductibility are our example's assumptions, said in the caption ("Real tax rules vary"); no company, country's tax code or statistic claimed.
+- Voice: HEART, synthetic (Kokoro af_heart at 0.9, Apache 2.0, ledger). Not a real person; the narrator claims no experience. Natural chain only.
+- Visuals and fonts: ours. Seven drawings new today in build/sketch.py (iw_hook, iw_shop, iw_income, iw_cash, iw_bs, iw_rule, iw_asks: a generic shop front, jackets on a rack, bars on a zero line, a waterfall, a till, a receipt, balance-sheet columns, a coin stack). Source Serif 4, IBM Plex Sans (SIL OFL).
+- Sound effects: synthesised (build/sfx.py), each on a visible action; no whoosh.
+- Masters: clean + scored (build/score.py, ORIGINAL_GENERATED); the scored master is the posted file when it passes its checks, the clean one is the fallback. No commercial or platform-library music.
+- Reconstruction: none. Real people drawn: none.
+- AI disclosure: caption line "Narration: AI-generated voice; script is our original work."; Instagram's AI label set at creation by the publisher (is_ai_generated). Recommended because the narrator is a realistic synthetic voice.
+- Claims: arithmetic and labelled assumptions only; no tax or accounting advice; no returns or jobs promised.
+- Sponsorship: none.
+- Approved: no approval step (Pietro, 16 Nov); gate result in the 25 Nov IG Reels row of docs/daily/quality-log.md.

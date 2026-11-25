@@ -1,0 +1,21 @@
+$10 of inventory gets written off and profit falls $7.50. So why is cash up $2.50?
+
+Leo's shop (made up for this one) has $10 of winter jackets nobody will buy, so he writes them down to $0.
+
+Income statement: it's a $10 expense, so profit before tax falls $10. At a 25% tax rate the tax bill's $2.50 lower, and net income falls $7.50.
+
+Cash flow: no cash left the shop, since he'd paid for the jackets long ago. Start from the -$7.50, add back the $10 that wasn't cash, and cash ends up $2.50 higher than it would have been.
+
+Balance sheet: inventory down $10, cash up $2.50, so assets fall $7.50. Retained earnings fall $7.50 too. It balances.
+
+The $2.50 is just the tax he doesn't pay: $10 x 25%.
+
+Your turn: Leo writes off $40 of jackets instead. What happens to his cash? Tell me in the comments.
+
+Follow @investmentbankinginterviews for a new IB interview question, worked out, every day.
+
+Our example assumes the write-down is tax deductible. Real tax rules vary.
+
+Narration: AI-generated voice; script is our original work.
+
+#investmentbanking #accounting #ibinterview #finance

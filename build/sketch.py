@@ -10479,7 +10479,7 @@ def iw_shop(p, seg=None, **_):
     p.parts.append(_life(-1, 99, _g("pop", t0 + .3, .4, _idle("swing", _ptag(620, 270, 200, "COST", IW_INV, INK, 44), 7, 2.0, style="transform-box:fill-box;transform-origin:center top")), fi=.01, fo=.01))
     p.parts.append(_life(t0 + .6, 99, _cnt(620, 380, 10, 0, t1 + .1, 1.0, size=64, dec=0), fi=.05, fo=.01))
     p.parts.append(_g("pop", _fr(seg, 0, .6), .4, _idle("bob", _pill(240, 530, "NOBODY'S BUYING", "#3B3F48", "#fff", 28), 6, 1.8, style="")))
-    p.parts.append(_stamp(470, 440, 270, 80, "WRITTEN DOWN", RED, _fr(seg, 1, .6), size=34, rot=-5))
+    p.parts.append(_stamp(430, 440, 260, 76, "WRITTEN DOWN", RED, _fr(seg, 1, .6), size=32, rot=-5))
     end = seg[-1][1] + .4
     _cam(p, [(seg[0][0] - .4, 400, 330, 1.0), (t0 + .4, 300, 360, 1.08), (t1, 520, 360, 1.08), (t1 + 1.3, 450, 380, 1.05), (end, 400, 320, 1.0)])
 
@@ -10556,6 +10556,7 @@ def iw_bs(p, seg=None, **_):
          + _t(xa + w_ / 2, base + 40, "ASSETS", 28, INK, serif=False) + _t(xe + w_ / 2, base + 40, "EQUITY + DEBT", 28, INK, serif=False)
          + _nv_col(xa, w_, 30, "#B9B4AC", k=k, base=base, label="OTHER", size=30) + _nv_col(xe, w_, 20, "#B9B4AC", k=k, base=base, label="DEBT", size=30)
          + _nv_col(xe, w_, 12.5, IW_EQ, k=k, base=base - 20 * k, label="EQUITY", size=30))
+    # before: assets 30 + 10 = 40; debt 20 + equity 12.5 + 7.5 = 40. After: 30 + 2.5 = 32.5; 20 + 12.5 = 32.5
     t0 = _fr(seg, 0, .1)
     inv = _nv_col(xa, w_, 10, IW_INV, k=k, base=base - 30 * k, label="INVENTORY $10", size=26)
     p.parts.append(_life(-1, t0 + .9, _g("slide", t0, .8, inv, style="", x0=0, y0=0, x1=-360, y1=0, ease="in"), fi=.01, fo=.1))
@@ -10563,8 +10564,7 @@ def iw_bs(p, seg=None, **_):
     p.parts.append(_life(_fr(seg, 0, .5), 99, _g("slide", _fr(seg, 0, .5), .4, cash, style="", x0=0, y0=-300, x1=0, y1=0, ease="out"), fi=.02, fo=.01))
     p.parts.append(_g("pop", _fr(seg, 0, .8), .35, _pill(xa + w_ / 2, 110, "-$7.50", RED, "#fff", 40)))
     t1 = _fr(seg, 1, .1)
-    eqcut = _nv_col(xe, w_, 7.5, IW_LOSS, k=k, base=base - 25 * k, label="-$7.50", size=24)
-    p.parts.append(_life(-1, 99, _nv_col(xe, w_, 5, IW_EQ, k=k, base=base - 20 * k), fi=.01, fo=.01))
+    eqcut = _nv_col(xe, w_, 7.5, IW_EQ, k=k, base=base - 32.5 * k, label="$7.50", size=24)
     p.parts.append(_life(-1, t1 + .9, _g("slide", t1 + .2, .7, eqcut, style="", x0=0, y0=0, x1=360, y1=0, ease="in"), fi=.01, fo=.1))
     p.parts.append(_g("pop", t1 + .7, .35, _pill(xe + w_ / 2, 110, "-$7.50", RED, "#fff", 40)))
     p.parts.append(_stamp(250, 300, 300, 80, "BALANCES", TEAL, _fr(seg, 1, .6), size=44, rot=-4))
