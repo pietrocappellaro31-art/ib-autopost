@@ -10254,7 +10254,9 @@ def dv_setup(p, seg=None, **_):
     travels right along a dashed path and drops into the wallet, which bounces; a DIVIDEND $1 tag swings."""
     x, w_ = 90, 240
     _set(p, f'<path d="M30 {DV_BASE} H770" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>' + _t(x + w_ / 2, DV_BASE + 40, "ONE SHARE", 28, INK, serif=False)
-         + _dv_col(x, w_, 50, DV_BUS, dash=True, op=.1) + _dv_wallet(500, 420))
+         + _dv_col(x, w_, 50, DV_BUS, dash=True, op=.1))
+    p.parts.append(_idle("breathe", _dv_wallet(500, 420), .025, 1.8))
+    p.parts.append(_idle("bob", _t(610, 380, "YOUR WALLET", 24, INK, serif=False), 5, 1.6))
     t0 = _fr(seg, 0, .1)
     p.parts.append(_life(t0, 99, _g("growY", t0, .6, _dv_col(x, w_, 40, DV_BUS) + _t(x + w_ / 2, DV_BASE - 20 * DV_K + 12, "BUSINESS", 26, INK, serif=False),
                                      style="transform-box:fill-box;transform-origin:center bottom"), fi=.01, fo=.01))
@@ -10283,8 +10285,14 @@ def dv_drop(p, seg=None, **_):
          + _dv_col(x, w_, 50, DV_DIV, dash=True, op=.08) + _t(x + w_ / 2, DV_BASE + 40, "AFTER", 28, INK, serif=False)
          + f'<rect x="320" y="60" width="440" height="320" rx="16" fill="#fff" stroke="{INK}" stroke-width="6"/>'
          + _t(540, 100, "SHARE PRICE", 24, GREY, serif=False))
+    _set(p, f'<path d="M350 190 H730" stroke="{GREY}" stroke-width="4" stroke-dasharray="10 8"/>' + _t(745, 230, "$50", 26, GREY, serif=False, anchor="end"))
+    t1_ = _fr(seg, 1, .05)
+    for r in range(int((t1_ - seg[0][0] + .4) / 1.2) + 1):
+        a_ = seg[0][0] - .4 + 1.2 * r
+        p.parts.append(_life(a_, 1.2, _g("slide", a_, 1.15, f'<circle cx="350" cy="190" r="12" fill="{GREY}"/>', style="", x0=0, y0=0, x1=380, y1=0, ease="inout"), fi=.02, fo=.02))
     t0 = _fr(seg, 0, .3)
     top = DV_BASE - 50 * DV_K
+    p.parts.append(_life(-1, t0 + 1.6, _g("slide", t0 + .1, 1.2, _dv_col(x, w_, 1, DV_DIV, base=DV_BASE - 49 * DV_K), style="", x0=0, y0=0, x1=60, y1=420, ease="in"), fi=.01, fo=.2))
     p.parts.append(_g("draw", t0, .4, f'<path d="M{x + w_ + 14} {top:.0f} h16 V{top + DV_K:.0f} h-16" stroke="{RED}" stroke-width="6" fill="none"/>', style=""))
     p.parts.append(_g("pop", t0 + .3, .35, _idle("bob", _pill(x + w_ / 2 + 20, top - 50, "-$1 A SHARE", RED, "#fff", 26), 6, 1.8, style="")))
     t1 = _fr(seg, 1, .05)
@@ -10343,7 +10351,7 @@ def dv_tax(p, seg=None, **_):
     p.parts.append(_life(t0 + 1.2 * n, 99, _coin_shape(620, 470, 44, "$1"), fi=.02, fo=.01))
     p.parts.append(_g("pop", t1 + .3, .3, f'<path d="M620 470 L668 440 A56 56 0 0 1 672 488 Z" fill="#EAF6F3" stroke="{RED}" stroke-width="5"/>'))
     p.parts.append(_g("pop", t1 + .1, .35, _idle("swing", _ptag(690, 330, 140, "TAX", RED, "#fff", 44), 8, 1.9, style="transform-box:fill-box;transform-origin:center top")))
-    p.parts.append(_life(_fr(seg, 1, .5) + 1, 99, _t(400, 135, "<$50", 48, RED), fi=.1, fo=.01))
+    p.parts.append(_life(_fr(seg, 1, .5), 99, _t(400, 135, "<$50", 48, RED), fi=.1, fo=.01))
     p.parts.append(_g("pop", _fr(seg, 1, .6), .35, _idle("bob", _pill(400, 390, "BEHIND", RED, "#fff", 28), 6, 1.8, style="")))
     end = seg[-1][1] + .4
     _cam(p, [(seg[0][0] - .4, 400, 380, 1.03), (t0 + 1.2, 400, 400, 1.06), (t1, 600, 400, 1.1), (t1 + 1.2, 450, 300, 1.06), (end, 400, 320, 1.0)])
@@ -10369,7 +10377,7 @@ def dv_rule(p, seg=None, **_):
     slab = _dv_col(xs[0] + 30, 160, 1, DV_DIV, k=k, base=base - 49 * k)
     p.parts.append(_life(-1, 99, _g("slide", t0, 1.0, slab, style="", x0=0, y0=0, x1=xs[2] - xs[0], y1=49 * k, ease="inout"), fi=.01, fo=.01))
     p.parts.append(_g("pop", t0 + 1.0, .3, _t(xs[2] + 110, base - 2 * k - 16, "$1", 44, INK)))
-    p.parts.append(_stamp(400, 400, 380, 84, "MOVED, NOT MADE", RED, _fr(seg, 0, .75), size=36, rot=-4))
+    p.parts.append(_stamp(370, 410, 350, 80, "MOVED, NOT MADE", RED, _fr(seg, 0, .75), size=32, rot=-4))
     t1 = _fr(seg, 1, .05)
     for j, x in enumerate(xs):
         p.parts.append(_g("press", t1 + .45 * j, .35, f'<rect x="{x}" y="40" width="{tw}" height="150" rx="18" fill="{DV_DIV}" fill-opacity=".35" stroke="{RED}" stroke-width="8"/>'))
@@ -10444,14 +10452,14 @@ def iw_hook(p, seg=None, **_):
     t0 = _fr(seg, 0, .15)
     p.parts.append(_g("draw", t0, .4, _cross(230, 230, 3.2), style=""))
     p.parts.append(_g("pop", t0 + .5, .35, _pill(220, 580, "WRITTEN OFF", RED, "#fff", 30)))
-    p.parts.append(_life(-1, 99, _cnt(595, 200, 0, -7.5, _fr(seg, 0, .6), .7, size=56, dec=2, color=RED), fi=.01, fo=.01))
+    p.parts.append(_life(-1, 99, _cnt(595, 200, 0, 7.5, _fr(seg, 0, .6), .7, size=56, dec=2, color=RED, pre="-$"), fi=.01, fo=.01))
     t1 = _fr(seg, 1, .2)
     p.parts.append(_life(-1, 99, _cnt(595, 480, 0, 2.5, t1, .6, size=56, dec=2, color=TEAL, pre="+$"), fi=.01, fo=.01))
     p.parts.append(_g("pop", t1 + .4, .4, _idle("swing", _ptag(400, 420, 110, "?", RED, "#fff", 64), 10, 2.1, style="transform-box:fill-box;transform-origin:center top")))
     for j in range(4):
         p.parts.append(_g("ripple", t1 + .6 + .5 * j, .5, f'<circle cx="615" cy="460" r="70" fill="none" stroke="{TEAL}" stroke-width="5"/>'))
     end = seg[-1][1] + .4
-    _cam(p, [(seg[0][0] - .4, 300, 320, 1.06), (t0 + .3, 240, 300, 1.1), (_fr(seg, 0, .7), 560, 200, 1.1), (t1 + .3, 560, 440, 1.1), (end, 400, 320, 1.0)])
+    _cam(p, [(seg[0][0] - .4, 300, 320, 1.06), (t0 + .3, 300, 300, 1.05), (_fr(seg, 0, .7), 560, 220, 1.08), (t1 + .3, 560, 420, 1.08), (end, 400, 320, 1.0)])
 
 
 def iw_shop(p, seg=None, **_):
@@ -10467,7 +10475,7 @@ def iw_shop(p, seg=None, **_):
     p.parts.append(_life(-1, 99, _idle("sway", rack, 3, 1.3), fi=.01, fo=.01))
     t1 = _fr(seg, 1, .1)
     for k in range(3):
-        p.parts.append(_g("pop", t1 + .35 * k + .2, .35, _iw_jacket(150 + 120 * k, 234, 1.0, "#B9B4AC")))
+        p.parts.append(_g("pop", t1 + .35 * k + .2, .35, _idle("swing", _iw_jacket(150 + 120 * k, 234, 1.0, "#B9B4AC"), 9, 1.1 + .2 * k, ph=k, style="transform-box:fill-box;transform-origin:center top")))
     p.parts.append(_life(-1, 99, _g("pop", t0 + .3, .4, _idle("swing", _ptag(620, 270, 200, "COST", IW_INV, INK, 44), 7, 2.0, style="transform-box:fill-box;transform-origin:center top")), fi=.01, fo=.01))
     p.parts.append(_life(t0 + .6, 99, _cnt(620, 380, 10, 0, t1 + .1, 1.0, size=64, dec=0), fi=.05, fo=.01))
     p.parts.append(_g("pop", _fr(seg, 0, .6), .4, _idle("bob", _pill(240, 530, "NOBODY'S BUYING", "#3B3F48", "#fff", 28), 6, 1.8, style="")))
@@ -10502,7 +10510,7 @@ def iw_income(p, seg=None, **_):
     piece = _iw_bar(80, 200, -7.5, -10, IW_CASH, "+$2.50", 30)
     p.parts.append(_life(t1, 99, _g("slide", t1, .7, piece, style="", x0=0, y0=0, x1=220, y1=-7.5 * IW_K - 2.5 * IW_K, ease="inout"), fi=.01, fo=.01))
     p.parts.append(_life(t1 + .7, 99, _g("slide", t1 + .8, .6, _iw_bar(80, 200, 0, -7.5, IW_LOSS, "-$7.50", 40), style="", x0=0, y0=0, x1=440, y1=0, ease="inout"), fi=.01, fo=.01))
-    p.parts.append(_g("pop", _fr(seg, 1, .05), .4, _idle("swing", _ptag(400, 90, 200, "25% TAX", INK, "#fff", 34), 7, 2.0, style="transform-box:fill-box;transform-origin:center top")))
+    p.parts.append(_g("pop", _fr(seg, 1, .05), .4, _idle("swing", _pill(400, 90, "25% TAX", INK, "#fff", 34), 5, 2.0, style="transform-box:fill-box;transform-origin:center top")))
     for j in range(3):
         p.parts.append(_g("ripple", t1 + 1.5 + .5 * j, .5, f'<circle cx="620" cy="{IW_ZERO + 3.75 * IW_K:.0f}" r="60" fill="none" stroke="{RED}" stroke-width="5"/>'))
     end = seg[-1][1] + .4
@@ -10521,10 +10529,10 @@ def iw_cash(p, seg=None, **_):
             + f'<path d="M570 420 a20 20 0 0 1 40 0 v12" stroke="{GREY}" stroke-width="8" fill="none"/><rect x="560" y="425" width="60" height="40" rx="6" fill="{IW_EQ}" stroke="{INK}" stroke-width="4"/>')
     t0 = _fr(seg, 0, .1)
     t1 = _fr(seg, 1, .1)
-    p.parts.append(_life(-1, t1 + 1, _idle("bob", till, 6, 1.6), fi=.01, fo=.2))
+    p.parts.append(_life(-1, t1 + 1.1, _idle("bob", till, 6, 1.6), fi=.01, fo=.2))
     rec = (f'<rect x="120" y="290" width="200" height="230" rx="6" fill="#fff" stroke="{INK}" stroke-width="5"/>' + _t(220, 340, "RECEIPT", 26, GREY, serif=False)
            + "".join(f'<path d="M145 {370 + 30 * k} H295" stroke="{GREY}" stroke-width="5"/>' for k in range(3)) + _t(220, 500, "PAID", 36, TEAL))
-    p.parts.append(_life(t0 + .5, t1 + .5 - t0, _g("pop", t0 + .5, .4, _idle("sway", rec, 5, 1.5)), fi=.05, fo=.2))
+    p.parts.append(_life(t0 + .5, t1 + .1 - t0 - .5, _g("pop", t0 + .5, .4, _idle("sway", rec, 5, 1.5)), fi=.05, fo=.2))
     p.parts.append(_life(t0 + .2, t1 + .5 - t0, _g("pop", t0 + .2, .35, _pill(400, 60, "NO CASH LEFT", RED, "#fff", 30)), fi=.05, fo=.2))
     p.parts.append(_life(t1 + .1, 99, _g("growYdown", t1 + .1, .5, _iw_bar(70, 200, 0, -7.5, IW_LOSS, "-$7.50", 36), style="transform-box:fill-box;transform-origin:center top"), fi=.01, fo=.01))
     p.parts.append(_life(t1 + .7, 99, _g("growY", t1 + .7, .7, _iw_bar(300, 200, -7.5, 2.5, "#B9B4AC", "+$10", 44), style="transform-box:fill-box;transform-origin:center bottom"), fi=.01, fo=.01))
@@ -10541,7 +10549,7 @@ def iw_bs(p, seg=None, **_):
     """The balance sheet: two pans, ASSETS and EQUITY + DEBT, each a stack of blocks. On the first sentence the
     INVENTORY $10 block slides out of ASSETS and a CASH +$2.50 block drops in (count -$7.50); on the second the
     EQUITY block shrinks by $7.50 (a RETAINED EARNINGS -$7.50 slice falls away) and a BALANCES stamp lands."""
-    k = 9.0
+    k = 13.0
     base = 590
     xa, xe, w_ = 80, 470, 250
     _set(p, f'<path d="M30 {base} H770" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
@@ -10553,15 +10561,15 @@ def iw_bs(p, seg=None, **_):
     p.parts.append(_life(-1, t0 + .9, _g("slide", t0, .8, inv, style="", x0=0, y0=0, x1=-360, y1=0, ease="in"), fi=.01, fo=.1))
     cash = _nv_col(xa, w_, 2.5, IW_CASH, k=k, base=base - 30 * k, label="+$2.50", size=22)
     p.parts.append(_life(_fr(seg, 0, .5), 99, _g("slide", _fr(seg, 0, .5), .4, cash, style="", x0=0, y0=-300, x1=0, y1=0, ease="out"), fi=.02, fo=.01))
-    p.parts.append(_g("pop", _fr(seg, 0, .8), .35, _pill(xa + w_ / 2, 140, "-$7.50", RED, "#fff", 40)))
+    p.parts.append(_g("pop", _fr(seg, 0, .8), .35, _pill(xa + w_ / 2, 110, "-$7.50", RED, "#fff", 40)))
     t1 = _fr(seg, 1, .1)
     eqcut = _nv_col(xe, w_, 7.5, IW_LOSS, k=k, base=base - 25 * k, label="-$7.50", size=24)
     p.parts.append(_life(-1, 99, _nv_col(xe, w_, 5, IW_EQ, k=k, base=base - 20 * k), fi=.01, fo=.01))
     p.parts.append(_life(-1, t1 + .9, _g("slide", t1 + .2, .7, eqcut, style="", x0=0, y0=0, x1=360, y1=0, ease="in"), fi=.01, fo=.1))
-    p.parts.append(_g("pop", t1 + .7, .35, _pill(xe + w_ / 2, 140, "-$7.50", RED, "#fff", 40)))
-    p.parts.append(_stamp(250, 40, 300, 80, "BALANCES", TEAL, _fr(seg, 1, .6), size=44, rot=-4))
+    p.parts.append(_g("pop", t1 + .7, .35, _pill(xe + w_ / 2, 110, "-$7.50", RED, "#fff", 40)))
+    p.parts.append(_stamp(250, 300, 300, 80, "BALANCES", TEAL, _fr(seg, 1, .6), size=44, rot=-4))
     for j in range(3):
-        p.parts.append(_g("ripple", _fr(seg, 1, .7) + .5 * j, .5, f'<circle cx="400" cy="80" r="70" fill="none" stroke="{TEAL}" stroke-width="5"/>'))
+        p.parts.append(_g("ripple", _fr(seg, 1, .7) + .5 * j, .5, f'<circle cx="400" cy="340" r="70" fill="none" stroke="{TEAL}" stroke-width="5"/>'))
     end = seg[-1][1] + .4
     _cam(p, [(seg[0][0] - .4, 300, 360, 1.06), (t0 + .6, 230, 330, 1.1), (t1, 560, 330, 1.08), (t1 + 1.2, 420, 300, 1.04), (end, 400, 320, 1.0)])
 
@@ -10599,7 +10607,8 @@ def iw_rule(p, seg=None, **_):
 def iw_asks(p, **_):
     """The close: a rack of jackets with a $40 tag swinging that keeps getting crossed out and redrawn, a 25% TAX
     tag, and a CASH plate whose arrow bobs with only a ? on it. The answer (+$10) is not shown."""
-    _set(p, _iw_rack(50, 110, 3, .85) + _iw_plate(450, 280, 300, 220, "CASH"))
+    _set(p, _iw_plate(450, 280, 300, 220, "CASH"))
+    p.parts.append(_idle("sway", _iw_rack(50, 110, 3, .85), 3, 1.3))
     p.parts.append(_idle("swing", _ptag(210, 470, 170, "$40", IW_INV, INK, 52), 8, 2.0, style="transform-box:fill-box;transform-origin:center top"))
     p.parts.append(_idle("swing", _ptag(600, 140, 200, "25% TAX", INK, "#fff", 34), 7, 1.8, style="transform-box:fill-box;transform-origin:center top"))
     for r in range(10):

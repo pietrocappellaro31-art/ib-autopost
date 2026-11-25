@@ -1,0 +1,17 @@
+A $1 dividend lands in your account. Your $50 share drops to $49. So did you get paid?
+
+Not really. Part of what made the share worth $50 was the company's cash. When $1 of that cash goes out to you, the company is worth $1 a share less, so in theory the price falls by about $1 on the ex-dividend day.
+
+You end up with a $49 share and $1 of cash. That's $50, the same as before. It's cash moving from one pocket to the other, and if that dollar gets taxed you're a little behind.
+
+Price before = price after + the dividend. A dividend moves value to you, it doesn't make any.
+
+Your turn: an $80 share pays a $5 dividend. What should it be worth right after? Tell me in the comments.
+
+Follow @investmentbankinginterviews for a new IB interview question, worked out, every day.
+
+Round numbers, our own example, all else equal (no news, no market move). Not a view on any stock.
+
+Narration: AI-generated voice; script is our original work.
+
+#investmentbanking #dividends #ibinterview #finance

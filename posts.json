@@ -1932,6 +1932,20 @@
       "first_comment": "Bonus: 1% a month for two years on $100, nothing paid back. What do you owe at the end?",
       "ai_label": true,
       "published_id": null
+    },
+    {
+      "id": "reel-w2-dividend-myth",
+      "type": "reel",
+      "scheduled_utc": "2026-11-25T23:00:00",
+      "slot": "B",
+      "media_branch": "reel/w2-dividend-myth",
+      "video": "w2-dividend-myth.mp4",
+      "cover": "w2-dividend-myth.jpg",
+      "master": "scored",
+      "caption": "A $1 dividend lands in your account. Your $50 share drops to $49. So did you get paid?\n\nNot really. Part of what made the share worth $50 was the company's cash. When $1 of that cash goes out to you, the company is worth $1 a share less, so in theory the price falls by about $1 on the ex-dividend day.\n\nYou end up with a $49 share and $1 of cash. That's $50, the same as before. It's cash moving from one pocket to the other, and if that dollar gets taxed you're a little behind.\n\nPrice before = price after + the dividend. A dividend moves value to you, it doesn't make any.\n\nYour turn: an $80 share pays a $5 dividend. What should it be worth right after? Tell me in the comments.\n\nFollow @investmentbankinginterviews for a new IB interview question, worked out, every day.\n\nRound numbers, our own example, all else equal (no news, no market move). Not a view on any stock.\n\nNarration: AI-generated voice; script is our original work.\n\n#investmentbanking #dividends #ibinterview #finance",
+      "first_comment": "Bonus: instead of the dividend, the company spends the same cash buying back shares at $50. What happens to the price of the shares left?",
+      "ai_label": true,
+      "published_id": null
     }
   ],
   "reel_slots_et": {

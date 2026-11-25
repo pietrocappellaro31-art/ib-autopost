@@ -453,6 +453,13 @@
    "kind": "short",
    "id": "txmy-ethereal-slowed",
    "mood": "curious"
+  },
+  {
+   "date": "2026-11-25",
+   "slug": "w2-writedown-cash",
+   "kind": "short",
+   "id": "txmy-ethereal-slowed",
+   "mood": "curious"
   }
  ],
  "originals": [
@@ -927,6 +934,19 @@
    "bpm": 78,
    "key": "Bb",
    "style": "orchestral",
+   "rights": "ORIGINAL_GENERATED",
+   "added": "2026-11-25",
+   "note": ""
+  },
+  {
+   "id": "score-w2-dividend-myth",
+   "title": "Original score for w2-dividend-myth",
+   "video": "w2-dividend-myth",
+   "engine": "score.py + GeneralUser GS v2.0.3 (TinySoundFont)",
+   "mood": "mystery+resolve",
+   "bpm": 85,
+   "key": "C",
+   "style": "noir_jazz",
    "rights": "ORIGINAL_GENERATED",
    "added": "2026-11-25",
    "note": ""
