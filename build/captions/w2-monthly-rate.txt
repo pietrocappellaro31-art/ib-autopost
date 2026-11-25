@@ -1,0 +1,17 @@
+2% a month sounds like 24% a year. It's actually 26.8%.
+
+Say you owe $100 on a card at 2% a month and don't pay a cent back for 12 months. Month 1 adds $2, so you owe $102. Month 2 charges 2% on the whole $102, which is $2.04. That extra 4 cents is interest on last month's interest.
+
+It keeps going. By month 12 the interest is almost $2.50, and you owe $126.82, not the $124 you'd get from 12 x 2%.
+
+The quick way: 1.02 to the 12th power, minus 1. That's the effective annual rate, and it's why a monthly rate times 12 always undersells what you pay over a year.
+
+Your turn: 1% a month. Is that more or less than 12.5% a year? Tell me in the comments.
+
+Follow @investmentbankinginterviews for a new IB interview question, worked out, every day.
+
+Round numbers, our own example: interest added monthly, no fees, nothing repaid. Not advice on any card or loan.
+
+Narration: AI-generated voice; script is our original work.
+
+#finance #compoundinterest #ibinterview #investmentbanking

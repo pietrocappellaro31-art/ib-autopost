@@ -439,6 +439,20 @@
    "kind": "short",
    "id": "txmy-ethereal-slowed",
    "mood": "curious"
+  },
+  {
+   "date": "2026-11-25",
+   "slug": "w2-monthly-rate",
+   "kind": "short",
+   "id": "txmy-ethereal-slowed",
+   "mood": "curious"
+  },
+  {
+   "date": "2026-11-25",
+   "slug": "w2-dividend-myth",
+   "kind": "short",
+   "id": "txmy-ethereal-slowed",
+   "mood": "curious"
   }
  ],
  "originals": [
@@ -902,6 +916,19 @@
    "style": "acoustic",
    "rights": "ORIGINAL_GENERATED",
    "added": "2026-11-24",
+   "note": ""
+  },
+  {
+   "id": "score-w2-monthly-rate",
+   "title": "Original score for w2-monthly-rate",
+   "video": "w2-monthly-rate",
+   "engine": "score.py + GeneralUser GS v2.0.3 (TinySoundFont)",
+   "mood": "explain+discover",
+   "bpm": 78,
+   "key": "Bb",
+   "style": "orchestral",
+   "rights": "ORIGINAL_GENERATED",
+   "added": "2026-11-25",
    "note": ""
   }
  ]

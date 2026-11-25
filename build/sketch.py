@@ -9938,3 +9938,676 @@ def mx_asks(p, **_):
 
 
 SCENES.update({f.__name__: f for f in (mx_hook, mx_buy, mx_wait, mx_sale, mx_split, mx_answer, mx_rule, mx_asks)})
+
+
+# ---- 25 Nov Reel A: 2% a month is not 24% a year (build/reels_monthly-rate.py). Our own round numbers: $100 owed at
+# 2% a month, nothing paid for a year, interest added monthly. Month j's interest is 2% of the balance before it:
+# 2.00, 2.04, 2.08, 2.12, 2.16, 2.21, 2.25, 2.30, 2.34, 2.39, 2.44, 2.49 (2 x 1.02^(j-1)); sum 26.82; balance
+# 100 x 1.02^12 = 126.82 (1.268242); effective annual rate 26.8% against 12 x 2% = 24% (simple, $124, gap $2.82).
+# Close (not shown): 1% a month, 1.01^12 = 1.1268, 12.7% a year, more than 12.5%.
+
+AP_BASE, AP_K, AP_BH = 590, 12.0, 150          # base line, px per $ of interest, the $100 block's height
+AP_P, AP_I, AP_S = "#B9B4AC", "#F2C35B", "#5EC8B4"
+AP_INT = [2 * 1.02 ** j for j in range(12)]
+
+
+def _ap_base(x, w_, label="$100", op=1.0):
+    return (f'<rect x="{x}" y="{AP_BASE - AP_BH}" width="{w_}" height="{AP_BH}" rx="8" fill="{AP_P}" fill-opacity="{op}" stroke="{INK}" stroke-width="6"/>'
+            + (_t(x + w_ / 2, AP_BASE - AP_BH / 2 + 16, label, 44, INK) if label else ""))
+
+
+def _ap_slice(x, w_, j, fill=AP_I, label=True, flat=False):
+    """Month j's interest slice (0-based) sitting on the slices below it; flat=True: the simple $2 version."""
+    vals = [2.0] * 12 if flat else AP_INT
+    y1 = AP_BASE - AP_BH - sum(vals[:j]) * AP_K
+    h_ = vals[j] * AP_K
+    s = f'<rect x="{x}" y="{y1 - h_:.1f}" width="{w_}" height="{h_:.1f}" rx="4" fill="{fill}" stroke="{INK}" stroke-width="3"/>'
+    if label:
+        s += _t(x + w_ / 2, y1 - h_ / 2 + 8, f"${vals[j]:.2f}", 20, INK, serif=False)
+    return s
+
+
+def _ap_cal(x, y, rate="2%", cw=96, ch=64, lit=None):
+    s = f'<rect x="{x - 14}" y="{y - 46}" width="{4 * cw + 28}" height="{3 * ch + 60}" rx="14" fill="#fff" stroke="{INK}" stroke-width="6"/>'
+    s += f'<rect x="{x - 14}" y="{y - 46}" width="{4 * cw + 28}" height="36" rx="14" fill="{RED}" stroke="{INK}" stroke-width="6"/>'
+    for j in range(12):
+        cx, cy = x + (j % 4) * cw, y + (j // 4) * ch
+        s += (f'<rect x="{cx + 4}" y="{cy + 4}" width="{cw - 8}" height="{ch - 8}" rx="8" fill="#F4F1EC" stroke="{GREY}" stroke-width="3"/>'
+              + _t(cx + cw / 2, cy + ch / 2 + 9, rate, 26, INK, serif=False))
+    return s
+
+
+def _ap_cal_light(p, x, y, t, gap, cw=96, ch=64, col=AP_I, life=99, sfx_cells=12):
+    for j in range(sfx_cells):
+        cx, cy = x + (j % 4) * cw, y + (j // 4) * ch
+        p.parts.append(_life(t + gap * j, life, _g("pop", t + gap * j, .22, f'<rect x="{cx + 4}" y="{cy + 4}" width="{cw - 8}" height="{ch - 8}" rx="8" fill="{col}" fill-opacity=".85" stroke="{INK}" stroke-width="4"/>'
+                                                   + _t(cx + cw / 2, cy + ch / 2 + 9, f"M{j + 1}", 24, INK, serif=False)), fi=.02, fo=.1))
+
+
+def ap_hook(p, seg=None, **_):
+    """The hook. From frame 0 the clash is on the panel and moving: a 12-month calendar of 2% cells on the left (a
+    light runs round its cells for ever), and on the right two columns on a $100 block: 12 x 2% (dashed gold, a 24%?
+    tag bobbing) and REAL (dashed, a ? swinging). On '2% a month' the cells light M1 to M12 with an x12 counter; on
+    the question the simple column fills to 24% with its count and the ? on REAL keeps swinging; camera across."""
+    cx, cy = 50, 130
+    _set(p, _ap_cal(cx, cy) + _t(cx + 192, 108, "2% A MONTH", 26, "#fff", serif=False)
+         + f'<path d="M440 {AP_BASE} H780" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+         + _ap_base(450, 140, None, op=.5) + _ap_base(620, 140, None, op=.5)
+         + f'<rect x="450" y="{AP_BASE - AP_BH - 24 * AP_K}" width="140" height="{24 * AP_K}" rx="6" fill="{AP_I}" fill-opacity=".14" stroke="{GREY}" stroke-width="5" stroke-dasharray="12 9"/>'
+         + f'<rect x="620" y="{AP_BASE - AP_BH - 30 * AP_K}" width="140" height="{30 * AP_K}" rx="6" fill="{RED}" fill-opacity=".06" stroke="{GREY}" stroke-width="5" stroke-dasharray="12 9"/>'
+         + _t(520, AP_BASE + 40, "12 x 2%", 28, INK, serif=False) + _t(690, AP_BASE + 40, "REAL", 28, INK, serif=False))
+    for r in range(30):                                     # the light that runs round the cells for ever
+        j = r % 12
+        x_, y_ = cx + (j % 4) * 96, cy + (j // 4) * 64
+        p.parts.append(_life(.0 + .45 * r, .45, f'<rect x="{x_ + 4}" y="{y_ + 4}" width="88" height="56" rx="8" fill="none" stroke="{RED}" stroke-width="6"/>', fi=.05, fo=.05))
+    p.parts.append(_idle("swing", _ptag(690, 70, 120, "?", RED, "#fff", 70), 10, 2.2, style="transform-box:fill-box;transform-origin:center top"))
+    t0 = _fr(seg, 0, .1)
+    _ap_cal_light(p, cx, cy, t0, .09)
+    p.parts.append(_life(t0, 99, _cnt(240, 470, 1, 12, t0, 12 * .09, size=56, pre="x", color=RED), fi=.05, fo=.01))
+    t1 = _fr(seg, 1, .1)
+    p.parts.append(_life(t1, 99, _g("growY", t1, .8, f'<rect x="450" y="{AP_BASE - AP_BH - 24 * AP_K}" width="140" height="{24 * AP_K}" rx="6" fill="{AP_I}" stroke="{INK}" stroke-width="6"/>',
+                                     style="transform-box:fill-box;transform-origin:center bottom"), fi=.01, fo=.01))
+    p.parts.append(_life(t1, 99, _cnt(520, AP_BASE - AP_BH - 12 * AP_K + 16, 0, 24, t1, .8, size=46, pre="", suf="%"), fi=.05, fo=.01))
+    p.parts.append(_g("pop", t1 + .8, .35, _idle("bob", _pill(520, 110, "24%?", INK, "#fff", 34), 7, 1.8, style="")))
+    for j in range(4):
+        p.parts.append(_g("ripple", t1 + .9 + .55 * j, .5, f'<circle cx="690" cy="300" r="50" fill="none" stroke="{RED}" stroke-width="5"/>'))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 260, 290, 1.12), (t0 + .6, 250, 280, 1.12), (t1, 560, 330, 1.1), (t1 + 1.0, 600, 330, 1.12), (end, 400, 320, 1.0)])
+
+
+def ap_setup(p, seg=None, **_):
+    """The set-up. A generic card (chip, stripes, no brand) slides in; on the first sentence the $100 block grows
+    under it with its count and a 2% A MONTH tag swings in; on the second a month counter flips M1 to M12 on a page
+    while a PAID $0 stamp lands and the card's stripe pulses."""
+    _set(p, f'<path d="M30 {AP_BASE} H770" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>' + _t(185, AP_BASE + 40, "YOU OWE", 28, INK, serif=False)
+         + _ap_base(100, 170, None, op=.12))
+    card = (f'<rect x="420" y="70" width="320" height="200" rx="22" fill="{TEAL}" stroke="{INK}" stroke-width="6"/>'
+            f'<rect x="452" y="120" width="60" height="44" rx="8" fill="{AP_I}" stroke="{INK}" stroke-width="4"/>'
+            + "".join(f'<rect x="{452 + 62 * k}" y="210" width="48" height="16" rx="5" fill="#fff" fill-opacity=".8"/>' for k in range(4)))
+    p.parts.append(_life(-1, 99, _g("slide", seg[0][0] - .2, .6, _idle("float", card, 6, .6), style="", x0=420, y0=0, x1=0, y1=0, ease="out"), fi=.01, fo=.01))
+    t0 = _fr(seg, 0, .3)
+    p.parts.append(_life(t0, 99, _g("growY", t0, .6, _ap_base(100, 170, None), style="transform-box:fill-box;transform-origin:center bottom"), fi=.01, fo=.01))
+    p.parts.append(_life(t0, 99, _cnt(185, AP_BASE - AP_BH / 2 + 16, 0, 100, t0, .6, size=48), fi=.05, fo=.01))
+    p.parts.append(_g("pop", _fr(seg, 0, .75), .4, _idle("swing", _pill(185, 320, "2% A MONTH", RED, "#fff", 32), 5, 2.0, style="transform-box:fill-box;transform-origin:center top")))
+    t1 = _fr(seg, 1, .1)
+    _set(p, f'<rect x="440" y="400" width="260" height="170" rx="14" fill="#fff" stroke="{INK}" stroke-width="6"/>' + _t(570, 440, "MONTH", 26, GREY, serif=False))
+    for j in range(12):
+        a = t1 + .13 * j
+        p.parts.append(_life(a if j else -1, (.13 if j < 11 else 99) if j else t1 + 1.13, _t(570, 530, f"M{j + 1}", 70, INK), fi=.01, fo=.01))
+    p.parts.append(_stamp(470, 290, 200, 76, "PAID $0", RED, t1 + 1.6, size=40, rot=-6))
+    for j in range(3):
+        p.parts.append(_g("ripple", t1 + 1.8 + .5 * j, .5, f'<circle cx="570" cy="328" r="60" fill="none" stroke="{RED}" stroke-width="5"/>'))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 500, 260, 1.1), (t0, 300, 400, 1.06), (t1, 450, 380, 1.04), (t1 + 1.5, 420, 340, 1.04), (end, 400, 320, 1.0)])
+
+
+def ap_month(p, seg=None, **_):
+    """Months one and two. The $100 block; on the first sentence a $2.00 slice drops on it and the count runs $100
+    to $102; on the second a bracket '2% OF $102' spans the whole column, the $2.04 slice drops, the count runs to
+    $104.04 and a +$0.04 pill pops beside the slice (interest on last month's interest), its edge flashing."""
+    x, w_ = 130, 230
+    _set(p, f'<path d="M30 {AP_BASE} H770" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>' + _ap_base(x, w_)
+         + _t(x + w_ / 2, AP_BASE + 40, "BALANCE", 28, INK, serif=False)
+         + f'<rect x="470" y="70" width="290" height="150" rx="16" fill="#fff" stroke="{INK}" stroke-width="6"/>' + _t(615, 110, "YOU OWE", 26, GREY, serif=False))
+    p.parts.append(_idle("breathe", _ap_base(x, w_), .01, 2.3, style="transform-box:fill-box;transform-origin:center bottom"))
+    t0 = _fr(seg, 0, .2)
+    big = lambda j: _ap_slice(x, w_, j, label=False).replace('height="', 'height="', 1)
+    # slices drawn 3x taller here so a $2 slice reads: a local scale
+    def sl(j, lab):
+        y1 = AP_BASE - AP_BH - sum(AP_INT[:j]) * 36
+        h_ = AP_INT[j] * 36
+        return (f'<rect x="{x}" y="{y1 - h_:.1f}" width="{w_}" height="{h_:.1f}" rx="6" fill="{AP_I}" stroke="{INK}" stroke-width="5"/>'
+                + _t(x + w_ / 2, y1 - h_ / 2 + 13, lab, 36, INK))
+    p.parts.append(_life(t0, 99, _g("slide", t0, .35, sl(0, "$2.00"), style="", x0=0, y0=-420, x1=0, y1=0, ease="out"), fi=.02, fo=.01))
+    p.parts.append(_life(-1, _fr(seg, 1, .5) + 1, _cnt(615, 190, 100, 102, t0 + .3, .5, size=60, dec=2), fi=.01, fo=.01))
+    t1 = _fr(seg, 1, .1)
+    top = AP_BASE - AP_BH - 2 * 36
+    p.parts.append(_g("draw", t1, .4, f'<path d="M{x - 30} {AP_BASE} V{top} M{x - 30} {AP_BASE} h18 M{x - 30} {top} h18" stroke="{RED}" stroke-width="6" fill="none"/>', style=""))
+    p.parts.append(_g("pop", t1 + .3, .35, _pill(x + w_ / 2, top - 160, "2% OF $102", RED, "#fff", 32)))
+    t2 = _fr(seg, 1, .5)
+    p.parts.append(_life(t2, 99, _g("slide", t2, .35, sl(1, "$2.04"), style="", x0=0, y0=-420, x1=0, y1=0, ease="out"), fi=.02, fo=.01))
+    p.parts.append(_life(t2, 99, _cnt(615, 190, 102, 104.04, t2 + .3, .5, size=60, dec=2), fi=.01, fo=.01))
+    p.parts.append(_g("pop", t2 + .5, .35, _idle("bob", _pill(560, top - 36, "+$0.04", TEAL, "#fff", 34), 6, 1.8, style="")))
+    for j in range(3):
+        p.parts.append(_g("ripple", t2 + .7 + .5 * j, .5, f'<circle cx="{x + w_ / 2}" cy="{top - 36}" r="50" fill="none" stroke="{TEAL}" stroke-width="5"/>'))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 260, 420, 1.1), (t0 + .4, 380, 300, 1.05), (t1, 250, 380, 1.1), (t2 + .6, 380, 320, 1.06), (end, 400, 320, 1.0)])
+
+
+def ap_snowball(p, seg=None, **_):
+    """The snowball. On the first sentence the twelve interest slices drop one by one on the $100 block, each a
+    touch taller, while on the right a small chart plots each month's interest as a rising dot line over a dashed
+    flat $2 line (SIMPLE); on the second the twelfth slice flashes, an ALMOST $2.50 pill pops at the line's end."""
+    x, w_ = 60, 200
+    _set(p, f'<path d="M30 {AP_BASE} H770" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>' + _ap_base(x, w_)
+         + f'<rect x="330" y="80" width="430" height="380" rx="16" fill="#fff" stroke="{INK}" stroke-width="6"/>'
+         + _t(545, 122, "INTEREST EACH MONTH", 24, GREY, serif=False)
+         + f'<path d="M370 400 H730" stroke="{GREY}" stroke-width="5" stroke-dasharray="12 9"/>' + _t(545, 440, "SIMPLE: $2 EVERY MONTH", 22, GREY, serif=False)
+         + "".join(_ap_slice(x, w_, j, fill=AP_I, label=False).replace(f'fill="{AP_I}"', f'fill="{AP_I}" fill-opacity=".1"') for j in range(12)))
+    t0 = _fr(seg, 0, .05)
+    gap = (seg[0][1] - t0) / 12.5
+    pts = [(370 + 30 * j + 15, 400 - (v - 2) * 400) for j, v in enumerate(AP_INT)]
+    for j in range(12):
+        a = t0 + gap * j
+        p.parts.append(_life(a, 99, _g("slide", a, .25, _ap_slice(x, w_, j, label=j in (0, 11)), style="", x0=0, y0=-300, x1=0, y1=0, ease="out"), fi=.02, fo=.01))
+        p.parts.append(_g("pop", a + .1, .2, f'<circle cx="{pts[j][0]:.0f}" cy="{pts[j][1]:.0f}" r="11" fill="{RED}" stroke="{INK}" stroke-width="3"/>'))
+        if j:
+            p.parts.append(_g("draw", a, .2, f'<path d="M{pts[j - 1][0]:.0f} {pts[j - 1][1]:.0f} L{pts[j][0]:.0f} {pts[j][1]:.0f}" stroke="{RED}" stroke-width="6"/>', style=""))
+    p.parts.append(_life(t0, 99, _cnt(545, 535, 100, 126.82, t0, gap * 12, size=50, dec=2), fi=.05, fo=.01))
+    t1 = _fr(seg, 1, .2)
+    p.parts.append(_g("press", t1, .4, _ap_slice(x, w_, 11, fill="none", label=False).replace('stroke-width="3"', f'stroke="{RED}" stroke-width="6"', 1).replace(f'stroke="{INK}" stroke="{RED}"', f'stroke="{RED}"')))
+    p.parts.append(_g("pop", t1 + .2, .4, _idle("bob", _pill(600, 160, "ALMOST $2.50", RED, "#fff", 30), 6, 1.8, style="")))
+    for j in range(4):
+        p.parts.append(_g("ripple", t1 + .5 + .5 * j, .5, f'<circle cx="{pts[11][0]:.0f}" cy="{pts[11][1]:.0f}" r="34" fill="none" stroke="{RED}" stroke-width="5"/>'))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 300, 360, 1.05), (t0 + gap * 6, 420, 300, 1.08), (t1, 560, 260, 1.12), (t1 + 1.0, 500, 300, 1.08), (end, 400, 320, 1.0)])
+
+
+def ap_answer(p, seg=None, **_):
+    """The answer. Two columns on $100 blocks: SIMPLE (twelve flat $2 slices, grey-gold) and REAL (the twelve
+    growing slices). On the first sentence both build together, the REAL count runs to $126.82 and the SIMPLE one to
+    $124; a red +$2.82 bracket stretches across the gap. On the second a 26.8% stamp lands on REAL and a 24% tag on
+    SIMPLE is struck through."""
+    xs, xr, w_ = 100, 500, 200
+    _set(p, f'<path d="M30 {AP_BASE} H770" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>' + _ap_base(xs, w_) + _ap_base(xr, w_)
+         + _t(xs + w_ / 2, AP_BASE + 40, "12 x 2%", 28, INK, serif=False) + _t(xr + w_ / 2, AP_BASE + 40, "REAL", 28, INK, serif=False))
+    t0 = _fr(seg, 0, .1)
+    g = .1
+    for j in range(12):
+        p.parts.append(_life(t0 + g * j, 99, _g("growY", t0 + g * j, .2, _ap_slice(xs, w_, j, fill="#E3D9B8", label=False, flat=True), style="transform-box:fill-box;transform-origin:center bottom"), fi=.02, fo=.01))
+        p.parts.append(_life(t0 + g * j, 99, _g("growY", t0 + g * j, .2, _ap_slice(xr, w_, j, label=False), style="transform-box:fill-box;transform-origin:center bottom"), fi=.02, fo=.01))
+    top_s, top_r = AP_BASE - AP_BH - 24 * AP_K, AP_BASE - AP_BH - 26.824 * AP_K
+    p.parts.append(_life(t0, 99, _cnt(xs + w_ / 2, top_s - 20, 100, 124, t0, 1.2, size=44, dec=2), fi=.05, fo=.01))
+    p.parts.append(_life(t0, 99, _cnt(xr + w_ / 2, top_r - 20, 100, 126.82, t0, 1.2, size=44, dec=2, color=TEAL), fi=.05, fo=.01))
+    tb = t0 + 1.4
+    p.parts.append(_g("draw", tb, .4, f'<path d="M{xs + w_} {top_s:.0f} H{xr + w_ + 20} M{xr + w_ + 20} {top_s:.0f} V{top_r:.0f} M{xr} {top_r:.0f} H{xr + w_ + 20}" stroke="{RED}" stroke-width="6" stroke-dasharray="10 8" fill="none"/>', style=""))
+    p.parts.append(_g("pop", tb + .3, .35, _idle("bob", _pill(400, 330, "+$2.82", RED, "#fff", 30), 6, 1.7, style="")))
+    t1 = _fr(seg, 1, .15)
+    p.parts.append(_stamp(xr - 20, 230, 240, 86, "26.8%", TEAL, t1, size=56, rot=-5))
+    p.parts.append(_g("pop", t1 + .25, .3, _ptag(xs + w_ / 2, 273, 160, "24%", "#3B3F48", "#fff", 50)))
+    p.parts.append(_g("draw", _fr(seg, 1, .7), .3, f'<path d="M{xs + 30} 298 L{xs + w_ - 20} 248" stroke="{RED}" stroke-width="12" stroke-linecap="round"/>', style=""))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 400, 380, 1.04), (tb, 420, 330, 1.05), (t1, 400, 310, 1.05), (t1 + 1.2, 330, 310, 1.05), (end, 400, 320, 1.0)])
+
+
+def ap_rule(p, seg=None, **_):
+    """The rule, laid out at full panel height (the 24 Nov next improvement: equation tiles 1.5x larger, the result
+    as a column below). Twelve big x1.02 tiles in two rows of six fill the top half; on the first sentence they light
+    one by one while a running product counts 1.000 to 1.268 under them; an arrow drops to the result row:
+    1.268 - 1 = 26.8%, growing as a teal bar beside a grey 24% bar. On the second an EFFECTIVE ANNUAL RATE stamp lands
+    and the tiles light again in a wave."""
+    tw, th, gx = 116, 92, 10
+    tiles = ""
+    pos = []
+    for j in range(12):
+        x_, y_ = 26 + (j % 6) * (tw + gx), 40 + (j // 6) * (th + 14)
+        pos.append((x_, y_))
+        tiles += (f'<rect x="{x_}" y="{y_}" width="{tw}" height="{th}" rx="14" fill="#fff" stroke="{INK}" stroke-width="5"/>'
+                  + _t(x_ + tw / 2, y_ + 58, "x1.02", 34, INK))
+    _set(p, tiles + f'<rect x="40" y="410" width="720" height="80" rx="12" fill="#3B3F48" fill-opacity=".1" stroke="{GREY}" stroke-width="4" stroke-dasharray="12 9"/>'
+         + f'<rect x="40" y="520" width="720" height="80" rx="12" fill="{AP_S}" fill-opacity=".1" stroke="{GREY}" stroke-width="4" stroke-dasharray="12 9"/>')
+    t0 = _fr(seg, 0, .05)
+    gap = (seg[0][1] - t0 - .4) / 12
+    for j, (x_, y_) in enumerate(pos):
+        a = t0 + gap * j
+        p.parts.append(_life(a, 99, _g("pop", a, .2, f'<rect x="{x_}" y="{y_}" width="{tw}" height="{th}" rx="14" fill="{AP_I}" stroke="{INK}" stroke-width="5"/>'
+                                         + _t(x_ + tw / 2, y_ + 58, "x1.02", 34, INK)), fi=.02, fo=.01))
+    p.parts.append(_life(t0, _fr(seg, 1, .45) - t0, _cnt(400, 300, 1, 1.268, t0, gap * 12, size=64, pre="", dec=3), fi=.05, fo=.1))
+    p.parts.append(_g("draw", t0 + gap * 12, .3, _arrow(400, 320, 395, RED), style=""))
+    tr = t0 + gap * 12 + .2
+    p.parts.append(_g("growX", tr, .5, f'<rect x="40" y="410" width="{24 * 24:.0f}" height="80" rx="12" fill="#B9B4AC" stroke="{INK}" stroke-width="5"/>' + _t(60, 462, "12 x 2% = 24%", 32, INK, serif=False, anchor="start"), style="transform-box:fill-box;transform-origin:left center"))
+    p.parts.append(_g("growX", tr + .4, .6, f'<rect x="40" y="520" width="{26.8 * 24:.0f}" height="80" rx="12" fill="{AP_S}" stroke="{INK}" stroke-width="5"/>' + _t(60, 572, "1.268 - 1 = 26.8%", 32, INK, serif=False, anchor="start"), style="transform-box:fill-box;transform-origin:left center"))
+    t1 = _fr(seg, 1, .1)
+    for j, (x_, y_) in enumerate(pos):
+        p.parts.append(_g("press", t1 + .06 * j, .3, f'<rect x="{x_}" y="{y_}" width="{tw}" height="{th}" rx="14" fill="none" stroke="{RED}" stroke-width="7"/>'))
+    p.parts.append(_stamp(150, 252, 500, 74, "EFFECTIVE ANNUAL RATE", RED, _fr(seg, 1, .5), size=36, rot=-3))
+    for j in range(3):
+        p.parts.append(_g("ripple", _fr(seg, 1, .6) + .5 * j, .5, f'<circle cx="{40 + 26.8 * 24:.0f}" cy="560" r="40" fill="none" stroke="{TEAL}" stroke-width="5"/>'))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 400, 180, 1.1), (t0 + gap * 6, 400, 200, 1.08), (tr, 400, 470, 1.08), (t1, 400, 330, 1.0), (end, 400, 320, 1.0)])
+
+
+def ap_asks(p, **_):
+    """The close: a 12-month calendar of 1% cells whose light keeps running round, and a seesaw with 12.5% A YEAR on
+    one pan and a ? on the other that keeps tipping one way and back. The answer (12.7%, more) is not shown."""
+    _set(p, _ap_cal(40, 110, rate="1%", cw=84, ch=58) + _t(40 + 168, 88, "1% A MONTH", 24, "#fff", serif=False))
+    for r in range(40):
+        j = r % 12
+        x_, y_ = 40 + (j % 4) * 84, 110 + (j // 4) * 58
+        p.parts.append(_life(p.at(0) + .4 * r, .4, f'<rect x="{x_ + 4}" y="{y_ + 4}" width="76" height="50" rx="8" fill="{AP_I}" fill-opacity=".8" stroke="{RED}" stroke-width="5"/>', fi=.05, fo=.05))
+    beam = (f'<path d="M420 300 H760" stroke="{INK}" stroke-width="10" stroke-linecap="round"/>'
+            + f'<rect x="420" y="220" width="130" height="80" rx="10" fill="#fff" stroke="{INK}" stroke-width="5"/>' + _t(485, 272, "12.5%", 34, INK)
+            + f'<rect x="630" y="220" width="130" height="80" rx="10" fill="{RED}" stroke="{INK}" stroke-width="5"/>' + _t(695, 278, "?", 56, "#fff"))
+    _set(p, f'<path d="M590 300 L550 420 H630 Z" fill="{GREY}" stroke="{INK}" stroke-width="5"/>' + f'<path d="M400 420 H780" stroke="{INK}" stroke-width="6"/>')
+    p.parts.append(_idle("swing", beam, 14, 1.5, style="transform-box:view-box;transform-origin:590px 300px"))
+    for r in range(14):                                     # 1% coins keep dropping into a jar that fills and empties
+        a = p.at(0) + .9 * r
+        p.parts.append(_life(a, .9, _g("slide", a, .45, _coin_shape(130 + 60 * (r % 4), 470, 26, "1%"), style="", x0=0, y0=-160, x1=0, y1=0, ease="out"), fi=.02, fo=.1))
+    p.parts.append(_idle("bob", _pill(590, 530, "MORE OR LESS?", INK, "#fff", 34), 7, 1.9, style=""))
+    for j in range(8):
+        p.parts.append(_g("ripple", p.at(.15) + .8 * j, .7, f'<circle cx="695" cy="260" r="50" fill="none" stroke="{RED}" stroke-width="5"/>'))
+
+
+SCENES.update({f.__name__: f for f in (ap_hook, ap_setup, ap_month, ap_snowball, ap_answer, ap_rule, ap_asks)})
+
+
+# ---- 25 Nov Reel B: the dividend myth (build/reels_dividend-myth.py). Our own round numbers: a share worth $50, a
+# $1 cash dividend; in theory (all else equal, no tax) the price drops by about the dividend on the ex-dividend day,
+# to about $49; the holder has $49 + $1 = $50, the same as before. If the $1 is taxed, a little less than $50.
+# Rule: price before = price after + dividend. Close (not shown): $80 share, $5 dividend, about $75 after.
+
+DV_BASE, DV_K = 590, 8.0                       # px per $ (a $50 column is 400 px)
+DV_BUS, DV_CASH, DV_DIV = "#B9B4AC", "#5EC8B4", "#F2C35B"
+
+
+def _dv_col(x, w_, v, fill, base=DV_BASE, k=DV_K, label=None, size=40, dash=False, op=1.0):
+    return _nv_col(x, w_, v, fill, k=k, base=base, label=label, size=size, dash=dash, op=op)
+
+
+def _dv_share(x, w_, after=False, k=DV_K, base=DV_BASE, labels=True):
+    """A $50 share as a column: the business ($40, grey) and its cash ($10, teal) with the $1 to be paid on top.
+    after=True: the $1 gone, $49."""
+    s = _dv_col(x, w_, 40, DV_BUS, k=k, base=base) + _dv_col(x, w_, 9, DV_CASH, k=k, base=base - 40 * k)
+    if labels:
+        s += _t(x + w_ / 2, base - 20 * k + 12, "BUSINESS", 26, INK, serif=False) + _t(x + w_ / 2, base - 44.5 * k + 10, "CASH", 26, INK, serif=False)
+    if not after:
+        s += _dv_col(x, w_, 1, DV_DIV, k=k, base=base - 49 * k)
+    return s
+
+
+def _dv_wallet(x, y, label="YOU"):
+    return (f'<rect x="{x}" y="{y}" width="220" height="140" rx="20" fill="#7A4E2D" stroke="{INK}" stroke-width="6"/>'
+            f'<rect x="{x + 120}" y="{y + 44}" width="110" height="56" rx="14" fill="#8F6038" stroke="{INK}" stroke-width="5"/>'
+            f'<circle cx="{x + 200}" cy="{y + 72}" r="9" fill="{DV_DIV}" stroke="{INK}" stroke-width="3"/>'
+            + _t(x + 60, y + 82, label, 28, "#fff", serif=False))
+
+
+def dv_hook(p, seg=None, **_):
+    """The hook. From frame 0 both sides of the clash are on the panel and moving: a $50 share column (its $1 gold
+    slice on top glowing) with a $50 price tag swinging, and a wallet (YOU) that breathes, a $1 coin hovering
+    between them. On the first sentence the coin drops into the wallet (+$1 pops) while the price tag counts
+    $50 to $49 and the gold slice leaves the column; on the question a ? swings over the wallet and PAID? bobs."""
+    x, w_ = 90, 220
+    _set(p, f'<path d="M30 {DV_BASE} H770" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>' + _t(x + w_ / 2, DV_BASE + 40, "YOUR SHARE", 28, INK, serif=False)
+         + _dv_share(x, w_, after=True))
+    t0 = _fr(seg, 0, .2)
+    p.parts.append(_life(-1, t0 + 1.4, _dv_col(x, w_, 1, DV_DIV, base=DV_BASE - 49 * DV_K), fi=.01, fo=.2))
+    for j in range(4):
+        p.parts.append(_g("ripple", .05 + .6 * j, .5, f'<circle cx="{x + w_ / 2}" cy="{DV_BASE - 49.5 * DV_K:.0f}" r="40" fill="none" stroke="{DV_DIV}" stroke-width="6"/>'))
+    p.parts.append(_idle("breathe", _dv_wallet(480, 400), .02, 2.0))
+    p.parts.append(_life(-1, t0 + 1.0, _idle("bob", _coin_shape(470, 200, 46, "$1"), 12, 1.6), fi=.01, fo=.01))
+    p.parts.append(_life(t0 + .95, 99, _g("slide", t0 + .95, .45, _coin_shape(470, 200, 46, "$1"), style="", x0=0, y0=0, x1=120, y1=260, ease="in"), fi=.01, fo=.01))
+    p.parts.append(_g("pop", t0 + 1.4, .35, _pill(600, 360, "+$1", TEAL, "#fff", 36)))
+    p.parts.append(_life(-1, t0 + 1.0, _idle("swing", _ptag(560, 120, 200, "$50", INK, "#fff", 60), 8, 2.0, style="transform-box:fill-box;transform-origin:center top"), fi=.01, fo=.01))
+    p.parts.append(_life(t0, 99, _idle("swing", _ptag(560, 120, 200, "$49", RED, "#fff", 60), 8, 2.0, style="transform-box:fill-box;transform-origin:center top"), fi=.3, fo=.01))
+    p.parts.append(_g("draw", t0 + .2, .3, f'<path d="M80 {DV_BASE - 50 * DV_K:.0f} H{x + w_ + 30}" stroke="{RED}" stroke-width="6" stroke-dasharray="12 9"/>', style=""))
+    t1 = _fr(seg, 1, .1)
+    p.parts.append(_g("pop", t1, .4, _idle("swing", _ptag(720, 250, 110, "?", RED, "#fff", 64), 10, 2.1, style="transform-box:fill-box;transform-origin:center top")))
+    p.parts.append(_g("pop", t1 + .3, .35, _idle("bob", _pill(590, 580, "PAID?", RED, "#fff", 34), 6, 1.8, style="")))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 400, 320, 1.0), (t0 + .4, 330, 300, 1.08), (t0 + 1.4, 520, 360, 1.08), (t1 + .5, 420, 330, 1.03), (end, 400, 320, 1.0)])
+
+
+def dv_setup(p, seg=None, **_):
+    """The set-up. On the first sentence the $50 share column builds from the ground (business, then cash, then the
+    gold $1 slice) with its count to $50 and a SHARE $50 plate; on the second the gold $1 slice lifts off the cash,
+    travels right along a dashed path and drops into the wallet, which bounces; a DIVIDEND $1 tag swings."""
+    x, w_ = 90, 240
+    _set(p, f'<path d="M30 {DV_BASE} H770" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>' + _t(x + w_ / 2, DV_BASE + 40, "ONE SHARE", 28, INK, serif=False)
+         + _dv_col(x, w_, 50, DV_BUS, dash=True, op=.1) + _dv_wallet(500, 420))
+    t0 = _fr(seg, 0, .1)
+    p.parts.append(_life(t0, 99, _g("growY", t0, .6, _dv_col(x, w_, 40, DV_BUS) + _t(x + w_ / 2, DV_BASE - 20 * DV_K + 12, "BUSINESS", 26, INK, serif=False),
+                                     style="transform-box:fill-box;transform-origin:center bottom"), fi=.01, fo=.01))
+    t0c = _fr(seg, 0, .7)
+    p.parts.append(_life(t0c, 99, _g("growY", t0c, .45, _dv_col(x, w_, 9, DV_CASH, base=DV_BASE - 40 * DV_K) + _t(x + w_ / 2, DV_BASE - 44.5 * DV_K + 10, "CASH", 26, INK, serif=False),
+                                      style="transform-box:fill-box;transform-origin:center bottom"), fi=.01, fo=.01))
+    t1 = _fr(seg, 1, .2)
+    p.parts.append(_life(t0c + .4, t1 + .1 - t0c - .4, _dv_col(x, w_, 1, DV_DIV, base=DV_BASE - 49 * DV_K), fi=.05, fo=.01))
+    p.parts.append(_life(t0, 99, _cnt(x + w_ / 2, DV_BASE - 50 * DV_K - 24, 0, 50, t0, 1.2, size=50), fi=.05, fo=.01))
+    slab = _dv_col(x, w_, 1, DV_DIV, base=DV_BASE - 49 * DV_K) + _t(x + w_ + 46, DV_BASE - 49.5 * DV_K + 10, "$1", 34, INK)
+    p.parts.append(_life(t1 + .1, 1.2, _g("slide", t1 + .1, 1.0, slab, style="", x0=0, y0=0, x1=440, y1=60, ease="inout"), fi=.01, fo=.1))
+    p.parts.append(_g("pop", t1 + 1.1, .35, _coin_shape(610, 470, 40, "$1")))
+    p.parts.append(_g("press", t1 + 1.1, .35, _dv_wallet(500, 420)))
+    p.parts.append(_g("pop", t1 + .4, .4, _idle("swing", _pill(600, 210, "DIVIDEND $1", RED, "#fff", 36), 5, 2.0, style="transform-box:fill-box;transform-origin:center top")))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 250, 340, 1.08), (t0c, 240, 300, 1.08), (t1, 400, 300, 1.03), (t1 + 1.2, 470, 380, 1.06), (end, 400, 320, 1.0)])
+
+
+def dv_drop(p, seg=None, **_):
+    """The drop. The share column after the dividend ($49, the cash a slice lower) beside a ghost of the $50 one.
+    On the first sentence a red bracket marks the missing $1 at the top and a -$1 pill pops; on the second a price
+    chart draws: flat at $50, a step down to $49 at an EX-DIVIDEND marker, the price tag counting 50 to 49 and a dot
+    that rides the line."""
+    x, w_ = 60, 200
+    _set(p, f'<path d="M30 {DV_BASE} H770" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>' + _dv_share(x, w_, after=True)
+         + _dv_col(x, w_, 50, DV_DIV, dash=True, op=.08) + _t(x + w_ / 2, DV_BASE + 40, "AFTER", 28, INK, serif=False)
+         + f'<rect x="320" y="60" width="440" height="320" rx="16" fill="#fff" stroke="{INK}" stroke-width="6"/>'
+         + _t(540, 100, "SHARE PRICE", 24, GREY, serif=False))
+    t0 = _fr(seg, 0, .3)
+    top = DV_BASE - 50 * DV_K
+    p.parts.append(_g("draw", t0, .4, f'<path d="M{x + w_ + 14} {top:.0f} h16 V{top + DV_K:.0f} h-16" stroke="{RED}" stroke-width="6" fill="none"/>', style=""))
+    p.parts.append(_g("pop", t0 + .3, .35, _idle("bob", _pill(x + w_ / 2 + 20, top - 50, "-$1 A SHARE", RED, "#fff", 26), 6, 1.8, style="")))
+    t1 = _fr(seg, 1, .05)
+    y50, y49 = 190, 300
+    p.parts.append(_g("draw", t1, .8, f'<path d="M350 {y50} H560 V{y49} H730" stroke="{RED}" stroke-width="8" fill="none" stroke-linejoin="round"/>', style=""))
+    p.parts.append(_g("pop", t1 + .4, .3, f'<path d="M560 130 V350" stroke="{INK}" stroke-width="4" stroke-dasharray="8 8"/>' + _t(560, 368, "EX-DIVIDEND DAY", 22, INK, serif=False)))
+    p.parts.append(_life(t1, 99, _cnt(420, y50 - 20, 50, 49, t1 + .5, .3, size=40), fi=.05, fo=.01))
+    for r in range(6):
+        a = t1 + .9 + 1.1 * r
+        p.parts.append(_life(a, 1.1, _g("slide", a, 1.05, f'<circle cx="350" cy="{y50}" r="12" fill="{INK}"/>', style="", x0=0, y0=0, x1=210, y1=0, ease="inout"), fi=.02, fo=.02))
+    p.parts.append(_g("pop", t1 + .9, .35, _pill(650, y49 + 40, "ABOUT $49", RED, "#fff", 28)))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 230, 300, 1.08), (t0 + .5, 300, 300, 1.04), (t1, 520, 260, 1.06), (t1 + 1.5, 500, 280, 1.04), (end, 400, 320, 1.0)])
+
+
+def dv_answer(p, seg=None, **_):
+    """The answer. A balance: BEFORE (the $50 share) on the left pan, AFTER on the right. On the first sentence the
+    $49 share column then a $1 coin land on the right pan and the beam settles level; on the second a $49 + $1 = $50
+    tile row draws below and a SAME stamp lands."""
+    _set(p, f'<path d="M400 360 L360 440 H440 Z" fill="{GREY}" stroke="{INK}" stroke-width="5"/>' + f'<path d="M260 440 H540" stroke="{INK}" stroke-width="6"/>')
+    k = 4.2
+    left = (f'<path d="M80 360 H720" stroke="{INK}" stroke-width="10" stroke-linecap="round"/>'
+            + f'<path d="M100 360 H300" stroke="{INK}" stroke-width="6"/>' + _dv_share(130, 140, k=k, base=355, labels=False)
+            + _t(200, 355 - 50 * k - 14, "$50", 40, INK))
+    t0 = _fr(seg, 0, .15)
+    right = (_life(t0, 99, _g("slide", t0, .4, _dv_share(520, 140, after=True, k=k, base=355, labels=False) + _t(590, 355 - 49 * k - 14, "$49", 40, INK), style="", y0=-300, y1=0, x0=0, x1=0, ease="out"), fi=.02, fo=.01)
+             + _life(t0 + .7, 99, _g("slide", t0 + .7, .35, _coin_shape(690, 330, 26, "$1"), style="", y0=-300, y1=0, x0=0, x1=0, ease="out"), fi=.02, fo=.01))
+    beam = f'<g>{left}{right}</g>'
+    p.parts.append(_idle("swing", beam, 3, 1.4, style="transform-box:view-box;transform-origin:400px 360px"))
+    t1 = _fr(seg, 1, .05)
+    for j, (x_, lab, col) in enumerate(((60, "$49", DV_BUS), (290, "+ $1", DV_DIV), (520, "= $50", DV_CASH))):
+        p.parts.append(_g("pop", t1 + .3 * j, .3, f'<rect x="{x_}" y="470" width="220" height="110" rx="16" fill="{col}" stroke="{INK}" stroke-width="6"/>' + _t(x_ + 110, 545, lab, 56, INK)))
+    p.parts.append(_stamp(290, 40, 220, 76, "SAME", TEAL, _fr(seg, 1, .6), size=44, rot=-6))
+    for j in range(3):
+        p.parts.append(_g("ripple", _fr(seg, 1, .7) + .5 * j, .5, f'<circle cx="630" cy="525" r="60" fill="none" stroke="{TEAL}" stroke-width="5"/>'))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 400, 250, 1.06), (t0 + .5, 520, 260, 1.08), (t1, 400, 420, 1.06), (t1 + 1.2, 420, 360, 1.03), (end, 400, 320, 1.0)])
+
+
+def dv_tax(p, seg=None, **_):
+    """Pockets. Two jars, THE COMPANY'S CASH and YOUR CASH; on the first sentence a $1 coin travels from one to the
+    other (and keeps doing so, back and forth) while the TOTAL $50 counter stays put; on the second a TAX bite takes
+    a wedge out of the coin in your jar and the total reads A LITTLE UNDER $50, a red arrow dipping."""
+    jar = lambda x, lab: (f'<path d="M{x} 200 V520 Q{x} 560 {x + 40} 560 H{x + 200} Q{x + 240} 560 {x + 240} 520 V200" fill="#EAF6F3" stroke="{INK}" stroke-width="6"/>'
+                          f'<rect x="{x - 14}" y="176" width="268" height="30" rx="10" fill="{INK}"/>' + _t(x + 120, 600, lab, 26, INK, serif=False))
+    _set(p, jar(60, "COMPANY'S CASH") + jar(500, "YOUR CASH") + f'<rect x="300" y="50" width="200" height="100" rx="16" fill="#fff" stroke="{INK}" stroke-width="6"/>'
+         + _t(400, 84, "TOTAL", 22, GREY, serif=False))
+    p.parts.append(_life(-1, _fr(seg, 1, .5) + 1, _t(400, 135, "$50", 48, INK), fi=.01, fo=.1))
+    t0 = _fr(seg, 0, .1)
+    n = 3
+    for r in range(n):
+        a = t0 + 1.2 * r
+        to_you = r % 2 == 0
+        p.parts.append(_life(a, 1.2, _g("slide", a, .9, _coin_shape(180, 470, 44, "$1"), style="", x0=0 if to_you else 440, y0=0, x1=440 if to_you else 0, y1=0, ease="inout"), fi=.02, fo=.02))
+    t1 = _fr(seg, 1, .1)
+    p.parts.append(_life(t0 + 1.2 * n, 99, _coin_shape(620, 470, 44, "$1"), fi=.02, fo=.01))
+    p.parts.append(_g("pop", t1 + .3, .3, f'<path d="M620 470 L668 440 A56 56 0 0 1 672 488 Z" fill="#EAF6F3" stroke="{RED}" stroke-width="5"/>'))
+    p.parts.append(_g("pop", t1 + .1, .35, _idle("swing", _ptag(690, 330, 140, "TAX", RED, "#fff", 44), 8, 1.9, style="transform-box:fill-box;transform-origin:center top")))
+    p.parts.append(_life(_fr(seg, 1, .5) + 1, 99, _t(400, 135, "<$50", 48, RED), fi=.1, fo=.01))
+    p.parts.append(_g("pop", _fr(seg, 1, .6), .35, _idle("bob", _pill(400, 390, "BEHIND", RED, "#fff", 28), 6, 1.8, style="")))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 400, 380, 1.03), (t0 + 1.2, 400, 400, 1.06), (t1, 600, 400, 1.1), (t1 + 1.2, 450, 300, 1.06), (end, 400, 320, 1.0)])
+
+
+def dv_rule(p, seg=None, **_):
+    """The rule at full panel height (the 24 Nov next improvement): three big tiles PRICE BEFORE = PRICE AFTER +
+    DIVIDEND fill the top row; under them the result as columns: $50 = $49 + $1 to the same scale. On the first
+    sentence MOVED, NOT MADE: the $1 slice travels from the left column to the third; on the second the tiles light
+    in turn with their numbers and the = and + signs pulse."""
+    tw = 220
+    xs = (30, 290, 550)
+    labs = (("PRICE", "BEFORE"), ("PRICE", "AFTER"), ("THE", "DIVIDEND"))
+    tiles = "".join(f'<rect x="{x}" y="40" width="{tw}" height="150" rx="18" fill="#fff" stroke="{INK}" stroke-width="6"/>'
+                    + _t(x + tw / 2, 100, a, 34, INK, serif=False) + _t(x + tw / 2, 150, b, 34, INK, serif=False) for x, (a, b) in zip(xs, labs))
+    k = 6.6
+    base = 600
+    _set(p, tiles + _t(260, 130, "=", 60, RED) + _t(520, 130, "+", 60, RED)
+         + _dv_share(xs[0] + 30, 160, after=True, k=k, base=base, labels=False) + _t(xs[0] + 110, base - 50 * k - 16, "$50", 40, INK)
+         + _dv_share(xs[1] + 30, 160, after=True, k=k, base=base, labels=False) + _t(xs[1] + 110, base - 49 * k - 16, "$49", 40, INK)
+         + _dv_col(xs[2] + 30, 160, 50, DV_DIV, k=k, base=base, dash=True, op=.08))
+    t0 = _fr(seg, 0, .25)
+    slab = _dv_col(xs[0] + 30, 160, 1, DV_DIV, k=k, base=base - 49 * k)
+    p.parts.append(_life(-1, 99, _g("slide", t0, 1.0, slab, style="", x0=0, y0=0, x1=xs[2] - xs[0], y1=49 * k, ease="inout"), fi=.01, fo=.01))
+    p.parts.append(_g("pop", t0 + 1.0, .3, _t(xs[2] + 110, base - 2 * k - 16, "$1", 44, INK)))
+    p.parts.append(_stamp(400, 400, 380, 84, "MOVED, NOT MADE", RED, _fr(seg, 0, .75), size=36, rot=-4))
+    t1 = _fr(seg, 1, .05)
+    for j, x in enumerate(xs):
+        p.parts.append(_g("press", t1 + .45 * j, .35, f'<rect x="{x}" y="40" width="{tw}" height="150" rx="18" fill="{DV_DIV}" fill-opacity=".35" stroke="{RED}" stroke-width="8"/>'))
+    for j, x in enumerate((260, 520)):
+        p.parts.append(_g("press", t1 + .3 + .45 * j, .4, _t(x, 130, "=+"[j], 60, RED)))
+    for j in range(3):
+        p.parts.append(_g("ripple", t1 + 1.4 + .5 * j, .5, f'<circle cx="{xs[2] + 110}" cy="{base - 30:.0f}" r="44" fill="none" stroke="{DV_DIV}" stroke-width="6"/>'))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 400, 380, 1.04), (t0 + .5, 400, 420, 1.08), (t1, 400, 200, 1.08), (t1 + 1.3, 400, 260, 1.04), (end, 400, 320, 1.0)])
+
+
+def dv_asks(p, **_):
+    """The close: an $80 share column with a gold $5 slice on top that keeps lifting off towards a wallet and coming
+    back, a $5 DIVIDEND tag swinging, and the price tag showing only ? (pulsing). The answer ($75) is not shown."""
+    k = 5.4
+    x, w_ = 70, 220
+    _set(p, f'<path d="M30 {DV_BASE} H770" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+         + _dv_col(x, w_, 75, DV_BUS, k=k) + _t(x + w_ / 2, DV_BASE + 36, "ONE SHARE", 24, INK, serif=False) + _dv_wallet(500, 420))
+    for r in range(6):
+        a = p.at(0) + 2.0 * r
+        p.parts.append(_life(a, 2.0, _g("slide", a + .3, 1.2, _dv_col(x, w_, 5, DV_DIV, k=k, base=DV_BASE - 75 * k, label="$5", size=30), style="", x0=0, y0=0, x1=440, y1=330, ease="inout"), fi=.05, fo=.15))
+    p.parts.append(_idle("swing", _ptag(600, 120, 200, "$80", INK, "#fff", 56), 8, 2.0, style="transform-box:fill-box;transform-origin:center top"))
+    p.parts.append(_idle("bob", _t(600, 320, "AFTER: ?", 56, RED), 8, 1.8))
+    for j in range(8):
+        p.parts.append(_g("ripple", p.at(.15) + .8 * j, .7, f'<circle cx="680" cy="300" r="50" fill="none" stroke="{RED}" stroke-width="5"/>'))
+
+
+SCENES.update({f.__name__: f for f in (dv_hook, dv_setup, dv_drop, dv_answer, dv_tax, dv_rule, dv_asks)})
+
+
+# ---- 25 Nov Reel C: an inventory write-down through the three statements (build/reels_writedown.py). Our own
+# round numbers and an invented shop: $10 of jackets that won't sell written down to $0; tax 25%, and we assume the
+# write-down is deductible. Income statement: -$10 before tax, tax -$2.50, net income -$7.50. Cash flow: -7.50 +
+# 10 (added back, no cash) = +$2.50 (the tax not paid). Balance sheet: inventory -10, cash +2.50 = assets -7.50;
+# equity (retained earnings) -7.50: it balances. Close (not shown): a $40 write-down, cash +$10.
+
+IW_INV, IW_CASH, IW_LOSS, IW_EQ = "#E8836B", "#5EC8B4", "#D93A12", "#F2C35B"
+
+
+def _iw_jacket(x, y, s=1.0, col="#3E6FA8"):
+    """A simple jacket on a hanger, top of the hook at x, y."""
+    return (f'<g transform="translate({x} {y}) scale({s})">'
+            f'<path d="M0 0 q0 -14 10 -14" stroke="{INK}" stroke-width="4" fill="none"/>'
+            f'<path d="M-40 26 L0 8 L40 26" stroke="{INK}" stroke-width="4" fill="none"/>'
+            f'<path d="M-36 26 L-58 50 L-50 120 L-34 116 L-32 150 H32 L34 116 L50 120 L58 50 L36 26 L12 26 L0 70 L-12 26 Z" fill="{col}" stroke="{INK}" stroke-width="4" stroke-linejoin="round"/>'
+            f'<path d="M0 70 V150" stroke="{INK}" stroke-width="3"/></g>')
+
+
+def _iw_rack(x, y, n=3, s=1.0, col="#3E6FA8"):
+    w_ = 120 * n * s
+    out = (f'<path d="M{x - 20} {y} H{x + w_ + 20}" stroke="{INK}" stroke-width="8" stroke-linecap="round"/>'
+           f'<path d="M{x - 10} {y} V{y + 230 * s} M{x + w_ + 10} {y} V{y + 230 * s}" stroke="{INK}" stroke-width="6"/>')
+    for k in range(n):
+        out += _iw_jacket(x + 60 * s + 120 * s * k, y + 14 * s, s, col)
+    return out
+
+
+def _iw_plate(x, y, w_, h_, head, fill="#fff"):
+    return (f'<rect x="{x}" y="{y}" width="{w_}" height="{h_}" rx="16" fill="{fill}" stroke="{INK}" stroke-width="6"/>'
+            + _t(x + w_ / 2, y + 40, head, 26, GREY, serif=False))
+
+
+def iw_hook(p, seg=None, **_):
+    """The hook. From frame 0 the clash is on the panel and moving: a rack of jackets with a $10 tag swinging, a
+    PROFIT plate with a red down-arrow bobbing and a CASH plate with a teal up-arrow bobbing. On the first sentence
+    a red cross lands on the rack, the tag counts $10 to $0 and PROFIT counts to -$7.50; on the question CASH counts
+    to +$2.50 and a ? swings beside it."""
+    _set(p, _iw_rack(70, 120, 3, .9) + _iw_plate(470, 60, 290, 230, "PROFIT") + _iw_plate(470, 340, 290, 230, "CASH"))
+    p.parts.append(_idle("bob", _arrow(720, 120, 200, RED, 14), 6, 1.6))
+    p.parts.append(_idle("bob", _arrow(720, 520, 420, TEAL, 14), 6, 1.8, ph=1))
+    p.parts.append(_life(-1, 99, _idle("swing", _ptag(220, 470, 170, "$10", IW_INV, INK, 52), 8, 2.0, style="transform-box:fill-box;transform-origin:center top"), fi=.01, fo=.01))
+    t0 = _fr(seg, 0, .15)
+    p.parts.append(_g("draw", t0, .4, _cross(230, 230, 3.2), style=""))
+    p.parts.append(_g("pop", t0 + .5, .35, _pill(220, 580, "WRITTEN OFF", RED, "#fff", 30)))
+    p.parts.append(_life(-1, 99, _cnt(595, 200, 0, -7.5, _fr(seg, 0, .6), .7, size=56, dec=2, color=RED), fi=.01, fo=.01))
+    t1 = _fr(seg, 1, .2)
+    p.parts.append(_life(-1, 99, _cnt(595, 480, 0, 2.5, t1, .6, size=56, dec=2, color=TEAL, pre="+$"), fi=.01, fo=.01))
+    p.parts.append(_g("pop", t1 + .4, .4, _idle("swing", _ptag(400, 420, 110, "?", RED, "#fff", 64), 10, 2.1, style="transform-box:fill-box;transform-origin:center top")))
+    for j in range(4):
+        p.parts.append(_g("ripple", t1 + .6 + .5 * j, .5, f'<circle cx="615" cy="460" r="70" fill="none" stroke="{TEAL}" stroke-width="5"/>'))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 300, 320, 1.06), (t0 + .3, 240, 300, 1.1), (_fr(seg, 0, .7), 560, 200, 1.1), (t1 + .3, 560, 440, 1.1), (end, 400, 320, 1.0)])
+
+
+def iw_shop(p, seg=None, **_):
+    """The shop. A shop front (striped awning, LEO'S sign that sways) with the rack of jackets inside; on the first
+    sentence the jackets sway on the rack and a $10 COST tag swings in, a NOBODY'S BUYING sign bobs; on the second
+    the tag counts $10 to $0, the jackets fade grey one by one and a WRITTEN DOWN stamp lands."""
+    awn = "".join(f'<path d="M{40 + 72 * k} 70 h72 v60 q-36 30 -72 0 Z" fill="{RED if k % 2 == 0 else "#fff"}" stroke="{INK}" stroke-width="4"/>' for k in range(10))
+    _set(p, f'<rect x="40" y="130" width="720" height="460" fill="#F4F1EC" stroke="{INK}" stroke-width="6"/>' + awn
+         + f'<path d="M20 {DV_BASE} H780" stroke="{INK}" stroke-width="6"/>')
+    p.parts.append(_idle("swing", _pill(400, 46, "LEO'S SHOP", INK, "#fff", 30), 3, 1.4, style="transform-box:fill-box;transform-origin:center top"))
+    t0 = _fr(seg, 0, .1)
+    rack = _iw_rack(90, 220, 3, 1.0)
+    p.parts.append(_life(-1, 99, _idle("sway", rack, 3, 1.3), fi=.01, fo=.01))
+    t1 = _fr(seg, 1, .1)
+    for k in range(3):
+        p.parts.append(_g("pop", t1 + .35 * k + .2, .35, _iw_jacket(150 + 120 * k, 234, 1.0, "#B9B4AC")))
+    p.parts.append(_life(-1, 99, _g("pop", t0 + .3, .4, _idle("swing", _ptag(620, 270, 200, "COST", IW_INV, INK, 44), 7, 2.0, style="transform-box:fill-box;transform-origin:center top")), fi=.01, fo=.01))
+    p.parts.append(_life(t0 + .6, 99, _cnt(620, 380, 10, 0, t1 + .1, 1.0, size=64, dec=0), fi=.05, fo=.01))
+    p.parts.append(_g("pop", _fr(seg, 0, .6), .4, _idle("bob", _pill(240, 530, "NOBODY'S BUYING", "#3B3F48", "#fff", 28), 6, 1.8, style="")))
+    p.parts.append(_stamp(470, 440, 270, 80, "WRITTEN DOWN", RED, _fr(seg, 1, .6), size=34, rot=-5))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 400, 330, 1.0), (t0 + .4, 300, 360, 1.08), (t1, 520, 360, 1.08), (t1 + 1.3, 450, 380, 1.05), (end, 400, 320, 1.0)])
+
+
+IW_ZERO, IW_K = 200, 26.0          # the zero line of the bar charts and px per $
+
+
+def _iw_bar(x, w_, v0, v1, fill, label=None, size=34):
+    """A bar from value v0 to v1 (positive up) on the IW_ZERO line."""
+    y0, y1 = IW_ZERO - max(v0, v1) * IW_K, IW_ZERO - min(v0, v1) * IW_K
+    s = f'<rect x="{x}" y="{y0:.1f}" width="{w_}" height="{y1 - y0:.1f}" rx="8" fill="{fill}" stroke="{INK}" stroke-width="5"/>'
+    if label:
+        s += _t(x + w_ / 2, (y0 + y1) / 2 + size * .36, label, size, INK)
+    return s
+
+
+def iw_income(p, seg=None, **_):
+    """The income statement, as bars under a zero line. On the first sentence the WRITE-DOWN bar drops to -$10
+    (PROFIT BEFORE TAX); on the second a teal TAX SAVED $2.50 piece lifts off its bottom and moves to its own column,
+    leaving PROFIT -$7.50 with its count; a 25% TAX tag swings."""
+    _set(p, f'<path d="M30 {IW_ZERO} H770" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>' + _t(60, IW_ZERO - 14, "$0", 26, GREY, serif=False, anchor="start")
+         + _iw_bar(80, 200, 0, -10, IW_LOSS, None).replace(f'fill="{IW_LOSS}"', f'fill="{IW_LOSS}" fill-opacity=".08"')
+         + _t(180, IW_ZERO + 10 * IW_K + 50, "BEFORE TAX", 26, INK, serif=False) + _t(400, IW_ZERO + 10 * IW_K + 50, "TAX", 26, INK, serif=False)
+         + _t(620, IW_ZERO + 10 * IW_K + 50, "PROFIT", 26, INK, serif=False))
+    t0 = _fr(seg, 0, .25)
+    p.parts.append(_life(t0, 99, _g("growYdown", t0, .6, _iw_bar(80, 200, 0, -10, IW_LOSS, "-$10", 44), style="transform-box:fill-box;transform-origin:center top"), fi=.01, fo=.01))
+    t1 = _fr(seg, 1, .3)
+    piece = _iw_bar(80, 200, -7.5, -10, IW_CASH, "+$2.50", 30)
+    p.parts.append(_life(t1, 99, _g("slide", t1, .7, piece, style="", x0=0, y0=0, x1=220, y1=-7.5 * IW_K - 2.5 * IW_K, ease="inout"), fi=.01, fo=.01))
+    p.parts.append(_life(t1 + .7, 99, _g("slide", t1 + .8, .6, _iw_bar(80, 200, 0, -7.5, IW_LOSS, "-$7.50", 40), style="", x0=0, y0=0, x1=440, y1=0, ease="inout"), fi=.01, fo=.01))
+    p.parts.append(_g("pop", _fr(seg, 1, .05), .4, _idle("swing", _ptag(400, 90, 200, "25% TAX", INK, "#fff", 34), 7, 2.0, style="transform-box:fill-box;transform-origin:center top")))
+    for j in range(3):
+        p.parts.append(_g("ripple", t1 + 1.5 + .5 * j, .5, f'<circle cx="620" cy="{IW_ZERO + 3.75 * IW_K:.0f}" r="60" fill="none" stroke="{RED}" stroke-width="5"/>'))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 250, 330, 1.08), (t0 + .6, 220, 360, 1.1), (t1, 360, 330, 1.05), (t1 + 1.4, 520, 360, 1.08), (end, 400, 320, 1.0)])
+
+
+def iw_cash(p, seg=None, **_):
+    """The cash flow, as a waterfall. On the first sentence a till with a padlock (NO CASH OUT) bobs and a PAID LONG
+    AGO receipt flutters; on the second the waterfall builds: PROFIT -$7.50 down, ADD BACK +$10 up (a dashed arrow
+    from the write-down), CASH +$2.50 lands teal with its count and ripples."""
+    _set(p, f'<path d="M30 {IW_ZERO} H770" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>' + _t(40, IW_ZERO - 14, "$0", 26, GREY, serif=False, anchor="start")
+         + _t(170, IW_ZERO + 10 * IW_K + 50, "PROFIT", 26, INK, serif=False) + _t(400, IW_ZERO + 10 * IW_K + 50, "ADD BACK", 26, INK, serif=False)
+         + _t(630, IW_ZERO + 10 * IW_K + 50, "CASH", 26, INK, serif=False))
+    till = (f'<rect x="460" y="300" width="260" height="170" rx="16" fill="#3B3F48" stroke="{INK}" stroke-width="6"/>'
+            f'<rect x="490" y="330" width="200" height="50" rx="8" fill="#DCEFEA" stroke="{INK}" stroke-width="4"/>' + _t(590, 366, "$0 OUT", 34, INK)
+            + f'<path d="M570 420 a20 20 0 0 1 40 0 v12" stroke="{GREY}" stroke-width="8" fill="none"/><rect x="560" y="425" width="60" height="40" rx="6" fill="{IW_EQ}" stroke="{INK}" stroke-width="4"/>')
+    t0 = _fr(seg, 0, .1)
+    t1 = _fr(seg, 1, .1)
+    p.parts.append(_life(-1, t1 + 1, _idle("bob", till, 6, 1.6), fi=.01, fo=.2))
+    rec = (f'<rect x="120" y="290" width="200" height="230" rx="6" fill="#fff" stroke="{INK}" stroke-width="5"/>' + _t(220, 340, "RECEIPT", 26, GREY, serif=False)
+           + "".join(f'<path d="M145 {370 + 30 * k} H295" stroke="{GREY}" stroke-width="5"/>' for k in range(3)) + _t(220, 500, "PAID", 36, TEAL))
+    p.parts.append(_life(t0 + .5, t1 + .5 - t0, _g("pop", t0 + .5, .4, _idle("sway", rec, 5, 1.5)), fi=.05, fo=.2))
+    p.parts.append(_life(t0 + .2, t1 + .5 - t0, _g("pop", t0 + .2, .35, _pill(400, 60, "NO CASH LEFT", RED, "#fff", 30)), fi=.05, fo=.2))
+    p.parts.append(_life(t1 + .1, 99, _g("growYdown", t1 + .1, .5, _iw_bar(70, 200, 0, -7.5, IW_LOSS, "-$7.50", 36), style="transform-box:fill-box;transform-origin:center top"), fi=.01, fo=.01))
+    p.parts.append(_life(t1 + .7, 99, _g("growY", t1 + .7, .7, _iw_bar(300, 200, -7.5, 2.5, "#B9B4AC", "+$10", 44), style="transform-box:fill-box;transform-origin:center bottom"), fi=.01, fo=.01))
+    p.parts.append(_g("draw", t1 + .6, .3, f'<path d="M270 {IW_ZERO - 7.5 * IW_K + 0 + 7.5 * IW_K * 2:.0f} H300" stroke="{INK}" stroke-width="4" stroke-dasharray="8 6"/>', style=""))
+    p.parts.append(_life(t1 + 1.5, 99, _g("growY", t1 + 1.5, .5, _iw_bar(530, 200, 0, 2.5, IW_CASH), style="transform-box:fill-box;transform-origin:center bottom"), fi=.01, fo=.01))
+    p.parts.append(_life(t1 + 1.5, 99, _cnt(630, IW_ZERO - 2.5 * IW_K - 20, 0, 2.5, t1 + 1.5, .5, size=50, dec=2, pre="+$", color=TEAL), fi=.05, fo=.01))
+    for j in range(4):
+        p.parts.append(_g("ripple", t1 + 2.0 + .5 * j, .5, f'<circle cx="630" cy="{IW_ZERO - 1.25 * IW_K:.0f}" r="60" fill="none" stroke="{TEAL}" stroke-width="5"/>'))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 420, 400, 1.06), (t0 + .6, 360, 400, 1.08), (t1, 300, 330, 1.04), (t1 + 1.6, 520, 300, 1.08), (end, 400, 320, 1.0)])
+
+
+def iw_bs(p, seg=None, **_):
+    """The balance sheet: two pans, ASSETS and EQUITY + DEBT, each a stack of blocks. On the first sentence the
+    INVENTORY $10 block slides out of ASSETS and a CASH +$2.50 block drops in (count -$7.50); on the second the
+    EQUITY block shrinks by $7.50 (a RETAINED EARNINGS -$7.50 slice falls away) and a BALANCES stamp lands."""
+    k = 9.0
+    base = 590
+    xa, xe, w_ = 80, 470, 250
+    _set(p, f'<path d="M30 {base} H770" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+         + _t(xa + w_ / 2, base + 40, "ASSETS", 28, INK, serif=False) + _t(xe + w_ / 2, base + 40, "EQUITY + DEBT", 28, INK, serif=False)
+         + _nv_col(xa, w_, 30, "#B9B4AC", k=k, base=base, label="OTHER", size=30) + _nv_col(xe, w_, 20, "#B9B4AC", k=k, base=base, label="DEBT", size=30)
+         + _nv_col(xe, w_, 12.5, IW_EQ, k=k, base=base - 20 * k, label="EQUITY", size=30))
+    t0 = _fr(seg, 0, .1)
+    inv = _nv_col(xa, w_, 10, IW_INV, k=k, base=base - 30 * k, label="INVENTORY $10", size=26)
+    p.parts.append(_life(-1, t0 + .9, _g("slide", t0, .8, inv, style="", x0=0, y0=0, x1=-360, y1=0, ease="in"), fi=.01, fo=.1))
+    cash = _nv_col(xa, w_, 2.5, IW_CASH, k=k, base=base - 30 * k, label="+$2.50", size=22)
+    p.parts.append(_life(_fr(seg, 0, .5), 99, _g("slide", _fr(seg, 0, .5), .4, cash, style="", x0=0, y0=-300, x1=0, y1=0, ease="out"), fi=.02, fo=.01))
+    p.parts.append(_g("pop", _fr(seg, 0, .8), .35, _pill(xa + w_ / 2, 140, "-$7.50", RED, "#fff", 40)))
+    t1 = _fr(seg, 1, .1)
+    eqcut = _nv_col(xe, w_, 7.5, IW_LOSS, k=k, base=base - 25 * k, label="-$7.50", size=24)
+    p.parts.append(_life(-1, 99, _nv_col(xe, w_, 5, IW_EQ, k=k, base=base - 20 * k), fi=.01, fo=.01))
+    p.parts.append(_life(-1, t1 + .9, _g("slide", t1 + .2, .7, eqcut, style="", x0=0, y0=0, x1=360, y1=0, ease="in"), fi=.01, fo=.1))
+    p.parts.append(_g("pop", t1 + .7, .35, _pill(xe + w_ / 2, 140, "-$7.50", RED, "#fff", 40)))
+    p.parts.append(_stamp(250, 40, 300, 80, "BALANCES", TEAL, _fr(seg, 1, .6), size=44, rot=-4))
+    for j in range(3):
+        p.parts.append(_g("ripple", _fr(seg, 1, .7) + .5 * j, .5, f'<circle cx="400" cy="80" r="70" fill="none" stroke="{TEAL}" stroke-width="5"/>'))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 300, 360, 1.06), (t0 + .6, 230, 330, 1.1), (t1, 560, 330, 1.08), (t1 + 1.2, 420, 300, 1.04), (end, 400, 320, 1.0)])
+
+
+def iw_rule(p, seg=None, **_):
+    """The rule at full panel height (the 24 Nov next improvement: tiles 1.5x, the result as a column below): the
+    tile row $10 x 25% = $2.50 fills the top; below, a stack of quarter coins builds into a TAX NOT PAID column with
+    its count. On the first sentence NO CASH OUT and the tax bill shrinks (a bill of $2.50 is torn off); on the
+    second the tiles light in turn and the coins stack."""
+    tiles = ""
+    for x, lab, col in ((20, "$10", IW_INV), (290, "25%", "#fff"), (560, "$2.50", IW_CASH)):
+        tiles += f'<rect x="{x}" y="40" width="220" height="140" rx="18" fill="{col}" stroke="{INK}" stroke-width="6"/>' + _t(x + 110, 135, lab, 64, INK)
+    _set(p, tiles + _t(265, 130, "x", 56, RED) + _t(535, 130, "=", 56, RED)
+         + _t(130, 220, "WRITE-DOWN", 24, INK, serif=False) + _t(400, 220, "TAX RATE", 24, INK, serif=False) + _t(670, 220, "TAX NOT PAID", 24, INK, serif=False)
+         + f'<path d="M30 600 H770" stroke="{INK}" stroke-width="6"/>'
+         + f'<rect x="80" y="270" width="280" height="300" rx="10" fill="#fff" stroke="{INK}" stroke-width="5"/>' + _t(220, 320, "TAX BILL", 30, GREY, serif=False))
+    t0 = _fr(seg, 0, .15)
+    p.parts.append(_life(-1, t0 + .3 + .5, f'<rect x="100" y="350" width="240" height="200" rx="6" fill="{IW_LOSS}" fill-opacity=".25" stroke="{INK}" stroke-width="4"/>' + _t(220, 465, "$2.50", 44, INK), fi=.01, fo=.1))
+    p.parts.append(_life(t0 + .3, 1.3, _g("slide", t0 + .3, 1.0, f'<rect x="100" y="350" width="240" height="200" rx="6" fill="{IW_LOSS}" fill-opacity=".25" stroke="{INK}" stroke-width="4"/>' + _t(220, 465, "$2.50", 44, INK),
+                                         style="", x0=0, y0=0, x1=380, y1=-60, ease="inout"), fi=.01, fo=.3))
+    p.parts.append(_g("pop", t0 + .2, .35, _pill(220, 470, "TORN UP", RED, "#fff", 32)))
+    t1 = _fr(seg, 1, .05)
+    for j, x in enumerate((20, 290, 560)):
+        p.parts.append(_g("press", t1 + .4 * j, .35, f'<rect x="{x}" y="40" width="220" height="140" rx="18" fill="none" stroke="{RED}" stroke-width="9"/>'))
+    for j in range(10):
+        a = t1 + 1.2 + .12 * j
+        p.parts.append(_life(a, 99, _g("slide", a, .25, f'<ellipse cx="620" cy="{580 - 26 * j}" rx="90" ry="20" fill="{IW_EQ}" stroke="{INK}" stroke-width="4"/>', style="", x0=0, y0=-200, x1=0, y1=0, ease="out"), fi=.02, fo=.01))
+    p.parts.append(_life(t1 + 1.2, 99, _cnt(620, 290, 0, 2.5, t1 + 1.2, 1.2, size=56, dec=2, color=TEAL), fi=.05, fo=.01))
+    for j in range(3):
+        p.parts.append(_g("ripple", t1 + 2.5 + .5 * j, .5, f'<circle cx="620" cy="460" r="80" fill="none" stroke="{TEAL}" stroke-width="5"/>'))
+    end = seg[-1][1] + .4
+    _cam(p, [(seg[0][0] - .4, 300, 400, 1.06), (t0 + 1.3, 420, 360, 1.04), (t1, 400, 180, 1.08), (t1 + 1.3, 540, 420, 1.08), (end, 400, 320, 1.0)])
+
+
+def iw_asks(p, **_):
+    """The close: a rack of jackets with a $40 tag swinging that keeps getting crossed out and redrawn, a 25% TAX
+    tag, and a CASH plate whose arrow bobs with only a ? on it. The answer (+$10) is not shown."""
+    _set(p, _iw_rack(50, 110, 3, .85) + _iw_plate(450, 280, 300, 220, "CASH"))
+    p.parts.append(_idle("swing", _ptag(210, 470, 170, "$40", IW_INV, INK, 52), 8, 2.0, style="transform-box:fill-box;transform-origin:center top"))
+    p.parts.append(_idle("swing", _ptag(600, 140, 200, "25% TAX", INK, "#fff", 34), 7, 1.8, style="transform-box:fill-box;transform-origin:center top"))
+    for r in range(10):
+        a = p.at(0) + 1.4 * r
+        p.parts.append(_life(a, 1.4, _g("draw", a, .4, _cross(200, 230, 3.0), style=""), fi=.02, fo=.2))
+    p.parts.append(_idle("bob", _t(600, 440, "?", 110, RED), 10, 1.9))
+    for j in range(8):
+        p.parts.append(_g("ripple", p.at(.15) + .8 * j, .7, f'<circle cx="600" cy="400" r="60" fill="none" stroke="{TEAL}" stroke-width="5"/>'))
+
+
+SCENES.update({f.__name__: f for f in (iw_hook, iw_shop, iw_income, iw_cash, iw_bs, iw_rule, iw_asks)})
