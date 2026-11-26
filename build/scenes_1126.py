@@ -705,13 +705,20 @@ def pp_asks(p, **_):
         s += f'<path d="M{x0 + j * dx} {y - (18 if j % 5 == 0 else 10)} V{y + (18 if j % 5 == 0 else 10)}" stroke="{INK}" stroke-width="{5 if j % 5 == 0 else 3}"/>'
         if j % 5 == 0 or j == 12:
             s += _t(x0 + j * dx, y + 58, f"{j}%", 32, INK, serif=False)
-    _set(p, s + _t(400, 90, "MARGIN", 34, INK, serif=False) + _marker(x0 + 10 * dx, y, GREY)
-         + f'<rect x="40" y="380" width="320" height="200" rx="22" fill="#fff" stroke="{INK}" stroke-width="7"/>' + _t(200, 450, "BASIS POINTS", 30, INK, serif=False) + _t(200, 545, "?", 90, RED)
-         + f'<rect x="440" y="380" width="320" height="200" rx="22" fill="#fff" stroke="{INK}" stroke-width="7"/>' + _t(600, 450, "% RISE", 30, INK, serif=False) + _t(600, 545, "?", 90, RED))
+    _set(p, s + _t(400, 70, "MARGIN", 34, INK, serif=False) + _marker(x0 + 10 * dx, y, GREY)
+         + f'<rect x="40" y="420" width="320" height="200" rx="22" fill="#fff" stroke="{INK}" stroke-width="7"/>' + _t(200, 470, "BASIS POINTS", 30, INK, serif=False)
+         + f'<rect x="440" y="420" width="320" height="200" rx="22" fill="#fff" stroke="{INK}" stroke-width="7"/>' + _t(600, 470, "% RISE", 30, INK, serif=False))
+    p.parts.append(_idle("swing", _t(200, 585, "?", 96, RED), 14, 1.4, style="transform-box:fill-box;transform-origin:center top"))
+    p.parts.append(_idle("swing", _t(600, 585, "?", 96, RED), 14, 1.6, ph=1, style="transform-box:fill-box;transform-origin:center top"))
+    for r in range(14):                                  # the margin bars regrow, 10% then 12%, every 1.6 s
+        t = p.at(0) + 1.6 * r
+        p.parts.append(_life(t, 1.6, _g("growX", t, .6, f'<rect x="{x0}" y="300" width="{10 * dx}" height="40" rx="8" fill="{CASH_C}" stroke="{INK}" stroke-width="4"/>', style="transform-box:fill-box"), fi=.02, fo=.1))
+        p.parts.append(_life(t + .5, 1.1, _g("growX", t + .5, .7, f'<rect x="{x0}" y="350" width="{12 * dx}" height="40" rx="8" fill="{GOLD}" stroke="{INK}" stroke-width="4"/>', style="transform-box:fill-box"), fi=.02, fo=.1))
+        p.parts.append(_g("ripple", t + .9, .6, f'<circle cx="{200 if r % 2 == 0 else 600}" cy="540" r="70" fill="none" stroke="{RED}" stroke-width="5"/>'))
     for r in range(12):
         t = p.at(0) + 1.6 * r
         p.parts.append(_life(t, 1.6, _g("slide", t, 1.45, _marker(x0 + 10 * dx, y), style="", x0=0, y0=0, x1=2 * dx, y1=0, ease="inout"), fi=.02, fo=.05))
-        p.parts.append(_g("press", t, .6, f'<rect x="{40 if r % 2 == 0 else 440}" y="380" width="320" height="200" rx="22" fill="none" stroke="{RED}" stroke-width="10"/>'))
+        p.parts.append(_g("press", t, .6, f'<rect x="{40 if r % 2 == 0 else 440}" y="420" width="320" height="200" rx="22" fill="none" stroke="{RED}" stroke-width="10"/>'))
 
 
 SCENES.update({f.__name__: f for f in (pp_hook, pp_setup, pp_rise, pp_answer, pp_bps, pp_rule, pp_asks)})

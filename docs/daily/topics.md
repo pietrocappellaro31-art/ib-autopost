@@ -71,6 +71,9 @@ number with no source is cut.
 | 2026-11-25 | Reel (concept) | Effective annual rate: $100 at 2% a month, nothing repaid; month 1 $2.00, month 2 $2.04 (interest on interest), month 12 about $2.49; 100 x 1.02^12 = $126.82, 26.8% vs 12 x 2% = 24% ($124); (1 + monthly rate)^12 - 1; close 1% a month vs 12.5% (12.7%) |
 | 2026-11-25 | Reel (myth) | Dividends and the share price: $50 share, $1 dividend; in theory the price falls about $1 on the ex-dividend day; $49 + $1 = $50; taxed, a little behind; price before = price after + dividend; close $80 share, $5 dividend ($75) |
 | 2026-11-25 | Reel (story) | Inventory write-down through the three statements: an invented shop writes $10 of jackets to $0; 25% tax, assumed deductible; net income -$7.50, cash +$2.50 (tax not paid; added back $10), inventory -10, cash +2.50, assets -7.50, retained earnings -7.50; close a $40 write-down (cash +$10) |
+| 2026-11-26 | Reel (concept) | Deferred revenue: an invented gym sells a one-year pass for $120 paid 1 January; $120 / 12 = $10 a month; end of January revenue $10, deferred revenue (liability) $110, cash $120 = $110 + $10 earned; $10 a month to revenue, $0 owed and $120 revenue by December; close a 6-month $60 pass paid 1 March (March revenue $10, $50 owed) |
+| 2026-11-26 | Reel (myth) | New shares at a fair price: $1,000, 100 shares at $10, you hold 10 (10%, $100); 25 new at $10 = $250; $1,250 / 125 = $10, your 10 = 8% and $100; at $6: $1,150 / 125 = $9.20, yours $92; smaller slice of a bigger pie; close at $14 ($108) |
+| 2026-11-26 | Reel (choice) | Percentage points vs percent: 2% to 3% on $1,000, interest $20 to $30; up 1 percentage point (100 basis points) and up 50%; subtract for points, divide by the start for percent; close a margin 10% to 12% (200 bps, 20%) |
 
 ## Ideas (YouTube long and Shorts)
 

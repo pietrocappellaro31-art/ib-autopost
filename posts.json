@@ -1994,6 +1994,20 @@
       "first_comment": "Bonus: the company sells 100 new shares at $10 instead of 25. What's your stake now, and what are your 10 shares worth?",
       "ai_label": true,
       "published_id": null
+    },
+    {
+      "id": "reel-w2-points-vs-percent",
+      "type": "reel",
+      "scheduled_utc": "2026-11-27T02:00:00",
+      "slot": "C",
+      "media_branch": "reel/w2-points-vs-percent",
+      "video": "w2-points-vs-percent.mp4",
+      "cover": "w2-points-vs-percent.jpg",
+      "master": "scored",
+      "caption": "You pay 2%, then 3%. Is that up 1% or up 50%?\n\nBoth.\n\nBorrow $1,000 at 2% a year and you pay $20 of interest, but at 3% you pay $30, so the same move in the rate shows up as two different numbers depending on what you compare.\n\n3 - 2 = 1. One percentage point.\n\n$10 extra on $20? Half again. 50%.\n\nBankers dodge the mix-up by saying points, or basis points. One point is 100 basis points, so 2% to 3% is \"up 100 bps\".\n\nSubtract two percentages and you get points. Divide the change by where you started and you get percent.\n\nYour turn: a margin goes from 10% to 12%. How many basis points is that, and what % rise? Tell me in the comments.\n\nFollow @investmentbankinginterviews for a new IB interview question, worked out, every day.\n\nNarration: AI-generated voice; script is our original work.\n\n#investmentbanking #finance #ibinterview #interestrates",
+      "first_comment": "Bonus: rates fall from 5% to 4%. How many basis points is that, and what % fall?",
+      "ai_label": true,
+      "published_id": null
     }
   ],
   "reel_slots_et": {

@@ -1,0 +1,21 @@
+You pay 2%, then 3%. Is that up 1% or up 50%?
+
+Both.
+
+Borrow $1,000 at 2% a year and you pay $20 of interest, but at 3% you pay $30, so the same move in the rate shows up as two different numbers depending on what you compare.
+
+3 - 2 = 1. One percentage point.
+
+$10 extra on $20? Half again. 50%.
+
+Bankers dodge the mix-up by saying points, or basis points. One point is 100 basis points, so 2% to 3% is "up 100 bps".
+
+Subtract two percentages and you get points. Divide the change by where you started and you get percent.
+
+Your turn: a margin goes from 10% to 12%. How many basis points is that, and what % rise? Tell me in the comments.
+
+Follow @investmentbankinginterviews for a new IB interview question, worked out, every day.
+
+Narration: AI-generated voice; script is our original work.
+
+#investmentbanking #finance #ibinterview #interestrates
