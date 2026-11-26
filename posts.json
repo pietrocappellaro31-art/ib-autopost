@@ -1396,8 +1396,8 @@
       "series": "Technical of the Day",
       "scheduled_utc": "2026-11-26T13:00:00",
       "caption": "Inventory gets written down by $10. It walks exactly like depreciation, right up until they ask about tax.\n\nAssume it's deductible. Pre-tax income falls $10, tax falls $2.50 at a 25% rate, and net income falls $7.50. On the cash flow statement you add the 10 back. No cash left. Cash is up $2.50.\n\nBalance sheet: inventory -10, cash +2.5, retained earnings -7.5. Done.\n\nHere's the follow-up that catches people, though: what if the tax rules only let you take the deduction later, when the stock is actually sold?\n\nThen you haven't saved any tax yet. Cash doesn't move at all, and that $2.50 sits in a deferred tax asset.\n\nSave it next to your depreciation walk.\n\n#investmentbanking #ibinterview #accounting #threestatements",
-      "published_id": null,
-      "published_at_utc": null,
+      "published_id": "18105611471386006",
+      "published_at_utc": "2026-11-26T13:05:32.977015+00:00",
       "images": [
         "n3-01-writedown-01.jpg",
         "n3-01-writedown-02.jpg",
