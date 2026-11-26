@@ -1,0 +1,25 @@
+You own 10% of a company. Then it sells new shares and you own 8%. Did you just lose money?
+
+Nope.
+
+Say it's worth $1,000: 100 shares at $10. You hold 10 of them, so 10%, worth $100.
+
+It sells 25 new shares at $10 and takes in $250, so now there are 125 shares, your 10 are 8% of them, and the company itself is worth $1,250.
+
+Divide by 125. Still $10 a share.
+
+Your 10 shares? Still $100.
+
+The catch is price. Sell those 25 at $6 and only $150 comes in, which leaves $1,150 over 125 shares, $9.20 each, and your stake falls to $92.
+
+A smaller slice of a bigger pie can be worth exactly the same. What decides it is the price the new shares go for.
+
+Your turn: same 25 shares, sold at $14. What are your 10 worth? Tell me in the comments.
+
+Follow @investmentbankinginterviews for a new IB interview question, worked out, every day.
+
+Our example leaves out fees and assumes nothing else changes.
+
+Narration: AI-generated voice; script is our original work.
+
+#investmentbanking #equity #ibinterview #finance

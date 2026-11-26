@@ -1980,6 +1980,20 @@
       "first_comment": "Bonus: the $120 yearly pass, three months in. How much deferred revenue is left on the balance sheet?",
       "ai_label": true,
       "published_id": null
+    },
+    {
+      "id": "reel-w2-new-shares-myth",
+      "type": "reel",
+      "scheduled_utc": "2026-11-26T23:00:00",
+      "slot": "B",
+      "media_branch": "reel/w2-new-shares-myth",
+      "video": "w2-new-shares-myth.mp4",
+      "cover": "w2-new-shares-myth.jpg",
+      "master": "scored",
+      "caption": "You own 10% of a company. Then it sells new shares and you own 8%. Did you just lose money?\n\nNope.\n\nSay it's worth $1,000: 100 shares at $10. You hold 10 of them, so 10%, worth $100.\n\nIt sells 25 new shares at $10 and takes in $250, so now there are 125 shares, your 10 are 8% of them, and the company itself is worth $1,250.\n\nDivide by 125. Still $10 a share.\n\nYour 10 shares? Still $100.\n\nThe catch is price. Sell those 25 at $6 and only $150 comes in, which leaves $1,150 over 125 shares, $9.20 each, and your stake falls to $92.\n\nA smaller slice of a bigger pie can be worth exactly the same. What decides it is the price the new shares go for.\n\nYour turn: same 25 shares, sold at $14. What are your 10 worth? Tell me in the comments.\n\nFollow @investmentbankinginterviews for a new IB interview question, worked out, every day.\n\nOur example leaves out fees and assumes nothing else changes.\n\nNarration: AI-generated voice; script is our original work.\n\n#investmentbanking #equity #ibinterview #finance",
+      "first_comment": "Bonus: the company sells 100 new shares at $10 instead of 25. What's your stake now, and what are your 10 shares worth?",
+      "ai_label": true,
+      "published_id": null
     }
   ],
   "reel_slots_et": {

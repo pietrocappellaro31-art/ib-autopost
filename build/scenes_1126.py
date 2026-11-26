@@ -562,7 +562,7 @@ def pp_setup(p, seg=None, **_):
            f'<rect x="446" y="276" width="288" height="30" rx="10" fill="{INK}"/>' + _t(590, 625, "INTEREST", 28, INK, serif=False))
     _set(p, f'<rect x="60" y="{base - 300}" width="230" height="300" rx="8" fill="none" stroke="{GREY}" stroke-width="3" stroke-dasharray="10 8"/>' + jar
          + _t(175, base + 45, "YOU BORROW", 28, INK, serif=False))
-    p.parts.append(_idle("swing", _ptag(590, 110, 260, "2% A YEAR", INK, "#fff", 40), 6, 2.0, style="transform-box:fill-box;transform-origin:center top"))
+    p.parts.append(_idle("swing", _pill(590, 120, "2% A YEAR", INK, "#fff", 40), 5, 2.0, style="transform-box:fill-box;transform-origin:center top"))
     _loop(p, a, _fr(seg, 1, .2), .9, _coin_shape(590, 330, 24, "$"), y0=-80, y1=60, ease="in", fo=.2)
     t0 = _fr(seg, 0, .15)
     gap = max(.08, (seg[0][1] - t0) * .7 / 10)
@@ -616,9 +616,9 @@ def pp_answer(p, seg=None, **_):
     1 / 2 = 50%. On the first sentence both rows light, 1 POINT then 50%; on the second the two sums draw in tiles,
     3 - 2 = 1 and 1 / 2 = 50%."""
     a, b = _span(seg)
-    y = 170
+    y = 200
     blocks = "".join(f'<rect x="{90 + 130 * j}" y="380" width="110" height="110" rx="12" fill="{GOLD}" stroke="{INK}" stroke-width="5"/>' + _t(145 + 130 * j, 450, "1%", 34, INK) for j in range(2))
-    _set(p, _ruler(y) + _t(30, 60, "POINTS", 30, INK, serif=False, anchor="start") + _t(30, 350, "PERCENT", 30, INK, serif=False, anchor="start") + blocks
+    _set(p, _ruler(y) + _t(30, 40, "POINTS", 30, INK, serif=False, anchor="start") + _t(30, 350, "PERCENT", 30, INK, serif=False, anchor="start") + blocks
          + f'<rect x="370" y="380" width="110" height="110" rx="12" fill="{RED}" fill-opacity=".12" stroke="{GREY}" stroke-width="4" stroke-dasharray="10 8"/>')
     _loop(p, a, b, 1.6, _marker(PP_X0 + 2 * PP_DX, y), x1=PP_DX)
     t0 = _fr(seg, 0, .2)
@@ -653,15 +653,15 @@ def pp_bps(p, seg=None, **_):
     p.parts.append(_idle("bob", f'<circle cx="{(x2 + x3) / 2}" cy="{y}" r="58" fill="none" stroke="{INK}" stroke-width="7"/><path d="M{(x2 + x3) / 2 + 42} {y + 42} l40 40" stroke="{INK}" stroke-width="12" stroke-linecap="round"/>', 8, 1.5))
     _loop(p, a, b, 2.0, f'<circle cx="{gx0}" cy="{gy}" r="10" fill="{RED}"/>', x1=gx1 - gx0)
     t0 = _fr(seg, 0, .15)
-    p.parts.append(_g("pop", t0, .3, _pill(260, 560, "POINTS", TEAL, "#fff", 34)))
-    p.parts.append(_g("pop", _fr(seg, 0, .55), .3, _pill(560, 560, "BASIS POINTS", GOLD, INK, 34)))
+    p.parts.append(_g("pop", t0, .3, _pill(230, 250, "POINTS", TEAL, "#fff", 32)))
+    p.parts.append(_g("pop", _fr(seg, 0, .55), .3, _pill(560, 250, "BASIS POINTS", GOLD, INK, 32)))
     t1 = _fr(seg, 1, .05)
     gap = max(.08, (seg[1][1] - t1) * .8 / 10)
     for g in range(10):
         xa = gx0 + (gx1 - gx0) * g / 10
         p.parts.append(_life(t1 + gap * g, 99, _g("pop", t1 + gap * g, .2, f'<rect x="{xa + 2:.0f}" y="{gy - 26}" width="{(gx1 - gx0) / 10 - 4:.0f}" height="52" rx="6" fill="{GOLD}" fill-opacity=".7" stroke="{INK}" stroke-width="3"/>'), fi=.02, fo=.01))
-    p.parts.append(_life(t1, 99, _cnt(400, 470, 0, 100, t1, gap * 10, size=60, pre="", suf=" BPS", color=RED), fi=.05, fo=.01))
-    p.parts.append(_stamp(170, 200, 460, 80, "1 POINT = 100 BPS", RED, t1 + gap * 10 + .1, size=40, rot=-4))
+    p.parts.append(_life(t1, 99, _cnt(400, 480, 0, 100, t1, gap * 10, size=60, pre="", suf=" BPS", color=RED), fi=.05, fo=.01))
+    p.parts.append(_stamp(170, 530, 460, 80, "1 POINT = 100 BPS", RED, t1 + gap * 10 + .1, size=40, rot=-4))
     end = seg[-1][1] + .4
     _cam(p, [(seg[0][0] - .4, 400, 260, 1.04), (t0, 400, 400, 1.06), (t1, 300, 360, 1.08), (t1 + gap * 8, 520, 330, 1.06), (end, 400, 320, 1.0)])
 
@@ -679,8 +679,8 @@ def pp_rule(p, seg=None, **_):
          + _t(xs[0] + tw / 2, 205, "3% - 2%", 48, INK) + _t(xs[2] + tw / 2, 205, "1 POINT", 46, TEAL)
          + _t(xs[0] + tw / 2, 495, "1 / 2", 52, INK) + _t(xs[2] + tw / 2, 495, "50%", 64, RED)
          + _t(xs[1] + tw / 2, 205, "=", 70, RED) + _t(xs[1] + tw / 2, 495, "=", 70, RED)
-         + _pill(150, 60, "SUBTRACT", TEAL, "#fff", 32) + _pill(150, 350, "DIVIDE BY THE START", RED, "#fff", 28)
-         + _t(xs[0] + tw / 2, 590, "THE CHANGE / 2%", 24, GREY, serif=False))
+         + _pill(150, 60, "SUBTRACT", TEAL, "#fff", 32) + _pill(190, 345, "DIVIDE BY THE START", RED, "#fff", 28)
+         + _t(xs[0] + tw / 2, 590, "(3 - 2) / 2", 34, INK, serif=False))
     t1 = _fr(seg, 1, 0)
     for r in range(int((b - a) / .5) + 1):
         t = a + .5 * r
