@@ -460,6 +460,27 @@
    "kind": "short",
    "id": "txmy-ethereal-slowed",
    "mood": "curious"
+  },
+  {
+   "date": "2026-11-26",
+   "slug": "w2-new-shares-myth",
+   "kind": "short",
+   "id": "ludovico-einaudi-experience",
+   "mood": "curious"
+  },
+  {
+   "date": "2026-11-26",
+   "slug": "w2-deferred-revenue",
+   "kind": "short",
+   "id": "flawed-mangoes-swimming",
+   "mood": "curious"
+  },
+  {
+   "date": "2026-11-26",
+   "slug": "w2-points-vs-percent",
+   "kind": "short",
+   "id": "sparky-deathcap-september-instrumental",
+   "mood": "curious"
   }
  ],
  "originals": [
@@ -962,6 +983,19 @@
    "style": "solo_piano",
    "rights": "ORIGINAL_GENERATED",
    "added": "2026-11-25",
+   "note": ""
+  },
+  {
+   "id": "score-w2-deferred-revenue",
+   "title": "Original score for w2-deferred-revenue",
+   "video": "w2-deferred-revenue",
+   "engine": "score.py + GeneralUser GS v2.0.3 (TinySoundFont)",
+   "mood": "discover+explain",
+   "bpm": 83,
+   "key": "Eb",
+   "style": "acoustic",
+   "rights": "ORIGINAL_GENERATED",
+   "added": "2026-11-26",
    "note": ""
   }
  ]

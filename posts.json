@@ -1966,6 +1966,20 @@
       "published_id": "18035976197856452",
       "published_at_utc": "2026-11-26T02:05:03.066941+00:00",
       "first_comment_id": "18027414116922989"
+    },
+    {
+      "id": "reel-w2-deferred-revenue",
+      "type": "reel",
+      "scheduled_utc": "2026-11-26T17:30:00",
+      "slot": "A",
+      "media_branch": "reel/w2-deferred-revenue",
+      "video": "w2-deferred-revenue.mp4",
+      "cover": "w2-deferred-revenue.jpg",
+      "master": "scored",
+      "caption": "$120 comes in, and January's revenue is just $10. Where did the rest go?\n\nA gym (made up for this one) sells a year's pass for $120, paid on 1 January, which works out at $10 for each month of gym time it now has to deliver.\n\nCash: all $120, day one.\n\nRevenue: only what's delivered. So $10.\n\nThe other $110 sits on the balance sheet as deferred revenue. It's a liability. The gym still owes you 11 months of workouts, and every month $10 of that moves out of the liability and into revenue until, by December, the liability is $0 and revenue has reached the full $120.\n\nCash counts when it's paid. Revenue counts when it's earned.\n\nYour turn: a 6-month pass for $60, paid on 1 March. What's March revenue, and what's still owed at the end of March? Tell me in the comments.\n\nFollow @investmentbankinginterviews for a new IB interview question, worked out, every day.\n\nNarration: AI-generated voice; script is our original work.\n\n#investmentbanking #accounting #ibinterview #finance",
+      "first_comment": "Bonus: the $120 yearly pass, three months in. How much deferred revenue is left on the balance sheet?",
+      "ai_label": true,
+      "published_id": null
     }
   ],
   "reel_slots_et": {

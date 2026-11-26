@@ -1,0 +1,19 @@
+$120 comes in, and January's revenue is just $10. Where did the rest go?
+
+A gym (made up for this one) sells a year's pass for $120, paid on 1 January, which works out at $10 for each month of gym time it now has to deliver.
+
+Cash: all $120, day one.
+
+Revenue: only what's delivered. So $10.
+
+The other $110 sits on the balance sheet as deferred revenue. It's a liability. The gym still owes you 11 months of workouts, and every month $10 of that moves out of the liability and into revenue until, by December, the liability is $0 and revenue has reached the full $120.
+
+Cash counts when it's paid. Revenue counts when it's earned.
+
+Your turn: a 6-month pass for $60, paid on 1 March. What's March revenue, and what's still owed at the end of March? Tell me in the comments.
+
+Follow @investmentbankinginterviews for a new IB interview question, worked out, every day.
+
+Narration: AI-generated voice; script is our original work.
+
+#investmentbanking #accounting #ibinterview #finance

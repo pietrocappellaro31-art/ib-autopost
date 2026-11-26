@@ -369,11 +369,17 @@ def cover_js(ep):
 })()""" % json.dumps(cfg)
 
 
-def make(ep, voice_name="HEART"):
+def make(ep, voice_name="HEART", keep_voice=False):
+    """26 Nov: keep_voice=True re-renders the picture and the mix from the takes the last render kept (out/<slug>/
+    parts), for a layout fix after every line was heard word for word; the script must be unchanged."""
     if follows(ep) and "follow" not in ep["close"]["say"][-1][0].lower():
         print("  CHECK the close's last line has no follow ask (Pietro, 23 Nov: every Reel asks for the follow)", flush=True)
-    v, parts = synth(ep, voice_name)
-    keep_parts(OUT / ep["slug"], parts)
+    parts = load_parts(OUT / ep["slug"]) if keep_voice else None
+    if parts is None:
+        v, parts = synth(ep, voice_name)
+        keep_parts(OUT / ep["slug"], parts)
+    else:
+        print("  keep_voice: the kept takes, no new synthesis", flush=True)
     at, spans, total = timeline(ep, parts)
     print(f"  timing: {total:.1f} s, {len(ep['beats'])} beats" + ("  CHECK over 60 s" if total > 60 else ""), flush=True)
     sc, check_at = scene(ep, parts, at, spans, total)
