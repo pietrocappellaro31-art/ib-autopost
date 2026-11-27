@@ -18,6 +18,20 @@ What has been settled, and what is still open. Newest first.
 
 ## Settled
 
+- **Reels: one fully animated Reel a day, trending music through Instagram, Trial Reels, hidden counts (26 Nov,
+  Pietro).** His words: "Reels are underperforming. We need, when we post reels from now on, to hide like and share
+  count. We need to have better storytelling. The music is terrible, so we need to find ways to access trending music
+  ... without having trouble with copyright. I also don't like the blurred background ... there will not be an image in
+  an image. It will just be the whole video completely animated. ... post only one or two reels per day of high quality
+  ... We need to grow at least 100 a week." Answers the same evening: one a day; he hides the counts in the app himself
+  (the API cannot); test some as Trial Reels; YouTube unchanged for now. Done: publish.py caps Reels at one per Eastern
+  day from 27 Nov (26 Nov's slot C still posted), sets `audio_configuration` (Instagram Audio API, tracks authorised for
+  third-party use, verified live on 26 Nov: 25 trending tracks returned) and `trial_params` on the container, and has an
+  `audio` mode; slot B (18:00 ET) chosen on the data (6 of 7 breakouts; on 3-Reel days only one Reel a day broke out).
+  New engine build/reel_film.py and standard docs/production/reel-film-standard.md (full frame, no blur, story shape,
+  layout bands, checks); first Reel build/reelf_depreciation.py queued for 27 Nov 18:00 ET with "Breath Between Thoughts"
+  (Lucent Hours). The scored master and the card formats are retired for Reels.
+
 - **YouTube Shorts paused for the rest of this week too** (24 Nov, Pietro: "Stop also youtube shorts for this week.").
   The "YouTube Short daily" scheduled task (trig_01FjzT23zvvYe6cudn7gafpL) was disabled on 24 Nov after that day's Short
   (shorts-hedge-own-shares) had been delivered; no Shorts on 25 to 29 Nov. Read as: back on Monday 30 Nov with the long film,

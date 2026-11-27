@@ -16,6 +16,15 @@ The code is `build/music_library.py` in the ib-autopost repo; the library is
 `build/music_library/library.json` (committed: names, analysis, rights, use log). The audio files sit in
 `build/music_library/audio/`, which is **gitignored**: the session keeps them, the repo never does.
 
+## Instagram Reels from 27 Nov (Pietro, 26 Nov: "access trending music ... without having trouble with copyright")
+
+Reels carry no music in the file. The track is chosen from Instagram's Audio API (`GET /ig_audio`, trending when no
+search words are given; only tracks Meta has authorised for third-party use) and attached by id when the container is
+created (`audio_configuration`: audio_id, audio_volume 15 by default, video_volume 100). Instagram plays its own licensed
+copy; we never download, store or re-use it, and it is never used in ads or paid partnerships (the tracks returned are
+not ads-eligible). Rights class for the record: PLATFORM_LICENSED_INSTAGRAM (attached by the platform, not a file of
+ours). Selection rules: docs/production/reel-film-standard.md, "Sound and music". Original scores stay for YouTube.
+
 ## Rights classes (13 Nov 2026, cinematic upgrade)
 
 Every piece of music has exactly one class (`music_library.RIGHTS`); unknown means REFERENCE_ONLY.

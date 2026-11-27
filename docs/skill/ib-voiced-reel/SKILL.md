@@ -1,9 +1,21 @@
 ---
 name: "ib-voiced-reel"
-description: "Make and queue two Instagram Reels a day for @investmentbankinginterviews, posted automatically at data-chosen times, to the same cinematic standards as the YouTube films: the HEART narrator (Kokoro af_heart, 0.9) with a natural, unprocessed delivery, a drawn scene or filmed segment in every beat (more animated, never text alone), synchronised sound effects, a clean master plus an original-scored alternative when feasible, motion and quality gates, caption, comment question and the daily quality log. The Levels quiz is one format, not the only one."
+description: "Make and queue ONE fully animated Instagram Reel a day for @investmentbankinginterviews (from 27 Nov 2026): the whole frame is a filmed world made with build/reel_film.py (no card, no picture in a picture, no blur), story first, the HEART narrator (Kokoro af_heart, 0.9), action-timed effects, a trending licensed track attached by Instagram at posting through the Audio API, some Reels as Trial Reels, posted automatically at 18:00 ET with the AI label, caption, comment question and the daily quality log."
 ---
 
 # Voiced Reels for @investmentbankinginterviews
+
+## FIRST: the 27 Nov standard (Pietro, 26 Nov) wins over everything below
+
+Read `docs/production/reel-film-standard.md` and follow it. In short: ONE Reel a day at 18:00 ET (slot B); the whole
+frame is the animated world (`build/reel_film.py`, copy `build/reelf_depreciation.py`); no card, panel, black ground or
+blur; a person with something at stake, the wrong answer struck out, the mechanism shown as it is said, the payoff in one
+number, the question back; voice and effects only in the MP4 (one clean master, no score); the music is a trending
+licensed track Instagram attaches at posting (`publish.py --audio` through the workflow's audio mode, then
+`reel_queue.py ... --audio-id <id> --audio-title "<title - artist>"`); about two Trial Reels a week (`--trial`, never two
+days running); Pietro hides the like and share counts in the app, so the delivery message names the posting time. Where a
+section below says two or three Reels a day, slots A or C, Formats A to F on cards, the black ground, the scored master
+or `entry_check.py`, it is history.
 
 Version 2026-11-16 (black background from 17 Nov; cinematic upgrade; Pietro's 14 Nov notes: more animated, drawn scenes everywhere, a more natural voice, unprocessed). Authoritative copy: `docs/skill/ib-voiced-reel/SKILL.md` in the ib-autopost
 repo; the installed plugin is built from it (`docs/production/skill-sync.md`).

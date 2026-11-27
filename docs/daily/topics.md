@@ -74,6 +74,7 @@ number with no source is cut.
 | 2026-11-26 | Reel (concept) | Deferred revenue: an invented gym sells a one-year pass for $120 paid 1 January; $120 / 12 = $10 a month; end of January revenue $10, deferred revenue (liability) $110, cash $120 = $110 + $10 earned; $10 a month to revenue, $0 owed and $120 revenue by December; close a 6-month $60 pass paid 1 March (March revenue $10, $50 owed) |
 | 2026-11-26 | Reel (myth) | New shares at a fair price: $1,000, 100 shares at $10, you hold 10 (10%, $100); 25 new at $10 = $250; $1,250 / 125 = $10, your 10 = 8% and $100; at $6: $1,150 / 125 = $9.20, yours $92; smaller slice of a bigger pie; close at $14 ($108) |
 | 2026-11-26 | Reel (choice) | Percentage points vs percent: 2% to 3% on $1,000, interest $20 to $30; up 1 percentage point (100 basis points) and up 50%; subtract for points, divide by the start for percent; close a margin 10% to 12% (200 bps, 20%) |
+| 2026-11-27 | Reel (story, full frame) | Depreciation +$10 and cash: pre-tax profit -10, tax -2.50 at 25%, net income -7.50, add back +10, cash +2.50; close: interest +10 (cash -7.50, not answered); comment bonus at 40% tax (+4) |
 
 ## Ideas (YouTube long and Shorts)
 

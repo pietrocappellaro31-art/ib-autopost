@@ -1,0 +1,19 @@
+Depreciation goes up $10. What happens to cash?
+
+Most people say it drops $10. Nope. It goes up $2.50.
+
+Here's why. Profit before tax falls $10, and at a 25% tax rate you pay $2.50 less tax, so net income only falls $7.50. But depreciation was never a payment, so the cash flow statement adds the whole $10 back.
+
+-7.50 + 10 = +2.50.
+
+The only cash that moved? The tax you didn't pay.
+
+(Usual interview set-up: 25% tax, tax follows the books, nothing else changes.)
+
+Your turn: interest goes up $10 instead. What happens to cash? Tell me below.
+
+Follow @investmentbankinginterviews for a new IB interview question, worked out, every day.
+
+Narration: AI-generated voice; script is our original work.
+
+#investmentbanking #ibinterview #accounting #finance

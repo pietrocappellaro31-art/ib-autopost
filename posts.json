@@ -2012,6 +2012,26 @@
       "first_comment": "Bonus: rates fall from 5% to 4%. How many basis points is that, and what % fall?",
       "ai_label": true,
       "published_id": null
+    },
+    {
+      "id": "reel-w3-depreciation-cash",
+      "type": "reel",
+      "scheduled_utc": "2026-11-27T23:00:00",
+      "slot": "B",
+      "media_branch": "reel/w3-depreciation-cash",
+      "video": "w3-depreciation-cash.mp4",
+      "cover": "w3-depreciation-cash.jpg",
+      "master": "clean",
+      "caption": "Depreciation goes up $10. What happens to cash?\n\nMost people say it drops $10. Nope. It goes up $2.50.\n\nHere's why. Profit before tax falls $10, and at a 25% tax rate you pay $2.50 less tax, so net income only falls $7.50. But depreciation was never a payment, so the cash flow statement adds the whole $10 back.\n\n-7.50 + 10 = +2.50.\n\nThe only cash that moved? The tax you didn't pay.\n\n(Usual interview set-up: 25% tax, tax follows the books, nothing else changes.)\n\nYour turn: interest goes up $10 instead. What happens to cash? Tell me below.\n\nFollow @investmentbankinginterviews for a new IB interview question, worked out, every day.\n\nNarration: AI-generated voice; script is our original work.\n\n#investmentbanking #ibinterview #accounting #finance",
+      "first_comment": "Bonus: depreciation goes up $10 but the tax rate is 40%. What happens to cash?",
+      "ai_label": true,
+      "published_id": null,
+      "audio": {
+        "audio_id": "783499624058823",
+        "title": "Breath Between Thoughts - Lucent Hours",
+        "audio_volume": 15,
+        "video_volume": 100
+      }
     }
   ],
   "reel_slots_et": {

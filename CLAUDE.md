@@ -1,7 +1,7 @@
 # ib-autopost: working rules
 
 The finance content operation for @investmentbankinginterviews (Instagram) and its YouTube channel. Independent: no
-brand, characters, files, music or schedules from any other project. Carousels, Stories and (from 16 Nov) two Reels a
+brand, characters, files, music or schedules from any other project. Carousels, Stories and (from 27 Nov) ONE Reel a
 day post automatically through `publish.py`; YouTube uploads stay manual (Pietro).
 
 ## Where the rules are
@@ -22,15 +22,17 @@ day post automatically through `publish.py`; YouTube uploads stay manual (Pietro
   send or offer a clean MP4 as well (it stays in `build/out/` only as the score gate's reference). The score's style,
   key and tempo change every video (`score.pick`: never a style or key of the last three; name the style in the
   delivery). This overrides any scheduled-task prompt step that still says to deliver a clean MP4 or "music=False".
-  Filmed beats from `build/cine.py` where the story has people, places or a mechanism. Reels: unchanged (clean master
-  with Instagram music in the app, plus the scored alternative).
+  Filmed beats from `build/cine.py` where the story has people, places or a mechanism.
 - **YouTube from 19 Nov (Pietro, 18 Nov):** Shorts are number puzzles cut from the newest long film without a Short,
   linked to it as Related video; films stay daily, opening on the hook (puzzle or number on screen within 5 s, no card
   first) with title and thumbnail carrying the same number. `docs/decisions-log.md` 18 Nov.
-- **Week of 22 to 29 Nov (Pietro, 22 Nov): three Reels a day (slots A 12:30, B 18:00, C 21:00 ET), one carousel a day
-  (08:00 ET), one Story a day.** `docs/decisions-log.md` 22 Nov.
+- **Reels from 27 Nov (Pietro, 26 Nov): ONE fully animated Reel a day at 18:00 ET (slot B), made with
+  `build/reel_film.py` to `docs/production/reel-film-standard.md`: the whole frame is the animated world (no card, no
+  picture in a picture, no blur), story first, voice and effects only in the file, a trending licensed track attached by
+  Instagram at posting (`--audio-id`), some Reels as Trial Reels (`--trial`). Pietro hides like and share counts in the
+  app. One carousel a day (08:00 ET), one Story a day.** `docs/decisions-log.md` 26 Nov.
 - AI disclosure: a recommendation per finished video with its reason, never an automatic tick.
-- Never invent a number, quote, source or credential. Reconstructions are badged. No commercial music in any file.
+- Never invent a number, quote, source or credential. Reconstructions are badged. No commercial music in any file (Instagram's licensed tracks are attached by Instagram at posting, never put in a file).
 
 ## Setup and safety
 

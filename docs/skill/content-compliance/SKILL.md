@@ -106,6 +106,13 @@ date checked).
 - No pitch, speed, chopping or re-recording to get a song past Content ID; no soundalike of a protected song.
 - "Royalty-free", giving credit, short length or owning a streaming subscription does not clear a track.
 
+## 4b. Instagram Reels from 27 Nov: platform-attached music
+
+A Reel's licensed track is attached by Instagram through the Audio API at posting (publish.py `audio_configuration`);
+the file has voice and effects only. Pass when: the track id came from `docs/daily/trending-audio.json` (the Audio API),
+the title and artist carry no explicit words, the post is not a paid partnership, branded content or an ad, and the rights
+record names the track. Fail if any music is mixed into the MP4 or the track was taken from anywhere else.
+
 ## 5. Visuals and fonts
 
 - Original renders only. Fonts: Source Serif 4 and IBM Plex Sans (both SIL OFL, record once in the ledger).
