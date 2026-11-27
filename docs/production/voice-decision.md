@@ -33,6 +33,7 @@ speed stay; the processing after Kokoro was cut back to a highpass and a light 7
 | 8 to 10 Nov | YouTube | GEORGE (bm_george) always | `docs/daily/youtube-long.md`, `youtube-shorts.md` |
 | 11 to 13 Nov | YouTube | daily trial of 14 Kokoro voices: HEART, MICHAEL, ISABELLA used | `docs/daily/youtube-voice-trial.md` (closed) |
 | 13 Nov | everything | HEART at 0.9 | this file |
+| 27 Nov to 4 Dec | everything (Reels, long films, Shorts) | EMMA (bf_emma, 0.97), Pietro 27 Nov; HEART again from 5 Dec unless extended | `voice_clone.NARRATOR_WINDOWS`, decisions-log 27 Nov |
 
 Encrypted samples of Pietro's own clones stay in `build/voices/*.flac.enc` for re-rendering old Reels only; the key
 is never in the repo.

@@ -38,8 +38,9 @@ DEFAULT_SLOTS_ET = (clock(8, 0), clock(12, 30), clock(17, 30))
 # daily cap and never take a carousel's place. Their video files are not in main's history: each Reel waits on
 # a temporary branch reel/<slug> (the session cannot create releases) and the branch is deleted once posted.
 # 22 Nov 2026 (Pietro): three Reels a day for the week of 22 to 29 Nov (slots A, B, C in posts.json reel_slots_et).
-MAX_REELS_PER_EASTERN_DAY = 1   # 26 Nov (Pietro): one high-quality Reel a day, from 27 Nov ET
+MAX_REELS_PER_EASTERN_DAY = 2   # 27 Nov (Pietro): "posting only two reels a day", slots A 12:30 and B 18:00 ET
 ONE_REEL_FROM = "2026-11-27"     # before this Eastern day the earlier cap of 3 applies (26 Nov's slot C posts)
+# (26 Nov to 27 Nov the cap was 1; from 28 Nov it is 2. A day never posts more than 2.)
 PROBE_HOURS = 6                      # while Meta blocks the app, try once every 6 hours, never more
 REPO = os.environ.get("GITHUB_REPOSITORY", "pietrocappellaro31-art/ib-autopost")
 # Errors that mean Meta is unhappy with the app or the account: stop the whole run, retry nothing.

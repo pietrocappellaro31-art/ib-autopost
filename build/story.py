@@ -369,7 +369,9 @@ def cover_js(ep):
 })()""" % json.dumps(cfg)
 
 
-def make(ep, voice_name="HEART", keep_voice=False):
+def make(ep, voice_name=None, keep_voice=False):
+    if not voice_name or (voice_name == "HEART" and __import__("voice_clone").window_voice()):
+        voice_name = __import__("voice_clone").narrator()     # 27 Nov: EMMA for 27 Nov to 4 Dec (Pietro)
     """26 Nov: keep_voice=True re-renders the picture and the mix from the takes the last render kept (out/<slug>/
     parts), for a layout fix after every line was heard word for word; the script must be unchanged."""
     if follows(ep) and "follow" not in ep["close"]["say"][-1][0].lower():

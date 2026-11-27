@@ -2057,5 +2057,5 @@
     "B": "18:00",
     "C": "21:00"
   },
-  "reel_slots_note": "26 Nov (Pietro): ONE Reel a day from 27 Nov, in slot B (18:00 ET): it broke out (800+ views) on 6 of the 7 days it ran, and on 3-Reel days only one Reel a day broke out. A and C stay defined for a deliberate test only."
+  "reel_slots_note": "27 Nov (Pietro): TWO Reels a day from 28 Nov, slot A (12:30 ET) and slot B (18:00 ET); publish.py caps Reels at 2 per Eastern day. Earlier: 26 Nov, one a day in slot B (it broke out, 800+ views, on 6 of the 7 days it ran). C stays defined for a deliberate test only."
 }

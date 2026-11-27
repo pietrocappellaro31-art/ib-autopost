@@ -18,6 +18,24 @@ What has been settled, and what is still open. Newest first.
 
 ## Settled
 
+- **EMMA for a week on every video, two Reels a day, no subtitles, the follow ask said and shown (27 Nov, Pietro,
+  after the first full-frame Reel).** His words: "do you remember the reel called 'Can Shareholders' Equity Be
+  Negative'? We want to start using that voice again. ... From now on, for the next week, we're going to use that voice
+  in all the videos, in all the reels created. Also, make sure we're posting only two reels a day. I saw the new reel
+  version that you created, which is great, but we don't need subtitles. We don't want subtitles in the videos. Make
+  sure, at the end of the video, to include an invitation to follow, and make sure that invitation is not just visual
+  but also verbal." That Reel was w2-levels-11 (12 Nov), voice EMMA (Kokoro bf_emma, speed 0.97). Asked the same
+  evening, he chose: the second Reel at 12:30 ET (slot A), and EMMA on YouTube too (long films and Shorts), not only
+  Reels. Read as: 27 Nov to 4 Dec inclusive, then HEART again unless he extends it (the 4 Dec Reel run reminds him).
+  Done: `voice_clone.NARRATOR_WINDOWS` + `narrator()` (Reels, story.make) and `youtube_voice()` return EMMA in the
+  window; `publish.py` caps Reels at 2 per Eastern day (slots A 12:30 and B 18:00 ET); `reel_film.SUBTITLES = False`;
+  `reel_film.narration()` refuses a script whose last line has no follow ask and `film()` refuses a last shot without
+  `follow_ask()` (avatar, handle, a + FOLLOW button tapped to FOLLOWING); the reference Reel ends on "Tell me in the
+  comments, and follow for a new interview question every day." (WER 0 in EMMA, 44.2 s). The IG Reel daily task now
+  makes two Reels a run and starts earlier (05:47 ET) so slot A is queued in time; the long-film and Shorts task
+  prompts say EMMA until 4 Dec. The 27 Nov Reel (depreciation, HEART, subtitles, no spoken follow ask) was already
+  live at 18:05 ET and is left as it is.
+
 - **The first full-frame Reel is the floor, and every Reel has music (26 Nov, Pietro, after seeing w3-depreciation-cash:
   "This is great. Keep this level from now on and make sure to add the music.").** reel_queue.py now refuses a Reel
   without a track and stores two backups; publish.py tries the backups before ever posting without music.

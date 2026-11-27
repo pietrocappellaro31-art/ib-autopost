@@ -262,6 +262,36 @@ def master_chain_plain(v):
 YOUTUBE_PICK = "HEART"
 REEL_PICK = "HEART"
 TRIAL_START = "2026-11-11"
+# 27 Nov (Pietro): "We want to start using that voice again [the 12 Nov 'Can shareholders' equity be negative?'
+# Reel, EMMA] ... for the next week, we're going to use that voice in all the videos, in all the reels created."
+# He chose Reels AND YouTube. A dated window wins over both picks; after it ends the picks apply again.
+NARRATOR_WINDOWS = [("2026-11-27", "2026-12-04", "EMMA")]
+
+
+def _ny_today():
+    import datetime
+    try:
+        from zoneinfo import ZoneInfo
+        return datetime.datetime.now(ZoneInfo("America/New_York")).date()
+    except Exception:
+        return datetime.date.today()
+
+
+def window_voice(date=None):
+    """The voice a dated window sets for this New York date, else None."""
+    import datetime
+    date = date or _ny_today()
+    if isinstance(date, str):
+        date = datetime.date.fromisoformat(date)
+    for a, b, name in NARRATOR_WINDOWS:
+        if datetime.date.fromisoformat(a) <= date <= datetime.date.fromisoformat(b):
+            return name
+    return None
+
+
+def narrator(date=None):
+    """The narrator for any video made on this date: the window voice, else HEART (the channel narrator)."""
+    return window_voice(date) or REEL_PICK or "HEART"
 
 
 def youtube_trial():
@@ -271,6 +301,8 @@ def youtube_trial():
 def youtube_voice(date=None):
     """The voice for a YouTube video made on this date (default today, New York)."""
     import datetime
+    if window_voice(date):
+        return window_voice(date)
     if YOUTUBE_PICK:
         return YOUTUBE_PICK
     if date is None:
@@ -297,7 +329,9 @@ def rotation():
 
 def next_voice():
     """The voice for the next Reel: REEL_PICK (the channel narrator since 13 Nov), else the rotation voice
-    after the last one logged (the 8 Nov G2, BELLA, EMMA test, kept for the record)."""
+    after the last one logged (the 8 Nov G2, BELLA, EMMA test, kept for the record). A dated window wins."""
+    if window_voice():
+        return window_voice()
     if REEL_PICK:
         return REEL_PICK
     rot = rotation()

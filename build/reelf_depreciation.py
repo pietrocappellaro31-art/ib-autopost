@@ -35,7 +35,7 @@ import sys
 import cine as C
 import cine_lib as L
 from reel_film import (W, H, lay, cam_x, cam_y, shot, hook, big_number, narration, beats, at_word, captions,
-                       interview_room, marker_text, film, full_frame_check, sound, INK, RED, TEAL, MUSTARD, GREEN, _r)
+                       interview_room, marker_text, film, full_frame_check, sound, follow_ask, INK, RED, TEAL, MUSTARD, GREEN, _r)
 
 SLUG = "w3-depreciation-cash"
 LINES = [
@@ -46,7 +46,8 @@ LINES = [
     "But depreciation isn't a payment. No cash left the company, so the cash flow statement adds the ten back.",
     "Minus seven fifty, plus ten. Cash goes up by two fifty.",
     "The only cash that moved is the tax you didn't pay.",
-    "Your turn: interest goes up by ten instead. What happens to cash? Tell me in the comments.",
+    "Your turn: interest goes up by ten instead. What happens to cash? Tell me in the comments, "
+    "and follow for a new interview question every day.",
 ]
 HOLDS = {4: .5}                    # a beat of air after the payoff
 
@@ -297,8 +298,10 @@ def s6(b, d):
            + marker_text("ni2", BX + 26, BY + 330, "CASH?", 72, TEAL, t_q, t_q + .6, family="Serif"))
     layers, anc = room_layers(board_svg(["done"] * 4) + wipe + nxt, cand, intv)
     cam = [[0, cam_x(1030, .8), cam_y(700, .8), 1.15], [d, cam_x(1040, .8), cam_y(690, .8), 1.28, "sine"]]
-    over = []
-    fx = [("paper", .1, .3, .1, dict(sec=.6, crisp=.4)), ("marker", t_int, .5, .1, dict(sec=.9)), ("marker", t_q, .5, .1, dict(sec=.6))]
+    t_fol = at_word(b, 6, "follow", 6)
+    over = [follow_ask(t_fol, d)]          # 27 Nov: the follow ask, said and shown
+    fx = [("paper", .1, .3, .1, dict(sec=.6, crisp=.4)), ("marker", t_int, .5, .1, dict(sec=.9)), ("marker", t_q, .5, .1, dict(sec=.6)),
+          ("tap", t_fol + .9, .45, .2, dict())]
     return shot(d, layers, [cand, intv], cam, over, tin=("cut", 0)), fx
 
 

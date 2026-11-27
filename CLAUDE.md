@@ -1,7 +1,7 @@
 # ib-autopost: working rules
 
 The finance content operation for @investmentbankinginterviews (Instagram) and its YouTube channel. Independent: no
-brand, characters, files, music or schedules from any other project. Carousels, Stories and (from 27 Nov) ONE Reel a
+brand, characters, files, music or schedules from any other project. Carousels, Stories and (from 28 Nov) TWO Reels a
 day post automatically through `publish.py`; YouTube uploads stay manual (Pietro).
 
 ## Where the rules are
@@ -18,6 +18,11 @@ day post automatically through `publish.py`; YouTube uploads stay manual (Pietro
 ## Current defaults (13 Nov 2026)
 
 - Narrator HEART: Kokoro v1.0 `af_heart`, speed 0.9, en-us, everywhere. Earlier voices and trials are history.
+- **27 Nov to 4 Dec (Pietro, 27 Nov): EMMA (Kokoro `bf_emma`, speed 0.97, the 12 Nov voice) on EVERY video: Reels,
+  long films and Shorts.** `voice_clone.narrator()` / `youtube_voice()` return it; this overrides any scheduled-task
+  prompt step that still says HEART. HEART again from 5 Dec unless Pietro extends it.
+- **Reels from 28 Nov (Pietro, 27 Nov): TWO a day, 12:30 ET (slot A) and 18:00 ET (slot B); NO subtitles; the follow
+  ask spoken in the last line AND shown on screen (`reel_film.follow_ask`).** This overrides "ONE Reel a day" below.
 - **YouTube, long films and Shorts (Pietro, 17 Nov): deliver ONE video file, the one with our original score.** Never
   send or offer a clean MP4 as well (it stays in `build/out/` only as the score gate's reference). The score's style,
   key and tempo change every video (`score.pick`: never a style or key of the last three; name the style in the

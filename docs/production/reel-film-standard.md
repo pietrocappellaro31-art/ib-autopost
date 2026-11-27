@@ -1,4 +1,25 @@
-# Reel standard from 27 Nov 2026: one fully animated Reel a day
+# Reel standard from 27 Nov 2026: fully animated Reels, two a day from 28 Nov
+
+## Pietro, 27 Nov (wins over the rest of this file where they differ)
+
+"We want to start using that voice again [the 12 Nov 'Can shareholders' equity be negative?' Reel] ... for the next
+week, we're going to use that voice in all the videos, in all the reels created. Also, make sure we're posting only two
+reels a day. I saw the new reel version that you created, which is great, but we don't need subtitles. We don't want
+subtitles in the videos. Make sure, at the end of the video, to include an invitation to follow, and make sure that
+invitation is not just visual but also verbal." He chose the second slot (12:30 ET) and EMMA on YouTube too.
+
+- **Voice: EMMA** (Kokoro `bf_emma`, speed 0.97, the 12 Nov voice) on every Reel, long film and Short made from 27 Nov to
+  4 Dec (`voice_clone.NARRATOR_WINDOWS`; `narrator()`, `youtube_voice()`, `next_voice()` and `story.make` all read it).
+  From 5 Dec HEART again unless Pietro extends it; the 4 Dec Reel run reminds him the week ends.
+- **Two Reels a day**: slot A 12:30 ET and slot B 18:00 ET (`publish.py` cap 2 per Eastern day). Each slot gets its
+  own topic and its own track; at most one of the two is a Trial Reel.
+- **No subtitles**: `reel_film.SUBTITLES = False`; `captions()` gives only the screen-text CSS. The band they used
+  (screen y 1390 to 1540) now holds the follow ask at the end and is otherwise free.
+- **The follow ask, said and shown**: the last spoken line asks for the follow ("... and follow for a new interview
+  question every day."; `narration()` refuses a last line without "follow"), and the last shot carries
+  `follow_ask(at_word(b, last, "follow", last), d)`: the IB avatar, the handle and a + FOLLOW button that is tapped and
+  turns to FOLLOWING, in the 1388 to 1530 band (`film()` refuses a last shot without it). The last shot runs 1.7 s after
+  the last word so the tap reads.
 
 Pietro, 26 Nov: "Reels are underperforming. We need, when we post reels from now on, to hide like and share count. We
 need to have better storytelling. The music is terrible, so we need to find ways to access trending music and just use
@@ -29,9 +50,9 @@ ground, the scored master, three a day). The other standards (audio, accuracy, A
 3. Numbers live in the world (a board written as the narrator says them, a sheet, coins, a screen) and are inked or
    counted at the moment they are said. One payoff number may be big, but it is the world's number, not a second card.
 4. A camera move in every shot; `yt_preview.py --clip` static share 0.
-5. Layout bands (screen px): hook text 230 to 650; action and numbers above 1390; captions 1400 to 1540 (word by word,
-   white with a dark outline, no box); nothing below 1540 or in the right-hand 150 px column (Instagram's buttons and
-   caption). Faces and numbers never under the captions.
+5. Layout bands (screen px): hook text 230 to 650; action and numbers above 1390; the follow ask 1388 to 1530 in the
+   last shot (no subtitles since 27 Nov); nothing below 1540 or in the right-hand 150 px column (Instagram's buttons and
+   caption). Faces and numbers never under the follow ask.
 6. People: invented, no likeness. Each shot gives its figures their own ids (the runtime animates the first id only).
 
 ## The story (every Reel)
@@ -42,13 +63,13 @@ ground, the scored master, three a day). The other standards (audio, accuracy, A
 - The mechanism, one step per line, each step visible as it is said.
 - The turn ("but ..."), then the payoff in one number.
 - One line on what it means, then the question back to the viewer (comment bait that loops to the start) and the follow
-  ask of 23 Nov.
+  ask, spoken in the last line and shown by follow_ask() (23 Nov, said and shown since 27 Nov).
 - 30 to 45 s. Delay the payoff to the last third; never give the answer in the first 10 s of the video.
 - The caption's first line repeats the hook; the answer may be in the caption body (after "more").
 
 ## Sound and music
 
-- The MP4 carries voice (HEART), room tone and action-timed effects only; one clean master at -16 LUFS, true peak at or
+- The MP4 carries voice (the narrator of the day: EMMA 27 Nov to 4 Dec, else HEART), room tone and action-timed effects only; one clean master at -16 LUFS, true peak at or
   under -1.5 dBTP, recogniser word error 0. No score, no music in the file.
 - The music is a trending licensed track attached by Instagram at posting: `python publish.py --audio [words]` (the
   workflow's audio mode, dispatched with `gh api ... dispatches -f 'inputs[mode]=audio'`) writes
@@ -74,15 +95,15 @@ ground, the scored master, three a day). The other standards (audio, accuracy, A
 
 ## Cadence and posting
 
-- One Reel a day, slot B, 18:00 ET (`publish.py` holds a second one; `reel_queue.py` refuses it).
+- Two Reels a day from 28 Nov, slots A (12:30 ET) and B (18:00 ET) (`publish.py` holds a third). 27 Nov had one, in B.
 - Hidden like and share counts: Instagram's API cannot set them. Pietro opens each new Reel in the app and taps
   ... > Hide like and share counts. The daily run's message reminds him with the posting time.
 
 ## Checks (in place of quality-gates section 9's card checks)
 
 lines wer 0 (takes in `out/<slug>/lines/*.json`), whole-master wer 0, DNSMOS, -16 LUFS and true peak, full_frame_check all
-ok, check_shots empty, `yt_preview.py --clip` static share 0, a contact sheet of 16 frames from the MP4 looked at for
-captions over faces or numbers, the grid cover preview looked at, caption PASS on ig-human, rights record written.
+ok, check_shots empty, `yt_preview.py --clip` static share 0, a contact sheet of 16 frames from the MP4 looked at (no
+subtitles; the follow ask in the last frames, not over a face or a number), the grid cover preview looked at, caption PASS on ig-human, rights record written.
 `entry_check.py` belongs to the old engine (it reads timeline.json) and does not apply.
 
 ## Reference Reel

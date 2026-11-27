@@ -45,8 +45,8 @@ def check(name, cond):
 check.failed = False
 P.wait_until_ready = lambda *a, **k: None
 
-# 1. one Reel a day
-check("cap is one Reel a day", P.MAX_REELS_PER_EASTERN_DAY == 1)
+# 1. two Reels a day (27 Nov, Pietro)
+check("cap is two Reels a day", P.MAX_REELS_PER_EASTERN_DAY == 2)
 
 # 2. music and trial are set on the container
 calls.clear()
@@ -92,11 +92,12 @@ try:
 except RuntimeError:
     check("block error raised, not retried", len(calls) == 1)
 
-# 6. the daily cap holds a second Reel
-now = datetime(2026, 11, 27, 23, 0, tzinfo=timezone.utc)
-m = {"posts": [post(id="a", scheduled_utc="2026-11-27T17:00:00"), post(id="b", scheduled_utc="2026-11-27T22:00:00")]}
+# 6. the daily cap releases two Reels and holds a third (27 Nov: two a day)
+now = datetime(2026, 11, 28, 23, 30, tzinfo=timezone.utc)
+m = {"posts": [post(id="a", scheduled_utc="2026-11-28T17:30:00"), post(id="b", scheduled_utc="2026-11-28T23:00:00"),
+               post(id="c", scheduled_utc="2026-11-28T23:10:00")]}
 due = P.apply_daily_cap(m, list(m["posts"]), now)
-check("only one Reel released", [x["id"] for x in due] == ["a"])
+check("two Reels released, the third held", [x["id"] for x in due] == ["a", "b"])
 m26 = {"posts": [post(id="c", scheduled_utc="2026-11-27T02:00:00"),
                  post(id="p1", published_id="1", published_at_utc="2026-11-26T17:30:00"),
                  post(id="p2", published_id="2", published_at_utc="2026-11-26T23:00:00")]}

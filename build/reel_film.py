@@ -17,7 +17,13 @@ dark, glowing ground, under a block of heading text):
   * Story first: a person with something at stake (an interview, a deal, a bill), the wrong answer most people give,
     the turn, the payoff with one number, a loop or a question back to the viewer. The hook is SAID and SHOWN in the
     first two seconds (hook()).
-  * Captions are word by word, white with a dark outline and no box, in the band Instagram leaves clear.
+  * No subtitles (Pietro, 27 Nov: "we don't need subtitles. We don't want subtitles in the videos."). captions()
+    returns only the screen-text CSS unless SUBTITLES is set back to True.
+  * Every Reel ends on the follow ask, SAID and SHOWN (Pietro, 27 Nov: "include an invitation to follow, and make sure
+    that invitation is not just visual but also verbal"): narration() refuses a script whose last line does not ask
+    for the follow, and film() refuses a last shot without follow_ask() (the handle and a + FOLLOW button that is
+    tapped and turns to FOLLOWING, in the band the subtitles used to have).
+  * The narrator is voice_clone.narrator(): EMMA (Kokoro bf_emma, 0.97) from 27 Nov to 4 Dec (Pietro), else HEART.
   * Sound: voice and action-timed effects only. The music is a trending licensed track that Instagram attaches at
     posting (publish.py, Audio API), so the MP4 never carries music.
 
@@ -49,7 +55,11 @@ GREEN = "#2F8F4E"
 # Instagram covers the bottom ~380 px (caption, audio line) and a ~140 px column on the right (buttons).
 SAFE = dict(top=220, bottom=380, right=150, left=60)
 ACTION_BOTTOM = 1390          # keep numbers and faces above this screen y: the caption band starts there
-CAP_BOTTOM = 380              # captions: their own band just above the covered one (screen y about 1400 to 1540)
+CAP_BOTTOM = 380              # the band just above the covered one (screen y about 1400 to 1540): the follow ask
+SUBTITLES = False             # 27 Nov (Pietro): no subtitles in the videos
+FOLLOW_TAIL = 1.7             # seconds the last shot runs after the last line ends (the tap and FOLLOWING read)
+FOLLOW_LINE = "Follow for a new interview question every day."
+HANDLE = "@investmentbankinginterviews"
 
 
 def lay(z, inner):
@@ -128,23 +138,31 @@ def big_number(text, at, d, top=620, size=230, color="#fff", count=None):
 
 # ------------------------------------------------------------------------------------------------ the voice
 
-def narration(lines, work):
-    """Say each line once with HEART (cached per line), then find its word times."""
+def asks_follow(text):
+    return "follow" in text.lower()
+
+
+def narration(lines, work, voice_name=None):
+    """Say each line once with the narrator of the day (cached per line and voice), then find its word times.
+    The last line must ask for the follow (27 Nov)."""
     from voice import write_wav, SR
-    from voice_clone import make_voice
+    from voice_clone import make_voice, narrator
     from voice_check import transcribe, wer
     import wave
+    if not asks_follow(lines[-1]):
+        raise SystemExit(f"REEL RULES: the last spoken line must ask for the follow (e.g. {FOLLOW_LINE!r}); it is {lines[-1]!r}")
+    name = voice_name or narrator()
     cache = pathlib.Path(work) / "lines"
     cache.mkdir(parents=True, exist_ok=True)
     v, out = None, []
     for i, text in enumerate(lines):
         key, wav = cache / f"{i:02d}.json", cache / f"{i:02d}.wav"
         meta = json.load(open(key)) if key.exists() else {}
-        if meta.get("text") != text or meta.get("voice") != "HEART" or not wav.exists():
-            v = v or make_voice("HEART")
+        if meta.get("text") != text or meta.get("voice") != name or not wav.exists():
+            v = v or make_voice(name)
             write_wav(wav, v.say(text))
             heard, words = transcribe(str(wav), with_words=True)
-            meta = dict(text=text, voice="HEART", heard=heard, wer=float(wer(text, heard)), words=words)
+            meta = dict(text=text, voice=name, heard=heard, wer=float(wer(text, heard)), words=words)
             json.dump(meta, open(key, "w"), indent=1)
         with wave.open(str(wav)) as wf:
             meta["dur"] = wf.getnframes() / SR
@@ -169,7 +187,7 @@ def beats(voice, holds=None):
     for i, m in enumerate(voice):
         starts.append(round(t, 3))
         t += m["dur"] + GAP + holds.get(i, 0)
-    ends = starts[1:] + [round(t + .6, 3)]
+    ends = starts[1:] + [round(t - GAP + FOLLOW_TAIL, 3)]
     shot_starts = [0.0] + starts[1:]
     durs = [round(e - s, 3) for s, e in zip(shot_starts, ends)]
     words = [_script_words(m["text"], m["words"], s, m["dur"]) for m, s in zip(voice, starts)]
@@ -190,7 +208,9 @@ def at_word(b, line, token, shot=None, end=False, nth=1):
 
 
 def captions(voice, b):
-    """Sentence by sentence, word by word, big, outlined, no box."""
+    """Sentence by sentence, word by word, big, outlined, no box. Off since 27 Nov (SUBTITLES): only the CSS."""
+    if not SUBTITLES:
+        return CSS
     out = []
     for m, wd in zip(voice, b["words"]):
         cur = []
@@ -271,7 +291,35 @@ def marker_text(tid, x, y, text, size, color, t0, t1, anchor="start", weight=700
 
 # ------------------------------------------------------------------------------------------------ film and checks
 
+def follow_ask(at, d, top=1388):
+    """The follow ask on screen (27 Nov), from shot second `at` (when "follow" is said) to the shot's end d: a round
+    IB avatar, the handle and a + FOLLOW button that a tap ring presses 0.9 s later and that turns to FOLLOWING.
+    It sits in the band above Instagram's own caption (screen y 1402 to about 1530), left of the button column, over
+    the world with no box behind it."""
+    from motion import A
+    t_tap = round(at + .9, 3)
+    btn = ("position:absolute;left:0;top:0;display:inline-block;font-family:'Sans',sans-serif;font-size:44px;font-weight:700;"
+           "letter-spacing:.05em;color:#fff;padding:12px 40px;border-radius:16px;white-space:nowrap")
+    button = ('<div style="position:relative;height:76px;margin-top:10px">'
+              + A(f'<span style="{btn};background:{RED}">+ FOLLOW</span>', "life", 0, t_tap + .05, fi=.01, fo=.05)
+              + A(f'<span style="{btn};background:#2A2E35;border:3px solid #fff">FOLLOWING</span>', "life", t_tap, 99, fi=.05, fo=.01,
+                  style="position:absolute;left:0;top:0")
+              + A('<span style="display:block;width:110px;height:110px;border-radius:50%;border:8px solid #fff"></span>', "ripple",
+                  round(t_tap - .2, 3), .6, style="position:absolute;left:62px;top:-22px")
+              + '</div>')
+    avatar = (f'<div style="width:132px;height:132px;border-radius:50%;background:{INK};border:6px solid #fff;flex:none;'
+              f'display:flex;align-items:center;justify-content:center;font-family:\'Serif\',serif;font-weight:700;font-size:60px;color:#fff">'
+              f'IB<span style="color:{RED}">.</span></div>')
+    handle = (f'<div style="font-family:\'Sans\',sans-serif;font-weight:700;font-size:42px;color:#fff;white-space:nowrap;'
+              f'text-shadow:0 0 3px #000,0 2px 10px rgba(0,0,0,.95),0 6px 24px rgba(0,0,0,.7)">{HANDLE}</div>')
+    row = f'<div style="display:flex;align-items:center;gap:22px">{avatar}<div>{handle}{button}</div></div>'
+    return A(A(row, "pop", round(at, 3), .4), "life", 0, d, cls="fol",
+             style=f"position:absolute;left:60px;top:{top}px;z-index:9", fi=.01, fo=.01)
+
+
 def film(shots, caps, badge=""):
+    if 'class="a fol' not in "".join(shots[-1].get("over", [])):
+        raise SystemExit("REEL RULES: the last shot has no follow_ask() on screen (27 Nov: said and shown)")
     probs = check_shots(shots)
     if probs:
         raise SystemExit("REEL RULES: " + "; ".join(probs))

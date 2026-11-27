@@ -5,7 +5,12 @@ description: "Make and queue ONE fully animated Instagram Reel a day for @invest
 
 # Voiced Reels for @investmentbankinginterviews
 
-## FIRST: the 27 Nov standard (Pietro, 26 Nov) wins over everything below
+## FIRST: Pietro, 27 Nov, then the 27 Nov standard
+
+27 Nov (newest): TWO Reels a day from 28 Nov (slots A 12:30 and B 18:00 ET); the EMMA voice (Kokoro bf_emma, 0.97) on
+every Reel and video from 27 Nov to 4 Dec (`voice_clone.narrator()`), HEART again from 5 Dec unless he extends it; NO
+subtitles; the follow ask said in the last line AND shown (`reel_film.follow_ask`). Details at the top of
+`docs/production/reel-film-standard.md`; where the text below says one a day, HEART or captions, this wins.
 
 Read `docs/production/reel-film-standard.md` and follow it. In short: ONE Reel a day at 18:00 ET (slot B); the whole
 frame is the animated world (`build/reel_film.py`, copy `build/reelf_depreciation.py`); no card, panel, black ground or
