@@ -31,9 +31,11 @@ What has been settled, and what is still open. Newest first.
   window; `publish.py` caps Reels at 2 per Eastern day (slots A 12:30 and B 18:00 ET); `reel_film.SUBTITLES = False`;
   `reel_film.narration()` refuses a script whose last line has no follow ask and `film()` refuses a last shot without
   `follow_ask()` (avatar, handle, a + FOLLOW button tapped to FOLLOWING); the reference Reel ends on "Tell me in the
-  comments, and follow for a new interview question every day." (WER 0 in EMMA, 44.2 s). The IG Reel daily task now
-  makes two Reels a run and starts earlier (05:47 ET) so slot A is queued in time; the long-film and Shorts task
-  prompts say EMMA until 4 Dec. The 27 Nov Reel (depreciation, HEART, subtitles, no spoken follow ask) was already
+  comments, and follow for a new interview question every day." (WER 0 in EMMA, 44.2 s). The scheduled task prompts
+  were NOT changed (the change to "IG Reel daily" was refused for lack of permission in that session): their old
+  wording (ONE Reel, HEART) is overridden by CLAUDE.md and this entry, and the code makes EMMA, no subtitles and the
+  follow ask the default whatever the prompt says. Pending Pietro: the "IG Reel daily" prompt rewritten for two Reels
+  a run and moved to 05:47 ET so slot A is queued well before 12:30. The 27 Nov Reel (depreciation, HEART, subtitles, no spoken follow ask) was already
   live at 18:05 ET and is left as it is.
 
 - **The first full-frame Reel is the floor, and every Reel has music (26 Nov, Pietro, after seeing w3-depreciation-cash:
