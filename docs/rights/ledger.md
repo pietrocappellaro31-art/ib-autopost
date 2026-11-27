@@ -41,3 +41,5 @@ in this repo.
 ## Music library (12 Nov)
 
 Songs Pietro sent for `build/music_library/library.json`: Experience (Ludovico Einaudi), Swimming and Missing Pieces (Flawed Mangoes), GOTH (Sidewalks and Skeletons), Luminary (Joel Sunny), Bloody Mary instrumental slowed (Lady Gaga, uploaded edit), Ethereal slowed (Txmy), September instrumental loop (Sparky Deathcap). Status: **reference only**. Commercial recordings with no licence held: never in a master, audio never committed (gitignored), never altered to avoid Content ID. Used for the song suggestion Pietro adds in the YouTube app on Shorts (YouTube's own licence), and as the tempo, key and feel our original long-form bed is written in (no melody, chords or audio taken). A song moves to `licence` only with written proof recorded here.
+
+27 Nov 2026: added "Presentation 1" and "Presentation 2" (sent by Pietro, artist unknown). Status: **reference only**, same terms as above, until Pietro gives the source or a licence.
