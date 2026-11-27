@@ -134,6 +134,26 @@ def push_media_branch(slug, files, dry):
     return branch
 
 
+EXPLICIT = ("shit", "fuck", "bitch", "nigg", "hoe", "pussy", "dick", "sex", "drug", "kill")
+
+
+def backup_tracks(chosen, volume, n=2):
+    """Two more tracks from docs/daily/trending-audio.json for publish.py to try if Meta refuses the chosen one."""
+    f = ROOT / "docs" / "daily" / "trending-audio.json"
+    if not f.exists():
+        return []
+    out = []
+    for t in json.loads(f.read_text()).get("tracks", []):
+        tid = str(t.get("audio_id") or t.get("id") or "")
+        name = f"{t.get('title', '')} - {t.get('display_artist', '')}"
+        if not tid or tid == str(chosen) or any(w in name.lower() for w in EXPLICIT) or "christmas" in name.lower():
+            continue
+        out.append(dict(audio_id=tid, title=name, audio_volume=volume, video_volume=100))
+        if len(out) == n:
+            break
+    return out
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("slug")
@@ -149,10 +169,15 @@ def main():
     ap.add_argument("--audio-title", default="", help="the track's title and artist, for the logs")
     ap.add_argument("--music-volume", type=int, default=15, help="0-100, one level for the whole Reel (no ducking)")
     ap.add_argument("--trial", action="store_true", help="26 Nov: post as a Trial Reel (non-followers first)")
+    ap.add_argument("--no-music", action="store_true", help="only if Pietro asks for a Reel without music")
     ap.add_argument("--dry-run", action="store_true")
     a = ap.parse_args()
     if a.audio_id and a.master == "scored":
         sys.exit("--audio-id with --master scored would play two pieces of music at once: use the clean master")
+    # 26 Nov (Pietro: "make sure to add the music"): every Reel carries a trending track
+    if not a.audio_id and not a.no_music:
+        sys.exit("NOT QUEUED: no --audio-id. Every Reel gets a trending track (dispatch the audio mode, pick from "
+                 "docs/daily/trending-audio.json); --no-music only if Pietro asks for it")
     if a.audio_id:
         a.master = "clean"
 
@@ -193,6 +218,7 @@ def main():
                  master=kind, caption=caption, first_comment=a.comment.strip(), ai_label=True, published_id=None)
     if a.audio_id:
         entry["audio"] = dict(audio_id=a.audio_id, title=a.audio_title, audio_volume=a.music_volume, video_volume=100)
+        entry["audio_backups"] = backup_tracks(a.audio_id, a.music_volume)
     if a.trial:
         entry["trial"] = True
     if not cover:

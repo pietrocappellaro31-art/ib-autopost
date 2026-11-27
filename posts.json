@@ -2033,7 +2033,21 @@
         "title": "Breath Between Thoughts - Lucent Hours",
         "audio_volume": 15,
         "video_volume": 100
-      }
+      },
+      "audio_backups": [
+        {
+          "audio_id": "1958989035018026",
+          "title": "Chills - 1NOVYX",
+          "audio_volume": 15,
+          "video_volume": 100
+        },
+        {
+          "audio_id": "1594706651702721",
+          "title": "Overboard x Just a Dream (Deep House) - Mashify",
+          "audio_volume": 15,
+          "video_volume": 100
+        }
+      ]
     }
   ],
   "reel_slots_et": {

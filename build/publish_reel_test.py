@@ -71,6 +71,18 @@ P.publish_one_reel("u", p, "", publish=False)
 check("retried without music", len(calls) == 2 and "audio_configuration" not in calls[1][1] and "trial_params" in calls[1][1])
 check("drop recorded", "audio_configuration" in p.get("dropped", {}))
 
+# 4b. a refused track is replaced by a backup before going without music
+calls.clear()
+def refuse_first(path, params, method="GET", root=None):
+    calls.append((path, dict(params)))
+    if '"audio_id": "9"' in params.get("audio_configuration", ""):
+        raise RuntimeError("Graph API 400: audio not available")
+    return {"id": "c2"}
+P.call_graph = refuse_first
+p = post(audio={"audio_id": "9", "title": "A"}, audio_backups=[{"audio_id": "10", "title": "B"}])
+P.publish_one_reel("u", p, "", publish=False)
+check("backup track used", len(calls) == 2 and '"audio_id": "10"' in calls[1][1]["audio_configuration"] and p["audio"]["audio_id"] == "10")
+
 # 5. a block error is never retried
 calls.clear()
 P.call_graph = lambda *a, **k: (calls.append(1), (_ for _ in ()).throw(RuntimeError("API access blocked 5258005")))[1]

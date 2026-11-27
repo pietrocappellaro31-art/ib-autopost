@@ -58,8 +58,12 @@ ground, the scored master, three a day). The other standards (audio, accuracy, A
   (`audio_query`, e.g. "lofi", "piano") gives more instrumental choices than the trending list.
 - `--music-volume` (default 15 of 100) is one level for the whole Reel; Instagram does no ducking. Raise it only if Pietro
   says the music is too quiet.
-- If Meta refuses the track at posting, publish.py posts without it and records `dropped` in posts.json; note it in the
-  next quality-log row.
+- Music on every Reel (Pietro, 26 Nov: "Keep this level from now on and make sure to add the music"): reel_queue.py
+  refuses a Reel without `--audio-id` (`--no-music` only if Pietro asks) and stores two backup tracks from
+  trending-audio.json. If Meta refuses the track at posting, publish.py tries the backups first; only if all fail does it
+  post without music, recording `dropped` in posts.json. Note any replacement or drop in the next quality-log row.
+- The level of the 27 Nov reference Reel (build/reelf_depreciation.py) is the floor for every Reel (Pietro, 26 Nov: "This
+  is great. Keep this level from now on").
 
 ## Trial Reels (Pietro: "test some as trials")
 

@@ -268,6 +268,22 @@ def create_with_fallback(ig_user_id, params, post):
         text = str(error)
         if is_block_error(text):
             raise
+        # 26 Nov (Pietro: "make sure to add the music"): a refused track is replaced by a backup track first
+        if "audio_configuration" in params:
+            for backup in post.get("audio_backups", []):
+                params = dict(params, audio_configuration=json.dumps({
+                    "audio_id": str(backup["audio_id"]), "audio_volume": int(backup.get("audio_volume", REEL_MUSIC_VOLUME)),
+                    "video_volume": int(backup.get("video_volume", 100))}))
+                print(f"  track refused ({text[:100]}); trying backup {backup.get('title') or backup['audio_id']}")
+                try:
+                    cid = call_graph(f"{ig_user_id}/media", params, method="POST")["id"]
+                    post.setdefault("dropped", {})["audio_replaced"] = f"{post['audio'].get('title')} -> {backup.get('title')}"
+                    post["audio"] = backup
+                    return cid
+                except RuntimeError as again:
+                    text = str(again)
+                    if is_block_error(text):
+                        raise
         dropped = [k for k in ("audio_configuration", "trial_params") if k in params]
         if not dropped:
             raise

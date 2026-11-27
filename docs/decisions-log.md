@@ -18,6 +18,10 @@ What has been settled, and what is still open. Newest first.
 
 ## Settled
 
+- **The first full-frame Reel is the floor, and every Reel has music (26 Nov, Pietro, after seeing w3-depreciation-cash:
+  "This is great. Keep this level from now on and make sure to add the music.").** reel_queue.py now refuses a Reel
+  without a track and stores two backups; publish.py tries the backups before ever posting without music.
+
 - **Reels: one fully animated Reel a day, trending music through Instagram, Trial Reels, hidden counts (26 Nov,
   Pietro).** His words: "Reels are underperforming. We need, when we post reels from now on, to hide like and share
   count. We need to have better storytelling. The music is terrible, so we need to find ways to access trending music
