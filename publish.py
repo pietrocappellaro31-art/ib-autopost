@@ -38,7 +38,8 @@ DEFAULT_SLOTS_ET = (clock(8, 0), clock(12, 30), clock(17, 30))
 # daily cap and never take a carousel's place. Their video files are not in main's history: each Reel waits on
 # a temporary branch reel/<slug> (the session cannot create releases) and the branch is deleted once posted.
 # 22 Nov 2026 (Pietro): three Reels a day for the week of 22 to 29 Nov (slots A, B, C in posts.json reel_slots_et).
-MAX_REELS_PER_EASTERN_DAY = 3
+MAX_REELS_PER_EASTERN_DAY = 1   # 26 Nov (Pietro): one high-quality Reel a day, from 27 Nov ET
+ONE_REEL_FROM = "2026-11-27"     # before this Eastern day the earlier cap of 3 applies (26 Nov's slot C posts)
 PROBE_HOURS = 6                      # while Meta blocks the app, try once every 6 hours, never more
 REPO = os.environ.get("GITHUB_REPOSITORY", "pietrocappellaro31-art/ib-autopost")
 # Errors that mean Meta is unhappy with the app or the account: stop the whole run, retry nothing.
@@ -56,11 +57,11 @@ POLL_ATTEMPTS = 30
 REEL_POLL_ATTEMPTS = 60   # video transcoding is slow; 10 minutes at 10s
 
 
-def call_graph(path, params, method="GET"):
+def call_graph(path, params, method="GET", root=None):
     """Send one request to the Graph API and return the decoded JSON."""
     params = dict(params)
     params["access_token"] = os.environ["IG_ACCESS_TOKEN"]
-    url = f"{GRAPH_ROOT}/{path}"
+    url = f"{root or GRAPH_ROOT}/{path}"
     data = urllib.parse.urlencode(params).encode()
 
     if method == "GET":
@@ -233,7 +234,76 @@ def reel_container_resumable(ig_user_id, post, cover_url=None):
         params["thumb_offset"] = str(int(post["thumb_offset_ms"]))
     if post.get("audio_name"):
         params["audio_name"] = post["audio_name"]
-    return call_graph(f"{ig_user_id}/media", params, method="POST")
+    params.update(reel_extras(post))
+    return {"id": create_with_fallback(ig_user_id, params, post)}
+
+
+# 26 Nov (Pietro): trending music and Trial Reels, both set on the container at creation.
+# Music comes from Instagram's Audio API (GET /ig_audio): tracks Meta has authorised for third-party use, attached by
+# id, so Instagram plays the licensed track itself and our MP4 carries only voice and effects. There is no ducking:
+# audio_volume is one level for the whole Reel, so it stays low under the narration (default 15 of 100).
+# A Trial Reel is shown to non-followers first; SS_PERFORMANCE lets Instagram share it with followers if it does well.
+REEL_MUSIC_VOLUME = 15
+
+
+def reel_extras(post):
+    extras = {}
+    audio = post.get("audio")
+    if audio and audio.get("audio_id"):
+        extras["audio_configuration"] = json.dumps({
+            "audio_id": str(audio["audio_id"]),
+            "audio_volume": int(audio.get("audio_volume", REEL_MUSIC_VOLUME)),
+            "video_volume": int(audio.get("video_volume", 100))})
+    if post.get("trial"):
+        extras["trial_params"] = json.dumps({"graduation_strategy": post.get("trial_graduation", "SS_PERFORMANCE")})
+    return extras
+
+
+def create_with_fallback(ig_user_id, params, post):
+    """Create the Reel container. If Meta refuses the music (a track can stop being available between queueing and
+    posting) or the trial settings, post without that extra rather than miss the slot, and record what was dropped."""
+    try:
+        return call_graph(f"{ig_user_id}/media", params, method="POST")["id"]
+    except RuntimeError as error:
+        text = str(error)
+        if is_block_error(text):
+            raise
+        dropped = [k for k in ("audio_configuration", "trial_params") if k in params]
+        if not dropped:
+            raise
+        # drop the music first; only if it still fails, drop the trial too
+        for key in dropped:
+            params = {k: v for k, v in params.items() if k != key}
+            post.setdefault("dropped", {})[key] = text[:300]
+            print(f"  container refused with {key} ({text[:120]}); retrying without it")
+            try:
+                return call_graph(f"{ig_user_id}/media", params, method="POST")["id"]
+            except RuntimeError as again:
+                text = str(again)
+                if is_block_error(text):
+                    raise
+        raise RuntimeError(text)
+
+
+def trending_audio(ig_user_id, query=None, limit=30):
+    """Trending music authorised for third-party use (no query) or a keyword search, as plain dicts."""
+    params = {"audio_type": "music", "user_id": ig_user_id}
+    if query:
+        params["search_query"] = query
+    errors = []
+    res = None
+    for root in (GRAPH_ROOT, "https://graph.facebook.com/v24.0"):
+        try:
+            res = call_graph("ig_audio", params, root=root)
+            break
+        except RuntimeError as error:
+            errors.append(str(error)[:300])
+    if res is None:
+        raise RuntimeError(" | ".join(errors))
+    items = res.get("data", res.get("audio", []))
+    keep = ("audio_id", "id", "title", "display_artist", "duration_in_ms", "audio_type", "is_ads_eligible",
+            "on_platform_audio_preview_link", "download_url")
+    return [{k: x.get(k) for k in keep if k in x} for x in items[:limit]], root
 
 
 def upload_by_url(container_id, url):
@@ -316,8 +386,11 @@ def publish_one_reel(ig_user_id, post, image_base, publish=True):
             params["is_ai_generated"] = "true"
         if post.get("cover"):
             params["cover_url"] = branch_url(branch, post["cover"])
-        print(f"  reel {post['video']} from {branch} by video_url")
-        container_id = call_graph(f"{ig_user_id}/media", params, method="POST")["id"]
+        params.update(reel_extras(post))
+        print(f"  reel {post['video']} from {branch} by video_url"
+              + (f" with music {post['audio'].get('title', post['audio']['audio_id'])}" if post.get("audio") else "")
+              + (" as a Trial Reel" if post.get("trial") else ""))
+        container_id = create_with_fallback(ig_user_id, params, post)
     elif branch:
         data = fetch_bytes(branch_url(branch, post["video"]))
         cover = branch_url(branch, post["cover"]) if post.get("cover") else None
@@ -422,7 +495,8 @@ def apply_daily_cap(manifest, due, now):
         if is_reel(post) and post.get("published_id") and post.get("published_at_utc")
         and _utc(post["published_at_utc"]).astimezone(EASTERN).date() == today
     )
-    reel_allowance = max(MAX_REELS_PER_EASTERN_DAY - reels_today, 0)
+    cap = MAX_REELS_PER_EASTERN_DAY if today.isoformat() >= ONE_REEL_FROM else 3
+    reel_allowance = max(cap - reels_today, 0)
     if len(reels) > reel_allowance:
         print(f"Reel cap: {reels_today} Reel(s) published today (ET). Holding: "
               + ", ".join(post["id"] for post in reels[reel_allowance:]))
@@ -671,6 +745,22 @@ def main():
     if "--reel-selftest" in sys.argv:
         i = sys.argv.index("--reel-selftest")
         return reel_selftest(resolve_ig_user_id(), sys.argv[i + 1], sys.argv[i + 2])
+    if "--audio" in sys.argv:
+        i = sys.argv.index("--audio")
+        query = sys.argv[i + 1] if len(sys.argv) > i + 1 and sys.argv[i + 1] else None
+        tracks, root = trending_audio(resolve_ig_user_id(), query)
+        for t in tracks:
+            t.pop("download_url", None)          # temporary signed links: not worth committing
+        out = {"updated_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"), "query": query,
+               "graph_root": root, "tracks": tracks}
+        os.makedirs(os.path.join(os.path.dirname(__file__), "docs", "daily"), exist_ok=True)
+        with open(os.path.join(os.path.dirname(__file__), "docs", "daily", "trending-audio.json"), "w") as handle:
+            json.dump(out, handle, indent=1, ensure_ascii=False)
+        print(f"Audio API: {len(tracks)} tracks via {root}")
+        for t in tracks[:30]:
+            print(f"  {t.get('audio_id') or t.get('id')}  {t.get('title')} - {t.get('display_artist')} "
+                  f"({(t.get('duration_in_ms') or 0) / 1000:.0f} s)")
+        return 0
     if "--insights" in sys.argv:
         cleanup_media_branches(manifest)
         perf = collect_insights(resolve_ig_user_id())

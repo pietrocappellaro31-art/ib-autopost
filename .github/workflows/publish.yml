@@ -25,12 +25,17 @@ on:
           - publish         # publish anything that is due
           - reel-selftest   # upload a Reel from a reel/<slug> branch with the AI label, publish nothing
           - insights        # record how recent posts did (docs/daily/performance.*)
+          - audio           # list trending licensed music for Reels (docs/daily/trending-audio.json)
       reel_branch:
         description: "reel-selftest: the media branch, e.g. reel/selftest-newton-1720"
         required: false
         default: ""
       reel_file:
         description: "reel-selftest: the MP4 on that branch"
+        required: false
+        default: ""
+      audio_query:
+        description: "audio: optional search words (empty = trending)"
         required: false
         default: ""
 
@@ -75,6 +80,14 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}   # removes reel/* media branches nothing needs any more
         run: python publish.py --insights
 
+      - name: Trending music for Reels
+        if: github.event_name == 'workflow_dispatch' && inputs.mode == 'audio'
+        env:
+          IG_USER_ID: ${{ secrets.IG_USER_ID }}
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+          AUDIO_QUERY: ${{ inputs.audio_query }}
+        run: python publish.py --audio "$AUDIO_QUERY"
+
       - name: Publish anything due
         if: github.event_name != 'workflow_dispatch' || inputs.mode == 'publish'
         env:
@@ -84,9 +97,9 @@ jobs:
         run: python publish.py
 
       - name: Record what was published
-        if: always() && (github.event_name != 'workflow_dispatch' || inputs.mode == 'publish' || inputs.mode == 'insights')
+        if: always() && (github.event_name != 'workflow_dispatch' || inputs.mode == 'publish' || inputs.mode == 'insights' || inputs.mode == 'audio')
         run: |
-          files="posts.json docs/daily/performance.json docs/daily/performance.md"
+          files="posts.json docs/daily/performance.json docs/daily/performance.md docs/daily/trending-audio.json"
           if [ -n "$(git status --porcelain $files)" ]; then
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"

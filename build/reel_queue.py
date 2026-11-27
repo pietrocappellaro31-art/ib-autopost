@@ -144,8 +144,17 @@ def main():
     ap.add_argument("--comment", default="")
     ap.add_argument("--cover", help="a ready 1080 x 1920 cover; default: build/reel_cover.py makes a grid-safe one")
     ap.add_argument("--title", help="cover title, default the Reel's hook question")
+    ap.add_argument("--audio-id", help="26 Nov: an Instagram Audio API track id (docs/daily/trending-audio.json); "
+                    "Instagram attaches the licensed track at posting, so the clean master (voice and effects) is used")
+    ap.add_argument("--audio-title", default="", help="the track's title and artist, for the logs")
+    ap.add_argument("--music-volume", type=int, default=15, help="0-100, one level for the whole Reel (no ducking)")
+    ap.add_argument("--trial", action="store_true", help="26 Nov: post as a Trial Reel (non-followers first)")
     ap.add_argument("--dry-run", action="store_true")
     a = ap.parse_args()
+    if a.audio_id and a.master == "scored":
+        sys.exit("--audio-id with --master scored would play two pieces of music at once: use the clean master")
+    if a.audio_id:
+        a.master = "clean"
 
     manifest = json.loads(MANIFEST.read_text())
     slots = manifest.get("reel_slots_et", DEFAULT_SLOTS)
@@ -168,6 +177,11 @@ def main():
     print(f"cover: {cover} (grid tile preview: {cover.with_name('cover_grid_preview.jpg')})")
     if problems:
         sys.exit("NOT QUEUED: " + "; ".join(problems))
+    # 26 Nov (Pietro): one Reel a day; a second one on the same Eastern day would only be held by publish.py
+    same_day = [x["id"] for x in manifest["posts"] if x.get("type") == "reel" and not x.get("published_id")
+                and datetime.fromisoformat(x["scheduled_utc"]).replace(tzinfo=ZoneInfo("UTC")).astimezone(ET).date() == day]
+    if same_day:
+        sys.exit(f"NOT QUEUED: {same_day[0]} is already queued for {day}; one Reel a day")
     pid = f"reel-{a.slug}"
     if any(x["id"] == pid for x in manifest["posts"]):
         sys.exit(f"{pid} is already in posts.json")
@@ -177,6 +191,10 @@ def main():
     entry = dict(id=pid, type="reel", scheduled_utc=when_utc.strftime("%Y-%m-%dT%H:%M:%S"), slot=a.slot,
                  media_branch=branch, video=f"{a.slug}.mp4", cover=f"{a.slug}.jpg" if cover else None,
                  master=kind, caption=caption, first_comment=a.comment.strip(), ai_label=True, published_id=None)
+    if a.audio_id:
+        entry["audio"] = dict(audio_id=a.audio_id, title=a.audio_title, audio_volume=a.music_volume, video_volume=100)
+    if a.trial:
+        entry["trial"] = True
     if not cover:
         entry.pop("cover")
         entry["thumb_offset_ms"] = 1500

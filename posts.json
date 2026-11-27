@@ -2019,5 +2019,5 @@
     "B": "18:00",
     "C": "21:00"
   },
-  "reel_slots_note": "16 Nov 2026: two Reels a day, posted automatically (Pietro). 12:30 and 18:00 ET match the dispatches that fire reliably (12:33 and 18:03 ET); GitHub's own cron fired about 7 times a day with gaps up to 10 hours. Moved by the daily Reel run from docs/daily/performance.md, with the reason in docs/decisions-log.md. 22 Nov (Pietro): three Reels a day for the week of 22 to 29 Nov, one carousel a day (08:00 ET) and one Story a day; slot C 21:00 ET, covered by the 21:03 ET dispatch task and GitHub's 02-03 UTC cron window."
+  "reel_slots_note": "26 Nov (Pietro): ONE Reel a day from 27 Nov, in slot B (18:00 ET): it broke out (800+ views) on 6 of the 7 days it ran, and on 3-Reel days only one Reel a day broke out. A and C stay defined for a deliberate test only."
 }
