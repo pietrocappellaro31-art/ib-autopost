@@ -34,6 +34,14 @@ on:
         description: "reel-selftest: the MP4 on that branch"
         required: false
         default: ""
+      reel_audio_id:
+        description: "reel-selftest: optional Audio API track id to attach"
+        required: false
+        default: ""
+      reel_trial:
+        description: "reel-selftest: 1 to create the container as a Trial Reel"
+        required: false
+        default: ""
       audio_query:
         description: "audio: optional search words (empty = trending)"
         required: false
@@ -70,6 +78,8 @@ jobs:
           IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
           REEL_BRANCH: ${{ inputs.reel_branch }}
           REEL_FILE: ${{ inputs.reel_file }}
+          REEL_AUDIO_ID: ${{ inputs.reel_audio_id }}
+          REEL_TRIAL: ${{ inputs.reel_trial }}
         run: python publish.py --reel-selftest "$REEL_BRANCH" "$REEL_FILE"
 
       - name: Record performance

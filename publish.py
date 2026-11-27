@@ -712,7 +712,17 @@ def reel_selftest(ig_user_id, branch, name):
         post.update(video=name[4:], upload="url")
     elif name.startswith("resumable:"):
         post.update(video=name[10:], upload="resumable")
+    # 26 Nov: optional music and trial settings, to prove Meta accepts them on a real container before a Reel relies
+    # on them (REEL_AUDIO_ID, REEL_TRIAL=1)
+    if os.environ.get("REEL_AUDIO_ID"):
+        post["audio"] = {"audio_id": os.environ["REEL_AUDIO_ID"], "title": "self-test"}
+    if os.environ.get("REEL_TRIAL") == "1":
+        post["trial"] = True
     container = publish_one_reel(ig_user_id, post, "", publish=False)
+    if post.get("dropped"):
+        print(f"  DROPPED by Meta: {post['dropped']}")
+    elif post.get("audio") or post.get("trial"):
+        print(f"  accepted: music={bool(post.get('audio'))} trial={bool(post.get('trial'))}")
     status = call_graph(container, {"fields": "status_code,status"})
     print(f"  container {container}: {status.get('status_code')} (nothing published)")
     try:
