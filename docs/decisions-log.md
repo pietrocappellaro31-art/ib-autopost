@@ -18,6 +18,15 @@ What has been settled, and what is still open. Newest first.
 
 ## Settled
 
+- **YouTube Shorts' music from our royalty-free library (27 Nov, Pietro).** Asked how the YouTube copy of a Reel should
+  carry music, he said: "Use our library - we created a chat with 20-30 royalty free music". Then: source "Pixabay";
+  the Content ID risk "OK, keep the licence proof". Not done yet: the MP3s exist only in the other chat's workspace
+  (past chats give text, not attachments), and this repository is PUBLIC, so the files cannot be committed here (the
+  Pixabay licence does not allow redistributing the tracks as they are). Pending: Pietro sends the files once in a
+  chat; they go to a private store the daily runs can read; each track is checked on pixabay.com by title and artist,
+  its page URL saved as the licence proof, and only then moved from REFERENCE_ONLY to LICENSED_FOR_YOUTUBE. Until
+  then build/yt_short_from_reel.py keeps our original score.
+
 - **YouTube from 27 Nov (Pietro): no subtitles, at most 5 minutes, EMMA, spark-yellow thumbnails, Shorts = the Reels,
   "what if" films.** His words: "For youtube please follow these guidelines moving forward: 1. Eliminate subtitles 2. 5
   mins and not any longer than that (current about 10 mins and too long) 3. Use voice from 'can share holders equity be
