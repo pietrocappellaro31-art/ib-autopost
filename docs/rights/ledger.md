@@ -45,3 +45,5 @@ Songs Pietro sent for `build/music_library/library.json`: Experience (Ludovico E
 27 Nov 2026: added "Presentation 1" and "Presentation 2" (sent by Pietro, artist unknown). Status: **reference only**, same terms as above, until Pietro gives the source or a licence.
 
 27 Nov 2026: added 14 tracks (ApalonBeats, AtlasAudio, CloudSystem, Eliveta, JoyInSound, MickeysCat, MondaMusic, NastelBom, Paul Yudin x2, PenguinMusic, The Mountain, Viacheslav Starostin, YourTunes). File names suggest Pixabay, but the source and licence are not confirmed. Status: **reference only** until the source pages are recorded here.
+
+27 Nov 2026: added 13 tracks (Alex Morgan, ChestnutMusicStudios x3, Draganov89, Leberch x2, NastelBom x2, QuentinGaming, SergePavkinMusic, Whvle x2). Pietro wants the library used in Reels, films and Shorts with credits. Status: **reference only** until source and licence are confirmed here.
