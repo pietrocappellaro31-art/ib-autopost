@@ -18,6 +18,20 @@ What has been settled, and what is still open. Newest first.
 
 ## Settled
 
+- **YouTube from 27 Nov (Pietro): no subtitles, at most 5 minutes, EMMA, spark-yellow thumbnails, Shorts = the Reels,
+  "what if" films.** His words: "For youtube please follow these guidelines moving forward: 1. Eliminate subtitles 2. 5
+  mins and not any longer than that (current about 10 mins and too long) 3. Use voice from 'can share holders equity be
+  negative?' ... 4. Thumbnail with yellow spark color 5. for the short youtube video make sure to use the same reels.
+  Simply when you produce the instagram reels, please provide the same description and tabs for youtube." Asked to
+  confirm, he added the "what if" series (list in long-form-standard.md "FIRST") and left four questions unanswered;
+  read as: (a) no words burned into the picture, the .srt still written for optional CC; (b) EMMA on YouTube with no
+  end date ("moving forward"); (c) both thumbnail options yellow: a bright #FFD400 ground, and black with yellow key
+  words; (d) the YouTube copy of a Reel carries our original score (the 17 Nov one-file rule; Instagram's licensed
+  track never goes to YouTube); what-if films alternate with documentaries from 30 Nov. Done: youtube.SUBTITLES False,
+  youtube.MAX_SECONDS 300 (the build stops above it), voice_clone.YOUTUBE_PICK EMMA, youtube.SPARK_LOOKS,
+  build/yt_short_from_reel.py (tested on w3-depreciation-cash: -14.0 LUFS, -1.8 dBTP, scored vs clean WER 0; that Reel
+  is not delivered as a Short because it predates the no-subtitles rule). The "YouTube Short daily" task stays off.
+
 - **EMMA for a week on every video, two Reels a day, no subtitles, the follow ask said and shown (27 Nov, Pietro,
   after the first full-frame Reel).** His words: "do you remember the reel called 'Can Shareholders' Equity Be
   Negative'? We want to start using that voice again. ... From now on, for the next week, we're going to use that voice

@@ -43,6 +43,12 @@ from playwright.sync_api import sync_playwright
 
 import sfx as S
 from motion import A, JS, FONTS, OUT
+
+# 27 Nov (Pietro, YouTube from now on): no subtitles burned into the picture (the drawn beats' caption bar and the
+# filmed beats' word-by-word captions); the .srt is still written so CC can be switched on by the viewer. Long videos
+# run at most 5 minutes (build stops above MAX_SECONDS; aim for 4:00 to 4:50).
+SUBTITLES = False
+MAX_SECONDS = 300
 from voice import passage, write_wav, SR, MASTER
 from voice_clone import make_voice, YOUTUBE_VOICE
 import sketch
@@ -532,7 +538,7 @@ def scenes(ep, items):
                     if j and not action:
                         sounds.append(("pop", t + .25 + s0, .12))
             cap = (f'<div class="cap nochk">{words_kara(H.escape(beat["say"]), .25, dur, size=40, serif=False)}</div>'
-                   if any(x.get("kind", "statement") not in ("statement", "quote", "verdict") for x in shows) else "")
+                   if SUBTITLES and any(x.get("kind", "statement") not in ("statement", "quote", "verdict") for x in shows) else "")
             sc.append(dict(dur=dur + .75, push=.02, enter="", html=vis + cap,
                            chap=ch["title"], voice=(a, .25), ci=c, nc=n_ch))
             if not action:
@@ -670,10 +676,22 @@ THUMB_LOOKS = [
 ]
 
 
+# 27 Nov (Pietro: "Thumbnail with yellow spark color"): from 27 Nov both options are yellow: A a bright spark-yellow
+# ground with black type and a red highlight, B black with the type's key words in the same yellow.
+SPARK = "#FFD400"
+SPARK_LOOKS = [
+    dict(name="spark-yellow", bg=SPARK, fg=INK, hl=RED, layout="right", card=False, bar=INK, strap=(INK, SPARK)),
+    dict(name="spark-ink", bg=INK, fg="#fff", hl=SPARK, layout="left", card=True, strap=(SPARK, INK)),
+]
+THUMB_LOOKS += SPARK_LOOKS
+
+
 def thumb_looks(date=None):
     import datetime
+    if (date or datetime.date.today()) >= datetime.date(2026, 11, 27):
+        return SPARK_LOOKS[0], SPARK_LOOKS[1]
     d = ((date or datetime.date.today()) - datetime.date(2026, 11, 8)).days
-    return THUMB_LOOKS[(2 * d) % 7], THUMB_LOOKS[(2 * d + 1) % 7]
+    return THUMB_LOOKS[(2 * d) % 7], THUMB_LOOKS[(2 * d + 1) % 7]     # the seven original looks only
 
 
 def film_still(spec, work, name):
@@ -1082,7 +1100,7 @@ def cine_splice(ep, work, silent, total):
     amb = np.zeros((int((total + 2) * FX.FSR), 2), np.float32)
     for k, it in enumerate(CINE):
         built = it["show"]["shot"](W, Hh, it["dur"], dict(say=it["say"], segs=it["segs"], chapter=it["chapter"]))
-        caps = cine.captions([(x, a, b + .15, None) for x, a, b in it["segs"]], W, Hh)
+        caps = cine.captions([(x, a, b + .15, None) for x, a, b in it["segs"]], W, Hh) if SUBTITLES else ""
         html, dur = cine.film_html(built["shots"], W, Hh, caps=caps)
         # 18 Nov (#12): a beat whose page is unchanged since the last render is reused (a foley or sound fix, or a
         # crash late in the splice, no longer re-renders every filmed beat: 9 beats were about 14 minutes)
@@ -1254,6 +1272,9 @@ def make(ep, voice_name=YOUTUBE_VOICE):
     BEATS.clear()
     CAM_USE.clear()
     sc, chapters, sounds, total = scenes(ep, items)
+    if total > MAX_SECONDS and not ep.get("short"):
+        raise SystemExit(f"TOO LONG: {total / 60:.1f} min. Long videos are at most {MAX_SECONDS // 60} minutes (Pietro, 27 Nov): "
+                         "cut the script, do not speed up the voice")
     moved = sum(v for k, v in CAM_USE.items() if k != "_n")
     print(f"  camera: {moved} visuals and cards on a move ({', '.join(f'{k} {v}' for k, v in CAM_USE.most_common() if k != '_n')})", flush=True)
     late = [p for p in PACING if p[2] > .65 * p[3]]

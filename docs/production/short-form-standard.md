@@ -8,6 +8,12 @@ disagrees, this file wins, unless Pietro has since recorded a newer decision in
 The Shorts are for the finance channel's IB identity. They are separate from any other project:
 no other channel's characters, branding or data. Posting stays manual: Pietro uploads.
 
+## From 27 Nov: the Shorts are the Reels (Pietro)
+
+No separate Short is made. Every Instagram Reel becomes the day's Short through `build/yt_short_from_reel.py <slug>`
+(the same picture, our original score, the Reel's description and tags for YouTube). The rest of this file is history
+for Shorts; long-form-standard.md "FIRST" has the details.
+
 ## Number puzzles cut from the films (Pietro, from 19 Nov)
 
 Overrides sections 2 and 3 where they disagree (`decisions-log.md`, 18 Nov). Every Short is a **number puzzle**

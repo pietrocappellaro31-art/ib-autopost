@@ -13,6 +13,41 @@ The companion files:
 - added the same day by the cinematic-upgrade directive: `animation-engine.md` (cine.py), `scene-library.md`
   (scene families A to L), `voice-decision.md` (HEART and the trial history), `short-form-standard.md`
 
+## FIRST: YouTube from 27 Nov (Pietro) wins over everything below
+
+Pietro, 27 Nov: "For youtube please follow these guidelines moving forward: 1. Eliminate subtitles 2. 5 mins and not
+any longer than that (current about 10 mins and too long) 3. Use voice from 'can share holders equity be negative?' ...
+4. Thumbnail with yellow spark color 5. for the short youtube video make sure to use the same reels. Simply when you
+produce the instagram reels, please provide the same description and tabs for youtube." And: "For youtube we will also
+experiment with 'what if videos'" (his list below).
+
+1. **No subtitles in the picture.** `youtube.SUBTITLES = False` removes the drawn beats' caption bar and the filmed
+   beats' word-by-word captions. The big headline words of a drawn beat are design, not subtitles, and stay. The .srt is
+   still written: Pietro may upload it for CC or skip it (his answer pending; default: offer it, never burn it in).
+2. **At most 5 minutes**, aim 4:00 to 4:50. `youtube.MAX_SECONDS = 300` stops the build above it: cut the script (about
+   600 to 680 words at EMMA's pace), never speed up the voice. Story structure stays (hook in 5 s, mechanism, turn,
+   payoff), compressed: 4 to 6 chapters.
+3. **Voice EMMA** (Kokoro bf_emma, speed 0.97, the voice of the 12 Nov Reel "Can shareholders' equity be negative?"):
+   `voice_clone.YOUTUBE_PICK = "EMMA"`, long films and Shorts, with no end date for YouTube (Reels follow their own
+   window in voice_clone.NARRATOR_WINDOWS).
+4. **Thumbnails in spark yellow**: `youtube.thumb_looks()` returns spark-yellow (bright #FFD400 ground, black type, red
+   highlight) and spark-ink (black ground, key words in #FFD400) from 27 Nov.
+5. **Shorts are the Reels.** No separate Short is made (the "YouTube Short daily" task stays off). Each Reel run also
+   runs `python3 build/yt_short_from_reel.py <slug>`: the Reel's picture with our original score under the voice
+   (-14 LUFS; the Instagram track is never on YouTube) and `youtube.txt` with the title (the hook), the Reel's
+   description (follow line turned into a subscribe line, music credit, not-advice line, #Shorts) and tags. Pietro
+   uploads by hand.
+6. **"What if" films**, alternating with the finance documentaries (a what-if on 30 Nov, a documentary on 1 Dec, and so
+   on). Pietro's list, take them in this order unless a newer idea of his comes first:
+   What could you buy with $1 billion? (scenarios: how many Ferraris, an island, a sports team, a small city's budget) /
+   What if you inherited $20 million tomorrow? / What if you invested $10 a day for 30 years? / What if there were a
+   world with no taxes? / What if you could travel back in time with $20 million? / What if you dropped out of college?
+   / Living on $1 a day / How much money does Harvard make?
+   Every price, return and figure is sourced and dated (the price of a Ferrari model, Harvard's annual report, the
+   World Bank poverty line); a return assumption is named as an assumption (for example "if it grew 7% a year, the
+   S&P 500's long-run average after inflation is about that, not a promise") and shown with a plain range; no advice.
+   Titles may be playful, never false; the thumbnail carries the title's number.
+
 ## Mission
 
 Make original, accurate, educational finance documentaries for a general adult audience: a fully produced
@@ -81,7 +116,7 @@ labelled approximate.
 
 ## Length
 
-8 to 12 minutes: as long as the explanation needs, no padding, no cutting a complex topic short.
+At most 5 minutes, aim 4:00 to 4:50 (Pietro, 27 Nov; 8 to 12 minutes until then).
 
 ## Story structure
 
