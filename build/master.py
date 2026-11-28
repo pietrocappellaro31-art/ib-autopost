@@ -313,6 +313,72 @@ def scored_alternative(clean_mp4, moods=("explain", "resolve"), out=None, lufs=-
     return rep
 
 
+def library_alternative(clean_mp4, track_mp3, start_s=0.0, out=None, lufs=-14.0, tp=-1.5, music_under_db=9.0, duck_db=11.0,
+                        fade_in=.6, fade_out=1.8, credit=""):
+    """27 Nov (Pietro: "Use our library"): a finished CLEAN master with a licensed library track under it (the IB Music
+    Library, Pixabay tracks of class LICENSED_FOR_ALL_REQUIRED_PLATFORMS). The track is cut from start_s (its
+    calm_start under narration, or full_start for a hook) to the video's length, faded in and out, set by RMS under the
+    voice and ducked while anyone speaks, then mastered to the platform target. The word check compares what a
+    recogniser hears against the clean master. Never alters the track itself beyond level, cut and fades."""
+    clean_mp4 = pathlib.Path(clean_mp4)
+    out = pathlib.Path(out) if out else clean_mp4.with_name(clean_mp4.stem + "-music.mp4")
+    tmp = pathlib.Path(tempfile.mkdtemp())
+    wav, mwav = tmp / "clean.wav", tmp / "music.wav"
+    subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", str(clean_mp4), "-vn", "-ac", "2", "-ar", str(SR), str(wav)], check=True)
+    cl, _ = read_wav(wav)
+    total = len(cl) / SR
+    # one track, or a list of (mp3, start_s) for a long film: each piece runs from its start and the next one comes
+    # in with a 2.5 s crossfade, until the film is covered
+    pieces = [(track_mp3, start_s)] if not isinstance(track_mp3, (list, tuple)) else list(track_mp3)
+    mu, xf = np.zeros((0, 2), np.float32), int(2.5 * SR)
+    for j, (mp3_j, st_j) in enumerate(pieces):
+        if len(mu) >= len(cl):
+            break
+        subprocess.run(["ffmpeg", "-y", "-v", "error", "-ss", f"{st_j:.2f}", "-t", f"{total + 5:.2f}", "-i", str(mp3_j), "-ac", "2",
+                        "-ar", str(SR), str(mwav)], check=True)
+        piece, _ = read_wav(mwav)
+        if len(mu) and len(piece) > xf:
+            ramp = np.linspace(0, 1, xf)[:, None]
+            mu[-xf:] = mu[-xf:] * (1 - ramp) + piece[:xf] * ramp
+            piece = piece[xf:]
+        mu = np.concatenate([mu, piece])
+    track_mp3 = pieces[0][0]
+    m = np.zeros_like(cl)
+    k = min(len(m), len(mu))
+    m[:k] = mu[:k]
+    if k < len(m) - SR:
+        print(f"  the track ran out {(len(m) - k) / SR:.1f} s before the video's end (start earlier)")
+    t = np.arange(len(m)) / SR
+    end = k / SR
+    m *= (np.clip(t / fade_in, 0, 1) * np.clip((end - t) / fade_out, 0, 1))[:, None]
+    env = envelope(cl)
+    sp = env > .7
+    rms = lambda x: float(np.sqrt(np.mean(x ** 2))) if x.size else 0.0
+    ref = rms(cl[sp]) if sp.any() else rms(cl)
+    mr = rms(m[np.abs(m).mean(1) > 1e-6]) or 1e-9
+    m = m * (ref * 10 ** (-music_under_db / 20) / mr) * (10 ** (-duck_db * env / 20))[:, None]
+    raw, fin = tmp / "raw.wav", tmp / "fin.wav"
+    write_wav(raw, cl + m)
+    meas = two_stage(raw, fin, lufs, tp)
+    mux(clean_mp4, fin, out)
+    y, _ = read_wav(fin)
+    rep = dict(file=out.name, from_clean=clean_mp4.name, track=pathlib.Path(track_mp3).name, start_s=round(start_s, 2),
+               credit=credit, **meas, clipped_samples=int((np.abs(y) >= .999).sum()),
+               voice_over_music_db=round(float(20 * np.log10(ref / max(rms(m[sp]), 1e-9))), 1) if sp.any() else None)
+    try:
+        from voice_check import transcribe, wer
+        heard = {}
+        for name, src in (("clean", wav), ("music", fin)):
+            mono = tmp / f"{name}-mono.wav"
+            subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", str(src), "-ac", "1", "-ar", "24000", str(mono)], check=True)
+            heard[name] = transcribe(str(mono))
+        rep["wer_music_vs_clean"] = round(float(wer(heard["clean"], heard["music"])), 3)
+    except Exception as e:
+        rep["wer_music_vs_clean"] = f"not measured ({type(e).__name__})"
+    json.dump(rep, open(out.with_suffix(".json"), "w"), indent=1)
+    return rep
+
+
 if __name__ == "__main__":
     import sys
     if len(sys.argv) > 2 and sys.argv[1] == "scored":

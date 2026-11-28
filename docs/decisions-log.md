@@ -22,14 +22,19 @@ Pietro: use the music library (27 Pixabay tracks, `build/music_library/library.j
 
 ## Settled
 
-- **YouTube Shorts' music from our royalty-free library (27 Nov, Pietro).** Asked how the YouTube copy of a Reel should
-  carry music, he said: "Use our library - we created a chat with 20-30 royalty free music". Then: source "Pixabay";
-  the Content ID risk "OK, keep the licence proof". Not done yet: the MP3s exist only in the other chat's workspace
-  (past chats give text, not attachments), and this repository is PUBLIC, so the files cannot be committed here (the
-  Pixabay licence does not allow redistributing the tracks as they are). Pending: Pietro sends the files once in a
-  chat; they go to a private store the daily runs can read; each track is checked on pixabay.com by title and artist,
-  its page URL saved as the licence proof, and only then moved from REFERENCE_ONLY to LICENSED_FOR_YOUTUBE. Until
-  then build/yt_short_from_reel.py keeps our original score.
+- **YouTube music from Pietro's library, every video (27 Nov, Pietro).** "Use our library"; source "Pixabay"; Content
+  ID risk "OK, keep the licence proof"; then: "Load my music from the private artifact 'IB Music Library' (slug
+  331a2c60-239a-4b00-acd3-dffde353a56a). Read files.json and library.json with read_file, download only the tracks you
+  need (join any .p00/.p01 parts in order), pick by the video's mood, trim to fit, and credit 'Music: <title> by
+  <artist>' in the description." Done: master.library_alternative (cut from calm_start, fades, ducked under speech,
+  -14 LUFS, word check; a list of tracks is chained with a 2.5 s crossfade for long films); build/yt_short_from_reel.py
+  now picks the mixable track nearest the Reel's mood (not a Short's track of the last 3 days), and `--film` does the
+  same for a long film's <slug>-clean.mp4 (<slug>-music.mp4, credits added to description.txt). Tested on the
+  depreciation Reel with "Chain Reaction" by Whvle: -14.1 LUFS, -1.8 dBTP, 0 clipped, word check 0, voice 19.6 dB over
+  the music. The audio lives only in the artifact and build/music_library/audio/ (gitignored); this repository is
+  public, so audio never goes in it. Credits use the track's note ("Music: <title> by <artist> (Pixabay)"). This
+  replaces our original score as the YouTube music (the 17 Nov one-file rule now means the library-music file); the
+  score stays as the fallback (--score) when the artifact cannot be read. Reels keep Instagram's trending tracks.
 
 - **YouTube from 27 Nov (Pietro): no subtitles, at most 5 minutes, EMMA, spark-yellow thumbnails, Shorts = the Reels,
   "what if" films.** His words: "For youtube please follow these guidelines moving forward: 1. Eliminate subtitles 2. 5

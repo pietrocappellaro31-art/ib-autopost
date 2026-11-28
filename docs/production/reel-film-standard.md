@@ -109,7 +109,9 @@ subtitles; the follow ask in the last frames, not over a face or a number), the 
 ## YouTube Short copy of every Reel (Pietro, 27 Nov)
 
 `reel_queue.py` runs `build/yt_short_from_reel.py <slug>` after queueing (run it by hand if it printed YOUTUBE SHORT NOT
-MADE). Deliver with each Reel: `build/out/<slug>/<slug>-youtube.mp4` (SendUserFile) and, in the message, the contents of
+MADE or LOAD THE TRACK FIRST). The YouTube copy carries a track from Pietro's library (long-form-standard.md FIRST,
+item 7): load the track it names from the IB Music Library artifact with the ib-music-access skill, then run
+`python3 build/yt_short_from_reel.py <slug> --mood <the Reel's mood>` again. Deliver with each Reel: `build/out/<slug>/<slug>-youtube.mp4` (SendUserFile) and, in the message, the contents of
 `build/out/<slug>/youtube.txt` (title, description, tags) and the score's style. Log a row in
 docs/daily/youtube-shorts.md ("made from Reel <slug>"). Pietro uploads by hand.
 

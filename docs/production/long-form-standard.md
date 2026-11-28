@@ -34,10 +34,19 @@ experiment with 'what if videos'" (his list below).
    returns spark-yellow (art right) and spark-yellow-left (art left), both a bright #FFD400 ground, black type, red
    highlight.
 5. **Shorts are the Reels.** No separate Short is made (the "YouTube Short daily" task stays off). Each Reel run also
-   runs `python3 build/yt_short_from_reel.py <slug>`: the Reel's picture with our original score under the voice
-   (-14 LUFS; the Instagram track is never on YouTube) and `youtube.txt` with the title (the hook), the Reel's
+   runs `python3 build/yt_short_from_reel.py <slug> --mood <mood>`: the Reel's picture with a track from Pietro's
+   library under the voice (item 7; the Instagram track is never on YouTube) and `youtube.txt` with the title (the hook), the Reel's
    description (follow line turned into a subscribe line, music credit, not-advice line, #Shorts) and tags. Pietro
    uploads by hand.
+7. **Music on every YouTube video comes from Pietro's library** (27 Nov): load it with the ib-music-access skill (the
+   private artifact "IB Music Library", slug 331a2c60-239a-4b00-acd3-dffde353a56a: read_file files.json and
+   library.json, then only the tracks needed, .pNN parts joined in order, sha256 checked, into
+   build/music_library/audio/, never committed). Shorts: `yt_short_from_reel.py <slug> --mood <mood>`. Long films:
+   render as usual, then `yt_short_from_reel.py <slug> --film --mood <mood>` (a second track crossfades in if the first
+   runs out) and deliver <slug>-music.mp4 as the one file. Only tracks where `music_library.mixable(t, "youtube")` is
+   true (never Presentation 1 and 2). Credit in the description: "Music: <title> by <artist> (Pixabay)". Voice at least
+   18 dB over the music and the word check at 0. If a track gets a Content ID claim, tell Pietro and drop it from the
+   library. Our original score (`--score`) only when the artifact cannot be read, and say so.
 6. **"What if" films**, alternating with the finance documentaries (a what-if on 30 Nov, a documentary on 1 Dec, and so
    on). Pietro's list, take them in this order unless a newer idea of his comes first:
    What could you buy with $1 billion? (scenarios: how many Ferraris, an island, a sports team, a small city's budget) /
