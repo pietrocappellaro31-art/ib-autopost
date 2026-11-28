@@ -53,3 +53,5 @@ Songs Pietro sent for `build/music_library/library.json`: Experience (Ludovico E
 27 Nov 2026: Pietro removed the 8 commercial reference songs (Einaudi, Flawed Mangoes x2, Sidewalks and Skeletons, Joel Sunny, Lady Gaga edit, Txmy, Sparky Deathcap) from the library: "Do not use these". They are no longer suggested anywhere.
 
 27 Nov 2026: Pietro confirmed the 27 uploader-named tracks (all except Presentation 1 and 2) come from **Pixabay**. Licence: Pixabay Content License (free commercial use, including monetised YouTube and Instagram videos; no standalone redistribution of the audio). Class LICENSED_FOR_ALL_REQUIRED_PLATFORMS. Credit in the description: "Music: <title> by <artist> (Pixabay)". Some Pixabay artists register Content ID: a claimed track is removed from the library. Presentation 1 and 2 stay reference only (source unknown).
+
+27 Nov 2026: Presentation 1 and 2 were downloaded from YouTube over 10 years ago (Pietro). Owner and licence unknown: reference only, never in a file.
