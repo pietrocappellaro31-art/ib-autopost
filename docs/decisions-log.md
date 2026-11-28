@@ -2,6 +2,10 @@
 
 What has been settled, and what is still open. Newest first.
 
+## 27 Nov 2026: Pixabay music library in every video
+
+Pietro: use the music library (27 Pixabay tracks, `build/music_library/library.json`, audio in the "IB Music Library" artifact, skill ib-music-access) for all Reels, YouTube films and Shorts, the best-suited track per video, cut to fit, credited in the description ("Music: <title> by <artist> (Pixabay)"). The 8 commercial reference songs are removed and never used.
+
 ## Current state, 2 November 2026
 
 - **Meta has blocked the app's API access.** Every workflow run since the first
