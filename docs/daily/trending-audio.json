@@ -1,232 +1,182 @@
 {
- "updated_utc": "2026-11-27T00:42:45+00:00",
- "query": null,
+ "updated_utc": "2026-11-28T13:18:56+00:00",
+ "query": "lofi",
  "graph_root": "https://graph.facebook.com/v21.0",
  "tracks": [
   {
-   "audio_id": "29982976461385866",
-   "title": "Burn This Shit Down",
-   "display_artist": "Travis Scott",
-   "duration_in_ms": 260000,
-   "audio_type": "music",
-   "is_ads_eligible": false,
-   "on_platform_audio_preview_link": "https://www.instagram.com/reels/audio/29982976461385866/"
+   "audio_id": "544713431841568",
+   "title": "Lofi Street",
+   "display_artist": "bbox",
+   "duration_in_ms": 182050,
+   "audio_type": "music"
   },
   {
-   "audio_id": "1134460562715470",
-   "title": "Huss Huss Huss",
-   "display_artist": "Virexo Aelvix",
-   "duration_in_ms": 75189,
-   "audio_type": "music",
-   "is_ads_eligible": false,
-   "on_platform_audio_preview_link": "https://www.instagram.com/reels/audio/1134460562715470/"
+   "audio_id": "1567253696692852",
+   "title": "Jing Wu Shan (feat. Chinese Performing Arts of North America)",
+   "display_artist": "Mike Block (Producer)",
+   "duration_in_ms": 265477,
+   "audio_type": "music"
   },
   {
-   "audio_id": "249541095800354",
-   "title": "Aquarius / Let the Sunshine In (The Flesh Failures) (From \"Hair\")",
-   "display_artist": "The 5th Dimension",
-   "duration_in_ms": 231813,
-   "audio_type": "music",
-   "is_ads_eligible": false,
-   "on_platform_audio_preview_link": "https://www.instagram.com/reels/audio/249541095800354/"
+   "audio_id": "534836465627737",
+   "title": "Midnight Dreamer",
+   "display_artist": "Giulio Cercato",
+   "duration_in_ms": 135460,
+   "audio_type": "music"
   },
   {
-   "audio_id": "1892027292014627",
-   "title": "LUV DAT. ft. Belly Gang Kushington & Breskii.",
-   "display_artist": "YFN Lucci, Belly Gang Kushington, Breskii",
-   "duration_in_ms": 215413,
-   "audio_type": "music",
-   "is_ads_eligible": false,
-   "on_platform_audio_preview_link": "https://www.instagram.com/reels/audio/1892027292014627/"
+   "audio_id": "393903371411311",
+   "title": "The Nerve",
+   "display_artist": "Elad Marish",
+   "duration_in_ms": 216262,
+   "audio_type": "music"
   },
   {
-   "audio_id": "1131276776292967",
-   "title": "Yellow",
-   "display_artist": "Coldplay",
-   "duration_in_ms": 270426,
-   "audio_type": "music",
-   "is_ads_eligible": false,
-   "on_platform_audio_preview_link": "https://www.instagram.com/reels/audio/1131276776292967/"
+   "audio_id": "1852688158814799",
+   "title": "Hypnotized (Instrumental)",
+   "display_artist": "Company Money",
+   "duration_in_ms": 172973,
+   "audio_type": "music"
   },
   {
-   "audio_id": "1958989035018026",
-   "title": "Chills",
-   "display_artist": "1NOVYX",
-   "duration_in_ms": 96013,
-   "audio_type": "music",
-   "is_ads_eligible": false,
-   "on_platform_audio_preview_link": "https://www.instagram.com/reels/audio/1958989035018026/"
+   "audio_id": "649135317201397",
+   "title": "Pyar Ka Kalma (Instrumental)",
+   "display_artist": "Prateek Gandhi",
+   "duration_in_ms": 202370,
+   "audio_type": "music"
   },
   {
-   "audio_id": "1451645629792430",
-   "title": "Feel Alright",
-   "display_artist": "Rema, Wizkid",
-   "duration_in_ms": 229757,
-   "audio_type": "music",
-   "is_ads_eligible": false,
-   "on_platform_audio_preview_link": "https://www.instagram.com/reels/audio/1451645629792430/"
+   "audio_id": "920231970522157",
+   "title": "Open Air",
+   "display_artist": "Tokay",
+   "duration_in_ms": 179761,
+   "audio_type": "music"
   },
   {
-   "audio_id": "1507163888001441",
-   "title": "Make Me Proud (feat. Nicki Minaj)",
-   "display_artist": "Drake",
-   "duration_in_ms": 219880,
-   "audio_type": "music",
-   "is_ads_eligible": false,
-   "on_platform_audio_preview_link": "https://www.instagram.com/reels/audio/1507163888001441/"
+   "audio_id": "2263439694405407",
+   "title": "Golden Ascent",
+   "display_artist": "Afterlight",
+   "duration_in_ms": 65244,
+   "audio_type": "music"
   },
   {
-   "audio_id": "1761168018307988",
-   "title": "Party En Mi Casa",
-   "display_artist": "Kreizy k, Alofoke Music, Yoan Retro",
-   "duration_in_ms": 92307,
-   "audio_type": "music",
-   "is_ads_eligible": false,
-   "on_platform_audio_preview_link": "https://www.instagram.com/reels/audio/1761168018307988/"
+   "audio_id": "1277541923560144",
+   "title": "She's In Love (But Ooh)",
+   "display_artist": "GEEZ",
+   "duration_in_ms": 197750,
+   "audio_type": "music"
   },
   {
-   "audio_id": "1594706651702721",
-   "title": "Overboard x Just a Dream (Deep House)",
-   "display_artist": "Mashify",
-   "duration_in_ms": 214400,
-   "audio_type": "music",
-   "is_ads_eligible": false,
-   "on_platform_audio_preview_link": "https://www.instagram.com/reels/audio/1594706651702721/"
+   "audio_id": "1899119408160179",
+   "title": "Mango",
+   "display_artist": "cloud cover",
+   "duration_in_ms": 48050,
+   "audio_type": "music"
   },
   {
-   "audio_id": "914527335067538",
-   "title": "Let’s Get Married",
-   "display_artist": "Miley Cyrus",
-   "duration_in_ms": 216104,
-   "audio_type": "music",
-   "is_ads_eligible": false,
-   "on_platform_audio_preview_link": "https://www.instagram.com/reels/audio/914527335067538/"
+   "audio_id": "912937830269606",
+   "title": "Lofi Return",
+   "display_artist": "half.cool",
+   "duration_in_ms": 118860,
+   "audio_type": "music"
   },
   {
-   "audio_id": "29681812238070064",
-   "title": "COUNT UP",
-   "display_artist": "Gunna",
-   "duration_in_ms": 181372,
-   "audio_type": "music",
-   "is_ads_eligible": false,
-   "on_platform_audio_preview_link": "https://www.instagram.com/reels/audio/29681812238070064/"
+   "audio_id": "722014056738966",
+   "title": "Lofi Funk",
+   "display_artist": "half.cool",
+   "duration_in_ms": 138400,
+   "audio_type": "music"
   },
   {
-   "audio_id": "1105832515616055",
-   "title": "Go Easy (from GTAVI: The Album)",
-   "display_artist": "Dua Lipa, Grand Theft Auto VI",
-   "duration_in_ms": 191500,
-   "audio_type": "music",
-   "is_ads_eligible": false,
-   "on_platform_audio_preview_link": "https://www.instagram.com/reels/audio/1105832515616055/"
+   "audio_id": "1066045312481746",
+   "title": "Lofi Dreams",
+   "display_artist": "Neon Avenue",
+   "duration_in_ms": 63847,
+   "audio_type": "music"
   },
   {
-   "audio_id": "1681688443632597",
-   "title": "Ishqa (From \"Dar-E-Nijaat\")",
-   "display_artist": "Naveed Nashad, Osaf Fateh Ali Khan, Nabeel Shaukat Ali",
-   "duration_in_ms": 251818,
-   "audio_type": "music",
-   "is_ads_eligible": false,
-   "on_platform_audio_preview_link": "https://www.instagram.com/reels/audio/1681688443632597/"
+   "audio_id": "624445130386044",
+   "title": "Lofi Love",
+   "display_artist": "Ella Joy Meir",
+   "duration_in_ms": 186050,
+   "audio_type": "music"
   },
   {
-   "audio_id": "1924822242216699",
-   "title": "Crazy For You",
-   "display_artist": "Lana Del Rey",
-   "duration_in_ms": 223683,
-   "audio_type": "music",
-   "is_ads_eligible": false,
-   "on_platform_audio_preview_link": "https://www.instagram.com/reels/audio/1924822242216699/"
+   "audio_id": "496700212782181",
+   "title": "Lofi Magic",
+   "display_artist": "Ella Joy Meir",
+   "duration_in_ms": 152890,
+   "audio_type": "music"
   },
   {
-   "audio_id": "1822529622118930",
-   "title": "Okayyy (Solo)",
-   "display_artist": "Latto",
-   "duration_in_ms": 222760,
-   "audio_type": "music",
-   "is_ads_eligible": false,
-   "on_platform_audio_preview_link": "https://www.instagram.com/reels/audio/1822529622118930/"
+   "audio_id": "1308088923495332",
+   "title": "Lofi Swag",
+   "display_artist": "bbox",
+   "duration_in_ms": 157890,
+   "audio_type": "music"
   },
   {
-   "audio_id": "2231187643788000",
-   "title": "Hollaback Girl",
-   "display_artist": "Gwen Stefani",
-   "duration_in_ms": 199853,
-   "audio_type": "music",
-   "is_ads_eligible": false,
-   "on_platform_audio_preview_link": "https://www.instagram.com/reels/audio/2231187643788000/"
+   "audio_id": "1340976656950287",
+   "title": "Lofi Vibes (Reels Sound - Reaction)",
+   "display_artist": "POTG",
+   "duration_in_ms": 19710,
+   "audio_type": "music"
   },
   {
-   "audio_id": "783499624058823",
-   "title": "Breath Between Thoughts",
-   "display_artist": "Lucent Hours",
-   "duration_in_ms": 156599,
-   "audio_type": "music",
-   "is_ads_eligible": false,
-   "on_platform_audio_preview_link": "https://www.instagram.com/reels/audio/783499624058823/"
+   "audio_id": "902471383520180",
+   "title": "LoFi Monday",
+   "display_artist": "Otis McDonald",
+   "duration_in_ms": 179317,
+   "audio_type": "music"
   },
   {
-   "audio_id": "2150999229139277",
-   "title": "My Moon My Man",
-   "display_artist": "speetha",
-   "duration_in_ms": 107014,
-   "audio_type": "music",
-   "is_ads_eligible": false,
-   "on_platform_audio_preview_link": "https://www.instagram.com/reels/audio/2150999229139277/"
+   "audio_id": "1272137963366391",
+   "title": "Lofi Love (feat. Plum Soul)",
+   "display_artist": "Jumbo",
+   "duration_in_ms": 208743,
+   "audio_type": "music"
   },
   {
-   "audio_id": "29092244063731898",
-   "title": "4th & 1.",
-   "display_artist": "YFN Lucci",
-   "duration_in_ms": 135616,
-   "audio_type": "music",
-   "is_ads_eligible": false,
-   "on_platform_audio_preview_link": "https://www.instagram.com/reels/audio/29092244063731898/"
+   "audio_id": "37788696224111486",
+   "title": "Lofi Jingle Bells",
+   "display_artist": "Afterlight",
+   "duration_in_ms": 62951,
+   "audio_type": "music"
   },
   {
-   "audio_id": "960749826827858",
-   "title": "AHH YEA",
-   "display_artist": "Playboi Carti",
-   "duration_in_ms": 120865,
-   "audio_type": "music",
-   "is_ads_eligible": false,
-   "on_platform_audio_preview_link": "https://www.instagram.com/reels/audio/960749826827858/"
+   "audio_id": "1213218503365575",
+   "title": "Lofi Memoir",
+   "display_artist": "Adam Griffith",
+   "duration_in_ms": 174780,
+   "audio_type": "music"
   },
   {
-   "audio_id": "1116992564566886",
-   "title": "Cameras / Good Ones Go Interlude (Medley)",
-   "display_artist": "Drake",
-   "duration_in_ms": 434973,
-   "audio_type": "music",
-   "is_ads_eligible": false,
-   "on_platform_audio_preview_link": "https://www.instagram.com/reels/audio/1116992564566886/"
+   "audio_id": "1116990936786838",
+   "title": "Lofi Magic (Reels Sound - Before & After)",
+   "display_artist": "Ella Joy Meir",
+   "duration_in_ms": 26520,
+   "audio_type": "music"
   },
   {
-   "audio_id": "1619590552945205",
-   "title": "Think I'm going dumb",
-   "display_artist": "ACE aqugounk",
-   "duration_in_ms": 128350,
-   "audio_type": "music",
-   "is_ads_eligible": false,
-   "on_platform_audio_preview_link": "https://www.instagram.com/reels/audio/1619590552945205/"
+   "audio_id": "6649404295148094",
+   "title": "Lofi Sunset",
+   "display_artist": "Neko Fuzz",
+   "duration_in_ms": 190708,
+   "audio_type": "music"
   },
   {
-   "audio_id": "183403658964987",
-   "title": "Last Christmas (Remastered)",
-   "display_artist": "Wham!",
-   "duration_in_ms": 267160,
-   "audio_type": "music",
-   "is_ads_eligible": false,
-   "on_platform_audio_preview_link": "https://www.instagram.com/reels/audio/183403658964987/"
+   "audio_id": "963982810863384",
+   "title": "LoFi&Chill (feat. My City Glory)",
+   "display_artist": "Ross Lara",
+   "duration_in_ms": 172376,
+   "audio_type": "music"
   },
   {
-   "audio_id": "3334485133607946",
-   "title": "November Christmas",
-   "display_artist": "BuzzEar",
-   "duration_in_ms": 204729,
-   "audio_type": "music",
-   "is_ads_eligible": false,
-   "on_platform_audio_preview_link": "https://www.instagram.com/reels/audio/3334485133607946/"
+   "audio_id": "602395363936390",
+   "title": "LoFiLand",
+   "display_artist": "Ella Joy Meir",
+   "duration_in_ms": 149631,
+   "audio_type": "music"
   }
  ]
 }
