@@ -106,6 +106,13 @@ ok, check_shots empty, `yt_preview.py --clip` static share 0, a contact sheet of
 subtitles; the follow ask in the last frames, not over a face or a number), the grid cover preview looked at, caption PASS on ig-human, rights record written.
 `entry_check.py` belongs to the old engine (it reads timeline.json) and does not apply.
 
+## YouTube Short copy of every Reel (Pietro, 27 Nov)
+
+`reel_queue.py` runs `build/yt_short_from_reel.py <slug>` after queueing (run it by hand if it printed YOUTUBE SHORT NOT
+MADE). Deliver with each Reel: `build/out/<slug>/<slug>-youtube.mp4` (SendUserFile) and, in the message, the contents of
+`build/out/<slug>/youtube.txt` (title, description, tags) and the score's style. Log a row in
+docs/daily/youtube-shorts.md ("made from Reel <slug>"). Pietro uploads by hand.
+
 ## Reference Reel
 
 `build/reelf_depreciation.py` (27 Nov): one interview room, seven beats, board writing, a desk insert with coins, 44 s,

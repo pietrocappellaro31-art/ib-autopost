@@ -20,7 +20,10 @@ licensed track Instagram attaches at posting (`publish.py --audio` through the w
 `reel_queue.py ... --audio-id <id> --audio-title "<title - artist>"`); about two Trial Reels a week (`--trial`, never two
 days running); Pietro hides the like and share counts in the app, so the delivery message names the posting time. Where a
 section below says two or three Reels a day, slots A or C, Formats A to F on cards, the black ground, the scored master
-or `entry_check.py`, it is history.
+or `entry_check.py`, it is history. From 27 Nov every queued Reel also gets its YouTube Short copy
+(`reel_queue.py` makes it; deliver `<slug>-youtube.mp4` and the contents of `youtube.txt` with the Reel), and
+`docs/decisions-log.md` 27 Nov sets two Reels a day (12:30 and 18:00 ET), EMMA, no subtitles and the spoken and shown
+follow ask.
 
 Version 2026-11-16 (black background from 17 Nov; cinematic upgrade; Pietro's 14 Nov notes: more animated, drawn scenes everywhere, a more natural voice, unprocessed). Authoritative copy: `docs/skill/ib-voiced-reel/SKILL.md` in the ib-autopost
 repo; the installed plugin is built from it (`docs/production/skill-sync.md`).

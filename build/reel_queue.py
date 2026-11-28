@@ -232,6 +232,14 @@ def main():
     manifest["posts"].append(entry)
     MANIFEST.write_text(json.dumps(manifest, indent=2, ensure_ascii=False) + "\n")
     print(f"queued {pid} for {slots[a.slot]} ET on {day} ({entry['scheduled_utc']} UTC). Commit posts.json and push.")
+    # 27 Nov (Pietro: "for the short youtube video make sure to use the same reels ... provide the same description and
+    # tabs for youtube"): every queued Reel also gets its YouTube Short copy, made here so no run can forget it
+    try:
+        import yt_short_from_reel
+        out, text = yt_short_from_reel.main(a.slug)
+        print(f"YouTube Short: {out} and {out.with_name('youtube.txt')}: deliver both with the Reel")
+    except Exception as error:                     # the Reel stays queued; say so loudly
+        print(f"YOUTUBE SHORT NOT MADE ({type(error).__name__}: {error}); run python3 build/yt_short_from_reel.py {a.slug}")
 
 
 if __name__ == "__main__":
