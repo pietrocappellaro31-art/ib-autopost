@@ -340,22 +340,89 @@ def trading_floor(seed=7, hero_x=800, t_scroll=40.0):
         row += f'<rect x="{dx}" y="846" width="300" height="200" fill="#2A303D" stroke="{INK}" stroke-width="3"/>'
     floor = ('<rect x="-2600" y="1040" width="7200" height="1600" fill="#4A5062"/>'
              + "".join(f'<path d="M{-2600 + k * 240},1040 L{-2600 + k * 240 - 340},2660" stroke="#343947" stroke-width="3"/>' for k in range(32)))
-    hx = hero_x
-    chair = (_r(hx - 120, 985, 170, 22, "#1E222B", rx=8) + _r(hx - 134, 790, 30, 215, "#1E222B", rx=12)
+    chair, desk, anc = hero_desk(hero_x)
+    layers = dict(wall=(.3, wall), row=(.5, row), floor=(.6, floor), chair=(.72, chair), desk=(.86, desk))
+    return layers, anc
+
+
+def hero_desk(hx, top="#4A5163", leg="#2A2F3A", chair_col="#1E222B", glow="tfGlow", prop=None):
+    """28 Nov: the seat and desk both desk sets share. A chair for a seated figure at hx (actor layer z .8, ground
+    1060, facing right), a desk top at y 925 and one big monitor whose screen (380 x 340, anchors["screen"]) the
+    episode draws on, on the z .86 layer. Returns (chair svg for z .72, desk svg for z .86, anchors)."""
+    chair = (_r(hx - 120, 985, 170, 22, chair_col, rx=8) + _r(hx - 134, 790, 30, 215, chair_col, rx=12)
              + _r(hx - 43, 1007, 16, 50, "#5A5F6A", sw=2.4)
              + f'<path d="M{hx - 100},1058 L{hx + 30},1058" stroke="{INK}" stroke-width="10" stroke-linecap="round"/>')
-    # the hero desk and its big monitor (screen 380 x 340, its lower edge just above the desk)
     sx, sy, sw_, sh_ = hx + 100, 540, 380, 340
-    desk = (f'<ellipse cx="{sx + sw_ / 2}" cy="{sy + sh_ / 2}" rx="{sw_ * .9:.0f}" ry="{sh_ * .9:.0f}" fill="url(#tfGlow)" opacity=".5"/>'
-            + _r(hx + 70, 925, 560, 26, "#4A5163", rx=6, sw=4) + _r(hx + 100, 951, 22, 110, "#2A2F3A", sw=3)
-            + _r(hx + 580, 951, 22, 110, "#2A2F3A", sw=3)
-            + _r(sx + sw_ / 2 - 16, sy + sh_, 32, 925 - sy - sh_, "#2A2F3A", sw=2.6) + _r(sx + sw_ / 2 - 80, 912, 160, 14, "#2A2F3A", rx=5, sw=2.6)
+    desk = (f'<ellipse cx="{sx + sw_ / 2}" cy="{sy + sh_ / 2}" rx="{sw_ * .9:.0f}" ry="{sh_ * .9:.0f}" fill="url(#{glow})" opacity=".5"/>'
+            + _r(hx + 70, 925, 560, 26, top, rx=6, sw=4) + _r(hx + 100, 951, 22, 110, leg, sw=3)
+            + _r(hx + 580, 951, 22, 110, leg, sw=3)
+            + _r(sx + sw_ / 2 - 16, sy + sh_, 32, 925 - sy - sh_, leg, sw=2.6) + _r(sx + sw_ / 2 - 80, 912, 160, 14, leg, rx=5, sw=2.6)
             + _r(sx - 16, sy - 16, sw_ + 32, sh_ + 32, "#10141C", rx=14, sw=4)
             + f'<rect x="{sx}" y="{sy}" width="{sw_}" height="{sh_}" fill="#F4EFE6"/>'
-            + _r(hx + 110, 905, 200, 18, "#2A2F3A", rx=5, sw=2.4)          # keyboard
-            + f'<g transform="translate({hx + 590},925) scale(.8)">{L.cup()}</g>')
-    layers = dict(wall=(.3, wall), row=(.5, row), floor=(.6, floor), chair=(.72, chair), desk=(.86, desk))
-    return layers, dict(hero_x=hx, ground=1060, screen=(sx, sy, sw_, sh_), desk_y=925)
+            + _r(hx + 110, 905, 200, 18, leg, rx=5, sw=2.4)          # keyboard
+            + (prop if prop is not None else f'<g transform="translate({hx + 590},925) scale(.8)">{L.cup()}</g>'))
+    return chair, desk, dict(hero_x=hx, ground=1060, screen=(sx, sy, sw_, sh_), desk_y=925)
+
+
+def home_desk(seed=11, hero_x=800):
+    """A home desk at night (28 Nov), the same seat, desk and monitor as trading_floor (hero_desk) in a flat: a warm
+    wall, a tall window on a night street of invented buildings whose windows flicker on and a moon, a bookshelf,
+    a framed print, a floor lamp with a warm pool of light, a plant that sways, a rug. Returns (layers, anchors)."""
+    import random
+    rng = random.Random(seed)
+    wall = C.defs() + ('<defs><linearGradient id="hdSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#141B33"/>'
+                       '<stop offset="1" stop-color="#3A3F66"/></linearGradient>'
+                       '<radialGradient id="hdGlow"><stop offset="0" stop-color="#FFE3A3" stop-opacity=".6"/>'
+                       '<stop offset="1" stop-color="#FFE3A3" stop-opacity="0"/></radialGradient></defs>')
+    wall += '<rect x="-2600" y="-1600" width="7200" height="4200" fill="#B9876A"/>'
+    wall += "".join(f'<rect x="{-2600 + k * 120}" y="-1600" width="60" height="4200" fill="#B07E62" opacity=".6"/>' for k in range(60))
+    wx, wy, ww, wh = 300, 120, 520, 640
+    sky = f'<rect x="{wx}" y="{wy}" width="{ww}" height="{wh}" fill="url(#hdSky)"/>'
+    sky += f'<circle cx="{wx + 400}" cy="{wy + 110}" r="46" fill="#F4EBD0" opacity=".95"/>'
+    x = wx - 10
+    while x < wx + ww:
+        bw, bh = rng.uniform(70, 140), rng.uniform(180, 420)
+        sky += f'<rect x="{x:.0f}" y="{wy + wh - bh:.0f}" width="{bw:.0f}" height="{bh:.0f}" fill="{rng.choice(["#1E2340", "#262B4A", "#2D3354"])}"/>'
+        for r in range(int(bh // 34)):
+            for c in range(int(bw // 26)):
+                if rng.random() < .28:
+                    op = rng.uniform(.5, .95)
+                    sky += (f'<rect x="{x + 8 + c * 26:.0f}" y="{wy + wh - bh + 12 + r * 34:.0f}" width="11" height="15" fill="{MUSTARD}" '
+                            f'opacity="{op:.2f}" data-flick=\'[{op:.2f},0.06,{rng.randint(0, 9)}]\'/>')
+        x += bw + rng.uniform(4, 16)
+    wall += (sky + f'<rect x="{wx}" y="{wy}" width="{ww}" height="{wh}" fill="none" stroke="#F1E6CF" stroke-width="22"/>'
+             + f'<path d="M{wx + ww / 2},{wy} L{wx + ww / 2},{wy + wh}" stroke="#F1E6CF" stroke-width="12"/>'
+             + f'<rect x="{wx - 30}" y="{wy + wh}" width="{ww + 60}" height="24" fill="#E8DCC6" stroke="{INK}" stroke-width="3"/>')
+    # a bookshelf, right
+    sh = _r(1260, 200, 440, 760, "#6B4A32", rx=4, sw=3.2)
+    for row in range(4):
+        y = 220 + row * 185
+        sh += _r(1276, y + 160, 408, 14, "#553A27", sw=2.4)
+        bx = 1290
+        while bx < 1660:
+            bw_ = rng.uniform(22, 44)
+            hgt = rng.uniform(110, 150)
+            sh += f'<rect x="{bx:.0f}" y="{y + 160 - hgt:.0f}" width="{bw_:.0f}" height="{hgt:.0f}" rx="3" fill="{rng.choice([TEAL, RED, MUSTARD, "#2E4A5A", "#E8E1D4", "#3B3B3B"])}" stroke="{INK}" stroke-width="2"/>'
+            bx += bw_ + rng.uniform(2, 5)
+    wall += sh
+    # a framed print, left of the window
+    wall += _r(-60, 300, 220, 280, "#E8E1D4", sw=4) + _r(-44, 316, 188, 248, "#2E4A5A", sw=2) + \
+        f'<circle cx="50" cy="420" r="50" fill="{MUSTARD}"/><path d="M-30,540 L40,470 L90,510 L140,450" fill="none" stroke="#F7F5F2" stroke-width="8"/>'
+    floor = ('<rect x="-2600" y="1040" width="7200" height="1600" fill="#7A5236"/>'
+             + "".join(f'<path d="M-2600,{1040 + k * 46} L4600,{1040 + k * 46}" stroke="#5E3D27" stroke-width="3"/>' for k in range(30))
+             + f'<ellipse cx="{hero_x + 200}" cy="1110" rx="620" ry="70" fill="{RED}" opacity=".55"/>')
+    # a floor lamp and a plant behind the chair (z .62)
+    lamp = (f'<ellipse cx="{hero_x - 260}" cy="520" rx="320" ry="300" fill="url(#hdGlow)"/>'
+            + f'<path d="M{hero_x - 260},1040 L{hero_x - 260},470" stroke="{INK}" stroke-width="10"/>'
+            + f'<path d="M{hero_x - 330},480 L{hero_x - 190},480 L{hero_x - 220},400 L{hero_x - 300},400 Z" fill="{MUSTARD}" stroke="{INK}" stroke-width="3.2"/>'
+            + _r(hero_x - 300, 1030, 80, 14, INK, rx=6, sw=0)
+            + f'<g transform="translate({hero_x + 700},1040)">' + _r(-56, -120, 112, 120, "#C4704A", rx=10)
+            + "".join(f'<g data-swing=\'[{1.4 + k * .3:.1f},{2.0 + k * .2:.1f},{k},0,-110]\'><path d="M0,-110 C{-80 + k * 40},{-220 - k * 20} {-40 + k * 30},{-300} {-10 + k * 25},{-330 + k * 10} '
+                      f'C{20 + k * 10},{-260} {10},{-180} 0,-110 Z" fill="{TEAL if k % 2 else "#3F7A5A"}" stroke="{INK}" stroke-width="3"/></g>' for k in range(4))
+            + "</g>")
+    chair, desk, anc = hero_desk(hero_x, top="#C9A27E", leg="#6B4A32", chair_col="#2B2F3A", glow="hdGlow")
+    layers = dict(wall=(.3, wall), row=(.5, lamp), floor=(.6, floor), chair=(.72, chair), desk=(.86, desk))
+    return layers, anc
 
 
 def marker_text(tid, x, y, text, size, color, t0, t1, anchor="start", weight=700, family="Sans"):

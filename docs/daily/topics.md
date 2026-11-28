@@ -75,6 +75,8 @@ number with no source is cut.
 | 2026-11-26 | Reel (myth) | New shares at a fair price: $1,000, 100 shares at $10, you hold 10 (10%, $100); 25 new at $10 = $250; $1,250 / 125 = $10, your 10 = 8% and $100; at $6: $1,150 / 125 = $9.20, yours $92; smaller slice of a bigger pie; close at $14 ($108) |
 | 2026-11-26 | Reel (choice) | Percentage points vs percent: 2% to 3% on $1,000, interest $20 to $30; up 1 percentage point (100 basis points) and up 50%; subtract for points, divide by the start for percent; close a margin 10% to 12% (200 bps, 20%) |
 | 2026-11-27 | Reel (story, full frame) | Depreciation +$10 and cash: pre-tax profit -10, tax -2.50 at 25%, net income -7.50, add back +10, cash +2.50; close: interest +10 (cash -7.50, not answered); comment bonus at 40% tax (+4) |
+| 2026-11-28 | Reel (story, full frame) | Down 50% then up 50%: $100 to $50 to $75 (the gain is 50% of $50); back to $100 needs +100%; close: -20% then +20% ($96, not answered); comment bonus +50% then -50% ($75) |
+| 2026-11-28 | Reel (story, full frame) | Doubling time and the rule of 72: $10,000 at 8%, not 12.5 years (simple $800 a year) but about 9 (1.08^9 = 19,990.05; 72 / 8 = 9; exact 9.006); close: 6% (12 years, not answered); comment bonus 12% (6) |
 
 ## Ideas (YouTube long and Shorts)
 

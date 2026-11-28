@@ -1,0 +1,19 @@
+$10,000 at 8% a year. How long until it doubles?
+
+Most people divide: 8% of $10,000 is $800 a year, so they say 12.5 years. That's too slow. It's about 9.
+
+The 8% isn't paid on the first $10,000 forever. It's paid on whatever's in the account that year, and that keeps growing. Year 1 adds $800. Year 2 adds $864, because the interest from year 1 earns interest too. So each year adds a bit more than the last.
+
+After 9 years: $10,000 x 1.08^9 = $19,990. Just under double.
+
+The interview shortcut is the rule of 72: divide 72 by the rate. 72 / 8 = 9 years. It's an approximation, but it's close at normal rates and you can do it in your head.
+
+(Our example: 8% a year, paid once a year and reinvested, no tax. Not advice.)
+
+Your turn: at 6% a year, how long does it take to double? Tell me below.
+
+Follow @investmentbankinginterviews for a new IB interview question, worked out, every day.
+
+Narration: AI-generated voice; script is our original work.
+
+#investmentbanking #ibinterview #finance #compoundinterest
