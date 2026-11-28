@@ -27,7 +27,9 @@ Pietro: use the music library (27 Pixabay tracks, `build/music_library/library.j
   music while speaking (measured 8.8 dB, word check 0). The 18 dB voice-over-music gate no longer applies to library
   music; the word check at 0 and at least 6 dB are the gate. Then, on the 9 dB test: "Even louder". Now music_under_db -1,
   duck_db 4: the voice about 3 dB over the music while speaking (measured 2.9 dB, word check 0); gate: word check 0 and
-  at least 2 dB.
+  at least 2 dB. Tested on a dense cinematic track ("War Hearts" by CloudSystem: 3.0 dB, every word heard, the only
+  differences punctuation and number formatting), Pietro: "Good music level - we will stick with it." This level is
+  final for all YouTube videos with library music.
 
 - **YouTube music from Pietro's library, every video (27 Nov, Pietro).** "Use our library"; source "Pixabay"; Content
   ID risk "OK, keep the licence proof"; then: "Load my music from the private artifact 'IB Music Library' (slug
