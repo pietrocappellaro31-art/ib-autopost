@@ -23,8 +23,9 @@ What has been settled, and what is still open. Newest first.
   mins and not any longer than that (current about 10 mins and too long) 3. Use voice from 'can share holders equity be
   negative?' ... 4. Thumbnail with yellow spark color 5. for the short youtube video make sure to use the same reels.
   Simply when you produce the instagram reels, please provide the same description and tabs for youtube." Asked to
-  confirm, he added the "what if" series (list in long-form-standard.md "FIRST") and left four questions unanswered;
-  read as: (a) no words burned into the picture, the .srt still written for optional CC; (b) EMMA on YouTube with no
+  confirm, he added the "what if" series (list in long-form-standard.md "FIRST"). Asked again the same evening he
+  chose: keep the .srt for CC; EMMA on YouTube until 4 Dec, then decide; thumbnails on a yellow background only; the
+  Shorts' music from our royalty-free library (see the music entry). First reading, now superseded where it differs: (a) no words burned into the picture, the .srt still written for optional CC; (b) EMMA on YouTube with no
   end date ("moving forward"); (c) both thumbnail options yellow: a bright #FFD400 ground, and black with yellow key
   words; (d) the YouTube copy of a Reel carries our original score (the 17 Nov one-file rule; Instagram's licensed
   track never goes to YouTube); what-if films alternate with documentaries from 30 Nov. Done: youtube.SUBTITLES False,

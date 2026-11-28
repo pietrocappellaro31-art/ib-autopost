@@ -28,8 +28,8 @@ day post automatically through `publish.py`; YouTube uploads stay manual (Pietro
   key and tempo change every video (`score.pick`: never a style or key of the last three; name the style in the
   delivery). This overrides any scheduled-task prompt step that still says to deliver a clean MP4 or "music=False".
   Filmed beats from `build/cine.py` where the story has people, places or a mechanism.
-- **YouTube from 27 Nov (Pietro): NO subtitles in the picture, long videos AT MOST 5 MINUTES, EMMA voice, spark-yellow
-  thumbnails, "what if" films alternating with documentaries, and the Shorts ARE the Reels (`build/yt_short_from_reel.py`
+- **YouTube from 27 Nov (Pietro): NO subtitles in the picture, long videos AT MOST 5 MINUTES, EMMA to 4 Dec, thumbnails on a
+  spark-yellow background only, the .srt kept for CC, "what if" films alternating with documentaries, and the Shorts ARE the Reels (`build/yt_short_from_reel.py`
   after each Reel: same picture, our score, the Reel's description and tags).** `docs/production/long-form-standard.md`
   "FIRST". This overrides the 19 Nov line below and any task prompt that says 8 to 12 minutes or HEART for YouTube.
 - **YouTube from 19 Nov (Pietro, 18 Nov), history for Shorts:** Shorts are number puzzles cut from the newest long film without a Short,

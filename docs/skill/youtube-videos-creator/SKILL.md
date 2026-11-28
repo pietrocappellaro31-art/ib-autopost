@@ -41,15 +41,16 @@ experiment with 'what if videos'" (his list below).
 
 1. **No subtitles in the picture.** `youtube.SUBTITLES = False` removes the drawn beats' caption bar and the filmed
    beats' word-by-word captions. The big headline words of a drawn beat are design, not subtitles, and stay. The .srt is
-   still written: Pietro may upload it for CC or skip it (his answer pending; default: offer it, never burn it in).
+   still written and delivered for YouTube's CC button (asked 27 Nov: "Keep the CC file").
 2. **At most 5 minutes**, aim 4:00 to 4:50. `youtube.MAX_SECONDS = 300` stops the build above it: cut the script (about
    600 to 680 words at EMMA's pace), never speed up the voice. Story structure stays (hook in 5 s, mechanism, turn,
    payoff), compressed: 4 to 6 chapters.
 3. **Voice EMMA** (Kokoro bf_emma, speed 0.97, the voice of the 12 Nov Reel "Can shareholders' equity be negative?"):
-   `voice_clone.YOUTUBE_PICK = "EMMA"`, long films and Shorts, with no end date for YouTube (Reels follow their own
-   window in voice_clone.NARRATOR_WINDOWS).
-4. **Thumbnails in spark yellow**: `youtube.thumb_looks()` returns spark-yellow (bright #FFD400 ground, black type, red
-   highlight) and spark-ink (black ground, key words in #FFD400) from 27 Nov.
+   long films and Shorts, 27 Nov to 4 Dec like the Reels (`voice_clone.NARRATOR_WINDOWS`), then Pietro decides again
+   (asked 27 Nov: "Until 4 Dec, then decide").
+4. **Thumbnails on a spark-yellow background only** (asked 27 Nov: "Only yellow background"): `youtube.thumb_looks()`
+   returns spark-yellow (art right) and spark-yellow-left (art left), both a bright #FFD400 ground, black type, red
+   highlight.
 5. **Shorts are the Reels.** No separate Short is made (the "YouTube Short daily" task stays off). Each Reel run also
    runs `python3 build/yt_short_from_reel.py <slug>`: the Reel's picture with our original score under the voice
    (-14 LUFS; the Instagram track is never on YouTube) and `youtube.txt` with the title (the hook), the Reel's

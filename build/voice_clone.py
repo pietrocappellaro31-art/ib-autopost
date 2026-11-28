@@ -259,7 +259,7 @@ def master_chain_plain(v):
 # 13 Nov, cinematic-upgrade directive: the same narrator for finance Reels too (REEL_PICK), ending the G2, BELLA,
 # EMMA rotation; build/voices/voice_log.json and docs/production/voice-decision.md keep the history. To reopen a
 # trial set the pick back to None.
-YOUTUBE_PICK = "EMMA"     # 27 Nov (Pietro, YouTube "moving forward"): EMMA (bf_emma, the "can shareholders' equity be negative?" voice)
+YOUTUBE_PICK = "HEART"    # 27 Nov (Pietro): EMMA on YouTube only within NARRATOR_WINDOWS (to 4 Dec), then decide again
 REEL_PICK = "HEART"
 TRIAL_START = "2026-11-11"
 # 27 Nov (Pietro): "We want to start using that voice again [the 12 Nov 'Can shareholders' equity be negative?'

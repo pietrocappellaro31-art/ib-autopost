@@ -676,12 +676,13 @@ THUMB_LOOKS = [
 ]
 
 
-# 27 Nov (Pietro: "Thumbnail with yellow spark color"): from 27 Nov both options are yellow: A a bright spark-yellow
-# ground with black type and a red highlight, B black with the type's key words in the same yellow.
+# 27 Nov (Pietro: "Thumbnail with yellow spark color"; asked which look: "Only yellow background"). From 27 Nov both
+# options are on a bright spark-yellow ground with black type and a red highlight; A puts the art right, B left, so
+# YouTube's Test & compare still has two different thumbnails.
 SPARK = "#FFD400"
 SPARK_LOOKS = [
     dict(name="spark-yellow", bg=SPARK, fg=INK, hl=RED, layout="right", card=False, bar=INK, strap=(INK, SPARK)),
-    dict(name="spark-ink", bg=INK, fg="#fff", hl=SPARK, layout="left", card=True, strap=(SPARK, INK)),
+    dict(name="spark-yellow-left", bg=SPARK, fg=INK, hl=RED, layout="left", card=False, strap=(INK, SPARK)),
 ]
 THUMB_LOOKS += SPARK_LOOKS
 
