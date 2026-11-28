@@ -282,6 +282,82 @@ def interview_room(seed=4):
     return layers, dict(cand_x=760, int_x=1160, ground=1060, table_y=925, near=near)
 
 
+TICKERS = ["ALDR +1.2%", "BKRN -0.8%", "CVLT +0.4%", "DMSN -2.1%", "ERGO +3.0%", "FNWK -0.5%", "GLTR +0.9%",
+           "HSPN -1.4%", "IVRY +0.2%", "JNPR -0.3%"]      # invented tickers for set dressing, no real company
+
+
+def trading_floor(seed=7, hero_x=800, t_scroll=40.0):
+    """A bank's trading floor at night (28 Nov), laid out for a vertical frame like interview_room. Back wall (z .3):
+    a dark wall with a long LED ticker band (invented tickers scrolling left) and three wall screens with drifting
+    lines. Middle (z .5): a row of trading desks with banks of glowing monitors that flicker. Floor (z .6). Hero desk
+    (z .86): a desk in front of the trader with one big monitor whose screen the episode draws on (anchors["screen"]:
+    x, y, w, h on the z .86 layer). The trader sits at hero_x on the actor layer (z .8, ground 1060), facing right
+    (dir=1) toward the monitor; a chair is drawn for her (z .72). Returns (layers by name: (z, svg), anchors)."""
+    import random
+    rng = random.Random(seed)
+    wall = C.defs() + ('<defs><linearGradient id="tfWall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#26304A"/>'
+                       '<stop offset="1" stop-color="#3C4862"/></linearGradient>'
+                       '<radialGradient id="tfGlow"><stop offset="0" stop-color="#7FD6C2" stop-opacity=".55"/>'
+                       '<stop offset="1" stop-color="#7FD6C2" stop-opacity="0"/></radialGradient></defs>')
+    wall += '<rect x="-2600" y="-1600" width="7200" height="4200" fill="url(#tfWall)"/>'
+    # the LED ticker band: two copies of the tape so the scroll never shows a gap
+    tape = "".join(f'<tspan fill="{"#7BE08F" if "+" in t else "#FF7A6B"}">{t}</tspan><tspan fill="#5A6478">  ●  </tspan>'
+                   for t in TICKERS * 3)
+    band_y = 130
+    wall += f'<rect x="-2600" y="{band_y - 60}" width="7200" height="96" fill="#0E1118" stroke="#3A4256" stroke-width="4"/>'
+    wall += (f'<g {C.kv(translate=[[0, 0, 0], [t_scroll, -2400, 0, "lin"]])}>'
+             + "".join(f'<text x="{x0}" y="{band_y + 6}" font-family="\'Sans\',sans-serif" font-weight="700" font-size="46" letter-spacing="2">{tape}</text>'
+                       for x0 in (-2600,)) + '</g>')
+    # three wall screens with lines that drift
+    for k, sx in enumerate((-300, 560, 1420)):
+        sw_, sh_ = 700, 380
+        wall += _r(sx, 250, sw_, sh_, "#121722", rx=10, sw=5)
+        pts, v = [], rng.uniform(.4, .6)
+        for i in range(15):
+            v = min(.9, max(.1, v + rng.uniform(-.12, .12)))
+            pts.append(f"{sx + 30 + i * (sw_ - 60) / 14:.0f},{250 + 40 + (1 - v) * (sh_ - 80):.0f}")
+        col = ["#7BE08F", "#F2C35B", "#7FB8E8"][k]
+        wall += (f'<g {C.kv(translate=[[0, 0, 0], [t_scroll, 0, rng.choice([-30, 30]), "lin"]])}>'
+                 f'<polyline points="{" ".join(pts)}" fill="none" stroke="{col}" stroke-width="7" stroke-linejoin="round" opacity=".85"/></g>')
+        for r in range(1, 4):
+            wall += f'<path d="M{sx + 20},{250 + r * sh_ / 4:.0f} L{sx + sw_ - 20},{250 + r * sh_ / 4:.0f}" stroke="#2A3244" stroke-width="2"/>'
+    # pillars between the screens
+    for px in (-420, 440, 1300, 2160):
+        wall += f'<rect x="{px}" y="220" width="60" height="900" fill="#252D3D"/>'
+    # the row of desks behind her, each with a bank of monitors (z .5)
+    row = ""
+    for dx in range(-1400, 3400, 330):
+        row += _r(dx, 820, 300, 26, "#3A4152", rx=4, sw=3)
+        for m in range(3):
+            mx = dx + 14 + m * 94
+            op = rng.uniform(.55, .9)
+            row += (_r(mx, 700, 86, 64, "#10141C", rx=5, sw=2.4)
+                    + f'<rect x="{mx + 6}" y="706" width="74" height="52" rx="3" fill="{rng.choice(["#1F4D47", "#24395A", "#3A2F4F"])}" opacity="{op:.2f}" '
+                      f'data-flick=\'[{op:.2f},0.08,{rng.randint(0, 9)}]\'/>'
+                    + f'<path d="M{mx + 10},{740 - rng.randint(0, 18)} L{mx + 30},{730 - rng.randint(0, 18)} L{mx + 52},{738 - rng.randint(0, 18)} L{mx + 76},{724 - rng.randint(0, 18)}" '
+                      f'fill="none" stroke="{rng.choice(["#7BE08F", "#F2C35B", "#FF7A6B"])}" stroke-width="3"/>'
+                    + _r(mx + 38, 764, 10, 56, "#2A2F3A", sw=1.6))
+        row += f'<rect x="{dx}" y="846" width="300" height="200" fill="#2A303D" stroke="{INK}" stroke-width="3"/>'
+    floor = ('<rect x="-2600" y="1040" width="7200" height="1600" fill="#4A5062"/>'
+             + "".join(f'<path d="M{-2600 + k * 240},1040 L{-2600 + k * 240 - 340},2660" stroke="#343947" stroke-width="3"/>' for k in range(32)))
+    hx = hero_x
+    chair = (_r(hx - 120, 985, 170, 22, "#1E222B", rx=8) + _r(hx - 134, 790, 30, 215, "#1E222B", rx=12)
+             + _r(hx - 43, 1007, 16, 50, "#5A5F6A", sw=2.4)
+             + f'<path d="M{hx - 100},1058 L{hx + 30},1058" stroke="{INK}" stroke-width="10" stroke-linecap="round"/>')
+    # the hero desk and its big monitor (screen 380 x 340, its lower edge just above the desk)
+    sx, sy, sw_, sh_ = hx + 100, 540, 380, 340
+    desk = (f'<ellipse cx="{sx + sw_ / 2}" cy="{sy + sh_ / 2}" rx="{sw_ * .9:.0f}" ry="{sh_ * .9:.0f}" fill="url(#tfGlow)" opacity=".5"/>'
+            + _r(hx + 70, 925, 560, 26, "#4A5163", rx=6, sw=4) + _r(hx + 100, 951, 22, 110, "#2A2F3A", sw=3)
+            + _r(hx + 580, 951, 22, 110, "#2A2F3A", sw=3)
+            + _r(sx + sw_ / 2 - 16, sy + sh_, 32, 925 - sy - sh_, "#2A2F3A", sw=2.6) + _r(sx + sw_ / 2 - 80, 912, 160, 14, "#2A2F3A", rx=5, sw=2.6)
+            + _r(sx - 16, sy - 16, sw_ + 32, sh_ + 32, "#10141C", rx=14, sw=4)
+            + f'<rect x="{sx}" y="{sy}" width="{sw_}" height="{sh_}" fill="#F4EFE6"/>'
+            + _r(hx + 110, 905, 200, 18, "#2A2F3A", rx=5, sw=2.4)          # keyboard
+            + f'<g transform="translate({hx + 590},925) scale(.8)">{L.cup()}</g>')
+    layers = dict(wall=(.3, wall), row=(.5, row), floor=(.6, floor), chair=(.72, chair), desk=(.86, desk))
+    return layers, dict(hero_x=hx, ground=1060, screen=(sx, sy, sw_, sh_), desk_y=925)
+
+
 def marker_text(tid, x, y, text, size, color, t0, t1, anchor="start", weight=700, family="Sans"):
     """Text written onto a board or a sheet as if by a marker: inked left to right between t0 and t1 (shot s)."""
     n = len(text)

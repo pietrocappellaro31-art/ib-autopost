@@ -954,7 +954,15 @@
    "proof": "ledger: Pixabay Content License, Pietro confirmed source 27 Nov 2026"
   }
  ],
- "used": [],
+ "used": [
+  {
+   "date": "2026-11-28",
+   "slug": "w3-down-up",
+   "kind": "short",
+   "id": "whvle-chain-reaction-cinematic-amp-inspiring-205",
+   "mood": "curious"
+  }
+ ],
  "originals": [
   {
    "id": "score-cine-poc-newton-1720",

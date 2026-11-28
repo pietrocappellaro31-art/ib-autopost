@@ -2050,6 +2050,40 @@
       ],
       "published_at_utc": "2026-11-27T23:05:34.555517+00:00",
       "first_comment_id": "18087322895334552"
+    },
+    {
+      "id": "reel-w3-down-up",
+      "type": "reel",
+      "scheduled_utc": "2026-11-28T23:00:00",
+      "slot": "B",
+      "media_branch": "reel/w3-down-up",
+      "video": "w3-down-up.mp4",
+      "cover": "w3-down-up.jpg",
+      "master": "clean",
+      "caption": "Down 50%. Up 50%. Is she back to even?\n\nMost people say yes. She isn't. She ends the week at $75.\n\nHer stock starts at $100. Monday it drops 50%, so half of $100 is gone and she has $50 left. Friday it climbs 50%, but that's 50% of the $50 she has now, not of the $100 she started with. Only $25 comes back.\n\n$50 + $25 = $75.\n\nTo get from $50 back to $100 she'd need the $50 to double. That's a 100% gain, not 50%.\n\nA percent move is always measured from where the price is now.\n\nYour turn: down 20%, then up 20%. Where does she end? Tell me below.\n\nFollow @investmentbankinginterviews for a new IB interview question, worked out, every day.\n\nNarration: AI-generated voice; script is our original work.\n\n#investmentbanking #ibinterview #finance #stockmarket",
+      "first_comment": "Bonus: up 50% first, then down 50%. Where does she end?",
+      "ai_label": true,
+      "published_id": null,
+      "audio": {
+        "audio_id": "902471383520180",
+        "title": "LoFi Monday - Otis McDonald",
+        "audio_volume": 15,
+        "video_volume": 100
+      },
+      "audio_backups": [
+        {
+          "audio_id": "544713431841568",
+          "title": "Lofi Street - bbox",
+          "audio_volume": 15,
+          "video_volume": 100
+        },
+        {
+          "audio_id": "1567253696692852",
+          "title": "Jing Wu Shan (feat. Chinese Performing Arts of North America) - Mike Block (Producer)",
+          "audio_volume": 15,
+          "video_volume": 100
+        }
+      ]
     }
   ],
   "reel_slots_et": {
