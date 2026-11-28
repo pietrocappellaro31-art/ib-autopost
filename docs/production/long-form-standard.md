@@ -44,8 +44,9 @@ experiment with 'what if videos'" (his list below).
    build/music_library/audio/, never committed). Shorts: `yt_short_from_reel.py <slug> --mood <mood>`. Long films:
    render as usual, then `yt_short_from_reel.py <slug> --film --mood <mood>` (a second track crossfades in if the first
    runs out) and deliver <slug>-music.mp4 as the one file. Only tracks where `music_library.mixable(t, "youtube")` is
-   true (never Presentation 1 and 2). Credit in the description: "Music: <title> by <artist> (Pixabay)". Voice at least
-   18 dB over the music and the word check at 0. If a track gets a Content ID claim, tell Pietro and drop it from the
+   true (never Presentation 1 and 2). Credit in the description: "Music: <title> by <artist> (Pixabay)". Music clearly
+   audible (Pietro, 27 Nov, at about 20 dB under: "Too quiet - almost inaudible"): default level about 9 dB under the
+   voice (library_alternative music_under_db 3, duck 6); the word check must stay at 0, voice at least 6 dB over. If a track gets a Content ID claim, tell Pietro and drop it from the
    library. Our original score (`--score`) only when the artifact cannot be read, and say so.
 6. **"What if" films**, alternating with the finance documentaries (a what-if on 30 Nov, a documentary on 1 Dec, and so
    on). Pietro's list, take them in this order unless a newer idea of his comes first:

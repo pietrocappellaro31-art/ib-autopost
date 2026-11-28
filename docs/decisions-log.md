@@ -22,6 +22,11 @@ Pietro: use the music library (27 Pixabay tracks, `build/music_library/library.j
 
 ## Settled
 
+- **Library music louder (27 Nov, Pietro, on the test Short at voice 19.6 dB over the music: "Too quiet - almost
+  inaudible").** master.library_alternative now defaults to music_under_db 3, duck_db 6: the voice about 9 dB over the
+  music while speaking (measured 8.8 dB, word check 0). The 18 dB voice-over-music gate no longer applies to library
+  music; the word check at 0 and at least 6 dB are the gate.
+
 - **YouTube music from Pietro's library, every video (27 Nov, Pietro).** "Use our library"; source "Pixabay"; Content
   ID risk "OK, keep the licence proof"; then: "Load my music from the private artifact 'IB Music Library' (slug
   331a2c60-239a-4b00-acd3-dffde353a56a). Read files.json and library.json with read_file, download only the tracks you

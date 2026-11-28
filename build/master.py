@@ -313,7 +313,7 @@ def scored_alternative(clean_mp4, moods=("explain", "resolve"), out=None, lufs=-
     return rep
 
 
-def library_alternative(clean_mp4, track_mp3, start_s=0.0, out=None, lufs=-14.0, tp=-1.5, music_under_db=9.0, duck_db=11.0,
+def library_alternative(clean_mp4, track_mp3, start_s=0.0, out=None, lufs=-14.0, tp=-1.5, music_under_db=3.0, duck_db=6.0,
                         fade_in=.6, fade_out=1.8, credit=""):
     """27 Nov (Pietro: "Use our library"): a finished CLEAN master with a licensed library track under it (the IB Music
     Library, Pixabay tracks of class LICENSED_FOR_ALL_REQUIRED_PLATFORMS). The track is cut from start_s (its
